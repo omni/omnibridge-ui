@@ -26,3 +26,7 @@ packages/subgraph/src/types/
 
 # vim 
 *.swp
+
+# firebase
+.firebase/*
+firebase-debug.log*
