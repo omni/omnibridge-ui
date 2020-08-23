@@ -1,7 +1,6 @@
 import React, { useCallback, useState } from "react";
 import Web3Modal from "web3modal";
 import WalletConnectProvider from "@walletconnect/web3-provider";
-import Fortmatic from "fortmatic";
 import Web3 from "web3";
 import ethers from "ethers";
 import { CONFIG } from "../config";
@@ -9,12 +8,6 @@ import { CONFIG } from "../config";
 const Web3Context = React.createContext({});
 
 const providerOptions = {
-    fortmatic: {
-        package: Fortmatic, // required
-        options: {
-            key: "FORTMATIC_KEY" // required
-        }
-    },
     walletconnect: {
         package: WalletConnectProvider,
         options: {
