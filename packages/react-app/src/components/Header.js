@@ -14,6 +14,7 @@ const getAccountString = account => {
 export const Header = () => {
     const { ethersProvider, connectWeb3 } = useContext(Web3Context);
     const [account, setAccount] = useState();
+    // eslint-disable-next-line
     const [network, setNetwork] = useState(networkOptions[0]);
     useEffect(() => {
         async function getAccount() {
