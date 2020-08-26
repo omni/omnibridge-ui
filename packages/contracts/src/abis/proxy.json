@@ -1,0 +1,11 @@
+[
+    {
+        "type": "function",
+        "stateMutability": "view",
+        "payable": false,
+        "outputs": [{ "type": "address", "name": "impl" }],
+        "name": "implementation",
+        "inputs": [],
+        "constant": true
+    }
+]
