@@ -37,15 +37,15 @@ export const Home = () => {
             </Flex>
             <Grid templateColumns="2fr 1fr 2fr" width="100%" my={4}>
                 <FromRectangle />
-                <Flex direction="column" px="0.5rem">
+                <Flex direction="column" px={{base: 2, md: 2, xl: 4}}>
                     <UnlockButton />
                     <TransferButton />
                 </Flex>
                 <ToRectangle />
             </Grid>
             <Flex align="center" color="blue.400">
-                <Image src={Details} mr={4} />
-                <Text fontWeight="bold">Multi Token Bridge</Text>
+                <Image src={Details} mr={2} />
+                <Text>System Feedback</Text>
             </Flex>
         </Flex>
     );

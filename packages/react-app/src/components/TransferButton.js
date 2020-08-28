@@ -6,7 +6,7 @@ function TransferButton(props) {
     return (
         <Flex
             align="center"
-            mt="0.25rem"
+            mt={{base: 1, md: 1, xl: 2}}
             color="blue.500"
             _hover={{ color: "blue.600" }}
             cursor="pointer"
