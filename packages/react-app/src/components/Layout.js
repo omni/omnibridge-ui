@@ -39,7 +39,7 @@ export const Layout = ({ children }) => (
             zIndex={1}
             flex={1}
             align="center"
-            justify="center"
+            justify="flex-start"
             direction="column"
             w="100%"
             h="100%"

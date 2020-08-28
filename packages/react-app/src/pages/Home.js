@@ -9,13 +9,16 @@ import TransferButton from "../components/TransferButton";
 export const Home = () => {
     return (
         <Flex
-            w="80%"
+            w="calc(100% - 2rem)"
+            maxW="75rem"
             background="white"
             boxShadow="0px 1rem 2rem rgba(204, 218, 238, 0.8)"
             borderRadius="1rem"
             direction="column"
             align="center"
             p={8}
+            mx={4}
+            my="auto"
         >
             <Flex w="100%" justify="space-between">
                 <Flex align="flex-start" direction="column">
@@ -37,7 +40,7 @@ export const Home = () => {
             </Flex>
             <Grid templateColumns="2fr 1fr 2fr" width="100%" my={4}>
                 <FromRectangle />
-                <Flex direction="column" px={{base: 2, md: 2, xl: 4}}>
+                <Flex direction="column" px={{base: 2, md: 2, lg: 4}}>
                     <UnlockButton />
                     <TransferButton />
                 </Flex>

@@ -6,7 +6,6 @@ function UnlockButton(props) {
     return (
         <Flex
             align="center"
-            mb="0.25rem"
             color="cyan.500"
             _hover={{ color: "cyan.600" }}
             cursor="pointer"

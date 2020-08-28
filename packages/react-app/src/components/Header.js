@@ -1,6 +1,7 @@
 import React, { useContext, useState, useEffect } from "react";
 import Web3Context from "../lib/Web3Context";
 import { HStack, Flex, Button, Text, Image } from "@chakra-ui/core";
+import { Link } from "react-router-dom";
 import Logo from "../assets/logo.svg";
 import { WalletIcon } from "../icons/WalletIcon";
 import { HistoryIcon } from "../icons/HistoryIcon";
@@ -35,19 +36,23 @@ export const Header = () => {
             align="center"
             h={20}
             maxW={"75rem"}
-            px={4}
+            px={8}
             w={"100%"}
-            zIndex={1}
+            zIndex={2}
         >
-            <Flex justify="space-around" align="center">
-                <Image src={Logo} mr={4} />
-                <Text fontWeight="bold">Multi Token Bridge</Text>
-            </Flex>
-            <HStack spacing={4}>
-                <Flex align="center" px={4} fontWeight="bold">
-                    <HistoryIcon color="grey" mr={2} />
-                    History
+            <Link to="/">
+                <Flex justify="space-around" align="center">
+                    <Image src={Logo} mr={4} />
+                    <Text fontWeight="bold">Multi Token Bridge</Text>
                 </Flex>
+            </Link>
+            <HStack spacing={4}>
+                <Link to="/history">
+                    <Flex align="center" px={4} fontWeight="bold">
+                        <HistoryIcon color="grey" mr={2} />
+                        History
+                    </Flex>
+                </Link>
                 <Flex>
                     {!account && (
                         <Button onClick={connectWeb3} colorScheme="blue">

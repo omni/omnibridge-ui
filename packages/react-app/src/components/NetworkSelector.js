@@ -7,7 +7,7 @@ const { Option, DropdownIndicator } = components;
 
 const CustomSelectOption = props => (
     <Option {...props}>
-        <Flex align="center">
+        <Flex align="center" cursor="pointer">
             {props.data.icon}
             {props.data.label}
         </Flex>
@@ -35,6 +35,7 @@ const customStyles = {
     control: provided => ({
         ...provided,
         // width: "9rem",
+        cursor: "pointer",
         border: "none",
         background: "transparent"
     }),

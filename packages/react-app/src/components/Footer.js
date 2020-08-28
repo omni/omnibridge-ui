@@ -1,6 +1,6 @@
 import React from "react";
 import { HStack, Flex, Box, Text, Image } from "@chakra-ui/core";
-// import { Link } from 'react-router-dom';
+import { Link } from "react-router-dom";
 import Logo from "../assets/footer-logo.svg";
 import xDaiLogo from "../assets/xdai.svg";
 import TwitterLogo from "../assets/twitter.svg";
@@ -14,25 +14,29 @@ export const Footer = () => {
             justify="space-between"
             align="center"
             h={20}
-            maxW={"75rem"}
-            px={4}
-            w={"100%"}
+            maxW="75rem"
+            px={8}
+            w="100%"
             color="grey"
-            zIndex={1}
+            zIndex={2}
         >
-            <Flex justify="space-around" align="center">
-                <Image src={Logo} />
-            </Flex>
+            <Link to="/">
+                <Flex justify="space-around" align="center">
+                    <Image src={Logo} />
+                </Flex>
+            </Link>
             <HStack spacing={4}>
                 <Image src={xDaiLogo} />
                 <Image src={TwitterLogo} />
                 <Image src={TelegramLogo} />
                 <Image src={GithubLogo} />
-                <Box w="1px" h="18px" background="grey" />
-                <HStack spacing={2}>
+                <Box w="1px" h={5} background="grey" />
+                <Flex align="center">
                     <Text>Built by</Text>
-                    <Image src={RaidGuildLogo} />
-                </HStack>
+                    <Link to="https://raidguild.org">
+                        <Image src={RaidGuildLogo} ml={2} />
+                    </Link>
+                </Flex>
             </HStack>
         </Flex>
     );

@@ -28,7 +28,7 @@ export default Web3Context;
 export const Web3Provider = ({ children }) => {
     const [network, setNetwork] = useState("kovan");
     const [ethersProvider, setEthersProvider] = useState(
-        new ethers.providers.InfuraProvider(network, CONFIG.infuraId)
+        // new ethers.providers.InfuraProvider(network, CONFIG.infuraId)
     );
 
     const connectWeb3 = useCallback(async () => {
