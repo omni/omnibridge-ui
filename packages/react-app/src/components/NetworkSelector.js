@@ -7,7 +7,7 @@ const { Option, DropdownIndicator } = components;
 
 const CustomSelectOption = props => (
     <Option {...props}>
-        <Flex align="center">
+        <Flex align="center" cursor="pointer">
             {props.data.icon}
             {props.data.label}
         </Flex>
@@ -35,6 +35,7 @@ const customStyles = {
     control: provided => ({
         ...provided,
         // width: "9rem",
+        cursor: "pointer",
         border: "none",
         background: "transparent"
     }),
@@ -42,24 +43,32 @@ const customStyles = {
 };
 
 export const networkOptions = [
+    // {
+    //     value: 100,
+    //     bridge: { chainId: 1, name: "ETH Mainnet" },
+    //     label: "xDai",
+    //     name: "xDai Chain",
+    //     icon: <NetworkIcon color="grey" mr={2} />
+    // },
+    // {
+    //     value: 1,
+    //     bridge: { chainId: 100, name: "xDai Chain" },
+    //     label: "Mainnet",
+    //     name: "xDai Chain",
+    //     icon: <NetworkIcon color="grey" mr={2} />
+    // },
     {
-        value: "xdai",
-        label: "xDai",
-        icon: <NetworkIcon color="grey" mr={2} />
-    },
-    {
-        value: "mainnet",
-        label: "Mainnet",
-        icon: <NetworkIcon color="grey" mr={2} />
-    },
-    {
-        value: "sokol",
+        value: 77,
+        bridge: { chainId: 42, name: "ETH Kovan" },
         label: "Sokol",
+        name: "Sokol Chain",
         icon: <NetworkIcon color="grey" mr={2} />
     },
     {
-        value: "kovan",
+        value: 42,
+        bridge: { chainId: 77, name: "Sokol Chain" },
         label: "Kovan",
+        name: "ETH Kovan",
         icon: <NetworkIcon color="grey" mr={2} />
     }
 ];
