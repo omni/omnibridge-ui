@@ -2,8 +2,8 @@ import React, { useContext } from "react";
 import Web3Context from "../lib/Web3Context";
 import { Flex, Image, Text, Grid } from "@chakra-ui/core";
 import Details from "../assets/details.svg";
-import FromRectangle from "./FromRectangle";
-import ToRectangle from "./ToRectangle";
+import FromToken from "./FromToken";
+import ToToken from "./ToToken";
 import UnlockButton from "./UnlockButton";
 import TransferButton from "./TransferButton";
 
@@ -42,14 +42,14 @@ const BridgeTokens = () => {
                 </Flex>
             </Flex>
             <Grid templateColumns="2fr 1fr 2fr" width="100%" my={4}>
-                <FromRectangle />
+                <FromToken />
                 <Flex direction="column" px={{ base: 2, md: 2, lg: 4 }}>
                     <UnlockButton />
                     <TransferButton />
                 </Flex>
-                <ToRectangle />
+                <ToToken />
             </Grid>
-            <Flex align="center" color="blue.400">
+            <Flex align="center" color="blue.400" cursor="pointer">
                 <Image src={Details} mr={2} />
                 <Text>System Feedback</Text>
             </Flex>

@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { Flex, Text, Image } from "@chakra-ui/core";
 import TransferIcon from "../assets/transfer.svg";
 
