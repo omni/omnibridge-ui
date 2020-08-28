@@ -37,6 +37,7 @@ export const Header = () => {
             maxW={"75rem"}
             px={4}
             w={"100%"}
+            zIndex={1}
         >
             <Flex justify="space-around" align="center">
                 <Image src={Logo} mr={4} />

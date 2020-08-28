@@ -18,6 +18,7 @@ export const Footer = () => {
             px={4}
             w={"100%"}
             color="grey"
+            zIndex={1}
         >
             <Flex justify="space-around" align="center">
                 <Image src={Logo} />

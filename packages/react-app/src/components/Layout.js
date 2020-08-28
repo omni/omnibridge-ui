@@ -35,7 +35,15 @@ export const Layout = ({ children }) => (
             minWidth="60rem"
         />
         <Header />
-        <Flex flex={1} align="center" direction="column">
+        <Flex
+            zIndex={1}
+            flex={1}
+            align="center"
+            justify="center"
+            direction="column"
+            w="100%"
+            h="100%"
+        >
             {children}
         </Flex>
         <Footer />
