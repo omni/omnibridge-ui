@@ -30,3 +30,6 @@ packages/subgraph/src/types/
 # firebase
 .firebase/*
 firebase-debug.log*
+
+# eslint
+.eslintcache

@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext } from "react";
 import Web3Context from "../lib/Web3Context";
 import { HStack, Flex, Button, Text, Image } from "@chakra-ui/core";
 import { Link } from "react-router-dom";
