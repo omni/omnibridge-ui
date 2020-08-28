@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext } from "react";
 import Web3Context from "../lib/Web3Context";
 import { Flex, Image, Text, Grid } from "@chakra-ui/core";
 import Details from "../assets/details.svg";
@@ -8,7 +8,7 @@ import UnlockButton from "./UnlockButton";
 import TransferButton from "./TransferButton";
 
 const BridgeTokens = () => {
-    const { ethersProvider, network } = useContext(Web3Context);
+    const { network } = useContext(Web3Context);
 
     return (
         <Flex
