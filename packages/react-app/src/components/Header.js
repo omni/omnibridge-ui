@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import Logo from "../assets/logo.svg";
 import { WalletIcon } from "../icons/WalletIcon";
 import { HistoryIcon } from "../icons/HistoryIcon";
-import { NetworkSelector, networkOptions } from "./NetworkSelector";
+import { NetworkSelector } from "./NetworkSelector";
 
 const getAccountString = account => {
     const len = account.length;
@@ -13,22 +13,7 @@ const getAccountString = account => {
 };
 
 export const Header = () => {
-    const { ethersProvider, connectWeb3 } = useContext(Web3Context);
-    const [account, setAccount] = useState();
-    // eslint-disable-next-line
-    const [network, setNetwork] = useState(networkOptions[0]);
-    useEffect(() => {
-        async function getAccount() {
-            try {
-                const signer = await ethersProvider.getSigner();
-                const gotAccount = await signer.getAddress();
-                setAccount(gotAccount);
-            } catch (error) {
-                console.log({ accountError: error });
-            }
-        }
-        getAccount();
-    }, [ethersProvider]);
+    const { connectWeb3, setNetwork, account } = useContext(Web3Context);
 
     return (
         <Flex

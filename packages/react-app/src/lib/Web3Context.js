@@ -1,9 +1,10 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useState, useEffect } from "react";
 import Web3Modal from "web3modal";
 import WalletConnectProvider from "@walletconnect/web3-provider";
 import Web3 from "web3";
 import ethers from "ethers";
 import { CONFIG } from "../config";
+import { networkOptions } from "../components/NetworkSelector";
 
 const Web3Context = React.createContext({});
 
@@ -26,10 +27,10 @@ const web3Modal = new Web3Modal({
 export default Web3Context;
 
 export const Web3Provider = ({ children }) => {
-    const [network, setNetwork] = useState("kovan");
-    const [ethersProvider, setEthersProvider] = useState(
-        // new ethers.providers.InfuraProvider(network, CONFIG.infuraId)
-    );
+    const [providerNetwork, setProviderNetwork] = useState();
+    const [chosenNetwork, setChosenNetwork] = useState(networkOptions[0]);
+    const [ethersProvider, setEthersProvider] = useState();
+    const [account, setAccount] = useState();
 
     const connectWeb3 = useCallback(async () => {
         try {
@@ -42,15 +43,48 @@ export const Web3Provider = ({ children }) => {
 
             setEthersProvider(provider);
             const network = await provider.getNetwork();
-            setNetwork(network.name);
-        } catch (e) {
-            throw e;
+            setProviderNetwork(network);
+            if (network.chainId !== chosenNetwork.bridge.chainId) {
+                throw new Error(
+                    `Provider network ${network.chainId}, expected ${chosenNetwork.bridge.chainId}`
+                );
+            }
+        } catch (error) {
+            console.log({networkError: error});
         }
-    }, []);
+    }, [chosenNetwork]);
 
     const disconnect = useCallback(async () => {
         web3Modal.clearCachedProvider();
     }, []);
+
+    const setNetwork = network => {
+        try {
+            setChosenNetwork(network);
+            if (providerNetwork) {
+                if (providerNetwork.chainId !== network.bridge.chainId) {
+                    throw new Error(
+                        `Provider network ${providerNetwork.chainId}, expected ${network.bridge.chainId}`
+                    );
+                }
+            }
+        } catch (error) {
+            console.log({networkError: error});
+        }
+    };
+
+    useEffect(() => {
+        async function getAccount() {
+            try {
+                const signer = await ethersProvider.getSigner();
+                const gotAccount = await signer.getAddress();
+                setAccount(gotAccount);
+            } catch (error) {
+                console.log({ accountError: error });
+            }
+        }
+        getAccount();
+    }, [ethersProvider]);
 
     // Uncomment this if we want to automatically connect
     // useEffect(() => {
@@ -61,7 +95,14 @@ export const Web3Provider = ({ children }) => {
 
     return (
         <Web3Context.Provider
-            value={{ ethersProvider, connectWeb3, disconnect }}
+            value={{
+                ethersProvider,
+                connectWeb3,
+                disconnect,
+                network: chosenNetwork,
+                setNetwork,
+                account
+            }}
         >
             {children}
         </Web3Context.Provider>
