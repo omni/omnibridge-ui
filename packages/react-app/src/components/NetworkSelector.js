@@ -34,7 +34,6 @@ const CustomSelectValue = props => (
 const customStyles = {
     control: provided => ({
         ...provided,
-        // width: "9rem",
         cursor: "pointer",
         border: "none",
         background: "transparent"
@@ -43,20 +42,6 @@ const customStyles = {
 };
 
 export const networkOptions = [
-    // {
-    //     value: 100,
-    //     bridge: { chainId: 1, name: "ETH Mainnet" },
-    //     label: "xDai",
-    //     name: "xDai Chain",
-    //     icon: <NetworkIcon color="grey" mr={2} />
-    // },
-    // {
-    //     value: 1,
-    //     bridge: { chainId: 100, name: "xDai Chain" },
-    //     label: "Mainnet",
-    //     name: "xDai Chain",
-    //     icon: <NetworkIcon color="grey" mr={2} />
-    // },
     {
         value: 77,
         bridge: { chainId: 42, name: "ETH Kovan" },
@@ -70,7 +55,21 @@ export const networkOptions = [
         label: "Kovan",
         name: "ETH Kovan",
         icon: <NetworkIcon color="grey" mr={2} />
-    }
+    },
+    {
+        value: 100,
+        bridge: { chainId: 1, name: "ETH Mainnet" },
+        label: "xDai",
+        name: "xDai Chain",
+        icon: <NetworkIcon color="grey" mr={2} />
+    },
+    {
+        value: 1,
+        bridge: { chainId: 100, name: "xDai Chain" },
+        label: "Mainnet",
+        name: "ETH Mainnet",
+        icon: <NetworkIcon color="grey" mr={2} />
+    },
 ];
 
 export const NetworkSelector = ({ onChange }) => (
