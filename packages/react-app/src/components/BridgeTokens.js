@@ -29,7 +29,7 @@ const BridgeTokens = () => {
                         From
                     </Text>
                     <Text fontWeight="bold" fontSize="lg">
-                        {network.bridge.name}
+                        {network.name}
                     </Text>
                 </Flex>
                 <Flex align="flex-end" direction="column">
@@ -37,14 +37,14 @@ const BridgeTokens = () => {
                         To
                     </Text>
                     <Text fontWeight="bold" fontSize="lg" textAlign="right">
-                        {network.name}
+                        {network.bridge.name}
                     </Text>
                 </Flex>
             </Flex>
             <Grid templateColumns="2fr 1fr 2fr" width="100%" my={4}>
-                <FromToken />
+                <FromToken amount={amount} setAmount={setAmount} />
                 <Flex direction="column" px={{ base: 2, md: 2, lg: 4 }}>
-                    <UnlockButton />
+                    <UnlockButton amount={amount} />
                     <TransferButton />
                 </Flex>
                 <ToToken />

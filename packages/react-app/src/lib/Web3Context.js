@@ -12,16 +12,16 @@ const providerOptions = {
     walletconnect: {
         package: WalletConnectProvider,
         options: {
-            infuraId: CONFIG.infuraId
-        }
-    }
+            infuraId: CONFIG.infuraId,
+        },
+    },
 };
 
 const web3Modal = new Web3Modal({
     network: "mainnet",
     // Uncomment this if we want to automatically connect
     // cacheProvider: true,
-    providerOptions
+    providerOptions,
 });
 
 export default Web3Context;
@@ -44,13 +44,13 @@ export const Web3Provider = ({ children }) => {
             setEthersProvider(provider);
             const network = await provider.getNetwork();
             setProviderNetwork(network);
-            if (network.chainId !== chosenNetwork.bridge.chainId) {
+            if (network.chainId !== chosenNetwork.value) {
                 throw new Error(
-                    `Provider network ${network.chainId}, expected ${chosenNetwork.bridge.chainId}`
+                    `Provider network ${network.chainId}, expected ${chosenNetwork.value}`
                 );
             }
         } catch (error) {
-            console.log({networkError: error});
+            console.log({ networkError: error });
         }
     }, [chosenNetwork]);
 
@@ -62,14 +62,14 @@ export const Web3Provider = ({ children }) => {
         try {
             setChosenNetwork(network);
             if (providerNetwork) {
-                if (providerNetwork.chainId !== network.bridge.chainId) {
+                if (providerNetwork.chainId !== network.value) {
                     throw new Error(
-                        `Provider network ${providerNetwork.chainId}, expected ${network.bridge.chainId}`
+                        `Provider network ${providerNetwork.chainId}, expected ${network.value}`
                     );
                 }
             }
         } catch (error) {
-            console.log({networkError: error});
+            console.log({ networkError: error });
         }
     };
 
