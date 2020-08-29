@@ -21,28 +21,28 @@ export const Layout = ({ children }) => (
         <Image
             src={DownTriangle}
             position="absolute"
-            top={0}
             right="min(-15rem, -20%)"
             w="60rem"
             minWidth="30rem"
+            opacity={0.99}
         />
         <Image
             src={UpTriangle}
             position="absolute"
-            bottom={0}
             left="min(-27rem, -20%)"
             w="81rem"
             minWidth="60rem"
+            opacity={0.99}
         />
         <Header />
         <Flex
-            zIndex={1}
             flex={1}
             align="center"
             justify="flex-start"
             direction="column"
             w="100%"
             h="100%"
+            position="relative"
         >
             {children}
         </Flex>

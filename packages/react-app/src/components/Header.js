@@ -33,9 +33,16 @@ export const Header = () => {
             </Link>
             <HStack spacing={4}>
                 <Link to="/history">
-                    <Flex align="center" px={4} fontWeight="bold">
-                        <HistoryIcon color="grey" mr={2} />
-                        History
+                    <Flex
+                        align="center"
+                        px={4}
+                        fontWeight="bold"
+                        color="grey"
+                        transition="0.5s"
+                        _hover={{ color: "blue.500" }}
+                    >
+                        <HistoryIcon mr={2} />
+                        <Text color="black"> History</Text>
                     </Flex>
                 </Link>
                 <Flex>

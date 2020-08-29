@@ -37,6 +37,7 @@ export const theme = {
         grey: "#A0B6D7",
         background: "#EEF4FD",
         greyText: "#75818D",
+        modalBG: "rgba(98, 118, 148, 0.9)",
     },
     fonts: {
         ...chakraTheme.fonts,
