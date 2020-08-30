@@ -1,10 +1,9 @@
-import React, { useEffect, useState, useContext } from "react";
-import Web3Context from "../lib/Web3Context";
-import { Text } from "@chakra-ui/core";
-import { Modal } from "./Modal";
-import { getTokenList } from "../lib/tokenList";
+import React, { useEffect, useState, useContext } from 'react';
+import Web3Context from '../lib/Web3Context';
+import { getTokenList } from '../lib/tokenList';
+import SelectTokenModal from './SelectTokenModal';
 
-export const TokenSelector = ({ close }) => {
+export const TokenSelector = ({ isOpen, onClose, setToken }) => {
     const { network } = useContext(Web3Context);
     const [tokenList, setTokenList] = useState();
 
@@ -13,7 +12,6 @@ export const TokenSelector = ({ close }) => {
             try {
                 const gotTokenList = await getTokenList(network.value);
                 setTokenList(gotTokenList);
-                console.log(gotTokenList);
             } catch (e) {
                 // TODO handle error better
                 throw e;
@@ -23,10 +21,11 @@ export const TokenSelector = ({ close }) => {
     }, [network]);
 
     return (
-        <Modal close={close}>
-            {tokenList && (
-                <Text> Got token list, need to display selector here </Text>
-            )}
-        </Modal>
+        <SelectTokenModal
+            isOpen={isOpen}
+            onClose={onClose}
+            tokenList={tokenList}
+            setToken={setToken}
+        />
     );
 };

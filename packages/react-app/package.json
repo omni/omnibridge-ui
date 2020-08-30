@@ -2,7 +2,11 @@
     "name": "@project/react-app",
     "version": "1.0.0",
     "browserslist": {
-        "production": [">0.2%", "not dead", "not op_mini all"],
+        "production": [
+            ">0.2%",
+            "not dead",
+            "not op_mini all"
+        ],
         "development": [
             "last 1 chrome version",
             "last 1 firefox version",
@@ -13,6 +17,7 @@
         "@apollo/react-hooks": "^3.1.5",
         "@chakra-ui/core": "^1.0.0-rc.2",
         "@chakra-ui/icon": "^1.0.0-rc.2",
+        "@chakra-ui/icons": "^1.0.0-next.3",
         "@chakra-ui/theme": "^1.0.0-rc.2",
         "@ethersproject/contracts": "^5.0.1",
         "@ethersproject/providers": "^5.0.4",
