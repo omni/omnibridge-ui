@@ -42,9 +42,9 @@ const BridgeTokens = () => {
                 </Flex>
             </Flex>
             <Grid templateColumns="2fr 1fr 2fr" width="100%" my={4}>
-                <FromToken amount={amount} setAmount={setAmount} />
+                <FromToken />
                 <Flex direction="column" px={{ base: 2, md: 2, lg: 4 }}>
-                    <UnlockButton amount={amount} />
+                    <UnlockButton />
                     <TransferButton />
                 </Flex>
                 <ToToken />

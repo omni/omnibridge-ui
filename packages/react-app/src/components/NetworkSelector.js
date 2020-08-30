@@ -1,15 +1,23 @@
 import React from "react";
 import Select, { components } from "react-select";
-import { Flex } from "@chakra-ui/core";
+import { Flex, Text } from "@chakra-ui/core";
 import { DownArrowIcon } from "../icons/DownArrowIcon";
 import { NetworkIcon } from "../icons/NetworkIcon";
 const { Option, DropdownIndicator } = components;
 
 const CustomSelectOption = props => (
     <Option {...props}>
-        <Flex align="center" cursor="pointer">
+        <Flex
+            align="center"
+            cursor="pointer"
+            color="grey"
+            transition="0.25s"
+            _hover={{ color: "blue.500" }}
+        >
             {props.data.icon}
-            {props.data.label}
+            <Text color="black" ml={2}>
+                {props.data.label}
+            </Text>
         </Flex>
     </Option>
 );
@@ -25,9 +33,17 @@ const CustomDropdownIndicator = props => {
 };
 
 const CustomSelectValue = props => (
-    <Flex align="center" fontWeight="bold">
+    <Flex
+        align="center"
+        cursor="pointer"
+        color="grey"
+        transition="0.25s"
+        _hover={{ color: "blue.500" }}
+    >
         {props.data.icon}
-        {props.data.label}
+        <Text color="black" ml={2}>
+            {props.data.label}
+        </Text>
     </Flex>
 );
 
@@ -47,29 +63,29 @@ export const networkOptions = [
         bridge: { chainId: 42, name: "ETH Kovan" },
         label: "Sokol",
         name: "Sokol Chain",
-        icon: <NetworkIcon color="grey" mr={2} />
+        icon: <NetworkIcon />
     },
     {
         value: 42,
         bridge: { chainId: 77, name: "Sokol Chain" },
         label: "Kovan",
         name: "ETH Kovan",
-        icon: <NetworkIcon color="grey" mr={2} />
+        icon: <NetworkIcon />
     },
     {
         value: 100,
         bridge: { chainId: 1, name: "ETH Mainnet" },
         label: "xDai",
         name: "xDai Chain",
-        icon: <NetworkIcon color="grey" mr={2} />
+        icon: <NetworkIcon />
     },
     {
         value: 1,
         bridge: { chainId: 100, name: "xDai Chain" },
         label: "Mainnet",
         name: "ETH Mainnet",
-        icon: <NetworkIcon color="grey" mr={2} />
-    },
+        icon: <NetworkIcon />
+    }
 ];
 
 export const NetworkSelector = ({ onChange }) => (

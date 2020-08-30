@@ -39,7 +39,7 @@ function ToToken() {
                     <Text>{`\u2248 $${token.balanceInUsd}`}</Text>
                 </Flex>
                 <Flex justify="space-between" align="center" flex={1}>
-                    <Flex align="center" cursor="pointer">
+                    <Flex align="center">
                         <Flex
                             justify="center"
                             align="center"

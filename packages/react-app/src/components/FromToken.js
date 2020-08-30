@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Flex, Text, Button, Image, Input } from "@chakra-ui/core";
 import xDAILogo from "../assets/xdai-logo.png";
 import DropDown from "../assets/drop-down.svg";
+import { TokenSelector } from "./TokenSelector";
 
 function FromToken() {
     const token = {
@@ -11,6 +12,7 @@ function FromToken() {
         logo: xDAILogo
     };
     const [amount, setAmount] = useState(0);
+    const [tokenSelector, setTokenSelector] = useState(false);
     return (
         <Flex
             align="center"
@@ -43,7 +45,7 @@ function FromToken() {
                     <Text>{`\u2248 $${token.balanceInUsd}`}</Text>
                 </Flex>
                 <Flex align="center" flex={1}>
-                    <Flex align="center" cursor="pointer">
+                    <Flex align="center" cursor="pointer" onClick={() => setTokenSelector(true)}>
                         <Flex
                             justify="center"
                             align="center"
@@ -55,9 +57,12 @@ function FromToken() {
                         >
                             <Image src={token.logo} />
                         </Flex>
-                        <Text fontSize="lg" fontWeight="bold" mx={2}>{token.name}</Text>
-                        <Image src={DropDown} cursor="pointer"/>
+                        <Text fontSize="lg" fontWeight="bold" mx={2}>
+                            {token.name}
+                        </Text>
+                        <Image src={DropDown} cursor="pointer" />
                     </Flex>
+                    {tokenSelector && <TokenSelector close={() => setTokenSelector(false)} />}
                     <Flex align="center" justify="flex-end" flex={1}>
                         <Input
                             variant="unstyled"
