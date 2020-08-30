@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { Flex, Box, Text, Image } from "@chakra-ui/core";
+import { Flex, Image } from "@chakra-ui/core";
 import Close from "../assets/close.svg";
 
 export const Modal = ({ close, closable = true, children, ...props }) => {
