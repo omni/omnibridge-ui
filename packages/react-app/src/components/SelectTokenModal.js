@@ -68,7 +68,7 @@ export default ({ isOpen, onClose, tokenList, setToken }) => {
                     <ModalCloseButton />
                     <ModalBody>
                         <Text fontSize="md">Search Name or Paste Token Contract Address</Text>
-                        <InputGroup margin="15px 0px">
+                        <InputGroup margin="15px 0px" borderColor="#DAE3F0">
                             <Input placeholder="Search ..." ref={inputRef} onChange={onChange} />
                             <InputRightElement children={<SearchIcon />} />
                         </InputGroup>
@@ -79,7 +79,7 @@ export default ({ isOpen, onClose, tokenList, setToken }) => {
                                 display="block"
                                 margin="5px 0px"
                                 padding="10px"
-                                border="1px solid black"
+                                border="1px solid #DAE3F0"
                                 borderRadius="5px"
                                 key={token.symbol}
                                 onClick={() => onClick(token)}
