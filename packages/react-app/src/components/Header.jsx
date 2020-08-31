@@ -1,4 +1,15 @@
-import { Button, Flex, HStack, Image, Text } from '@chakra-ui/core';
+import {
+  Button,
+  Flex,
+  HStack,
+  Image,
+  Popover,
+  PopoverArrow,
+  PopoverBody,
+  PopoverContent,
+  PopoverTrigger,
+  Text,
+} from '@chakra-ui/core';
 import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -14,7 +25,9 @@ const getAccountString = (account) => {
 };
 
 export const Header = () => {
-  const { connectWeb3, setNetwork, account } = useContext(Web3Context);
+  const { connectWeb3, disconnect, setNetwork, account } = useContext(
+    Web3Context,
+  );
 
   return (
     <Flex
@@ -54,10 +67,31 @@ export const Header = () => {
             </Button>
           )}
           {account && (
-            <Button colorScheme="blue">
-              <WalletIcon mr={2} />
-              <Text> {getAccountString(account)} </Text>
-            </Button>
+            <Popover>
+              <PopoverTrigger>
+                <Button colorScheme="blue">
+                  <WalletIcon mr={2} />
+                  <Text> {getAccountString(account)} </Text>
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent
+                boxShadow="0 0.5rem 1rem #CADAEF"
+                border="none"
+                width="auto"
+                _focus={{ border: 'none', outline: 'none' }}
+              >
+                <PopoverArrow />
+                <PopoverBody width="100%" align="center">
+                  <Button
+                    colorScheme="blue"
+                    onClick={disconnect}
+                    _focus={{ border: 'none' }}
+                  >
+                    <Text> Disconnect </Text>
+                  </Button>
+                </PopoverBody>
+              </PopoverContent>
+            </Popover>
           )}
         </Flex>
         <Flex>
