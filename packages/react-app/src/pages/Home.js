@@ -1,6 +1,6 @@
-import React from "react";
-import BridgeTokens from "../components/BridgeTokens";
+import React from 'react';
+import BridgeTokens from '../components/BridgeTokens';
 
 export const Home = () => {
-    return <BridgeTokens />;
+  return <BridgeTokens />;
 };

@@ -17,7 +17,13 @@
     "react-app:eject": "yarn workspace @project/react-app eject",
     "react-app:start": "yarn workspace @project/react-app start",
     "react-app:test": "yarn workspace @project/react-app test",
-    "react-app:lint": "yarn workspace @project/react-app lint"
+    "lint": "eslint --ignore-path .gitignore \"./packages/**/*.{ts,tsx,js,jsx}\" --cache",
+    "format": "prettier --ignore-path .gitignore --write \"{*,**/*}.{ts,tsx,js,jsx,json,yml,yaml,md}\""
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "yarn format && yarn lint"
+    }
   },
   "workspaces": {
     "nohoist": [
@@ -27,6 +33,17 @@
     "packages": [
       "packages/*"
     ]
+  },
+  "devDependencies": {
+    "eslint": "6.8.0",
+    "eslint-config-airbnb": "^18.2.0",
+    "eslint-config-prettier": "6.11.0",
+    "eslint-plugin-import": "2.22.0",
+    "eslint-plugin-react": "7.20.3",
+    "eslint-plugin-react-hooks": "4.0.6",
+    "eslint-plugin-simple-import-sort": "5.0.3",
+    "husky": "^4.2.5",
+    "prettier": "^2.0.5"
   },
   "license": "UNLICENSED"
 }

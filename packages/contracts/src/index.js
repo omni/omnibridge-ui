@@ -1,4 +1,2 @@
-export { default as abis } from "./abis";
-export { default as addresses } from "./addresses";
-
-export * from "./addresses";
+export { abis } from './abis';
+export { addresses } from './addresses';
