@@ -2,7 +2,6 @@
 
 The [multi-token extension](https://docs.tokenbridge.net/eth-xdai-amb-bridge/multi-token-extension) for the Arbitrary Message Bridge between Ethereum and the xDai chain is the simplest way to transfer ANY ERC20/ERC677/ERC827 token to the xDai chain.
 
-
 ## Project Structure
 
 This project is a monorepo created with [Yarn Workspaces](https://classic.yarnpkg.com/en/docs/workspaces/) and [Create Eth App](https://github.com/paulrberg/create-eth-app).
@@ -104,4 +103,3 @@ GRAPH_ACCESS_TOKEN=your-access-token-here yarn subgraph:auth
 #### `yarn subgraph:deploy`
 
 Deploys the subgraph to the official Graph Node.<br/>
-

@@ -9,10 +9,10 @@ dataSources:
     network: mainnet
     source:
       abi: erc20
-      address: "0xc1C0472c0C80bCcDC7F5D01A376Bd97a734B8815"
+      address: '0xc1C0472c0C80bCcDC7F5D01A376Bd97a734B8815'
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.3
+      apiVersion: 0.0.4
       abis:
         - name: erc20
           file: ../contracts/src/abis/erc20.json
