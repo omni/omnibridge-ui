@@ -1,18 +1,27 @@
 import React, { useState } from "react";
-import { Flex, Text, Button, Image, Input } from "@chakra-ui/core";
+import ethers from "ethers";
+import {
+    Flex,
+    Text,
+    Button,
+    Image,
+    Input,
+    useDisclosure
+} from "@chakra-ui/core";
 import xDAILogo from "../assets/xdai-logo.png";
 import DropDown from "../assets/drop-down.svg";
-import { TokenSelector } from "./TokenSelector";
+import TokenSelector from "./TokenSelector";
 
 function FromToken() {
-    const token = {
+    const defaultToken = {
         name: "STAKE",
-        balance: "390.0",
+        balance: "390000000000000000000",
         balanceInUsd: "0",
         logo: xDAILogo
     };
+    const [token, setToken] = useState(defaultToken);
     const [amount, setAmount] = useState(0);
-    const [tokenSelector, setTokenSelector] = useState(false);
+    const { isOpen, onOpen, onClose } = useDisclosure();
     return (
         <Flex
             align="center"
@@ -41,11 +50,11 @@ function FromToken() {
                     color="grey"
                     mb={2}
                 >
-                    <Text>{`Balance: ${token.balance}`}</Text>
+                    <Text>{`Balance: ${ethers.utils.formatEther(token.balance)}`}</Text>
                     <Text>{`\u2248 $${token.balanceInUsd}`}</Text>
                 </Flex>
                 <Flex align="center" flex={1}>
-                    <Flex align="center" cursor="pointer" onClick={() => setTokenSelector(true)}>
+                    <Flex align="center" cursor="pointer" onClick={onOpen}>
                         <Flex
                             justify="center"
                             align="center"
@@ -62,15 +71,25 @@ function FromToken() {
                         </Text>
                         <Image src={DropDown} cursor="pointer" />
                     </Flex>
-                    {tokenSelector && <TokenSelector close={() => setTokenSelector(false)} />}
+                    {isOpen && (
+                        <TokenSelector
+                            onClose={onClose}
+                            isOpen={isOpen}
+                            setToken={setToken}
+                        />
+                    )}
                     <Flex align="center" justify="flex-end" flex={1}>
                         <Input
                             variant="unstyled"
                             type="number"
-                            value={amount}
+                            value={ethers.utils.formatEther(amount)}
                             textAlign="right"
                             fontWeight="bold"
-                            onChange={e => setAmount(e.target.value)}
+                            onChange={e =>
+                                setAmount(
+                                    ethers.utils.parseEther(e.target.value)
+                                )
+                            }
                             fontSize="3xl"
                         />
                         <Button

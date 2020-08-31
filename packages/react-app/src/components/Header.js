@@ -23,7 +23,6 @@ export const Header = () => {
             maxW={"75rem"}
             px={8}
             w={"100%"}
-            zIndex={2}
         >
             <Link to="/">
                 <Flex justify="space-around" align="center">
