@@ -7,13 +7,16 @@ import {
   useDisclosure,
 } from '@chakra-ui/core';
 import ethers from 'ethers';
-import React, { useState } from 'react';
+import React, { useContext,useState } from 'react';
 
 import DropDown from '../assets/drop-down.svg';
 import xDAILogo from '../assets/xdai-logo.png';
+import { Web3Context } from '../lib/Web3Context';
+import { ErrorModal } from './ErrorModal';
 import { TokenSelector } from './TokenSelector';
 
 export const FromToken = () => {
+  const { network, networkMismatch } = useContext(Web3Context);
   const defaultToken = {
     name: 'STAKE',
     balance: '390000000000000000000',
@@ -63,7 +66,14 @@ export const FromToken = () => {
             </Text>
             <Image src={DropDown} cursor="pointer" />
           </Flex>
-          {isOpen && (
+          {isOpen && networkMismatch && (
+            <ErrorModal
+              message={`Please switch wallet to ${network.name}`}
+              isOpen={isOpen}
+              onClose={onClose}
+            />
+          )}
+          {isOpen && !networkMismatch && (
             <TokenSelector
               onClose={onClose}
               isOpen={isOpen}

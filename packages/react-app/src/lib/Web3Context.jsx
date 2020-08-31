@@ -45,13 +45,15 @@ export const Web3Provider = ({ children }) => {
       setProviderNetwork(network);
       if (chosenNetwork && network.chainId !== chosenNetwork.value) {
         setNetworkMismatch(true);
+      } else {
+        setNetworkMismatch(false);
       }
       const signer = provider.getSigner();
       const gotAccount = await signer.getAddress();
       setAccount(gotAccount);
     } catch (error) {
       // eslint-disable-next-line
-      console.log({ networkError: error });
+      console.log({ web3ModalError: error });
     }
   }, [chosenNetwork]);
 
@@ -65,6 +67,8 @@ export const Web3Provider = ({ children }) => {
       setChosenNetwork(network);
       if (providerNetwork && providerNetwork.chainId !== network.value) {
         setNetworkMismatch(true);
+      } else {
+        setNetworkMismatch(false);
       }
     } catch (error) {
       // eslint-disable-next-line
@@ -74,7 +78,10 @@ export const Web3Provider = ({ children }) => {
 
   useEffect(() => {
     if (web3Modal.cachedProvider) {
-      connectWeb3().catch(console.error);
+      connectWeb3().catch((error) => {
+        // eslint-disable-next-line
+        console.error({ web3ModalError: error });
+      });
     }
   }, [connectWeb3]);
 

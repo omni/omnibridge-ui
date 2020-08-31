@@ -95,7 +95,7 @@ export const Header = () => {
           )}
         </Flex>
         <Flex>
-          <NetworkSelector onChange={(_network) => setNetwork(_network)} />
+          <NetworkSelector setNetwork={setNetwork} />
         </Flex>
       </HStack>
     </Flex>
