@@ -20,34 +20,30 @@ import React, { useContext, useEffect, useState } from 'react';
 import SearchIcon from '../assets/search.svg';
 import xDAILogo from '../assets/xdai-logo.png';
 import { PlusIcon } from '../icons/PlusIcon';
+import { BridgeContext } from '../lib/BridgeContext';
 import { fetchBalance } from '../lib/helpers';
 import { getTokenList } from '../lib/tokenList';
 import { Web3Context } from '../lib/Web3Context';
 
-export const TokenSelector = ({ isOpen, onClose, setToken }) => {
+export const TokenSelector = ({ isOpen, onClose }) => {
   const { network, ethersProvider, account } = useContext(Web3Context);
+  const { setToken } = useContext(BridgeContext);
   const [tokenList, setTokenList] = useState();
   const [filteredTokenList, setFilteredTokenList] = useState([]);
 
   const onClick = (token) => {
-    setToken({
-      ...token,
-      logo: token.logo,
-      balanceInUsd: '0',
-    });
+    setToken(token);
     onClose();
   };
 
   const onChange = (e) => {
-    const newFilteredTokenList = tokenList
-      .filter((token) => {
-        const lowercaseSearch = e.target.value.toLowerCase();
-        return (
-          token.name.toLowerCase().includes(lowercaseSearch) ||
-          token.symbol.toLowerCase().includes(lowercaseSearch)
-        );
-      })
-      .map((token) => ({ ...token, logo: xDAILogo }));
+    const newFilteredTokenList = tokenList.filter((token) => {
+      const lowercaseSearch = e.target.value.toLowerCase();
+      return (
+        token.name.toLowerCase().includes(lowercaseSearch) ||
+        token.symbol.toLowerCase().includes(lowercaseSearch)
+      );
+    });
     setFilteredTokenList(newFilteredTokenList);
   };
 
@@ -58,8 +54,8 @@ export const TokenSelector = ({ isOpen, onClose, setToken }) => {
         const newFilteredTokenList = await Promise.all(
           gotTokenList.map(async (token) => ({
             ...token,
-            logo: xDAILogo,
             balance: await fetchBalance(ethersProvider, account, token.address),
+            balanceInUsd: 0,
           })),
         );
         setFilteredTokenList(newFilteredTokenList);
@@ -139,7 +135,7 @@ export const TokenSelector = ({ isOpen, onClose, setToken }) => {
                       overflow="hidden"
                       borderRadius="50%"
                     >
-                      <Image src={token.logo} alt="xdai" />
+                      <Image src={token.logoURI || xDAILogo} alt="xdai" />
                     </Flex>
                     <Text fontSize="lg" fontWeight="bold" mx={2}>
                       {token.symbol}

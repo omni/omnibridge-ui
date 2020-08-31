@@ -25,9 +25,7 @@ const getAccountString = (account) => {
 };
 
 export const Header = () => {
-  const { connectWeb3, disconnect, setNetwork, account } = useContext(
-    Web3Context,
-  );
+  const { connectWeb3, disconnect, account } = useContext(Web3Context);
 
   return (
     <Flex
@@ -95,7 +93,7 @@ export const Header = () => {
           )}
         </Flex>
         <Flex>
-          <NetworkSelector setNetwork={setNetwork} />
+          <NetworkSelector />
         </Flex>
       </HStack>
     </Flex>

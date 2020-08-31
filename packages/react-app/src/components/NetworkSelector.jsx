@@ -1,9 +1,11 @@
 import { Flex, Text } from '@chakra-ui/core';
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import Select, { components } from 'react-select';
 
+import { networkOptions } from '../constants';
 import { DownArrowIcon } from '../icons/DownArrowIcon';
-import { NetworkIcon } from '../icons/NetworkIcon';
+import { BridgeContext } from '../lib/BridgeContext';
+import { Web3Context } from '../lib/Web3Context';
 
 const { Option, DropdownIndicator } = components;
 
@@ -64,54 +66,26 @@ const customStyles = {
   indicatorSeparator: () => {},
 };
 
-export const networkOptions = [
-  {
-    value: 100,
-    key: 0,
-    bridge: { chainId: 1, name: 'ETH Mainnet' },
-    label: 'xDai',
-    name: 'xDai Chain',
-    icon: <NetworkIcon />,
-  },
-  {
-    value: 1,
-    key: 1,
-    bridge: { chainId: 100, name: 'xDai Chain' },
-    label: 'Mainnet',
-    name: 'ETH Mainnet',
-    icon: <NetworkIcon />,
-  },
-  {
-    value: 77,
-    key: 2,
-    bridge: { chainId: 42, name: 'ETH Kovan' },
-    label: 'Sokol',
-    name: 'Sokol Chain',
-    icon: <NetworkIcon />,
-  },
-  {
-    value: 42,
-    key: 3,
-    bridge: { chainId: 77, name: 'Sokol Chain' },
-    label: 'Kovan',
-    name: 'ETH Kovan',
-    icon: <NetworkIcon />,
-  },
-];
-
-export const NetworkSelector = ({ setNetwork }) => {
+export const NetworkSelector = () => {
   const [localNetwork, setLocalNetwork] = useState(0);
+  const { setNetwork } = useContext(Web3Context);
+  const { setDefaultToken } = useContext(BridgeContext);
 
   useEffect(() => {
-    const network = parseInt(window.localStorage.getItem('chosenNetwork'), 10);
-    if (network) {
-      const foundNetwork = network % networkOptions.length;
-      setLocalNetwork(foundNetwork);
-      setNetwork(networkOptions[foundNetwork]);
+    let storageNetwork = parseInt(
+      window.localStorage.getItem('chosenNetwork'),
+      10,
+    );
+    if (!isNaN(storageNetwork)) {
+      storageNetwork %= networkOptions.length;
+      setDefaultToken(networkOptions[storageNetwork].value);
+      setLocalNetwork(storageNetwork);
+      setNetwork(networkOptions[storageNetwork]);
     }
-  }, [setNetwork]);
+  }, [setNetwork, setDefaultToken]);
 
   const onChange = (network) => {
+    setDefaultToken(network.value);
     setNetwork(network);
     setLocalNetwork(network.key);
     window.localStorage.setItem('chosenNetwork', network.key);
