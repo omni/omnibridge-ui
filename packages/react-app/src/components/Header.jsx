@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import Logo from '../assets/logo.svg';
 import { HistoryIcon } from '../icons/HistoryIcon';
 import { WalletIcon } from '../icons/WalletIcon';
-import Web3Context from '../lib/Web3Context';
+import { Web3Context } from '../lib/Web3Context';
 import { NetworkSelector } from './NetworkSelector';
 
 const getAccountString = (account) => {
@@ -19,6 +19,7 @@ export const Header = () => {
   return (
     <Flex
       justify="space-between"
+      position="relative"
       align="center"
       h={20}
       maxW="75rem"

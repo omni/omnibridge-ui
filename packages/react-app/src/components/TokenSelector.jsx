@@ -22,7 +22,7 @@ import xDAILogo from '../assets/xdai-logo.png';
 import { PlusIcon } from '../icons/PlusIcon';
 import { fetchBalance } from '../lib/helpers';
 import { getTokenList } from '../lib/tokenList';
-import Web3Context from '../lib/Web3Context';
+import { Web3Context } from '../lib/Web3Context';
 
 export const TokenSelector = ({ isOpen, onClose, setToken }) => {
   const { network, ethersProvider, account } = useContext(Web3Context);

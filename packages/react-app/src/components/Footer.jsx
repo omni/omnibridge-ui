@@ -12,6 +12,7 @@ import xDaiLogo from '../assets/xdai.svg';
 export const Footer = () => {
   return (
     <Flex
+      position="relative"
       justify="space-between"
       align="center"
       h={20}
@@ -31,12 +32,12 @@ export const Footer = () => {
         <Image src={TelegramLogo} />
         <Image src={GithubLogo} />
         <Box w="1px" h={5} background="grey" />
-        <Flex align="center">
-          <Text>Built by</Text>
-          <Link to="https://raidguild.org">
+        <Link to="https://raidguild.org">
+          <Flex align="center" _hover={{}}>
+            <Text>Built by</Text>
             <Image src={RaidGuildLogo} ml={2} />
-          </Link>
-        </Flex>
+          </Flex>
+        </Link>
       </HStack>
     </Flex>
   );
