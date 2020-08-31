@@ -4,8 +4,8 @@ import React, { useCallback, useEffect, useState } from 'react';
 import Web3 from 'web3';
 import Web3Modal from 'web3modal';
 
-import { networkOptions } from '../components/NetworkSelector';
 import { CONFIG } from '../config';
+import { networkOptions } from '../constants';
 
 export const Web3Context = React.createContext({});
 
@@ -43,11 +43,6 @@ export const Web3Provider = ({ children }) => {
       setEthersProvider(provider);
       const network = await provider.getNetwork();
       setProviderNetwork(network);
-      if (chosenNetwork && network.chainId !== chosenNetwork.value) {
-        setNetworkMismatch(true);
-      } else {
-        setNetworkMismatch(false);
-      }
       const signer = provider.getSigner();
       const gotAccount = await signer.getAddress();
       setAccount(gotAccount);
@@ -55,26 +50,24 @@ export const Web3Provider = ({ children }) => {
       // eslint-disable-next-line
       console.log({ web3ModalError: error });
     }
-  }, [chosenNetwork]);
+  }, []);
+
+  useEffect(() => {
+    if (
+      providerNetwork &&
+      chosenNetwork &&
+      providerNetwork.chainId === chosenNetwork.value
+    ) {
+      setNetworkMismatch(false);
+    } else {
+      setNetworkMismatch(true);
+    }
+  }, [chosenNetwork, providerNetwork]);
 
   const disconnect = useCallback(async () => {
     web3Modal.clearCachedProvider();
     setAccount();
   }, []);
-
-  const setNetwork = (network) => {
-    try {
-      setChosenNetwork(network);
-      if (providerNetwork && providerNetwork.chainId !== network.value) {
-        setNetworkMismatch(true);
-      } else {
-        setNetworkMismatch(false);
-      }
-    } catch (error) {
-      // eslint-disable-next-line
-      console.log({ networkError: error });
-    }
-  };
 
   useEffect(() => {
     if (web3Modal.cachedProvider) {
@@ -92,7 +85,7 @@ export const Web3Provider = ({ children }) => {
         connectWeb3,
         disconnect,
         network: chosenNetwork,
-        setNetwork,
+        setNetwork: setChosenNetwork,
         account,
         networkMismatch,
       }}

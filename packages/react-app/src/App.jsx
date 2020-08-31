@@ -5,6 +5,7 @@ import React from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 
 import { Layout } from './components/Layout';
+import { BridgeProvider } from './lib/BridgeContext';
 import { Web3Provider } from './lib/Web3Context';
 import { Routes } from './Routes';
 import { theme } from './theme';
@@ -19,11 +20,13 @@ export const App = () => {
       <CSSReset />
       <ApolloProvider client={client}>
         <Web3Provider>
-          <Router>
-            <Layout>
-              <Routes />
-            </Layout>
-          </Router>
+          <BridgeProvider>
+            <Router>
+              <Layout>
+                <Routes />
+              </Layout>
+            </Router>
+          </BridgeProvider>
         </Web3Provider>
       </ApolloProvider>
     </ChakraProvider>

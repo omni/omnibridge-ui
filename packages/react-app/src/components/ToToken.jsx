@@ -1,17 +1,12 @@
 import { Flex, Image, Text } from '@chakra-ui/core';
 import ethers from 'ethers';
-import React from 'react';
+import React, { useContext } from 'react';
 
 import xDAILogo from '../assets/xdai-logo.png';
+import { BridgeContext } from '../lib/BridgeContext';
 
 export const ToToken = () => {
-  const token = {
-    name: 'STAKE on xDai',
-    balance: '290000000000000000000',
-    balanceInUsd: '0',
-    logo: xDAILogo,
-    amount: '0',
-  };
+  const { toToken: token, toAmount: amount } = useContext(BridgeContext);
   return (
     <Flex align="center" ml={{ base: -4, md: -4, lg: -6 }} position="relative">
       <svg width="100%" viewBox="0 0 381 94" fill="none">
@@ -20,45 +15,47 @@ export const ToToken = () => {
           fill="#EEF4FD"
         />
       </svg>
-      <Flex
-        position="absolute"
-        w="100%"
-        h="100%"
-        direction="column"
-        py={4}
-        pr={4}
-        pl={12}
-      >
-        <Flex justify="space-between" align="center" color="grey" mb={2}>
-          <Text>{`Balance: ${ethers.utils.formatEther(token.balance)}`}</Text>
-          <Text>{`\u2248 $${token.balanceInUsd}`}</Text>
-        </Flex>
-        <Flex justify="space-between" align="center" flex={1}>
-          <Flex align="center">
-            <Flex
-              justify="center"
-              align="center"
-              background="white"
-              border="1px solid #DAE3F0"
-              w={8}
-              h={8}
-              overflow="hidden"
-              borderRadius="50%"
-              mr={2}
-            >
-              <Image src={token.logo} />
+      {token && (
+        <Flex
+          position="absolute"
+          w="100%"
+          h="100%"
+          direction="column"
+          py={4}
+          pr={4}
+          pl={12}
+        >
+          <Flex justify="space-between" align="center" color="grey" mb={2}>
+            <Text>{`Balance: ${ethers.utils.formatEther(token.balance)}`}</Text>
+            <Text>{`\u2248 $${token.balanceInUsd}`}</Text>
+          </Flex>
+          <Flex justify="space-between" align="center" flex={1}>
+            <Flex align="center">
+              <Flex
+                justify="center"
+                align="center"
+                background="white"
+                border="1px solid #DAE3F0"
+                w={8}
+                h={8}
+                overflow="hidden"
+                borderRadius="50%"
+                mr={2}
+              >
+                <Image src={token.logoURI || xDAILogo} />
+              </Flex>
+              <Text fontSize="lg" fontWeight="bold">
+                {token.name}
+              </Text>
             </Flex>
-            <Text fontSize="lg" fontWeight="bold">
-              {token.name}
-            </Text>
-          </Flex>
-          <Flex align="center">
-            <Text fontWeight="bold" fontSize="3xl">
-              {ethers.utils.formatEther(token.amount)}
-            </Text>
+            <Flex align="center">
+              <Text fontWeight="bold" fontSize="3xl">
+                {ethers.utils.formatEther(amount)}
+              </Text>
+            </Flex>
           </Flex>
         </Flex>
-      </Flex>
+      )}
     </Flex>
   );
 };

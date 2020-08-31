@@ -21,8 +21,8 @@ export const ErrorModal = ({ message, isOpen, onClose }) => {
           <ModalBody p={4}>
             <Flex align="center">
               <Flex
-                height="7rem"
-                width="7rem"
+                height="5rem"
+                width="5rem"
                 align="center"
                 justify="center"
                 border="5px solid #f27474"
