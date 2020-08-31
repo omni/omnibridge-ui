@@ -1,18 +1,19 @@
-import React, { useState } from 'react';
-import ethers from 'ethers';
 import {
-  Flex,
-  Text,
   Button,
+  Flex,
   Image,
   Input,
+  Text,
   useDisclosure,
 } from '@chakra-ui/core';
-import xDAILogo from '../assets/xdai-logo.png';
-import DropDown from '../assets/drop-down.svg';
-import TokenSelector from './TokenSelector';
+import ethers from 'ethers';
+import React, { useState } from 'react';
 
-function FromToken() {
+import DropDown from '../assets/drop-down.svg';
+import xDAILogo from '../assets/xdai-logo.png';
+import { TokenSelector } from './TokenSelector';
+
+export const FromToken = () => {
   const defaultToken = {
     name: 'STAKE',
     balance: '390000000000000000000',
@@ -98,6 +99,4 @@ function FromToken() {
       </Flex>
     </Flex>
   );
-}
-
-export default FromToken;
+};

@@ -1,20 +1,22 @@
+import { Flex, Image, Text } from '@chakra-ui/core';
 import React from 'react';
-import { Flex, Text, Image } from '@chakra-ui/core';
-import UnlockIcon from '../assets/unlock.svg';
 
-function UnlockButton(props) {
+import TransferIcon from '../assets/transfer.svg';
+
+export const TransferButton = (props) => {
   return (
     <Flex
       align="center"
-      color="cyan.500"
-      _hover={{ color: 'cyan.600' }}
+      mt={{ base: 2, md: 2, lg: 3 }}
+      color="blue.500"
+      _hover={{ color: 'blue.600' }}
       cursor="pointer"
       transition="0.25s"
       position="relative"
     >
       <svg width="100%" viewBox="0 0 156 42" fill="none" {...props}>
         <path
-          d="M139.086 39.72a4 4 0 01-3.612 2.28H20.526a4 4 0 01-3.612-2.28l-16.19-34C-.54 3.065 1.395 0 4.335 0h147.33c2.94 0 4.875 3.065 3.611 5.72l-16.19 34z"
+          d="M16.914 2.28A4 4 0 0120.526 0h114.948a4 4 0 013.612 2.28l16.19 34c1.264 2.655-.671 5.72-3.611 5.72H4.335C1.395 42-.54 38.935.724 36.28l16.19-34z"
           fill="currentColor"
         />
       </svg>
@@ -26,12 +28,10 @@ function UnlockButton(props) {
         align="center"
       >
         <Text color="white" fontWeight="bold">
-          Unlock
+          Transfer
         </Text>
-        <Image src={UnlockIcon} ml={2} />
+        <Image src={TransferIcon} ml={2} />
       </Flex>
     </Flex>
   );
-}
-
-export default UnlockButton;
+};

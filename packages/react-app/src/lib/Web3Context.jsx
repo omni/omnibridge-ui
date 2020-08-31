@@ -1,12 +1,13 @@
-import React, { useCallback, useState, useEffect } from 'react';
-import Web3Modal from 'web3modal';
 import WalletConnectProvider from '@walletconnect/web3-provider';
-import Web3 from 'web3';
 import ethers from 'ethers';
-import { CONFIG } from '../config';
-import { networkOptions } from '../components/NetworkSelector';
+import React, { useCallback, useEffect, useState } from 'react';
+import Web3 from 'web3';
+import Web3Modal from 'web3modal';
 
-const Web3Context = React.createContext({});
+import { networkOptions } from '../components/NetworkSelector';
+import { CONFIG } from '../config';
+
+export const Web3Context = React.createContext({});
 
 const providerOptions = {
   walletconnect: {
@@ -23,8 +24,6 @@ const web3Modal = new Web3Modal({
   // cacheProvider: true,
   providerOptions,
 });
-
-export default Web3Context;
 
 export const Web3Provider = ({ children }) => {
   const [providerNetwork, setProviderNetwork] = useState();
@@ -50,6 +49,7 @@ export const Web3Provider = ({ children }) => {
         );
       }
     } catch (error) {
+      // eslint-disable-next-line
       console.log({ networkError: error });
     }
   }, [chosenNetwork]);
@@ -69,6 +69,7 @@ export const Web3Provider = ({ children }) => {
         }
       }
     } catch (error) {
+      // eslint-disable-next-line
       console.log({ networkError: error });
     }
   };
@@ -80,6 +81,7 @@ export const Web3Provider = ({ children }) => {
         const gotAccount = await signer.getAddress();
         setAccount(gotAccount);
       } catch (error) {
+        // eslint-disable-next-line
         console.log({ accountError: error });
       }
     }

@@ -1,29 +1,30 @@
-import React, { useState, useEffect, useContext } from 'react';
-import ethers from 'ethers';
-import Web3Context from '../lib/Web3Context';
 import {
   Button,
   Flex,
-  Link,
   Image,
   Input,
   InputGroup,
   InputRightElement,
+  Link,
   Modal,
-  ModalOverlay,
-  ModalContent,
-  ModalHeader,
   ModalBody,
   ModalCloseButton,
+  ModalContent,
+  ModalHeader,
+  ModalOverlay,
   Text,
 } from '@chakra-ui/core';
-import xDAILogo from '../assets/xdai-logo.png';
+import ethers from 'ethers';
+import React, { useContext, useEffect, useState } from 'react';
+
 import SearchIcon from '../assets/search.svg';
+import xDAILogo from '../assets/xdai-logo.png';
 import { PlusIcon } from '../icons/PlusIcon';
 import { fetchBalance } from '../lib/helpers';
 import { getTokenList } from '../lib/tokenList';
+import Web3Context from '../lib/Web3Context';
 
-const TokenSelector = ({ isOpen, onClose, setToken }) => {
+export const TokenSelector = ({ isOpen, onClose, setToken }) => {
   const { network, ethersProvider, account } = useContext(Web3Context);
   const [tokenList, setTokenList] = useState();
   const [filteredTokenList, setFilteredTokenList] = useState([]);
@@ -54,7 +55,6 @@ const TokenSelector = ({ isOpen, onClose, setToken }) => {
     async function fetchTokenList() {
       try {
         const gotTokenList = await getTokenList(network.value);
-        console.log({ gotTokenList });
         const newFilteredTokenList = await Promise.all(
           gotTokenList.map(async (token) => ({
             ...token,
@@ -65,8 +65,8 @@ const TokenSelector = ({ isOpen, onClose, setToken }) => {
         setFilteredTokenList(newFilteredTokenList);
         setTokenList(newFilteredTokenList);
       } catch (e) {
-        // TODO handle error better
-        throw e;
+        // eslint-disable-next-line
+        console.log({ fetchTokensError: error });
       }
     }
     fetchTokenList();
@@ -157,5 +157,3 @@ const TokenSelector = ({ isOpen, onClose, setToken }) => {
     </Modal>
   );
 };
-
-export default TokenSelector;

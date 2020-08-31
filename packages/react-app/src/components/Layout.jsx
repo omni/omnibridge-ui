@@ -1,9 +1,10 @@
-import React from 'react';
 import { Flex, Image } from '@chakra-ui/core';
+import React from 'react';
+
 import DownTriangle from '../assets/down-triangle.svg';
 import UpTriangle from '../assets/up-triangle.svg';
-import { Header } from './Header';
 import { Footer } from './Footer';
+import { Header } from './Header';
 
 export const Layout = ({ children }) => (
   <Flex
@@ -11,8 +12,8 @@ export const Layout = ({ children }) => (
     m={0}
     overflowX="hidden"
     fontFamily="body"
-    w={'100vw'}
-    h={'100vh'}
+    w="100vw"
+    h="100vh"
     align="center"
     direction="column"
     background="background"

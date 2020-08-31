@@ -1,5 +1,6 @@
+import { Flex, Image, Text } from '@chakra-ui/core';
 import React from 'react';
-import { Flex, Text, Image } from '@chakra-ui/core';
+
 import LoadingImage from '../assets/loading.svg';
 
 export const Loading = () => {

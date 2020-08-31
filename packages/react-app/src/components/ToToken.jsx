@@ -1,9 +1,10 @@
-import React from 'react';
+import { Flex, Image, Text } from '@chakra-ui/core';
 import ethers from 'ethers';
-import { Flex, Text, Image } from '@chakra-ui/core';
+import React from 'react';
+
 import xDAILogo from '../assets/xdai-logo.png';
 
-function ToToken() {
+export const ToToken = () => {
   const token = {
     name: 'STAKE on xDai',
     balance: '290000000000000000000',
@@ -60,6 +61,4 @@ function ToToken() {
       </Flex>
     </Flex>
   );
-}
-
-export default ToToken;
+};

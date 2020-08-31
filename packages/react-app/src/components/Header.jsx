@@ -1,15 +1,16 @@
+import { Button, Flex, HStack, Image, Text } from '@chakra-ui/core';
 import React, { useContext } from 'react';
-import Web3Context from '../lib/Web3Context';
-import { HStack, Flex, Button, Text, Image } from '@chakra-ui/core';
 import { Link } from 'react-router-dom';
+
 import Logo from '../assets/logo.svg';
-import { WalletIcon } from '../icons/WalletIcon';
 import { HistoryIcon } from '../icons/HistoryIcon';
+import { WalletIcon } from '../icons/WalletIcon';
+import Web3Context from '../lib/Web3Context';
 import { NetworkSelector } from './NetworkSelector';
 
 const getAccountString = (account) => {
   const len = account.length;
-  return account.substr(0, 6) + '...' + account.substr(len - 4, len - 1);
+  return `${account.substr(0, 6)}...${account.substr(len - 4, len - 1)}`;
 };
 
 export const Header = () => {
@@ -20,9 +21,9 @@ export const Header = () => {
       justify="space-between"
       align="center"
       h={20}
-      maxW={'75rem'}
+      maxW="75rem"
       px={8}
-      w={'100%'}
+      w="100%"
     >
       <Link to="/">
         <Flex justify="space-around" align="center">

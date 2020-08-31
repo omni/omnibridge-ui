@@ -1,13 +1,14 @@
+import { Flex, Grid, Image, Text } from '@chakra-ui/core';
 import React, { useContext } from 'react';
-import Web3Context from '../lib/Web3Context';
-import { Flex, Image, Text, Grid } from '@chakra-ui/core';
-import Details from '../assets/details.svg';
-import FromToken from './FromToken';
-import ToToken from './ToToken';
-import UnlockButton from './UnlockButton';
-import TransferButton from './TransferButton';
 
-const BridgeTokens = () => {
+import Details from '../assets/details.svg';
+import { Web3Context } from '../lib/Web3Context';
+import { FromToken } from './FromToken';
+import { ToToken } from './ToToken';
+import { TransferButton } from './TransferButton';
+import { UnlockButton } from './UnlockButton';
+
+export const BridgeTokens = () => {
   const { network } = useContext(Web3Context);
   return (
     <Flex
@@ -55,5 +56,3 @@ const BridgeTokens = () => {
     </Flex>
   );
 };
-
-export default BridgeTokens;

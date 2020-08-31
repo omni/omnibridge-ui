@@ -1,26 +1,33 @@
+import { Flex, Text } from '@chakra-ui/core';
 import React from 'react';
 import Select, { components } from 'react-select';
-import { Flex, Text } from '@chakra-ui/core';
+
 import { DownArrowIcon } from '../icons/DownArrowIcon';
 import { NetworkIcon } from '../icons/NetworkIcon';
+
 const { Option, DropdownIndicator } = components;
 
-const CustomSelectOption = (props) => (
-  <Option {...props}>
-    <Flex
-      align="center"
-      cursor="pointer"
-      color="grey"
-      transition="0.25s"
-      _hover={{ color: 'blue.500' }}
-    >
-      {props.data.icon}
-      <Text color="black" ml={2}>
-        {props.data.label}
-      </Text>
-    </Flex>
-  </Option>
-);
+const CustomSelectOption = (props) => {
+  const {
+    data: { icon, label },
+  } = props;
+  return (
+    <Option {...props}>
+      <Flex
+        align="center"
+        cursor="pointer"
+        color="grey"
+        transition="0.25s"
+        _hover={{ color: 'blue.500' }}
+      >
+        {icon}
+        <Text color="black" ml={2}>
+          {label}
+        </Text>
+      </Flex>
+    </Option>
+  );
+};
 
 const CustomDropdownIndicator = (props) => {
   return (
@@ -32,7 +39,7 @@ const CustomDropdownIndicator = (props) => {
   );
 };
 
-const CustomSelectValue = (props) => (
+const CustomSelectValue = ({ data: { icon, label } }) => (
   <Flex
     align="center"
     cursor="pointer"
@@ -40,9 +47,9 @@ const CustomSelectValue = (props) => (
     transition="0.25s"
     _hover={{ color: 'blue.500' }}
   >
-    {props.data.icon}
+    {icon}
     <Text color="black" ml={2}>
-      {props.data.label}
+      {label}
     </Text>
   </Flex>
 );

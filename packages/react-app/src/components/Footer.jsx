@@ -1,12 +1,13 @@
+import { Box, Flex, HStack, Image, Text } from '@chakra-ui/core';
 import React from 'react';
-import { HStack, Flex, Box, Text, Image } from '@chakra-ui/core';
 import { Link } from 'react-router-dom';
+
 import Logo from '../assets/footer-logo.svg';
-import xDaiLogo from '../assets/xdai.svg';
-import TwitterLogo from '../assets/twitter.svg';
-import TelegramLogo from '../assets/telegram.svg';
 import GithubLogo from '../assets/github.svg';
 import RaidGuildLogo from '../assets/raid-guild-logo.svg';
+import TelegramLogo from '../assets/telegram.svg';
+import TwitterLogo from '../assets/twitter.svg';
+import xDaiLogo from '../assets/xdai.svg';
 
 export const Footer = () => {
   return (

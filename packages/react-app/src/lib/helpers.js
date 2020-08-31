@@ -9,6 +9,7 @@ export const fetchBalance = async (ethersProvider, account, erc20Address) => {
     const contract = new ethers.Contract(erc20Address, abi, ethersProvider);
     return await contract.balanceOf(account);
   } catch (error) {
+    // eslint-disable-next-line
     console.log({ balanceError: error });
     return 0;
   }

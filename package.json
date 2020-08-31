@@ -48,7 +48,7 @@
   },
   "license": "UNLICENSED",
   "lint-staged": {
-    "*.js": "eslint --cache --fix",
+    "*.{js,jsx}": "eslint --cache --fix",
     "*.{ts,tsx,js,jsx,json,yml,yaml,md}": "prettier --write"
   }
 }

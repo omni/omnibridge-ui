@@ -1,5 +1,5 @@
+import { Flex, Grid, Link, Text } from '@chakra-ui/core';
 import React from 'react';
-import { Flex, Text, Grid, Link } from '@chakra-ui/core';
 
 export const History = () => {
   return (
