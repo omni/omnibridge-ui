@@ -22,7 +22,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "yarn format && yarn lint"
+      "pre-commit": "lint-staged"
     }
   },
   "workspaces": {
@@ -43,7 +43,12 @@
     "eslint-plugin-react-hooks": "4.0.6",
     "eslint-plugin-simple-import-sort": "5.0.3",
     "husky": "^4.2.5",
+    "lint-staged": "^10.2.13",
     "prettier": "^2.0.5"
   },
-  "license": "UNLICENSED"
+  "license": "UNLICENSED",
+  "lint-staged": {
+    "*.js": "eslint --cache --fix",
+    "*.{ts,tsx,js,jsx,json,yml,yaml,md}": "prettier --write"
+  }
 }
