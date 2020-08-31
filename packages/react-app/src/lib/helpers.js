@@ -17,12 +17,15 @@ export const fetchBalance = async (ethersProvider, account, erc20Address) => {
   }
 };
 
-// TODO calculate toAmount based on fromAmount and toToken which holds chainId as well
+/* TODO calculate toAmount based on fromAmount
+ * and toToken which holds chainId as well */
 export const fetchToAmount = async (toToken, fromAmount) => {
   return fromAmount;
 };
 
-// TODO calculate toToken based on fromToken. This will need sending of ethersProvider or creating a new ethersProvider
+/* TODO calculate toToken based on fromToken.
+ * This will need ethersProvider or creating a new ethersProvider.
+ * Also need to fetch balance for new token as well. */
 export const fetchToToken = async (fromToken) => {
   return fromToken;
 };

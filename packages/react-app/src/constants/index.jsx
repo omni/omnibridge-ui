@@ -22,17 +22,17 @@ export const networkOptions = [
   {
     value: 77,
     key: 2,
-    bridge: { chainId: 42, name: 'ETH Kovan' },
+    bridge: { chainId: 42, name: 'Kovan Testnet' },
     label: 'Sokol',
-    name: 'Sokol Chain',
+    name: 'Sokol Testnet',
     icon: <NetworkIcon />,
   },
   {
     value: 42,
     key: 3,
-    bridge: { chainId: 77, name: 'Sokol Chain' },
+    bridge: { chainId: 77, name: 'Sokol Testnet' },
     label: 'Kovan',
-    name: 'ETH Kovan',
+    name: 'Kovan Testnet',
     icon: <NetworkIcon />,
   },
 ];
