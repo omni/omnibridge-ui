@@ -18,7 +18,6 @@ export const Footer = () => {
             px={8}
             w="100%"
             color="grey"
-            zIndex={2}
         >
             <Link to="/">
                 <Flex justify="space-around" align="center">

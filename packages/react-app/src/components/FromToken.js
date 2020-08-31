@@ -1,21 +1,33 @@
-import React, { useState } from 'react';
-import { Flex, Text, Button, Image, Input, useDisclosure } from '@chakra-ui/core';
-import xDAILogo from '../assets/xdai-logo.png';
-import DropDown from '../assets/drop-down.svg';
-import { TokenSelector } from './TokenSelector';
+import React, { useState } from "react";
+import ethers from "ethers";
+import {
+    Flex,
+    Text,
+    Button,
+    Image,
+    Input,
+    useDisclosure
+} from "@chakra-ui/core";
+import xDAILogo from "../assets/xdai-logo.png";
+import DropDown from "../assets/drop-down.svg";
+import TokenSelector from "./TokenSelector";
 
 function FromToken() {
     const defaultToken = {
-        name: 'STAKE',
-        balance: '390.0',
-        balanceInUsd: '0',
-        logo: xDAILogo,
+        name: "STAKE",
+        balance: "390000000000000000000",
+        balanceInUsd: "0",
+        logo: xDAILogo
     };
     const [token, setToken] = useState(defaultToken);
     const [amount, setAmount] = useState(0);
     const { isOpen, onOpen, onClose } = useDisclosure();
     return (
-        <Flex align="center" mr={{ base: -4, md: -4, lg: -6 }} position="relative">
+        <Flex
+            align="center"
+            mr={{ base: -4, md: -4, lg: -6 }}
+            position="relative"
+        >
             <svg width="100%" viewBox="0 0 381 94" fill="none">
                 <path
                     d="M359.745 4.703A7.5 7.5 0 00353.008.5H8A7.5 7.5 0 00.5 8v78A7.5 7.5 0 008 93.5h345.008a7.5 7.5 0 006.737-4.203l19.085-39a7.499 7.499 0 000-6.594l-19.085-39z"
@@ -23,9 +35,22 @@ function FromToken() {
                     stroke="#DAE3F0"
                 />
             </svg>
-            <Flex position="absolute" w="100%" h="100%" direction="column" py={4} pl={4} pr={12}>
-                <Flex justify="space-between" align="center" color="grey" mb={2}>
-                    <Text>{`Balance: ${token.balance}`}</Text>
+            <Flex
+                position="absolute"
+                w="100%"
+                h="100%"
+                direction="column"
+                py={4}
+                pl={4}
+                pr={12}
+            >
+                <Flex
+                    justify="space-between"
+                    align="center"
+                    color="grey"
+                    mb={2}
+                >
+                    <Text>{`Balance: ${ethers.utils.formatEther(token.balance)}`}</Text>
                     <Text>{`\u2248 $${token.balanceInUsd}`}</Text>
                 </Flex>
                 <Flex align="center" flex={1}>
@@ -47,16 +72,24 @@ function FromToken() {
                         <Image src={DropDown} cursor="pointer" />
                     </Flex>
                     {isOpen && (
-                        <TokenSelector onClose={onClose} isOpen={isOpen} setToken={setToken} />
+                        <TokenSelector
+                            onClose={onClose}
+                            isOpen={isOpen}
+                            setToken={setToken}
+                        />
                     )}
                     <Flex align="center" justify="flex-end" flex={1}>
                         <Input
                             variant="unstyled"
                             type="number"
-                            value={amount}
+                            value={ethers.utils.formatEther(amount)}
                             textAlign="right"
                             fontWeight="bold"
-                            onChange={(e) => setAmount(e.target.value)}
+                            onChange={e =>
+                                setAmount(
+                                    ethers.utils.parseEther(e.target.value)
+                                )
+                            }
                             fontSize="3xl"
                         />
                         <Button
@@ -66,7 +99,7 @@ function FromToken() {
                             size="sm"
                             fontSize="sm"
                             fontWeight="normal"
-                            _hover={{ bg: 'blue.100' }}
+                            _hover={{ bg: "blue.100" }}
                             onClick={() => setAmount(token.balance)}
                         >
                             Max

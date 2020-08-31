@@ -1,17 +1,20 @@
 import React from "react";
+import ethers from "ethers";
 import { Flex, Text, Image } from "@chakra-ui/core";
 import xDAILogo from "../assets/xdai-logo.png";
 
 function ToToken() {
     const token = {
         name: "STAKE on xDai",
-        balance: "390.0",
+        balance: "290000000000000000000",
         balanceInUsd: "0",
         logo: xDAILogo,
         amount: "0"
     };
     return (
-        <Flex align="center" ml={{ base: -4, md: -4, lg: -6 }}
+        <Flex
+            align="center"
+            ml={{ base: -4, md: -4, lg: -6 }}
             position="relative"
         >
             <svg width="100%" viewBox="0 0 381 94" fill="none">
@@ -35,7 +38,9 @@ function ToToken() {
                     color="grey"
                     mb={2}
                 >
-                    <Text>{`Balance: ${token.balance}`}</Text>
+                    <Text>{`Balance: ${ethers.utils.formatEther(
+                        token.balance
+                    )}`}</Text>
                     <Text>{`\u2248 $${token.balanceInUsd}`}</Text>
                 </Flex>
                 <Flex justify="space-between" align="center" flex={1}>
@@ -53,13 +58,14 @@ function ToToken() {
                         >
                             <Image src={token.logo} />
                         </Flex>
-                        <Text fontSize="lg" fontWeight="bold">{token.name}</Text>
+                        <Text fontSize="lg" fontWeight="bold">
+                            {token.name}
+                        </Text>
                     </Flex>
                     <Flex align="center">
-                        <Text
-                            fontWeight="bold"
-                            fontSize="3xl"
-                        >{token.amount}</Text>
+                        <Text fontWeight="bold" fontSize="3xl">
+                            {ethers.utils.formatEther(token.amount)}
+                        </Text>
                     </Flex>
                 </Flex>
             </Flex>
