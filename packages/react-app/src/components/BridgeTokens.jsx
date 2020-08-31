@@ -1,4 +1,14 @@
-import { Flex, Grid, Image, Text } from '@chakra-ui/core';
+import {
+  Flex,
+  Grid,
+  Image,
+  Popover,
+  PopoverArrow,
+  PopoverBody,
+  PopoverContent,
+  PopoverTrigger,
+  Text,
+} from '@chakra-ui/core';
 import React, { useContext } from 'react';
 
 import Details from '../assets/details.svg';
@@ -9,6 +19,9 @@ import { TransferButton } from './TransferButton';
 import { UnlockButton } from './UnlockButton';
 
 export const BridgeTokens = () => {
+  const token = {
+    symbol: 'STAKE',
+  };
   const { network } = useContext(Web3Context);
   return (
     <Flex
@@ -49,10 +62,35 @@ export const BridgeTokens = () => {
         </Flex>
         <ToToken />
       </Grid>
-      <Flex align="center" color="blue.400" cursor="pointer">
-        <Image src={Details} mr={2} />
-        <Text>System Feedback</Text>
-      </Flex>
+      <Popover>
+        <PopoverTrigger>
+          <Flex align="center" color="blue.400" cursor="pointer">
+            <Image src={Details} mr={2} />
+            <Text>System Feedback</Text>
+          </Flex>
+        </PopoverTrigger>
+        <PopoverContent
+          boxShadow="0 0.5rem 1rem #CADAEF"
+          border="none"
+          _focus={{ border: 'none', outline: 'none' }}
+        >
+          <PopoverArrow />
+          <PopoverBody width="100%" align="center" fontSize="sm">
+            <Flex align="center" justify="space-between">
+              <Text color="grey"> Daily Limit </Text>
+              <Text fontWeight="bold"> 1,000,000.00 {token.symbol} </Text>
+            </Flex>
+            <Flex align="center" justify="space-between">
+              <Text color="grey"> Maximum per transaction </Text>
+              <Text fontWeight="bold"> 100,000.00 {token.symbol} </Text>
+            </Flex>
+            <Flex align="center" justify="space-between">
+              <Text color="grey"> Minimum per transaction </Text>
+              <Text fontWeight="bold"> 1.00 {token.symbol} </Text>
+            </Flex>
+          </PopoverBody>
+        </PopoverContent>
+      </Popover>
     </Flex>
   );
 };

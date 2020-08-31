@@ -20,8 +20,7 @@ const providerOptions = {
 
 const web3Modal = new Web3Modal({
   network: 'mainnet',
-  // Uncomment this if we want to automatically connect
-  // cacheProvider: true,
+  cacheProvider: true,
   providerOptions,
 });
 
@@ -30,6 +29,7 @@ export const Web3Provider = ({ children }) => {
   const [chosenNetwork, setChosenNetwork] = useState(networkOptions[0]);
   const [ethersProvider, setEthersProvider] = useState();
   const [account, setAccount] = useState();
+  const [networkMismatch, setNetworkMismatch] = useState(false);
 
   const connectWeb3 = useCallback(async () => {
     try {
@@ -43,11 +43,12 @@ export const Web3Provider = ({ children }) => {
       setEthersProvider(provider);
       const network = await provider.getNetwork();
       setProviderNetwork(network);
-      if (network.chainId !== chosenNetwork.value) {
-        throw new Error(
-          `Provider network ${network.chainId}, expected ${chosenNetwork.value}`,
-        );
+      if (chosenNetwork && network.chainId !== chosenNetwork.value) {
+        setNetworkMismatch(true);
       }
+      const signer = provider.getSigner();
+      const gotAccount = await signer.getAddress();
+      setAccount(gotAccount);
     } catch (error) {
       // eslint-disable-next-line
       console.log({ networkError: error });
@@ -56,17 +57,14 @@ export const Web3Provider = ({ children }) => {
 
   const disconnect = useCallback(async () => {
     web3Modal.clearCachedProvider();
+    setAccount();
   }, []);
 
   const setNetwork = (network) => {
     try {
       setChosenNetwork(network);
-      if (providerNetwork) {
-        if (providerNetwork.chainId !== network.value) {
-          throw new Error(
-            `Provider network ${providerNetwork.chainId}, expected ${network.value}`,
-          );
-        }
+      if (providerNetwork && providerNetwork.chainId !== network.value) {
+        setNetworkMismatch(true);
       }
     } catch (error) {
       // eslint-disable-next-line
@@ -75,25 +73,10 @@ export const Web3Provider = ({ children }) => {
   };
 
   useEffect(() => {
-    async function getAccount() {
-      try {
-        const signer = await ethersProvider.getSigner();
-        const gotAccount = await signer.getAddress();
-        setAccount(gotAccount);
-      } catch (error) {
-        // eslint-disable-next-line
-        console.log({ accountError: error });
-      }
+    if (web3Modal.cachedProvider) {
+      connectWeb3().catch(console.error);
     }
-    getAccount();
-  }, [ethersProvider]);
-
-  // Uncomment this if we want to automatically connect
-  // useEffect(() => {
-  //     if (web3Modal.cachedProvider) {
-  //         connectWeb3().catch(console.error);
-  //     }
-  // }, [connectWeb3]);
+  }, [connectWeb3]);
 
   return (
     <Web3Context.Provider
@@ -104,6 +87,7 @@ export const Web3Provider = ({ children }) => {
         network: chosenNetwork,
         setNetwork,
         account,
+        networkMismatch,
       }}
     >
       {children}
