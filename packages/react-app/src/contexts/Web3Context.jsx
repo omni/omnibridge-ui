@@ -5,7 +5,7 @@ import Web3 from 'web3';
 import Web3Modal from 'web3modal';
 
 import { CONFIG } from '../config';
-import { networkOptions } from '../constants';
+import { networkOptions } from '../lib/constants';
 
 export const Web3Context = React.createContext({});
 
@@ -69,14 +69,14 @@ export const Web3Provider = ({ children }) => {
     setAccount();
   }, []);
 
-  useEffect(() => {
-    if (web3Modal.cachedProvider) {
-      connectWeb3().catch((error) => {
-        // eslint-disable-next-line
-        console.error({ web3ModalError: error });
-      });
-    }
-  }, [connectWeb3]);
+  // useEffect(() => {
+  //   if (web3Modal.cachedProvider) {
+  //     connectWeb3().catch((error) => {
+  //       // eslint-disable-next-line
+  //       console.error({ web3ModalError: error });
+  //     });
+  //   }
+  // }, [connectWeb3]);
 
   return (
     <Web3Context.Provider

@@ -12,7 +12,7 @@ import {
 import React, { useContext } from 'react';
 
 import Details from '../assets/details.svg';
-import { Web3Context } from '../lib/Web3Context';
+import { Web3Context } from '../contexts/Web3Context';
 import { FromToken } from './FromToken';
 import { ToToken } from './ToToken';
 import { TransferButton } from './TransferButton';

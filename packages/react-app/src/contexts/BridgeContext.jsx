@@ -1,12 +1,12 @@
 import React, { useCallback, useContext, useState } from 'react';
 
-import { fetchDefaultToken, fetchToAmount, fetchToToken } from './helpers';
+import { fetchDefaultToken, fetchToAmount, fetchToToken } from '../lib/bridge';
 import { Web3Context } from './Web3Context';
 
 export const BridgeContext = React.createContext({});
 
 export const BridgeProvider = ({ children }) => {
-  const { ethersProvider, account } = useContext(Web3Context);
+  const { account } = useContext(Web3Context);
 
   const [fromToken, setFromToken] = useState();
   const [toToken, setToToken] = useState();
@@ -16,24 +16,32 @@ export const BridgeProvider = ({ children }) => {
   const setAmount = useCallback(
     async (amount) => {
       setFromAmount(amount);
-      const gotToAmount = await fetchToAmount(toToken, amount);
+      const gotToAmount = await fetchToAmount(fromToken, toToken, amount);
       setToAmount(gotToAmount);
     },
-    [toToken],
+    [fromToken, toToken],
   );
 
-  const setToken = useCallback(async (token) => {
-    setFromToken(token);
-    const gotToToken = await fetchToToken(token);
-    setToToken(gotToToken);
-  }, []);
+  const setToken = useCallback(
+    async (token) => {
+      setFromToken(token);
+      setFromAmount(0);
+      setToToken();
+      const gotToToken = await fetchToToken(account, token);
+      setToToken(gotToToken);
+      setToAmount(0);
+    },
+    [account],
+  );
 
   const setDefaultToken = useCallback(
     async (chainId) => {
-      const token = await fetchDefaultToken(ethersProvider, account, chainId);
+      setFromToken();
+      setToToken();
+      const token = await fetchDefaultToken(account, chainId);
       setToken(token);
     },
-    [ethersProvider, account, setToken],
+    [account, setToken],
   );
 
   return (
