@@ -24,21 +24,24 @@ export const BridgeProvider = ({ children }) => {
 
   const setToken = useCallback(
     async (token) => {
-      setAmount(0);
       setFromToken(token);
+      setFromAmount(0);
+      setToToken();
       const gotToToken = await fetchToToken(account, token);
       setToToken(gotToToken);
+      setToAmount(0);
     },
-    [account, setAmount],
+    [account],
   );
 
   const setDefaultToken = useCallback(
     async (chainId) => {
-      setAmount(0);
+      setFromToken();
+      setToToken();
       const token = await fetchDefaultToken(account, chainId);
       setToken(token);
     },
-    [account, setToken, setAmount],
+    [account, setToken],
   );
 
   return (

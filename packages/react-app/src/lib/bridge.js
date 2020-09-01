@@ -42,27 +42,33 @@ export const fetchToAmount = async (fromToken, toToken, fromAmount) => {
     ethersProvider,
   );
 
-  const feeType = isxDai
-    ? await mediatorContract.FOREIGN_TO_HOME_FEE()
-    : await mediatorContract.HOME_TO_FOREIGN_FEE();
-  const fee = await mediatorContract.calculateFee(
-    feeType,
-    tokenAddress,
-    fromAmount,
-  );
-  return (fromAmount - fee).toString();
+  try {
+    const feeType = isxDai
+      ? await mediatorContract.FOREIGN_TO_HOME_FEE()
+      : await mediatorContract.HOME_TO_FOREIGN_FEE();
+    const fee = await mediatorContract.calculateFee(
+      feeType,
+      tokenAddress,
+      fromAmount,
+    );
+    return (fromAmount - fee).toString();
+  } catch (error) {
+    // eslint-disable-next-line
+    console.log({ amountError: error });
+    return fromAmount;
+  }
 };
 export const fetchBalance = async (chainId, account, tokenAddress) => {
   if (!account) {
     return 0;
   }
+  const ethersProvider = getEthersProvider(chainId);
+  const tokenContract = new ethers.Contract(
+    tokenAddress,
+    abis.erc20,
+    ethersProvider,
+  );
   try {
-    const ethersProvider = getEthersProvider(chainId);
-    const tokenContract = new ethers.Contract(
-      tokenAddress,
-      abis.erc20,
-      ethersProvider,
-    );
     return tokenContract.balanceOf(account);
   } catch (error) {
     // eslint-disable-next-line
@@ -80,20 +86,18 @@ export const fetchToToken = async (account, fromToken) => {
   const toChainId = getBridgeNetwork(fromToken.chainId);
   const isxDai = isxDaiChain(toChainId);
   const toToken = {
+    name: isxDai ? `${fromToken.name} on xDai` : fromToken.name.slice(0, -8),
     address: toTokenAddress,
     symbol: fromToken.symbol,
     decimals: 18,
     chainId: toChainId,
     logoURI: '',
+    balance: 0,
+    balanceInUsd: 0,
   };
 
   if (toTokenAddress === ADDRESS_ZERO) {
-    return {
-      ...toToken,
-      name: isxDai ? `${fromToken.name} on xDai` : fromToken.name.slice(0, -8),
-      balance: 0,
-      balanceInUsd: 0,
-    };
+    return toToken;
   }
 
   const ethersProvider = getEthersProvider(toChainId);
@@ -103,12 +107,17 @@ export const fetchToToken = async (account, fromToken) => {
     ethersProvider,
   );
 
-  return {
-    ...toToken,
-    name: await tokenContract.name(),
-    balance: await tokenContract.balanceOf(account),
-    balanceInUsd: 0,
-  };
+  try {
+    return {
+      ...toToken,
+      name: await tokenContract.name(),
+      balance: account ? await tokenContract.balanceOf(account) : 0,
+    };
+  } catch (error) {
+    // eslint-disable-next-line
+    console.log({ tokenError: error });
+    return toToken;
+  }
 };
 
 export const fetchDefaultToken = async (account, chainId) => {
