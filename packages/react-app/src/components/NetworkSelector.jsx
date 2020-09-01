@@ -2,10 +2,10 @@ import { Flex, Text } from '@chakra-ui/core';
 import React, { useContext, useEffect, useState } from 'react';
 import Select, { components } from 'react-select';
 
-import { networkOptions } from '../constants';
+import { BridgeContext } from '../contexts/BridgeContext';
+import { Web3Context } from '../contexts/Web3Context';
 import { DownArrowIcon } from '../icons/DownArrowIcon';
-import { BridgeContext } from '../lib/BridgeContext';
-import { Web3Context } from '../lib/Web3Context';
+import { networkOptions } from '../lib/constants';
 
 const { Option, DropdownIndicator } = components;
 
@@ -76,12 +76,14 @@ export const NetworkSelector = () => {
       window.localStorage.getItem('chosenNetwork'),
       10,
     );
-    if (!isNaN(storageNetwork)) {
+    if (isNaN(storageNetwork)) {
+      storageNetwork = 0;
+    } else {
       storageNetwork %= networkOptions.length;
-      setDefaultToken(networkOptions[storageNetwork].value);
-      setLocalNetwork(storageNetwork);
-      setNetwork(networkOptions[storageNetwork]);
     }
+    setDefaultToken(networkOptions[storageNetwork].value);
+    setLocalNetwork(storageNetwork);
+    setNetwork(networkOptions[storageNetwork]);
   }, [setNetwork, setDefaultToken]);
 
   const onChange = (network) => {

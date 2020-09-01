@@ -1,45 +1,59 @@
-import ethers from 'ethers';
+import { mediators } from '@project/contracts';
 
-import { defaultTokens } from '../constants';
+import { defaultTokens } from './constants';
 
-export const fetchBalance = async (ethersProvider, account, erc20Address) => {
-  if (!ethersProvider || !account) {
-    return 0;
-  }
-  try {
-    const abi = ['function balanceOf(address owner) view returns (uint256)'];
-    const contract = new ethers.Contract(erc20Address, abi, ethersProvider);
-    return await contract.balanceOf(account);
-  } catch (error) {
-    // eslint-disable-next-line
-    console.log({ balanceError: error });
-    return 0;
+export const getBridgeNetwork = (chainId) => {
+  switch (chainId) {
+    case 1:
+      return 100;
+    case 42:
+      return 77;
+    case 77:
+      return 42;
+    case 100:
+    default:
+      return 1;
   }
 };
 
-/* TODO calculate toAmount based on fromAmount
- * and toToken which holds chainId as well */
-export const fetchToAmount = async (toToken, fromAmount) => {
-  return fromAmount;
-};
-
-/* TODO calculate toToken based on fromToken.
- * This will need ethersProvider or creating a new ethersProvider.
- * Also need to fetch balance for new token as well. */
-export const fetchToToken = async (fromToken) => {
-  return fromToken;
-};
-
-export const fetchDefaultToken = async (ethersProvider, account, chainId) => {
-  const token = defaultTokens[chainId];
-  if (
-    ethersProvider &&
-    (await ethersProvider.getNetwork()).chainId === chainId
-  ) {
-    token.balance = await fetchBalance(ethersProvider, account, token.address);
-  } else {
-    token.balance = 0;
+export const isxDaiChain = (chainId) => {
+  switch (chainId) {
+    case 1:
+      return false;
+    case 42:
+      return false;
+    case 77:
+      return true;
+    case 100:
+    default:
+      return true;
   }
-  token.balanceInUsd = 0;
-  return token;
+};
+
+export const getDefaultToken = (chainId) => {
+  switch (chainId) {
+    case 1:
+      return defaultTokens[1];
+    case 42:
+      return defaultTokens[42];
+    case 77:
+      return defaultTokens[77];
+    case 100:
+    default:
+      return defaultTokens[100];
+  }
+};
+
+export const getMediatorAddress = (chainId) => {
+  switch (chainId) {
+    case 1:
+      return mediators[1];
+    case 42:
+      return mediators[42];
+    case 77:
+      return mediators[77];
+    case 100:
+    default:
+      return mediators[100];
+  }
 };

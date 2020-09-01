@@ -3,7 +3,7 @@ import ethers from 'ethers';
 import React, { useContext } from 'react';
 
 import xDAILogo from '../assets/xdai-logo.png';
-import { BridgeContext } from '../lib/BridgeContext';
+import { BridgeContext } from '../contexts/BridgeContext';
 
 export const ToToken = () => {
   const { toToken: token, toAmount: amount } = useContext(BridgeContext);

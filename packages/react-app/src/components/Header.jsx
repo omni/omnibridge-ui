@@ -14,9 +14,9 @@ import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
 
 import Logo from '../assets/logo.svg';
+import { Web3Context } from '../contexts/Web3Context';
 import { HistoryIcon } from '../icons/HistoryIcon';
 import { WalletIcon } from '../icons/WalletIcon';
-import { Web3Context } from '../lib/Web3Context';
 import { NetworkSelector } from './NetworkSelector';
 
 const getAccountString = (account) => {

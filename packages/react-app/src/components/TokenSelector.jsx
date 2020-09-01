@@ -19,14 +19,14 @@ import React, { useContext, useEffect, useState } from 'react';
 
 import SearchIcon from '../assets/search.svg';
 import xDAILogo from '../assets/xdai-logo.png';
+import { BridgeContext } from '../contexts/BridgeContext';
+import { Web3Context } from '../contexts/Web3Context';
 import { PlusIcon } from '../icons/PlusIcon';
-import { BridgeContext } from '../lib/BridgeContext';
-import { fetchBalance } from '../lib/helpers';
+import { fetchBalance } from '../lib/bridge';
 import { getTokenList } from '../lib/tokenList';
-import { Web3Context } from '../lib/Web3Context';
 
 export const TokenSelector = ({ isOpen, onClose }) => {
-  const { network, ethersProvider, account } = useContext(Web3Context);
+  const { network, account } = useContext(Web3Context);
   const { setToken } = useContext(BridgeContext);
   const [tokenList, setTokenList] = useState();
   const [filteredTokenList, setFilteredTokenList] = useState([]);
@@ -54,7 +54,7 @@ export const TokenSelector = ({ isOpen, onClose }) => {
         const newFilteredTokenList = await Promise.all(
           gotTokenList.map(async (token) => ({
             ...token,
-            balance: await fetchBalance(ethersProvider, account, token.address),
+            balance: await fetchBalance(token.chainId, account, token.address),
             balanceInUsd: 0,
           })),
         );
@@ -66,7 +66,7 @@ export const TokenSelector = ({ isOpen, onClose }) => {
       }
     }
     fetchTokenList();
-  }, [account, ethersProvider, network]);
+  }, [account, network]);
 
   const inputRef = React.useRef();
   return (

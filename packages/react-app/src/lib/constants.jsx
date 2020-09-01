@@ -1,6 +1,9 @@
 import React from 'react';
 
+import { CONFIG } from '../config';
 import { NetworkIcon } from '../icons/NetworkIcon';
+
+export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000';
 
 export const networkOptions = [
   {
@@ -37,6 +40,33 @@ export const networkOptions = [
   },
 ];
 
+export const chainUrls = {
+  100: {
+    rpc: 'https://xdai.poanetwork.dev',
+    explorer: 'https://blockscout.com/poa/xdai',
+    chainId: 100,
+    name: 'xDai Chain',
+  },
+  1: {
+    rpc: `https://mainnet.infura.io/v3/${CONFIG.infuraId}`,
+    explorer: 'https://etherscan.io/',
+    chainId: 1,
+    name: 'ETH Mainnet',
+  },
+  77: {
+    rpc: 'https://sokol.poa.network',
+    explorer: 'https://blockscout.com/poa/sokol',
+    chainId: 77,
+    name: 'Sokol Testnet',
+  },
+  42: {
+    rpc: `https://kovan.infura.io/v3/${CONFIG.infuraId}`,
+    explorer: 'https://kovan.etherscan.io/',
+    chainId: 42,
+    name: 'Kovan Testnet',
+  },
+};
+
 export const defaultTokens = {
   100: {
     name: 'Stake on xDai',
@@ -52,11 +82,10 @@ export const defaultTokens = {
     symbol: 'STAKE',
     decimals: 18,
     chainId: 1,
-    logoURI:
-      'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x0Ae055097C6d159879521C384F1D2123D1f195e6/logo.png',
+    logoURI: '',
   },
   77: {
-    name: 'Stake on Sokol',
+    name: 'Stake on xDai',
     address: '0xDd100c4f827ABAbB2301d562FDBD503aE0d6B1D0',
     symbol: 'STAKE',
     decimals: 18,
