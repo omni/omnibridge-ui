@@ -69,14 +69,14 @@ export const Web3Provider = ({ children }) => {
     setAccount();
   }, []);
 
-  useEffect(() => {
-    if (web3Modal.cachedProvider) {
-      connectWeb3().catch((error) => {
-        // eslint-disable-next-line
-        console.error({ web3ModalError: error });
-      });
-    }
-  }, [connectWeb3]);
+  // useEffect(() => {
+  //   if (web3Modal.cachedProvider) {
+  //     connectWeb3().catch((error) => {
+  //       // eslint-disable-next-line
+  //       console.error({ web3ModalError: error });
+  //     });
+  //   }
+  // }, [connectWeb3]);
 
   return (
     <Web3Context.Provider
