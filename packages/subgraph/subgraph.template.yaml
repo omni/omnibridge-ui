@@ -1,0 +1,26 @@
+specVersion: 0.0.2
+description: Subgraph that indexes the omnibridge transfers
+repository: https://github.com/raid-guild/xdai-omnibridge
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: Mediator
+    network: { { network } }
+    source:
+      abi: mediator
+      address: '{{address}}'
+      startBlock: { { startBlock } }
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      abis:
+        - name: mediator
+          file: ../contracts/src/abis/mediator.json
+      entities:
+        - Bridge
+      eventHandlers:
+        - event: TokensBridged(indexed address,indexed address,uint256,indexed bytes32)
+          handler: handleBridgeTransfer
+      file: ./src/mappings/bridge.ts
+      language: wasm/assemblyscript

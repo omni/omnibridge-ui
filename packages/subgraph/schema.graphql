@@ -1,13 +1,8 @@
-type Token @entity {
+type BridgeTransfer @entity {
   id: ID!
-  decimals: Int
-  name: String
-  symbol: String
-}
-
-type Transfer @entity {
-  id: ID!
-  from: String!
-  to: String!
+  token: Bytes!
+  recipient: Bytes!
   value: BigInt!
+  messageId: Bytes!
+  txHash: String!
 }
