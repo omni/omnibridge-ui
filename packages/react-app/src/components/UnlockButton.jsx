@@ -5,17 +5,12 @@ import UnlockIcon from '../assets/unlock.svg';
 import { BridgeContext } from '../contexts/BridgeContext';
 import { Web3Context } from '../contexts/Web3Context';
 import { ErrorModal } from './ErrorModal';
-import { LoadingModal } from './LoadingModal';
 
 export const UnlockButton = () => {
   const { network, networkMismatch, ethersProvider } = useContext(Web3Context);
-  const {
-    fromAmount: amount,
-    allowed,
-    approve,
-    fromToken: token,
-    loading,
-  } = useContext(BridgeContext);
+  const { fromAmount: amount, allowed, approve, fromToken: token } = useContext(
+    BridgeContext,
+  );
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [message, setMessage] = useState();
   const onClick = () => {
@@ -53,7 +48,6 @@ export const UnlockButton = () => {
       {isOpen && (
         <ErrorModal message={message} isOpen={isOpen} onClose={onClose} />
       )}
-      {!isOpen && loading && <LoadingModal />}
       <svg width="100%" viewBox="0 0 156 42" fill="none">
         <path
           d="M139.086 39.72a4 4 0 01-3.612 2.28H20.526a4 4 0 01-3.612-2.28l-16.19-34C-.54 3.065 1.395 0 4.335 0h147.33c2.94 0 4.875 3.065 3.611 5.72l-16.19 34z"
