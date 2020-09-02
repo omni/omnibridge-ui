@@ -58,24 +58,6 @@ export const fetchToAmount = async (fromToken, toToken, fromAmount) => {
     return fromAmount;
   }
 };
-export const fetchBalance = async (chainId, account, tokenAddress) => {
-  if (!account) {
-    return 0;
-  }
-  const ethersProvider = getEthersProvider(chainId);
-  const tokenContract = new ethers.Contract(
-    tokenAddress,
-    abis.erc20,
-    ethersProvider,
-  );
-  try {
-    return tokenContract.balanceOf(account);
-  } catch (error) {
-    // eslint-disable-next-line
-    console.log({ balanceError: error });
-    return 0;
-  }
-};
 
 export const fetchToToken = async (account, fromToken) => {
   const toTokenAddress = await fetchBridgedTokenAddress(
@@ -120,11 +102,51 @@ export const fetchToToken = async (account, fromToken) => {
   }
 };
 
-export const fetchDefaultToken = async (account, chainId) => {
-  const token = getDefaultToken(chainId);
+export const fetchTokenDetails = async (token, account) => {
+  const ethersProvider = getEthersProvider(token.chainId);
+  const tokenContract = new ethers.Contract(
+    token.address,
+    abis.erc20,
+    ethersProvider,
+  );
+  const mediatorAddress = getMediatorAddress(token.chainId);
+  const mediatorContract = new ethers.Contract(
+    mediatorAddress,
+    abis.xdaiMediator,
+    ethersProvider,
+  );
+  let isRegistered = false;
+  let balance = 0;
+  const balanceInUsd = 0;
+  let minPerTx = '1000000000000000000';
+  let maxPerTx = '10000000000000000000000';
+  let dailyLimit = '1000000000000000000000000';
+  try {
+    isRegistered = await mediatorContract.isTokenRegistered(token.address);
+    if (account) {
+      balance = await tokenContract.balanceOf(account);
+    }
+    if (isRegistered) {
+      minPerTx = await mediatorContract.minPerTx(token.address);
+      maxPerTx = await mediatorContract.maxPerTx(token.address);
+      dailyLimit = await mediatorContract.dailyLimit(token.address);
+    }
+  } catch (error) {
+    // eslint-disable-next-line
+    console.log({ tokenError: error });
+  }
   return {
     ...token,
-    balance: await fetchBalance(chainId, account, token.address),
-    balanceInUsd: 0,
+    isRegistered,
+    balance,
+    balanceInUsd,
+    minPerTx,
+    maxPerTx,
+    dailyLimit,
   };
+};
+
+export const fetchDefaultToken = async (account, chainId) => {
+  const token = getDefaultToken(chainId);
+  return fetchTokenDetails(token, account);
 };

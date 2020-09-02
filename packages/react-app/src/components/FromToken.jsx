@@ -6,8 +6,8 @@ import {
   Text,
   useDisclosure,
 } from '@chakra-ui/core';
-import ethers from 'ethers';
-import React, { useContext,useState } from 'react';
+import { utils } from 'ethers';
+import React, { useContext, useState } from 'react';
 
 import DropDown from '../assets/drop-down.svg';
 import xDAILogo from '../assets/xdai-logo.png';
@@ -53,7 +53,7 @@ export const FromToken = () => {
           pr={12}
         >
           <Flex justify="space-between" align="center" color="grey" mb={2}>
-            <Text>{`Balance: ${ethers.utils.formatEther(token.balance)}`}</Text>
+            <Text>{`Balance: ${utils.formatEther(token.balance)}`}</Text>
             <Text>{`\u2248 $${token.balanceInUsd}`}</Text>
           </Flex>
           <Flex align="center" flex={1}>
@@ -84,12 +84,10 @@ export const FromToken = () => {
               <Input
                 variant="unstyled"
                 type="number"
-                value={ethers.utils.formatEther(amount)}
+                value={utils.formatEther(amount)}
                 textAlign="right"
                 fontWeight="bold"
-                onChange={e =>
-                  setAmount(ethers.utils.parseEther(e.target.value))
-                }
+                onChange={e => setAmount(utils.parseEther(e.target.value))}
                 fontSize="3xl"
               />
               <Button
