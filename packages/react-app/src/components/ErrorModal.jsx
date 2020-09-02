@@ -17,7 +17,13 @@ export const ErrorModal = ({ message, isOpen, onClose }) => {
     <Modal isOpen={isOpen} onClose={onClose} isCentered>
       <ModalOverlay background="modalBG">
         <ModalContent boxShadow="0px 1rem 2rem #617492" borderRadius="9999px">
-          <ModalCloseButton size="lg" top={-10} right={-10} color="white" />
+          <ModalCloseButton
+            size="lg"
+            top={-10}
+            right={-10}
+            color="white"
+            _focus={{ border: 'none', outline: 'none' }}
+          />
           <ModalBody p={4}>
             <Flex align="center">
               <Flex
@@ -35,7 +41,7 @@ export const ErrorModal = ({ message, isOpen, onClose }) => {
                 <Text fontWeight="bold" fontSize="xl" width="100%">
                   Error
                 </Text>
-                <Text width="100%">{message}</Text>
+                <Text width="100%">{message || ''}</Text>
               </Flex>
             </Flex>
           </ModalBody>

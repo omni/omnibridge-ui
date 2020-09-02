@@ -22,7 +22,7 @@ import xDAILogo from '../assets/xdai-logo.png';
 import { BridgeContext } from '../contexts/BridgeContext';
 import { Web3Context } from '../contexts/Web3Context';
 import { PlusIcon } from '../icons/PlusIcon';
-import { fetchBalance } from '../lib/bridge';
+import { fetchTokenDetails } from '../lib/bridge';
 import { getTokenList } from '../lib/tokenList';
 
 export const TokenSelector = ({ isOpen, onClose }) => {
@@ -31,13 +31,13 @@ export const TokenSelector = ({ isOpen, onClose }) => {
   const [tokenList, setTokenList] = useState();
   const [filteredTokenList, setFilteredTokenList] = useState([]);
 
-  const onClick = (token) => {
+  const onClick = token => {
     setToken(token);
     onClose();
   };
 
-  const onChange = (e) => {
-    const newFilteredTokenList = tokenList.filter((token) => {
+  const onChange = e => {
+    const newFilteredTokenList = tokenList.filter(token => {
       const lowercaseSearch = e.target.value.toLowerCase();
       return (
         token.name.toLowerCase().includes(lowercaseSearch) ||
@@ -52,11 +52,7 @@ export const TokenSelector = ({ isOpen, onClose }) => {
       try {
         const gotTokenList = await getTokenList(network.value);
         const newFilteredTokenList = await Promise.all(
-          gotTokenList.map(async (token) => ({
-            ...token,
-            balance: await fetchBalance(token.chainId, account, token.address),
-            balanceInUsd: 0,
-          })),
+          gotTokenList.map(async token => fetchTokenDetails(token, account)),
         );
         setFilteredTokenList(newFilteredTokenList);
         setTokenList(newFilteredTokenList);
@@ -113,7 +109,7 @@ export const TokenSelector = ({ isOpen, onClose }) => {
                 <Image src={SearchIcon} />
               </InputRightElement>
             </InputGroup>
-            {filteredTokenList.map((token) => (
+            {filteredTokenList.map(token => (
               <Button
                 variant="outline"
                 size="lg"

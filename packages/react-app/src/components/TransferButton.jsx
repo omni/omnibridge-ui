@@ -3,7 +3,7 @@ import React from 'react';
 
 import TransferIcon from '../assets/transfer.svg';
 
-export const TransferButton = (props) => {
+export const TransferButton = () => {
   return (
     <Flex
       align="center"
@@ -14,7 +14,7 @@ export const TransferButton = (props) => {
       transition="0.25s"
       position="relative"
     >
-      <svg width="100%" viewBox="0 0 156 42" fill="none" {...props}>
+      <svg width="100%" viewBox="0 0 156 42" fill="none">
         <path
           d="M16.914 2.28A4 4 0 0120.526 0h114.948a4 4 0 013.612 2.28l16.19 34c1.264 2.655-.671 5.72-3.611 5.72H4.335C1.395 42-.54 38.935.724 36.28l16.19-34z"
           fill="currentColor"

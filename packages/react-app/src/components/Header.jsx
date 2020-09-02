@@ -19,7 +19,7 @@ import { HistoryIcon } from '../icons/HistoryIcon';
 import { WalletIcon } from '../icons/WalletIcon';
 import { NetworkSelector } from './NetworkSelector';
 
-const getAccountString = (account) => {
+const getAccountString = account => {
   const len = account.length;
   return `${account.substr(0, 6)}...${account.substr(len - 4, len - 1)}`;
 };
@@ -78,8 +78,7 @@ export const Header = () => {
                 width="auto"
                 _focus={{ border: 'none', outline: 'none' }}
               >
-                <PopoverArrow />
-                <PopoverBody width="100%" align="center">
+                <PopoverBody width="100%" align="center" p={0}>
                   <Button
                     colorScheme="blue"
                     onClick={disconnect}
