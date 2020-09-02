@@ -22,7 +22,7 @@ import xDAILogo from '../assets/xdai-logo.png';
 import { BridgeContext } from '../contexts/BridgeContext';
 import { Web3Context } from '../contexts/Web3Context';
 import { PlusIcon } from '../icons/PlusIcon';
-import { fetchTokenDetails } from '../lib/bridge';
+import { fetchTokenBalance } from '../lib/bridge';
 import { getTokenList } from '../lib/tokenList';
 
 export const TokenSelector = ({ isOpen, onClose }) => {
@@ -52,11 +52,14 @@ export const TokenSelector = ({ isOpen, onClose }) => {
       try {
         const gotTokenList = await getTokenList(network.value);
         const newFilteredTokenList = await Promise.all(
-          gotTokenList.map(async token => fetchTokenDetails(token, account)),
+          gotTokenList.map(async token => ({
+            ...token,
+            balance: await fetchTokenBalance(token, account),
+          })),
         );
         setFilteredTokenList(newFilteredTokenList);
         setTokenList(newFilteredTokenList);
-      } catch (e) {
+      } catch (error) {
         // eslint-disable-next-line
         console.log({ fetchTokensError: error });
       }

@@ -1,7 +1,7 @@
 import React, { useCallback, useContext, useState } from 'react';
 
-import { fetchDefaultToken, fetchToAmount, fetchToToken } from '../lib/bridge';
-import { isxDaiChain } from '../lib/helpers';
+import { fetchToAmount, fetchTokenDetails, fetchToToken } from '../lib/bridge';
+import { getDefaultToken, isxDaiChain } from '../lib/helpers';
 import { approveToken, fetchAllowance } from '../lib/token';
 import { Web3Context } from './Web3Context';
 
@@ -38,29 +38,33 @@ export const BridgeProvider = ({ children }) => {
 
   const setToken = useCallback(
     async token => {
-      setFromToken(token);
+      setLoading(true);
+      const tokenWithDetails = await fetchTokenDetails(token, account);
+      setFromToken(tokenWithDetails);
       setFromAmount(0);
       setToToken();
-      if (isxDaiChain(token.chainId)) {
+      if (isxDaiChain(tokenWithDetails.chainId)) {
         setAllowed(true);
       } else {
         setAllowed(false);
       }
-      const gotToToken = await fetchToToken(account, token);
+      const gotToToken = await fetchToToken(tokenWithDetails, account);
       setToToken(gotToToken);
       setToAmount(0);
+      if (loading) {
+        setLoading(false);
+      }
     },
-    [account],
+    [account, loading],
   );
 
   const setDefaultToken = useCallback(
     async chainId => {
       setFromToken();
       setToToken();
-      const token = await fetchDefaultToken(account, chainId);
-      setToken(token);
+      setToken(getDefaultToken(chainId));
     },
-    [account, setToken],
+    [setToken],
   );
 
   const approve = useCallback(async () => {
