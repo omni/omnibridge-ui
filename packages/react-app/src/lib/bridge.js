@@ -138,3 +138,15 @@ export const fetchTokenBalance = async (token, account) => {
   }
   return 0;
 };
+
+export const relayTokens = async (ethersProvider, token, amount) => {
+  const mediatorAddress = getMediatorAddress(token.chainId);
+  const mediatorContract = new ethers.Contract(
+    mediatorAddress,
+    abis.mediator,
+    ethersProvider.getSigner(),
+  );
+
+  const tx = await mediatorContract.relayTokens(token.address, amount);
+  return tx;
+};

@@ -1,5 +1,5 @@
 import { Flex, Grid, Text } from '@chakra-ui/core';
-import React, { useContext,useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 import { Web3Context } from '../contexts/Web3Context';
 import { getExplorerUrl } from '../lib/helpers';
@@ -31,6 +31,7 @@ export const BridgeHistory = () => {
         history.length > 0 &&
         history.map(item => (
           <HistoryItem
+            key={item.txHash}
             explorer={explorer}
             date={new Date(parseInt(item.timestamp, 10) * 1000)}
             hash={item.txHash}

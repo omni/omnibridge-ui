@@ -3,7 +3,6 @@ import React from 'react';
 
 export const HistoryItem = ({ explorer, date, hash }) => (
   <Flex
-    key={hash}
     w="100%"
     background="white"
     boxShadow="0px 1rem 2rem rgba(204, 218, 238, 0.8)"
@@ -16,13 +15,14 @@ export const HistoryItem = ({ explorer, date, hash }) => (
         hour: '2-digit',
         minute: '2-digit',
       })} ${date.toLocaleDateString().replaceAll('/', '.')}`}</Text>
-      <a
+      <Link
+        color="blue.500"
         href={`${explorer}/tx/${hash}`}
         rel="noreferrer noopener"
         target="_blank"
       >
-        <Link color="blue.500">{hash}</Link>
-      </a>
+        {hash}
+      </Link>
     </Grid>
   </Flex>
 );

@@ -32,3 +32,14 @@ export const approveToken = async (ethersProvider, token, amount) => {
   const tx = await tokenContract.approve(mediatorAddress, amount);
   return tx.wait();
 };
+
+export const transferAndCallToken = async (ethersProvider, token, amount) => {
+  const tokenContract = new ethers.Contract(
+    token.address,
+    abis.xdaiToken,
+    ethersProvider.getSigner(),
+  );
+  const mediatorAddress = getMediatorAddress(token.chainId);
+  const tx = await tokenContract.transferAndCall(mediatorAddress, amount, '0x');
+  return tx;
+};
