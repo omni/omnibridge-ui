@@ -49,7 +49,7 @@ export const chainUrls = {
   },
   1: {
     rpc: `https://mainnet.infura.io/v3/${CONFIG.infuraId}`,
-    explorer: 'https://etherscan.io/',
+    explorer: 'https://etherscan.io',
     chainId: 1,
     name: 'ETH Mainnet',
   },
@@ -61,7 +61,7 @@ export const chainUrls = {
   },
   42: {
     rpc: `https://kovan.infura.io/v3/${CONFIG.infuraId}`,
-    explorer: 'https://kovan.etherscan.io/',
+    explorer: 'https://kovan.etherscan.io',
     chainId: 42,
     name: 'Kovan Testnet',
   },
@@ -100,4 +100,11 @@ export const defaultTokens = {
     chainId: 42,
     logoURI: '',
   },
+};
+
+export const graphEndpoints = {
+  100: 'https://api.thegraph.com/subgraphs/name/dan13ram/xdai-omnibridge',
+  1: 'https://api.thegraph.com/subgraphs/name/dan13ram/mainnet-omnibridge',
+  77: 'https://api.thegraph.com/subgraphs/name/dan13ram/sokol-omnibridge',
+  42: 'https://api.thegraph.com/subgraphs/name/dan13ram/kovan-omnibridge',
 };
