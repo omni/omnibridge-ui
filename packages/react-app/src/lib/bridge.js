@@ -2,12 +2,7 @@ import { abis } from '@project/contracts';
 import ethers from 'ethers';
 
 import { ADDRESS_ZERO } from './constants';
-import {
-  getBridgeNetwork,
-  getDefaultToken,
-  getMediatorAddress,
-  isxDaiChain,
-} from './helpers';
+import { getBridgeNetwork, getMediatorAddress, isxDaiChain } from './helpers';
 import { getEthersProvider } from './providers';
 
 export const fetchBridgedTokenAddress = async (fromChainId, tokenAddress) => {
@@ -59,7 +54,7 @@ export const fetchToAmount = async (fromToken, toToken, fromAmount) => {
   }
 };
 
-export const fetchToToken = async (account, fromToken) => {
+export const fetchToToken = async (fromToken, account) => {
   const toTokenAddress = await fetchBridgedTokenAddress(
     fromToken.chainId,
     fromToken.address,
@@ -77,29 +72,8 @@ export const fetchToToken = async (account, fromToken) => {
     balance: 0,
     balanceInUsd: 0,
   };
-
-  if (toTokenAddress === ADDRESS_ZERO) {
-    return toToken;
-  }
-
-  const ethersProvider = getEthersProvider(toChainId);
-  const tokenContract = new ethers.Contract(
-    toTokenAddress,
-    abis.erc20,
-    ethersProvider,
-  );
-
-  try {
-    return {
-      ...toToken,
-      name: await tokenContract.name(),
-      balance: account ? await tokenContract.balanceOf(account) : 0,
-    };
-  } catch (error) {
-    // eslint-disable-next-line
-    console.log({ tokenError: error });
-    return toToken;
-  }
+  toToken.balance = await fetchTokenBalance(toToken, account);
+  return toToken;
 };
 
 export const fetchTokenDetails = async (token, account) => {
@@ -146,7 +120,21 @@ export const fetchTokenDetails = async (token, account) => {
   };
 };
 
-export const fetchDefaultToken = async (account, chainId) => {
-  const token = getDefaultToken(chainId);
-  return fetchTokenDetails(token, account);
+export const fetchTokenBalance = async (token, account) => {
+  if (!account || !token || token.address === ADDRESS_ZERO) {
+    return 0;
+  }
+  const ethersProvider = getEthersProvider(token.chainId);
+  const tokenContract = new ethers.Contract(
+    token.address,
+    abis.erc20,
+    ethersProvider,
+  );
+  try {
+    return await tokenContract.balanceOf(account);
+  } catch (error) {
+    // eslint-disable-next-line
+    console.log({ tokenError: error });
+  }
+  return 0;
 };

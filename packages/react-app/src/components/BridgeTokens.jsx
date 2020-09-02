@@ -3,6 +3,7 @@ import React, { useContext } from 'react';
 
 import { Web3Context } from '../contexts/Web3Context';
 import { FromToken } from './FromToken';
+import { LoadingModal } from './LoadingModal';
 import { SystemFeedback } from './SystemFeedback';
 import { ToToken } from './ToToken';
 import { TransferButton } from './TransferButton';
@@ -23,6 +24,7 @@ export const BridgeTokens = () => {
       mx={4}
       my="auto"
     >
+      <LoadingModal />
       <Flex w="100%" justify="space-between">
         <Flex align="flex-start" direction="column">
           <Text color="greyText" fontSize="sm">

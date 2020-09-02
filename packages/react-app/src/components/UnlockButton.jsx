@@ -1,5 +1,5 @@
 import { Flex, Image, Text, useDisclosure } from '@chakra-ui/core';
-import React, { useContext,useState } from 'react';
+import React, { useContext, useState } from 'react';
 
 import UnlockIcon from '../assets/unlock.svg';
 import { BridgeContext } from '../contexts/BridgeContext';
@@ -22,7 +22,8 @@ export const UnlockButton = () => {
       token.balance >= amount
     ) {
       return approve();
-    } if (!ethersProvider) {
+    }
+    if (!ethersProvider) {
       setMessage('Please connect wallet');
     } else if (networkMismatch) {
       setMessage(`Please switch wallet to ${network.name}`);
