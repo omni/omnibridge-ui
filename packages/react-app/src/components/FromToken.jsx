@@ -7,7 +7,7 @@ import {
   useDisclosure,
 } from '@chakra-ui/core';
 import ethers from 'ethers';
-import React, { useContext } from 'react';
+import React, { useContext,useState } from 'react';
 
 import DropDown from '../assets/drop-down.svg';
 import xDAILogo from '../assets/xdai-logo.png';
@@ -17,11 +17,22 @@ import { ErrorModal } from './ErrorModal';
 import { TokenSelector } from './TokenSelector';
 
 export const FromToken = () => {
-  const { network, networkMismatch } = useContext(Web3Context);
+  const { ethersProvider, network, networkMismatch } = useContext(Web3Context);
   const { fromToken: token, fromAmount: amount, setAmount } = useContext(
     BridgeContext,
   );
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const [message, setMessage] = useState();
+  const onClick = () => {
+    if (!ethersProvider) {
+      setMessage('Please connect wallet');
+    } else if (networkMismatch) {
+      setMessage(`Please switch wallet to ${network.name}`);
+    } else {
+      setMessage();
+    }
+    onOpen();
+  };
   return (
     <Flex align="center" mr={{ base: -4, md: -4, lg: -6 }} position="relative">
       <svg width="100%" viewBox="0 0 381 94" fill="none">
@@ -46,7 +57,7 @@ export const FromToken = () => {
             <Text>{`\u2248 $${token.balanceInUsd}`}</Text>
           </Flex>
           <Flex align="center" flex={1}>
-            <Flex align="center" cursor="pointer" onClick={onOpen}>
+            <Flex align="center" cursor="pointer" onClick={onClick}>
               <Flex
                 justify="center"
                 align="center"
@@ -63,14 +74,10 @@ export const FromToken = () => {
               </Text>
               <Image src={DropDown} cursor="pointer" />
             </Flex>
-            {isOpen && networkMismatch && (
-              <ErrorModal
-                message={`Please switch wallet to ${network.name}`}
-                isOpen={isOpen}
-                onClose={onClose}
-              />
+            {isOpen && message && (
+              <ErrorModal message={message} isOpen={isOpen} onClose={onClose} />
             )}
-            {isOpen && !networkMismatch && (
+            {isOpen && !message && (
               <TokenSelector onClose={onClose} isOpen={isOpen} />
             )}
             <Flex align="center" justify="flex-end" flex={1}>
@@ -80,7 +87,7 @@ export const FromToken = () => {
                 value={ethers.utils.formatEther(amount)}
                 textAlign="right"
                 fontWeight="bold"
-                onChange={(e) =>
+                onChange={e =>
                   setAmount(ethers.utils.parseEther(e.target.value))
                 }
                 fontSize="3xl"

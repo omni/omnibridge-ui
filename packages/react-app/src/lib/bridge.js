@@ -28,7 +28,7 @@ export const fetchBridgedTokenAddress = async (fromChainId, tokenAddress) => {
 };
 
 export const fetchToAmount = async (fromToken, toToken, fromAmount) => {
-  if (fromAmount * 1 === 0) return 0;
+  if (fromAmount * 1 === 0 || !fromToken || !toToken) return 0;
   const isxDai = isxDaiChain(toToken.chainId);
   const xDaiChainId = isxDai
     ? toToken.chainId

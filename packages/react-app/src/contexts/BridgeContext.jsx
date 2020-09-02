@@ -1,32 +1,50 @@
 import React, { useCallback, useContext, useState } from 'react';
 
 import { fetchDefaultToken, fetchToAmount, fetchToToken } from '../lib/bridge';
+import { isxDaiChain } from '../lib/helpers';
+import { approveToken,fetchAllowance } from '../lib/token';
 import { Web3Context } from './Web3Context';
 
 export const BridgeContext = React.createContext({});
 
 export const BridgeProvider = ({ children }) => {
-  const { account } = useContext(Web3Context);
+  const { ethersProvider, account } = useContext(Web3Context);
 
   const [fromToken, setFromToken] = useState();
   const [toToken, setToToken] = useState();
   const [fromAmount, setFromAmount] = useState(0);
   const [toAmount, setToAmount] = useState(0);
+  const [allowed, setAllowed] = useState(false);
 
   const setAmount = useCallback(
-    async (amount) => {
+    async amount => {
       setFromAmount(amount);
       const gotToAmount = await fetchToAmount(fromToken, toToken, amount);
       setToAmount(gotToAmount);
+      if (isxDaiChain(fromToken.chainId)) {
+        setAllowed(true);
+      } else {
+        const gotAllowance = await fetchAllowance(
+          fromToken.chainId,
+          account,
+          fromToken.address,
+        );
+        setAllowed(gotAllowance >= amount);
+      }
     },
-    [fromToken, toToken],
+    [account, fromToken, toToken],
   );
 
   const setToken = useCallback(
-    async (token) => {
+    async token => {
       setFromToken(token);
       setFromAmount(0);
       setToToken();
+      if (isxDaiChain(token.chainId)) {
+        setAllowed(true);
+      } else {
+        setAllowed(false);
+      }
       const gotToToken = await fetchToToken(account, token);
       setToToken(gotToToken);
       setToAmount(0);
@@ -35,7 +53,7 @@ export const BridgeProvider = ({ children }) => {
   );
 
   const setDefaultToken = useCallback(
-    async (chainId) => {
+    async chainId => {
       setFromToken();
       setToToken();
       const token = await fetchDefaultToken(account, chainId);
@@ -43,6 +61,11 @@ export const BridgeProvider = ({ children }) => {
     },
     [account, setToken],
   );
+
+  const approve = useCallback(async () => {
+    await approveToken(ethersProvider, fromToken, fromAmount);
+    setAllowed(true);
+  }, [fromAmount, fromToken, ethersProvider]);
 
   return (
     <BridgeContext.Provider
@@ -54,6 +77,8 @@ export const BridgeProvider = ({ children }) => {
         toToken,
         setToken,
         setDefaultToken,
+        allowed,
+        approve,
       }}
     >
       {children}
