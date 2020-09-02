@@ -16,7 +16,6 @@ import { BridgeContext } from '../contexts/BridgeContext';
 
 export const SystemFeedback = () => {
   const { fromToken: token } = useContext(BridgeContext);
-  console.log({ token });
   return (
     <Popover>
       <PopoverTrigger>

@@ -2,7 +2,7 @@ import React, { useCallback, useContext, useState } from 'react';
 
 import { fetchDefaultToken, fetchToAmount, fetchToToken } from '../lib/bridge';
 import { isxDaiChain } from '../lib/helpers';
-import { approveToken,fetchAllowance } from '../lib/token';
+import { approveToken, fetchAllowance } from '../lib/token';
 import { Web3Context } from './Web3Context';
 
 export const BridgeContext = React.createContext({});
@@ -15,6 +15,7 @@ export const BridgeProvider = ({ children }) => {
   const [fromAmount, setFromAmount] = useState(0);
   const [toAmount, setToAmount] = useState(0);
   const [allowed, setAllowed] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const setAmount = useCallback(
     async amount => {
@@ -63,8 +64,15 @@ export const BridgeProvider = ({ children }) => {
   );
 
   const approve = useCallback(async () => {
-    await approveToken(ethersProvider, fromToken, fromAmount);
-    setAllowed(true);
+    setLoading(true);
+    try {
+      await approveToken(ethersProvider, fromToken, fromAmount);
+      setAllowed(true);
+    } catch (error) {
+      // eslint-disable-next-line
+      console.log({ approveError: error });
+    }
+    setLoading(false);
   }, [fromAmount, fromToken, ethersProvider]);
 
   return (
@@ -79,6 +87,7 @@ export const BridgeProvider = ({ children }) => {
         setDefaultToken,
         allowed,
         approve,
+        loading,
       }}
     >
       {children}
