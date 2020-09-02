@@ -51,11 +51,9 @@ export const BridgeProvider = ({ children }) => {
       const gotToToken = await fetchToToken(tokenWithDetails, account);
       setToToken(gotToToken);
       setToAmount(0);
-      if (loading) {
-        setLoading(false);
-      }
+      setLoading(false);
     },
-    [account, loading],
+    [account],
   );
 
   const setDefaultToken = useCallback(
