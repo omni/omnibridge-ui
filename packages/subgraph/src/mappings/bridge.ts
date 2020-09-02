@@ -5,6 +5,7 @@ export function handleBridgeTransfer(event: TokensBridged): void {
   let txHash = event.transaction.hash.toHex();
   let transfer = new BridgeTransfer(txHash);
   transfer.txHash = txHash;
+  transfer.timestamp = event.block.timestamp;
   transfer.token = event.params.token;
   transfer.recipient = event.params.recipient;
   transfer.value = event.params.value;

@@ -6,11 +6,11 @@ schema:
 dataSources:
   - kind: ethereum/contract
     name: Mediator
-    network: { { network } }
+    network: {{network}}
     source:
       abi: mediator
       address: '{{address}}'
-      startBlock: { { startBlock } }
+      startBlock: {{startBlock}}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
