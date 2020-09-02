@@ -13,7 +13,7 @@ export const Layout = ({ children }) => (
     overflowX="hidden"
     fontFamily="body"
     w="100vw"
-    h="100vh"
+    minH="100vh"
     align="center"
     direction="column"
     background="background"

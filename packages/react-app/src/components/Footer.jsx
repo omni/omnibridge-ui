@@ -20,6 +20,8 @@ export const Footer = () => {
       px={8}
       w="100%"
       color="grey"
+      _hover={{ color: 'blue.500' }}
+      transition="0.25s"
     >
       <Link to="/">
         <Flex justify="space-around" align="center">

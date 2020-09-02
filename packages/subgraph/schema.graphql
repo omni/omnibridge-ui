@@ -4,5 +4,6 @@ type BridgeTransfer @entity {
   recipient: Bytes!
   value: BigInt!
   messageId: Bytes!
+  timestamp: BigInt!
   txHash: String!
 }

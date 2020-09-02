@@ -1,8 +1,8 @@
 import { mediators } from '@project/contracts';
 
-import { defaultTokens } from './constants';
+import { chainUrls,defaultTokens, graphEndpoints } from './constants';
 
-export const getBridgeNetwork = (chainId) => {
+export const getBridgeNetwork = chainId => {
   switch (chainId) {
     case 1:
       return 100;
@@ -16,7 +16,7 @@ export const getBridgeNetwork = (chainId) => {
   }
 };
 
-export const isxDaiChain = (chainId) => {
+export const isxDaiChain = chainId => {
   switch (chainId) {
     case 1:
       return false;
@@ -30,7 +30,7 @@ export const isxDaiChain = (chainId) => {
   }
 };
 
-export const getDefaultToken = (chainId) => {
+export const getDefaultToken = chainId => {
   switch (chainId) {
     case 1:
       return defaultTokens[1];
@@ -44,7 +44,7 @@ export const getDefaultToken = (chainId) => {
   }
 };
 
-export const getMediatorAddress = (chainId) => {
+export const getMediatorAddress = chainId => {
   switch (chainId) {
     case 1:
       return mediators[1];
@@ -55,5 +55,47 @@ export const getMediatorAddress = (chainId) => {
     case 100:
     default:
       return mediators[100];
+  }
+};
+
+export const getGraphEndpoint = chainId => {
+  switch (chainId) {
+    case 1:
+      return graphEndpoints[1];
+    case 42:
+      return graphEndpoints[42];
+    case 77:
+      return graphEndpoints[77];
+    case 100:
+    default:
+      return graphEndpoints[100];
+  }
+};
+
+export const getRPCUrl = chainId => {
+  switch (chainId) {
+    case 1:
+      return chainUrls[1].rpc;
+    case 42:
+      return chainUrls[42].rpc;
+    case 77:
+      return chainUrls[77].rpc;
+    case 100:
+    default:
+      return chainUrls[100].rpc;
+  }
+};
+
+export const getExplorerUrl = chainId => {
+  switch (chainId) {
+    case 1:
+      return chainUrls[1].explorer;
+    case 42:
+      return chainUrls[42].explorer;
+    case 77:
+      return chainUrls[77].explorer;
+    case 100:
+    default:
+      return chainUrls[100].explorer;
   }
 };
