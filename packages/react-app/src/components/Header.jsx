@@ -4,7 +4,6 @@ import {
   HStack,
   Image,
   Popover,
-  PopoverArrow,
   PopoverBody,
   PopoverContent,
   PopoverTrigger,
