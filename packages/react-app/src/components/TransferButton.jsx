@@ -30,15 +30,15 @@ export const TransferButton = () => {
       setMessage('Please connect wallet');
     } else if (networkMismatch) {
       setMessage(`Please switch wallet to ${network.name}`);
-    } else if (amount < token.minPerTx) {
+    } else if (window.BigInt(amount) < window.BigInt(token.minPerTx)) {
       setMessage(
         `Please specify amount more than ${utils.formatEther(token.minPerTx)}`,
       );
-    } else if (amount >= token.maxPerTx) {
+    } else if (window.BigInt(amount) >= window.BigInt(token.maxPerTx)) {
       setMessage(
         `Please specify amount less than ${utils.formatEther(token.maxPerTx)}`,
       );
-    } else if (token.balance < amount) {
+    } else if (window.BigInt(token.balance) < window.BigInt(amount)) {
       setMessage('Not enough balance');
     }
     return onOpen();

@@ -1,6 +1,9 @@
-import { mediators } from '@project/contracts';
-
-import { chainUrls, defaultTokens, graphEndpoints } from './constants';
+import {
+  chainUrls,
+  defaultTokens,
+  graphEndpoints,
+  mediators,
+} from './constants';
 
 export const getBridgeNetwork = chainId => {
   switch (chainId) {

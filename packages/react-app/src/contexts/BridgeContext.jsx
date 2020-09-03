@@ -34,13 +34,15 @@ export const BridgeProvider = ({ children }) => {
       setToAmount(gotToAmount);
       if (isxDaiChain(fromToken.chainId)) {
         setAllowed(true);
+      } else if (amount <= 0) {
+        setAllowed(false);
       } else {
         const gotAllowance = await fetchAllowance(
           fromToken.chainId,
           account,
           fromToken.address,
         );
-        setAllowed(gotAllowance >= amount);
+        setAllowed(window.BigInt(gotAllowance) >= window.BigInt(amount));
       }
     },
     [account, fromToken, toToken],
@@ -103,19 +105,21 @@ export const BridgeProvider = ({ children }) => {
       setTransaction(tx);
       const handler = async () => {
         const receipt = await ethersProvider.getTransactionReceipt(tx.hash);
+        receipt.hash = tx.hash;
         setTransaction(receipt);
       };
 
       ethersProvider.on('block', handler);
       await tx.wait(totalConfirms);
       ethersProvider.removeListener('block', handler);
+      await setToken(fromToken);
+      setTransaction();
     } catch (error) {
       // eslint-disable-next-line
       console.log({ transferError: error });
     }
-    setTransaction();
     setLoading(false);
-  }, [fromToken, ethersProvider, fromAmount]);
+  }, [fromToken, ethersProvider, fromAmount, setToken]);
 
   return (
     <BridgeContext.Provider

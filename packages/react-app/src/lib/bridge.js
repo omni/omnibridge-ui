@@ -1,4 +1,3 @@
-import { abis } from '@project/contracts';
 import ethers from 'ethers';
 
 import { ADDRESS_ZERO } from './constants';
@@ -10,9 +9,13 @@ export const fetchBridgedTokenAddress = async (fromChainId, tokenAddress) => {
   const xDaiChainId = isxDai ? fromChainId : getBridgeNetwork(fromChainId);
   const ethersProvider = getEthersProvider(xDaiChainId);
   const mediatorAddress = getMediatorAddress(xDaiChainId);
+  const abi = [
+    'function foreignTokenAddress(address) view returns (address)',
+    'function homeTokenAddress(address) view returns (address)',
+  ];
   const mediatorContract = new ethers.Contract(
     mediatorAddress,
-    abis.xdaiMediator,
+    abi,
     ethersProvider,
   );
 
@@ -31,9 +34,14 @@ export const fetchToAmount = async (fromToken, toToken, fromAmount) => {
   const tokenAddress = isxDai ? toToken.address : fromToken.address;
   const ethersProvider = getEthersProvider(xDaiChainId);
   const mediatorAddress = getMediatorAddress(xDaiChainId);
+  const abi = [
+    'function FOREIGN_TO_HOME_FEE() view returns (uint256)',
+    'function HOME_TO_FOREIGN_FEE() view returns (uint256)',
+    'function calculateFee(bytes32, address, uint256) view returns (uint256)',
+  ];
   const mediatorContract = new ethers.Contract(
     mediatorAddress,
-    abis.xdaiMediator,
+    abi,
     ethersProvider,
   );
 
@@ -78,15 +86,22 @@ export const fetchToToken = async (fromToken, account) => {
 
 export const fetchTokenDetails = async (token, account) => {
   const ethersProvider = getEthersProvider(token.chainId);
+  const tokenAbi = ['function balanceOf(address) view returns (uint256)'];
   const tokenContract = new ethers.Contract(
     token.address,
-    abis.erc20,
+    tokenAbi,
     ethersProvider,
   );
+  const mediatorAbi = [
+    'function isTokenRegistered(address) view returns (bool)',
+    'function minPerTx(address) view returns (uint256)',
+    'function maxPerTx(address) view returns (uint256)',
+    'function dailyLimit(address) view returns (uint256)',
+  ];
   const mediatorAddress = getMediatorAddress(token.chainId);
   const mediatorContract = new ethers.Contract(
     mediatorAddress,
-    abis.xdaiMediator,
+    mediatorAbi,
     ethersProvider,
   );
   let isRegistered = false;
@@ -125,11 +140,8 @@ export const fetchTokenBalance = async (token, account) => {
     return 0;
   }
   const ethersProvider = getEthersProvider(token.chainId);
-  const tokenContract = new ethers.Contract(
-    token.address,
-    abis.erc20,
-    ethersProvider,
-  );
+  const abi = ['function balanceOf(address) view returns (uint256)'];
+  const tokenContract = new ethers.Contract(token.address, abi, ethersProvider);
   try {
     return await tokenContract.balanceOf(account);
   } catch (error) {
@@ -141,9 +153,10 @@ export const fetchTokenBalance = async (token, account) => {
 
 export const relayTokens = async (ethersProvider, token, amount) => {
   const mediatorAddress = getMediatorAddress(token.chainId);
+  const abi = ['function relayTokens(address, uint256)'];
   const mediatorContract = new ethers.Contract(
     mediatorAddress,
-    abis.mediator,
+    abi,
     ethersProvider.getSigner(),
   );
 

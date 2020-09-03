@@ -69,7 +69,7 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
                 h="4rem"
                 px={4}
               >
-                <Text>{fromAmt}</Text>
+                <Text textAlign="center">{fromAmt}</Text>
               </Flex>
               <Flex
                 flex={1}
@@ -95,7 +95,7 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
                 h="4rem"
                 px={4}
               >
-                <Text>{toAmt}</Text>
+                <Text textAlign="center">{toAmt}</Text>
               </Flex>
             </Flex>
             <Flex align="center" fontSize="sm" justify="center" mt={4}>

@@ -13,6 +13,13 @@ import React, { useContext } from 'react';
 import LoadingImage from '../assets/loading.svg';
 import { BridgeContext } from '../contexts/BridgeContext';
 import { getMonitorUrl, isxDaiChain } from '../lib/helpers';
+import { ProgressRing } from './ProgressRing';
+
+const getTransactionString = hash => {
+  if (!hash) return 'here';
+  const len = hash.length;
+  return `${hash.substr(0, 6)}...${hash.substr(len - 4, len - 1)}`;
+};
 
 export const LoadingModal = () => {
   const { loading, fromToken, transaction } = useContext(BridgeContext);
@@ -46,14 +53,34 @@ export const LoadingModal = () => {
                   border="5px solid #eef4fd"
                   borderRadius="50%"
                   mr={4}
+                  position="relative"
                 >
-                  <Text>
-                    ${`${transaction.confirmations}/${totalConfirms}`}
-                  </Text>
+                  <Text>{`${
+                    transaction.confirmations < totalConfirms
+                      ? transaction.confirmations
+                      : totalConfirms
+                  }/${totalConfirms}`}</Text>
+                  <Flex
+                    position="absolute"
+                    justify="center"
+                    align="center"
+                    color="blue.500"
+                  >
+                    <ProgressRing
+                      radius={47.5}
+                      stroke={5}
+                      progress={
+                        transaction.confirmations < totalConfirms
+                          ? transaction.confirmations
+                          : totalConfirms
+                      }
+                      totalProgress={totalConfirms}
+                    />
+                  </Flex>
                 </Flex>
                 <Flex height="100%" flex={1} direction="column">
                   <Text width="100%">Waiting for Block Confirmations...</Text>
-                  <Text width="100%">
+                  <Text width="100%" color="grey">
                     {'Monitor at ALM '}
                     <Link
                       href={getMonitorUrl(fromToken.chainId, transaction.hash)}
@@ -61,7 +88,7 @@ export const LoadingModal = () => {
                       target="_blank"
                       color="blue.500"
                     >
-                      here
+                      {getTransactionString(transaction.hash)}
                     </Link>
                   </Text>
                 </Flex>
