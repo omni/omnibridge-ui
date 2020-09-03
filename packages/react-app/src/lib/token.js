@@ -1,4 +1,3 @@
-import { abis } from '@project/contracts';
 import ethers from 'ethers';
 
 import { getMediatorAddress } from './helpers';
@@ -7,11 +6,8 @@ import { getEthersProvider } from './providers';
 export const fetchAllowance = (chainId, account, tokenAddress) => {
   if (!account) return 0;
   const ethersProvider = getEthersProvider(chainId);
-  const tokenContract = new ethers.Contract(
-    tokenAddress,
-    abis.erc20,
-    ethersProvider,
-  );
+  const abi = ['function allowance(address, address) view returns (uint256)'];
+  const tokenContract = new ethers.Contract(tokenAddress, abi, ethersProvider);
   try {
     const mediatorAddress = getMediatorAddress(chainId);
     return tokenContract.allowance(account, mediatorAddress);
@@ -23,12 +19,25 @@ export const fetchAllowance = (chainId, account, tokenAddress) => {
 };
 
 export const approveToken = async (ethersProvider, token, amount) => {
+  const abi = ['function approve(address, uint256)'];
   const tokenContract = new ethers.Contract(
     token.address,
-    abis.erc20,
+    abi,
     ethersProvider.getSigner(),
   );
   const mediatorAddress = getMediatorAddress(token.chainId);
   const tx = await tokenContract.approve(mediatorAddress, amount);
   return tx.wait();
+};
+
+export const transferAndCallToken = async (ethersProvider, token, amount) => {
+  const abi = ['function transferAndCall(address, uint256, bytes)'];
+  const tokenContract = new ethers.Contract(
+    token.address,
+    abi,
+    ethersProvider.getSigner(),
+  );
+  const mediatorAddress = getMediatorAddress(token.chainId);
+  const tx = await tokenContract.transferAndCall(mediatorAddress, amount, '0x');
+  return tx;
 };

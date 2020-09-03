@@ -34,12 +34,16 @@ export const Footer = () => {
         <Image src={TelegramLogo} />
         <Image src={GithubLogo} />
         <Box w="1px" h={5} background="grey" />
-        <Link to="https://raidguild.org">
+        <a
+          href="https://raidguild.org"
+          rel="noreferrer noopener"
+          target="_blank"
+        >
           <Flex align="center" _hover={{}}>
             <Text>Built by</Text>
             <Image src={RaidGuildLogo} ml={2} />
           </Flex>
-        </Link>
+        </a>
       </HStack>
     </Flex>
   );

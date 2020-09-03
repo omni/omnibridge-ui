@@ -1,8 +1,17 @@
 import React, { useCallback, useContext, useState } from 'react';
 
-import { fetchToAmount, fetchTokenDetails, fetchToToken } from '../lib/bridge';
+import {
+  fetchToAmount,
+  fetchTokenDetails,
+  fetchToToken,
+  relayTokens,
+} from '../lib/bridge';
 import { getDefaultToken, isxDaiChain } from '../lib/helpers';
-import { approveToken, fetchAllowance } from '../lib/token';
+import {
+  approveToken,
+  fetchAllowance,
+  transferAndCallToken,
+} from '../lib/token';
 import { Web3Context } from './Web3Context';
 
 export const BridgeContext = React.createContext({});
@@ -16,6 +25,7 @@ export const BridgeProvider = ({ children }) => {
   const [toAmount, setToAmount] = useState(0);
   const [allowed, setAllowed] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [transaction, setTransaction] = useState(false);
 
   const setAmount = useCallback(
     async amount => {
@@ -24,13 +34,15 @@ export const BridgeProvider = ({ children }) => {
       setToAmount(gotToAmount);
       if (isxDaiChain(fromToken.chainId)) {
         setAllowed(true);
+      } else if (amount <= 0) {
+        setAllowed(false);
       } else {
         const gotAllowance = await fetchAllowance(
           fromToken.chainId,
           account,
           fromToken.address,
         );
-        setAllowed(gotAllowance >= amount);
+        setAllowed(window.BigInt(gotAllowance) >= window.BigInt(amount));
       }
     },
     [account, fromToken, toToken],
@@ -77,6 +89,38 @@ export const BridgeProvider = ({ children }) => {
     setLoading(false);
   }, [fromAmount, fromToken, ethersProvider]);
 
+  const transfer = useCallback(async () => {
+    setLoading(true);
+    try {
+      let tx;
+      let totalConfirms;
+      const isxDai = isxDaiChain(fromToken.chainId);
+      if (isxDai) {
+        tx = await transferAndCallToken(ethersProvider, fromToken, fromAmount);
+        totalConfirms = 2;
+      } else {
+        tx = await relayTokens(ethersProvider, fromToken, fromAmount);
+        totalConfirms = 8;
+      }
+      setTransaction(tx);
+      const handler = async () => {
+        const receipt = await ethersProvider.getTransactionReceipt(tx.hash);
+        receipt.hash = tx.hash;
+        setTransaction(receipt);
+      };
+
+      ethersProvider.on('block', handler);
+      await tx.wait(totalConfirms);
+      ethersProvider.removeListener('block', handler);
+      await setToken(fromToken);
+      setTransaction();
+    } catch (error) {
+      // eslint-disable-next-line
+      console.log({ transferError: error });
+    }
+    setLoading(false);
+  }, [fromToken, ethersProvider, fromAmount, setToken]);
+
   return (
     <BridgeContext.Provider
       value={{
@@ -89,7 +133,9 @@ export const BridgeProvider = ({ children }) => {
         setDefaultToken,
         allowed,
         approve,
+        transfer,
         loading,
+        transaction,
       }}
     >
       {children}

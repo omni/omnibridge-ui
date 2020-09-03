@@ -1,6 +1,9 @@
-import { mediators } from '@project/contracts';
-
-import { chainUrls,defaultTokens, graphEndpoints } from './constants';
+import {
+  chainUrls,
+  defaultTokens,
+  graphEndpoints,
+  mediators,
+} from './constants';
 
 export const getBridgeNetwork = chainId => {
   switch (chainId) {
@@ -97,5 +100,21 @@ export const getExplorerUrl = chainId => {
     case 100:
     default:
       return chainUrls[100].explorer;
+  }
+};
+
+export const getMonitorUrl = (chainId, hash) => {
+  const url = 'https://alm-xdai.herokuapp.com/';
+  const testUrl = 'https://alm-test-amb.herokuapp.com/';
+  switch (chainId) {
+    case 1:
+      return `${url}1/${hash}`;
+    case 42:
+      return `${testUrl}42/${hash}`;
+    case 77:
+      return `${testUrl}77/${hash}`;
+    case 100:
+    default:
+      return `${url}100/${hash}`;
   }
 };

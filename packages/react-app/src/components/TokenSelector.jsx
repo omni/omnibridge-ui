@@ -14,7 +14,7 @@ import {
   ModalOverlay,
   Text,
 } from '@chakra-ui/core';
-import ethers from 'ethers';
+import { utils } from 'ethers';
 import React, { useContext, useEffect, useState } from 'react';
 
 import SearchIcon from '../assets/search.svg';
@@ -141,7 +141,7 @@ export const TokenSelector = ({ isOpen, onClose }) => {
                     </Text>
                   </Flex>
                   <Text color="grey" fontWeight="normal">
-                    {ethers.utils.formatEther(token.balance)}
+                    {utils.formatEther(token.balance)}
                   </Text>
                 </Flex>
               </Button>

@@ -16,7 +16,7 @@ export const ErrorModal = ({ message, isOpen, onClose }) => {
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered>
       <ModalOverlay background="modalBG">
-        <ModalContent boxShadow="0px 1rem 2rem #617492" borderRadius="9999px">
+        <ModalContent boxShadow="0px 1rem 2rem #617492" borderRadius="full">
           <ModalCloseButton
             size="lg"
             top={-10}
