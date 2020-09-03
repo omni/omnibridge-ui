@@ -20,7 +20,6 @@
     "@chakra-ui/theme": "^1.0.0-rc.2",
     "@ethersproject/contracts": "^5.0.1",
     "@ethersproject/providers": "^5.0.4",
-    "@project/contracts": "^1.0.0",
     "@testing-library/dom": "^6.12.2",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
