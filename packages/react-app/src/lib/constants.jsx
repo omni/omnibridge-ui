@@ -86,7 +86,7 @@ export const defaultTokens = {
   },
   77: {
     name: 'Stake on xDai',
-    address: '0xDd100c4f827ABAbB2301d562FDBD503aE0d6B1D0',
+    address: '0x6d14fb09ca87929d25e0451dc2d1d465c324f62f',
     symbol: 'STAKE',
     decimals: 18,
     chainId: 77,
