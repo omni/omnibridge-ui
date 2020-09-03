@@ -22,13 +22,10 @@ import xDAILogo from '../assets/xdai-logo.png';
 import { BridgeContext } from '../contexts/BridgeContext';
 import { Web3Context } from '../contexts/Web3Context';
 import { PlusIcon } from '../icons/PlusIcon';
-import { fetchTokenBalance } from '../lib/bridge';
-import { getTokenList } from '../lib/tokenList';
 
 export const TokenSelector = ({ isOpen, onClose }) => {
-  const { network, account } = useContext(Web3Context);
-  const { setToken } = useContext(BridgeContext);
-  const [tokenList, setTokenList] = useState();
+  const { network } = useContext(Web3Context);
+  const { setToken, tokenList, setDefaultTokenList } = useContext(BridgeContext);
   const [filteredTokenList, setFilteredTokenList] = useState([]);
 
   const onClick = token => {
@@ -48,24 +45,12 @@ export const TokenSelector = ({ isOpen, onClose }) => {
   };
 
   useEffect(() => {
-    async function fetchTokenList() {
-      try {
-        const gotTokenList = await getTokenList(network.value);
-        const newFilteredTokenList = await Promise.all(
-          gotTokenList.map(async token => ({
-            ...token,
-            balance: await fetchTokenBalance(token, account),
-          })),
-        );
-        setFilteredTokenList(newFilteredTokenList);
-        setTokenList(newFilteredTokenList);
-      } catch (error) {
-        // eslint-disable-next-line
-        console.log({ fetchTokensError: error });
-      }
-    }
-    fetchTokenList();
-  }, [account, network]);
+    setFilteredTokenList(tokenList)
+  }, [tokenList, setFilteredTokenList])
+
+  useEffect(() => {
+    setDefaultTokenList(network.value)
+  }, [network, setDefaultTokenList]);
 
   const inputRef = React.useRef();
   return (
