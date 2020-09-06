@@ -1,8 +1,8 @@
 import {
   Button,
-  Divider,
   Flex,
-  Image,
+  Input,
+  InputGroup,
   Modal,
   ModalBody,
   ModalCloseButton,
@@ -13,36 +13,64 @@ import {
   Text,
 } from '@chakra-ui/core';
 import { utils } from 'ethers';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useState } from 'react';
 
-import TransferImage from '../assets/confirm-transfer.svg';
+import xDAILogo from '../assets/xdai-logo.png';
 import { BridgeContext } from '../contexts/BridgeContext';
-import { isxDaiChain } from '../lib/helpers';
+import { Web3Context } from '../contexts/Web3Context';
+import { fetchTokenDetails } from '../lib/token';
+
 
 export const CustomTokenModal = ({ isOpen, onClose }) => {
-  const { fromToken, toToken, fromAmount, toAmount, transfer } = useContext(
+  const { setToken } = useContext(
     BridgeContext,
   );
-  const [fee, setFee] = useState(0);
-  const [customTokens, setCustomTokens] = useState([])
-
-
-  useEffect(() => {
-    window.localStorage.getItem('customTokens')
-    setFee(((fromAmount - toAmount) * 100) / fromAmount);
-  }, [fromAmount, toAmount]);
-  const isxDai = isxDaiChain(fromToken.chainId);
-  const fromAmt = `${utils.formatEther(fromAmount)} ${fromToken.symbol}${
-    isxDai ? ' on xDai' : ''
-  }`;
-  const toAmt = `${utils.formatEther(toAmount)} ${toToken.symbol}${
-    isxDai ? '' : ' on xDai'
-  }`;
+  const { network } = useContext(Web3Context);
+  const [customToken, setCustomToken] = useState({
+    address: '',
+    name: '',
+    symbol: '',
+    decimals: 0,
+    chainId: network.value,
+    logo: xDAILogo
+  });
 
   const onClick = () => {
-    transfer();
     onClose();
+    addCustomToken();
   };
+
+  const addCustomToken = () => {
+    let localTokensList = window.localStorage.getItem('customTokens')
+    let customTokensList = [];
+
+    if (localTokensList === "") { localTokensList = [] }
+    if (localTokensList.length < 1) {
+      customTokensList = localTokensList.concat([customToken])
+    } else {
+      customTokensList = JSON.parse(localTokensList)
+      customTokensList.push(customToken)
+    }
+    window.localStorage.setItem('customTokens', JSON.stringify(customTokensList))
+    setToken(customToken);
+  }
+
+  const handleChange = async e => {
+
+    if (e.target.id === 'address' && utils.isAddress(e.target.value)) {
+      const tokenAddress = e.target.value
+      const customTokenDetails = await fetchTokenDetails(network.value, tokenAddress)
+      setCustomToken({
+        ...customToken,
+        address: tokenAddress,
+        name: customTokenDetails.name,
+        symbol: customTokenDetails.symbol,
+        decimals: customTokenDetails.decimals
+      })
+    } else {
+      setCustomToken({...customToken, [e.target.id]: e.target.value})
+    }
+  }
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered>
@@ -63,51 +91,46 @@ export const CustomTokenModal = ({ isOpen, onClose }) => {
             _focus={{ border: 'none', outline: 'none' }}
           />
           <ModalBody px={6} py={0}>
-            <Flex align="center" fontWeight="bold">
-              <Flex
-                justify="center"
-                align="center"
-                border="1px solid #DAE3F0"
-                borderRadius="0.25rem"
-                w="10rem"
-                h="4rem"
-                px={4}
-              >
-                <Text textAlign="center">{fromAmt}</Text>
-              </Flex>
-              <Flex
-                flex={1}
-                justify="center"
-                align="center"
-                position="relative"
-              >
-                <Divider color="#DAE3F0" />
-                <Image
-                  src={TransferImage}
-                  position="absolute"
-                  left="50%"
-                  top="50%"
-                  transform="translate(-50%, -50%)"
+            <Flex flexDirection="column">
+              <Text mb={2}>
+                Token Contract Address
+              </Text>
+              <InputGroup mb={4} borderColor="#DAE3F0">
+                <Input
+                  id="address"
+                  placeholder="0xAbC ..."
+                  size="sm"
+                  onChange={handleChange}
+                  _placeholder={{ color: 'grey' }}
+                  value={customToken.address}
                 />
-              </Flex>
-              <Flex
-                justify="center"
-                align="center"
-                border="1px solid #DAE3F0"
-                borderRadius="0.25rem"
-                w="10rem"
-                h="4rem"
-                px={4}
-              >
-                <Text textAlign="center">{toAmt}</Text>
-              </Flex>
-            </Flex>
-            <Flex align="center" fontSize="sm" justify="center" mt={4}>
-              {`Bridge Fees ${fee}%`}
-            </Flex>
-            <Divider color="#DAE3F0" my={4} />
-            <Flex w="100%" fontSize="sm" color="grey" align="center">
-              {`Please confirm that you would like to send ${fromAmt} and receive ${toAmt}.`}
+              </InputGroup>
+              <Text mb={2}>
+                Token Symbol
+              </Text>
+              <InputGroup mb={4} borderColor="#DAE3F0">
+                <Input
+                  id="symbol"
+                  placeholder="ETH"
+                  size="sm"
+                  onChange={handleChange}
+                  _placeholder={{ color: 'grey' }}
+                  value={customToken.symbol}
+                />
+              </InputGroup>
+              <Text mb={2}>
+                Decimals of Precision
+              </Text>
+              <InputGroup mb={4} borderColor="#DAE3F0">
+                <Input
+                  id="decimals"
+                  placeholder="18"
+                  size="sm"
+                  onChange={handleChange}
+                  _placeholder={{ color: 'grey' }}
+                  value={customToken.decimals}
+                />
+              </InputGroup>
             </Flex>
           </ModalBody>
           <ModalFooter p={6}>
@@ -122,7 +145,7 @@ export const CustomTokenModal = ({ isOpen, onClose }) => {
                 Cancel
               </Button>
               <Button px={12} onClick={onClick} colorScheme="blue">
-                Continue
+                Add Token
               </Button>
             </Flex>
           </ModalFooter>

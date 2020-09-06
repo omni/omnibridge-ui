@@ -49,7 +49,13 @@ export const TokenSelector = ({ isOpen, onClose }) => {
   }, [tokenList, setFilteredTokenList])
 
   useEffect(() => {
-    setDefaultTokenList(network.value)
+    let localTokenList = window.localStorage.getItem('customTokens')
+    if (localTokenList.length < 1) {
+      localTokenList = []
+    } else {
+      localTokenList = JSON.parse(localTokenList)
+    }
+    setDefaultTokenList(network.value, localTokenList)
   }, [network, setDefaultTokenList]);
 
   const inputRef = React.useRef();

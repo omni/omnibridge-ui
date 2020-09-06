@@ -124,10 +124,11 @@ export const BridgeProvider = ({ children }) => {
     setLoading(false);
   }, [fromToken, ethersProvider, fromAmount, setToken]);
 
-  const setDefaultTokenList = useCallback(async chainId => {
+  const setDefaultTokenList = useCallback(async (chainId, customTokens) => {
     setLoading(true);
     try {
       const gotTokenList = await getTokenList(chainId);
+      gotTokenList.concat(customTokens.filter(token => token.chainId === chainId ))
       const currentTokenList = await Promise.all(
         gotTokenList.map(async token => ({
           ...token,
