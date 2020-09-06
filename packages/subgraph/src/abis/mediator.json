@@ -9,5 +9,22 @@
     ],
     "name": "TokensBridged",
     "type": "event"
+  },
+  {
+    "type": "event",
+    "name": "NewTokenRegistered",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "foreignToken",
+        "indexed": true
+      },
+      {
+        "type": "address",
+        "name": "homeToken",
+        "indexed": true
+      }
+    ],
+    "anonymous": false
   }
 ]

@@ -8,19 +8,24 @@ dataSources:
     name: Mediator
     network: {{network}}
     source:
-      abi: mediator
+      abi: Mediator
       address: '{{address}}'
       startBlock: {{startBlock}}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
       abis:
-        - name: mediator
-          file: ../contracts/src/abis/mediator.json
+        - name: Mediator
+          file: ./src/abis/mediator.json
+        - name: Token
+          file: ./src/abis/token.json
       entities:
-        - Bridge
+        - BridgeTransfer
+        - Token
       eventHandlers:
         - event: TokensBridged(indexed address,indexed address,uint256,indexed bytes32)
           handler: handleBridgeTransfer
+        - event: NewTokenRegistered(indexed address,indexed address)
+          handler: handleNewToken
       file: ./src/mappings/bridge.ts
       language: wasm/assemblyscript
