@@ -13,9 +13,8 @@ import DropDown from '../assets/drop-down.svg';
 import xDAILogo from '../assets/xdai-logo.png';
 import { BridgeContext } from '../contexts/BridgeContext';
 import { Web3Context } from '../contexts/Web3Context';
-import { CustomTokenModal } from './CustomTokenModal';
 import { ErrorModal } from './ErrorModal';
-
+import { SelectTokenModal } from './SelectTokenModal';
 
 export const FromToken = () => {
   const { ethersProvider, network, networkMismatch } = useContext(Web3Context);
@@ -79,7 +78,7 @@ export const FromToken = () => {
               <ErrorModal message={message} isOpen={isOpen} onClose={onClose} />
             )}
             {isOpen && !message && (
-              <CustomTokenModal onClose={onClose} isOpen={isOpen} />
+              <SelectTokenModal onClose={onClose} isOpen={isOpen} />
             )}
             <Flex align="center" justify="flex-end" flex={1}>
               <Input
