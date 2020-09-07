@@ -29,10 +29,34 @@ export const Footer = () => {
         </Flex>
       </Link>
       <HStack spacing={4}>
-        <Image src={xDaiLogo} />
-        <Image src={TwitterLogo} />
-        <Image src={TelegramLogo} />
-        <Image src={GithubLogo} />
+        <a
+            href="https://xdaichain.com"
+            rel="noreferrer noopener"
+            target="_blank"
+          >
+          <Image src={xDaiLogo} />
+        </a>
+        <a
+          href="https://twitter.com/xdaichain"
+          rel="noreferrer noopener"
+          target="_blank"
+        >
+          <Image src={TwitterLogo} />
+        </a>
+        <a
+          href="https://t.me/xdaistable"
+          rel="noreferrer noopener"
+          target="_blank"
+        >
+          <Image src={TelegramLogo} />
+        </a>
+        <a
+          href="https://github.com/xdaichain"
+          rel="noreferrer noopener"
+          target="_blank"
+        >
+          <Image src={GithubLogo} />
+        </a>
         <Box w="1px" h={5} background="grey" />
         <a
           href="https://raidguild.org"
