@@ -20,11 +20,8 @@ import { BridgeContext } from '../contexts/BridgeContext';
 import { Web3Context } from '../contexts/Web3Context';
 import { fetchTokenDetails } from '../lib/token';
 
-
 export const CustomTokenModal = ({ isOpen, onClose }) => {
-  const { setToken } = useContext(
-    BridgeContext,
-  );
+  const { setToken } = useContext(BridgeContext);
   const { network } = useContext(Web3Context);
   const [customToken, setCustomToken] = useState({
     address: '',
@@ -32,7 +29,7 @@ export const CustomTokenModal = ({ isOpen, onClose }) => {
     symbol: '',
     decimals: 0,
     chainId: network.value,
-    logo: xDAILogo
+    logo: xDAILogo,
   });
 
   const onClick = () => {
@@ -41,36 +38,43 @@ export const CustomTokenModal = ({ isOpen, onClose }) => {
   };
 
   const addCustomToken = () => {
-    let localTokensList = window.localStorage.getItem('customTokens')
+    let localTokensList = window.localStorage.getItem('customTokens');
     let customTokensList = [];
 
-    if (localTokensList === "") { localTokensList = [] }
-    if (localTokensList.length < 1) {
-      customTokensList = localTokensList.concat([customToken])
-    } else {
-      customTokensList = JSON.parse(localTokensList)
-      customTokensList.push(customToken)
+    if (!localTokensList) {
+      localTokensList = [];
     }
-    window.localStorage.setItem('customTokens', JSON.stringify(customTokensList))
+    if (localTokensList.length < 1) {
+      customTokensList = localTokensList.concat([customToken]);
+    } else {
+      customTokensList = JSON.parse(localTokensList);
+      customTokensList.push(customToken);
+    }
+    window.localStorage.setItem(
+      'customTokens',
+      JSON.stringify(customTokensList),
+    );
     setToken(customToken);
-  }
+  };
 
   const handleChange = async e => {
-
     if (e.target.id === 'address' && utils.isAddress(e.target.value)) {
-      const tokenAddress = e.target.value
-      const customTokenDetails = await fetchTokenDetails(network.value, tokenAddress)
+      const tokenAddress = e.target.value;
+      const customTokenDetails = await fetchTokenDetails(
+        network.value,
+        tokenAddress,
+      );
       setCustomToken({
         ...customToken,
         address: tokenAddress,
         name: customTokenDetails.name,
         symbol: customTokenDetails.symbol,
-        decimals: customTokenDetails.decimals
-      })
+        decimals: customTokenDetails.decimals,
+      });
     } else {
-      setCustomToken({...customToken, [e.target.id]: e.target.value})
+      setCustomToken({ ...customToken, [e.target.id]: e.target.value });
     }
-  }
+  };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered>
@@ -92,9 +96,7 @@ export const CustomTokenModal = ({ isOpen, onClose }) => {
           />
           <ModalBody px={6} py={0}>
             <Flex flexDirection="column">
-              <Text mb={2}>
-                Token Contract Address
-              </Text>
+              <Text mb={2}>Token Contract Address</Text>
               <InputGroup mb={4} borderColor="#DAE3F0">
                 <Input
                   id="address"
@@ -105,9 +107,7 @@ export const CustomTokenModal = ({ isOpen, onClose }) => {
                   value={customToken.address}
                 />
               </InputGroup>
-              <Text mb={2}>
-                Token Symbol
-              </Text>
+              <Text mb={2}>Token Symbol</Text>
               <InputGroup mb={4} borderColor="#DAE3F0">
                 <Input
                   id="symbol"
@@ -118,9 +118,7 @@ export const CustomTokenModal = ({ isOpen, onClose }) => {
                   value={customToken.symbol}
                 />
               </InputGroup>
-              <Text mb={2}>
-                Decimals of Precision
-              </Text>
+              <Text mb={2}>Decimals of Precision</Text>
               <InputGroup mb={4} borderColor="#DAE3F0">
                 <Input
                   id="decimals"
