@@ -1,4 +1,5 @@
 import {
+  ambs,
   chainUrls,
   defaultTokens,
   defaultTokensUrl,
@@ -59,6 +60,20 @@ export const getMediatorAddress = chainId => {
     case 100:
     default:
       return mediators[100];
+  }
+};
+
+export const getAMBAddress = chainId => {
+  switch (chainId) {
+    case 1:
+      return ambs[1];
+    case 42:
+      return ambs[42];
+    case 77:
+      return ambs[77];
+    case 100:
+    default:
+      return ambs[100];
   }
 };
 

@@ -111,7 +111,7 @@ export const TokenSelectorModal = ({ onClose, onCustom }) => {
             size="lg"
             width="100%"
             borderColor="#DAE3F0"
-            key={token.symbol}
+            key={token.address}
             onClick={() => onClick(token)}
             mb={2}
             px={4}
