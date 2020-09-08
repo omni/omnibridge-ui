@@ -11,8 +11,11 @@ type BridgeTransfer @entity {
 type Token @entity {
   id: ID!
   homeAddress: Bytes!
-  foreignAddress: Bytes!
+  homeName: String!
+  homeChainId: Int!
   decimals: Int!
-  name: String!
   symbol: String!
+  foreignAddress: Bytes!
+  foreignName: String!
+  foreignChainId: Int!
 }

@@ -1,4 +1,4 @@
-import { log } from '@graphprotocol/graph-ts';
+import { log, dataSource } from '@graphprotocol/graph-ts';
 import { TokensBridged, NewTokenRegistered } from '../types/Mediator/Mediator';
 import { BridgeTransfer, Token } from '../types/schema';
 
@@ -26,9 +26,19 @@ export function handleNewToken(event: NewTokenRegistered): void {
   token.foreignAddress = event.params.foreignToken;
 
   let tokenObject = fetchTokenInfo(event.params.homeToken);
-  token.name = tokenObject.name;
+  token.homeName = tokenObject.name;
+  token.foreignName = tokenObject.name.slice(0, -8);
   token.symbol = tokenObject.symbol;
   token.decimals = tokenObject.decimals;
+
+  let network = dataSource.network();
+  if (network == 'xdai') {
+    token.homeChainId = 100;
+    token.foreignChainId = 1;
+  } else if (network == 'poa-sokol') {
+    token.homeChainId = 77;
+    token.foreignChainId = 42;
+  }
 
   token.save();
   log.debug('NewTokenRegistered homeToken {} and foreignToken {}', [
