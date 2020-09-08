@@ -13,22 +13,21 @@ export function fetchTokenInfo(address: Address): TokenObject | null {
   log.debug('TokenContract at {}', [address.toHex()]);
   let tokenObject = new TokenObject();
 
-  // TODO: uncomment code when network supports call handlers
-  //let name = tokenInstance.try_name();
-  //let symbol = tokenInstance.try_symbol();
-  //let decimals = tokenInstance.try_decimals();
+  let name = tokenInstance.try_name();
+  let symbol = tokenInstance.try_symbol();
+  let decimals = tokenInstance.try_decimals();
 
-  //if (!name.reverted) {
-  //  tokenObject.name = name.value;
-  //}
+  if (!name.reverted) {
+    tokenObject.name = name.value;
+  }
 
-  //if (!symbol.reverted) {
-  //  tokenObject.symbol = symbol.value;
-  //}
+  if (!symbol.reverted) {
+    tokenObject.symbol = symbol.value;
+  }
 
-  //if (!decimals.reverted) {
-  //  tokenObject.decimals = decimals.value;
-  //}
+  if (!decimals.reverted) {
+    tokenObject.decimals = decimals.value;
+  }
 
   return tokenObject;
 }
