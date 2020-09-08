@@ -12,7 +12,7 @@ import React, { useContext } from 'react';
 
 import LoadingImage from '../assets/loading.svg';
 import { BridgeContext } from '../contexts/BridgeContext';
-import { getMonitorUrl, isxDaiChain } from '../lib/helpers';
+import { getMonitorUrl } from '../lib/helpers';
 import { ProgressRing } from './ProgressRing';
 
 const getTransactionString = hash => {
@@ -22,8 +22,9 @@ const getTransactionString = hash => {
 };
 
 export const LoadingModal = () => {
-  const { loading, fromToken, transaction } = useContext(BridgeContext);
-  const totalConfirms = fromToken && isxDaiChain(fromToken.chainId) ? 2 : 8;
+  const { loading, fromToken, transaction, totalConfirms } = useContext(
+    BridgeContext,
+  );
 
   return (
     <Modal
@@ -33,7 +34,7 @@ export const LoadingModal = () => {
       isCentered
     >
       <ModalOverlay background="modalBG">
-        {!transaction && (
+        {(!transaction || totalConfirms === 0) && (
           <Flex direction="column" align="center">
             <Image src={LoadingImage} mb={4} />
             <Text color="white" fontWeight="bold">
@@ -41,7 +42,7 @@ export const LoadingModal = () => {
             </Text>
           </Flex>
         )}
-        {transaction && (
+        {transaction && totalConfirms && (
           <ModalContent boxShadow="0px 1rem 2rem #617492" borderRadius="full">
             <ModalBody p={4}>
               <Flex align="center">

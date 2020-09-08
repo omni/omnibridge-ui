@@ -5,15 +5,11 @@ import {
   fetchTokenBalance,
   fetchTokenDetails,
   fetchToToken,
-  relayTokens,
+  transferTokens,
 } from '../lib/bridge';
 import { getDefaultToken, isxDaiChain, uniqueTokens } from '../lib/helpers';
-import {
-  approveToken,
-  fetchAllowance,
-  transferAndCallToken,
-} from '../lib/token';
-import { getTokenList } from '../lib/tokenList';
+import { approveToken, fetchAllowance } from '../lib/token';
+import { fetchTokenList } from '../lib/tokenList';
 import { Web3Context } from './Web3Context';
 
 export const BridgeContext = React.createContext({});
@@ -28,6 +24,7 @@ export const BridgeProvider = ({ children }) => {
   const [allowed, setAllowed] = useState(false);
   const [loading, setLoading] = useState(false);
   const [transaction, setTransaction] = useState(false);
+  const [totalConfirms, setTotalConfirms] = useState(0);
   const [tokenList, setTokenList] = useState([]);
 
   const setAmount = useCallback(
@@ -95,25 +92,23 @@ export const BridgeProvider = ({ children }) => {
   const transfer = useCallback(async () => {
     setLoading(true);
     try {
-      let tx;
-      let totalConfirms;
-      const isxDai = isxDaiChain(fromToken.chainId);
-      if (isxDai) {
-        tx = await transferAndCallToken(ethersProvider, fromToken, fromAmount);
-        totalConfirms = 2;
-      } else {
-        tx = await relayTokens(ethersProvider, fromToken, fromAmount);
-        totalConfirms = 8;
-      }
+      const [tx, numConfirms] = await transferTokens(
+        ethersProvider,
+        fromToken,
+        fromAmount,
+      );
+      setTotalConfirms(numConfirms);
       setTransaction(tx);
       const handler = async () => {
         const receipt = await ethersProvider.getTransactionReceipt(tx.hash);
-        receipt.hash = tx.hash;
-        setTransaction(receipt);
+        if (receipt) {
+          receipt.hash = tx.hash;
+          setTransaction(receipt);
+        }
       };
 
       ethersProvider.on('block', handler);
-      await tx.wait(totalConfirms);
+      await tx.wait(numConfirms);
       ethersProvider.removeListener('block', handler);
       await setToken(fromToken);
       setTransaction();
@@ -128,7 +123,7 @@ export const BridgeProvider = ({ children }) => {
     async (chainId, customTokens) => {
       setLoading(true);
       try {
-        const baseTokenList = await getTokenList(chainId);
+        const baseTokenList = await fetchTokenList(chainId);
         const customTokenList = uniqueTokens(
           baseTokenList.concat(
             customTokens.filter(token => token.chainId === chainId),
@@ -174,6 +169,7 @@ export const BridgeProvider = ({ children }) => {
         transfer,
         loading,
         transaction,
+        totalConfirms,
         tokenList,
         setDefaultTokenList,
       }}

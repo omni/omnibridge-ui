@@ -1,8 +1,14 @@
 import ethers from 'ethers';
 
 import { ADDRESS_ZERO } from './constants';
-import { getBridgeNetwork, getMediatorAddress, isxDaiChain } from './helpers';
+import {
+  getAMBAddress,
+  getBridgeNetwork,
+  getMediatorAddress,
+  isxDaiChain,
+} from './helpers';
 import { getEthersProvider } from './providers';
+import { transferAndCallToken } from './token';
 
 export const fetchBridgedTokenAddress = async (fromChainId, tokenAddress) => {
   const isxDai = isxDaiChain(fromChainId);
@@ -151,6 +157,14 @@ export const fetchTokenBalance = async (token, account) => {
   return 0;
 };
 
+export const fetchConfirmations = async chainId => {
+  const ethersProvider = getEthersProvider(chainId);
+  const abi = ['function requiredBlockConfirmations() view returns (uint256)'];
+  const address = getAMBAddress(chainId);
+  const ambContract = new ethers.Contract(address, abi, ethersProvider);
+  return ambContract.requiredBlockConfirmations();
+};
+
 export const relayTokens = async (ethersProvider, token, amount) => {
   const mediatorAddress = getMediatorAddress(token.chainId);
   const abi = ['function relayTokens(address, uint256)'];
@@ -160,6 +174,16 @@ export const relayTokens = async (ethersProvider, token, amount) => {
     ethersProvider.getSigner(),
   );
 
-  const tx = await mediatorContract.relayTokens(token.address, amount);
-  return tx;
+  return mediatorContract.relayTokens(token.address, amount);
+};
+
+export const transferTokens = async (ethersProvider, token, amount) => {
+  const confirmsPromise = fetchConfirmations(token.chainId);
+  const txPromise = isxDaiChain(token.chainId)
+    ? transferAndCallToken(ethersProvider, token, amount)
+    : relayTokens(ethersProvider, token, amount);
+  const totalConfirms = parseInt(await confirmsPromise, 10);
+  const tx = await txPromise;
+
+  return [tx, totalConfirms];
 };

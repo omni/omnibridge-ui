@@ -1,6 +1,8 @@
 import {
+  ambs,
   chainUrls,
   defaultTokens,
+  defaultTokensUrl,
   graphEndpoints,
   mediators,
 } from './constants';
@@ -58,6 +60,20 @@ export const getMediatorAddress = chainId => {
     case 100:
     default:
       return mediators[100];
+  }
+};
+
+export const getAMBAddress = chainId => {
+  switch (chainId) {
+    case 1:
+      return ambs[1];
+    case 42:
+      return ambs[42];
+    case 77:
+      return ambs[77];
+    case 100:
+    default:
+      return ambs[100];
   }
 };
 
@@ -123,9 +139,27 @@ export const uniqueTokens = list => {
   const seen = {};
   return list.filter(function isDuplicate(token) {
     const { address } = token;
-    const isDuplicateItem = Object.prototype.hasOwnProperty.call(seen, address)
+    const lowerCaseAddress = address.toLowerCase();
+    const isDuplicateItem = Object.prototype.hasOwnProperty.call(
+      seen,
+      lowerCaseAddress,
+    )
       ? false
-      : (seen[address] = true);
+      : (seen[lowerCaseAddress] = true);
     return isDuplicateItem;
   });
+};
+
+export const getTokenListUrl = chainId => {
+  switch (chainId) {
+    case 1:
+      return defaultTokensUrl[1];
+    case 42:
+      return defaultTokensUrl[42];
+    case 77:
+      return defaultTokensUrl[77];
+    default:
+    case 100:
+      return defaultTokensUrl[100];
+  }
 };
