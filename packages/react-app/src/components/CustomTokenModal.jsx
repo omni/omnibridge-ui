@@ -40,11 +40,7 @@ export const CustomTokenModal = ({ onClose, onBack }) => {
     let localTokensList = window.localStorage.getItem('customTokens');
     let customTokensList = [];
 
-    if (
-      !localTokensList ||
-      localTokensList === null ||
-      localTokensList === ''
-    ) {
+    if (!localTokensList) {
       localTokensList = [];
     }
     if (localTokensList.length < 1) {
