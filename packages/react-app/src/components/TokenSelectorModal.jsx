@@ -50,6 +50,9 @@ export const TokenSelectorModal = ({ onClose, onCustom }) => {
 
   useEffect(() => {
     let localTokenList = window.localStorage.getItem('customTokens');
+    if (!localTokenList) {
+      localTokenList = [];
+    }
     if (localTokenList.length < 1) {
       localTokenList = [];
     } else {
