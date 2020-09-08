@@ -118,3 +118,14 @@ export const getMonitorUrl = (chainId, hash) => {
       return `${url}100/${hash}`;
   }
 };
+
+export const uniqueTokens = list => {
+  const seen = {};
+  return list.filter(function isDuplicate(token) {
+    const { address } = token;
+    const isDuplicateItem = Object.prototype.hasOwnProperty.call(seen, address)
+      ? false
+      : (seen[address] = true);
+    return isDuplicateItem;
+  });
+};

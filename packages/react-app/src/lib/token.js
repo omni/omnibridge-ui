@@ -18,6 +18,19 @@ export const fetchAllowance = (chainId, account, tokenAddress) => {
   }
 };
 
+export const fetchTokenDetails = async (chainId, tokenAddress) => {
+  const ethersProvider = getEthersProvider(chainId);
+  const abi = ["function decimals() view returns (uint8)","function symbol() view returns (string)","function name() view returns (string)",];
+  const tokenContract = new ethers.Contract(tokenAddress, abi, ethersProvider);
+
+  const details = {
+    name: await tokenContract.name(),
+    symbol: await tokenContract.symbol(),
+    decimals: await tokenContract.decimals()
+  }
+  return details
+}
+
 export const approveToken = async (ethersProvider, token, amount) => {
   const abi = ['function approve(address, uint256)'];
   const tokenContract = new ethers.Contract(

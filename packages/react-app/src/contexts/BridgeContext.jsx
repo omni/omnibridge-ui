@@ -2,16 +2,18 @@ import React, { useCallback, useContext, useState } from 'react';
 
 import {
   fetchToAmount,
+  fetchTokenBalance,
   fetchTokenDetails,
   fetchToToken,
   relayTokens,
 } from '../lib/bridge';
-import { getDefaultToken, isxDaiChain } from '../lib/helpers';
+import { getDefaultToken, isxDaiChain, uniqueTokens } from '../lib/helpers';
 import {
   approveToken,
   fetchAllowance,
   transferAndCallToken,
 } from '../lib/token';
+import { getTokenList } from '../lib/tokenList';
 import { Web3Context } from './Web3Context';
 
 export const BridgeContext = React.createContext({});
@@ -26,6 +28,7 @@ export const BridgeProvider = ({ children }) => {
   const [allowed, setAllowed] = useState(false);
   const [loading, setLoading] = useState(false);
   const [transaction, setTransaction] = useState(false);
+  const [tokenList, setTokenList] = useState([]);
 
   const setAmount = useCallback(
     async amount => {
@@ -121,6 +124,41 @@ export const BridgeProvider = ({ children }) => {
     setLoading(false);
   }, [fromToken, ethersProvider, fromAmount, setToken]);
 
+  const setDefaultTokenList = useCallback(
+    async (chainId, customTokens) => {
+      setLoading(true);
+      try {
+        const baseTokenList = await getTokenList(chainId);
+        const customTokenList = uniqueTokens(
+          baseTokenList.concat(
+            customTokens.filter(token => token.chainId === chainId),
+          ),
+        );
+        const tokenListWithBalance = await Promise.all(
+          customTokenList.map(async token => ({
+            ...token,
+            balance: await fetchTokenBalance(token, account),
+          })),
+        );
+        const sortedTokenList = tokenListWithBalance.sort(function checkBalance(
+          { balance: balanceA },
+          { balance: balanceB },
+        ) {
+          return parseInt(
+            window.BigInt(balanceB) - window.BigInt(balanceA),
+            10,
+          );
+        });
+        setTokenList(sortedTokenList);
+      } catch (error) {
+        // eslint-disable-next-line
+        console.log({ fetchTokensError: error });
+      }
+      setLoading(false);
+    },
+    [account],
+  );
+
   return (
     <BridgeContext.Provider
       value={{
@@ -136,6 +174,8 @@ export const BridgeProvider = ({ children }) => {
         transfer,
         loading,
         transaction,
+        tokenList,
+        setDefaultTokenList,
       }}
     >
       {children}
