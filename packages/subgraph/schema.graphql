@@ -7,3 +7,12 @@ type BridgeTransfer @entity {
   timestamp: BigInt!
   txHash: String!
 }
+
+type Token @entity {
+  id: ID!
+  homeAddress: Bytes!
+  foreignAddress: Bytes!
+  decimals: Int!
+  name: String!
+  symbol: String!
+}
