@@ -16,6 +16,7 @@ import React, { useContext, useState } from 'react';
 import xDAILogo from '../assets/xdai-logo.png';
 import { BridgeContext } from '../contexts/BridgeContext';
 import { Web3Context } from '../contexts/Web3Context';
+import { uniqueTokens } from '../lib/helpers';
 import { fetchTokenDetails } from '../lib/token';
 
 export const CustomTokenModal = ({ onClose, onBack }) => {
@@ -48,6 +49,7 @@ export const CustomTokenModal = ({ onClose, onBack }) => {
       customTokensList = JSON.parse(localTokensList);
       customTokensList.push(customToken);
     }
+    customTokensList = uniqueTokens(customTokensList);
     window.localStorage.setItem(
       'customTokens',
       JSON.stringify(customTokensList),

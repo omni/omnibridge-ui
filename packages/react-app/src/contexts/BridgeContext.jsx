@@ -7,7 +7,7 @@ import {
   fetchToToken,
   relayTokens,
 } from '../lib/bridge';
-import { getDefaultToken, isxDaiChain } from '../lib/helpers';
+import { getDefaultToken, isxDaiChain, uniqueTokens } from '../lib/helpers';
 import {
   approveToken,
   fetchAllowance,
@@ -28,7 +28,7 @@ export const BridgeProvider = ({ children }) => {
   const [allowed, setAllowed] = useState(false);
   const [loading, setLoading] = useState(false);
   const [transaction, setTransaction] = useState(false);
-  const [tokenList, setTokenList] = useState([])
+  const [tokenList, setTokenList] = useState([]);
 
   const setAmount = useCallback(
     async amount => {
@@ -124,24 +124,40 @@ export const BridgeProvider = ({ children }) => {
     setLoading(false);
   }, [fromToken, ethersProvider, fromAmount, setToken]);
 
-  const setDefaultTokenList = useCallback(async (chainId, customTokens) => {
-    setLoading(true);
-    try {
-      const gotTokenList = await getTokenList(chainId);
-      gotTokenList.concat(customTokens.filter(token => token.chainId === chainId ))
-      const currentTokenList = await Promise.all(
-        gotTokenList.map(async token => ({
-          ...token,
-          balance: await fetchTokenBalance(token, account),
-        })),
-      );
-      setTokenList(currentTokenList);
+  const setDefaultTokenList = useCallback(
+    async (chainId, customTokens) => {
+      setLoading(true);
+      try {
+        const baseTokenList = await getTokenList(chainId);
+        const customTokenList = uniqueTokens(
+          baseTokenList.concat(
+            customTokens.filter(token => token.chainId === chainId),
+          ),
+        );
+        const tokenListWithBalance = await Promise.all(
+          customTokenList.map(async token => ({
+            ...token,
+            balance: await fetchTokenBalance(token, account),
+          })),
+        );
+        const sortedTokenList = tokenListWithBalance.sort(function checkBalance(
+          { balance: balanceA },
+          { balance: balanceB },
+        ) {
+          return parseInt(
+            window.BigInt(balanceB) - window.BigInt(balanceA),
+            10,
+          );
+        });
+        setTokenList(sortedTokenList);
+      } catch (error) {
+        // eslint-disable-next-line
+        console.log({ fetchTokensError: error });
+      }
       setLoading(false);
-    } catch (error) {
-      // eslint-disable-next-line
-      console.log({ fetchTokensError: error });
-    }
-  }, [account])
+    },
+    [account],
+  );
 
   return (
     <BridgeContext.Provider
@@ -159,7 +175,7 @@ export const BridgeProvider = ({ children }) => {
         loading,
         transaction,
         tokenList,
-        setDefaultTokenList
+        setDefaultTokenList,
       }}
     >
       {children}
