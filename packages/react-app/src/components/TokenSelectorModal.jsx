@@ -15,11 +15,13 @@ import {
 import { utils } from 'ethers';
 import React, { useContext, useEffect, useState } from 'react';
 
+import EthLogo from '../assets/eth-logo.png';
 import SearchIcon from '../assets/search.svg';
 import xDAILogo from '../assets/xdai-logo.png';
 import { BridgeContext } from '../contexts/BridgeContext';
 import { Web3Context } from '../contexts/Web3Context';
 import { PlusIcon } from '../icons/PlusIcon';
+import { isxDaiChain } from '../lib/helpers';
 
 export const TokenSelectorModal = ({ onClose, onCustom }) => {
   const { network } = useContext(Web3Context);
@@ -27,6 +29,7 @@ export const TokenSelectorModal = ({ onClose, onCustom }) => {
     BridgeContext,
   );
   const [filteredTokenList, setFilteredTokenList] = useState([]);
+  const fallbackLogo = isxDaiChain(network.value) ? xDAILogo : EthLogo;
 
   const onClick = token => {
     setToken(token);
@@ -38,7 +41,8 @@ export const TokenSelectorModal = ({ onClose, onCustom }) => {
       const lowercaseSearch = e.target.value.toLowerCase();
       return (
         token.name.toLowerCase().includes(lowercaseSearch) ||
-        token.symbol.toLowerCase().includes(lowercaseSearch)
+        token.symbol.toLowerCase().includes(lowercaseSearch) ||
+        token.address.toLowerCase().includes(lowercaseSearch)
       );
     });
     setFilteredTokenList(newFilteredTokenList);
@@ -123,7 +127,10 @@ export const TokenSelectorModal = ({ onClose, onCustom }) => {
                   overflow="hidden"
                   borderRadius="50%"
                 >
-                  <Image src={token.logoURI || xDAILogo} alt="xdai" />
+                  <Image
+                    src={token.logoURI || fallbackLogo}
+                    fallbackSrc={fallbackLogo}
+                  />
                 </Flex>
                 <Text fontSize="lg" fontWeight="bold" mx={2}>
                   {token.symbol}

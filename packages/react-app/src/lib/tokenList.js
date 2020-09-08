@@ -1,32 +1,66 @@
-const XDAI_TOKENS_URL =
-  'https://raw.githubusercontent.com/raid-guild/default-token-list/master/src/tokens/xdai.json';
-const MAINNET_TOKENS_URL =
-  'https://raw.githubusercontent.com/raid-guild/default-token-list/master/src/tokens/mainnet.json';
-const KOVAN_TOKENS_URL =
-  'https://raw.githubusercontent.com/raid-guild/default-token-list/master/src/tokens/kovan.json';
-const SOKOL_TOKENS_URL =
-  'https://raw.githubusercontent.com/raid-guild/default-token-list/master/src/tokens/sokol.json';
+import { gql, request } from 'graphql-request';
 
-const getTokenListUrl = (chainId) => {
-  switch (chainId) {
-    case 100:
-      return XDAI_TOKENS_URL;
-    case 77:
-      return SOKOL_TOKENS_URL;
-    case 42:
-      return KOVAN_TOKENS_URL;
-    case 1:
-    default:
-      return MAINNET_TOKENS_URL;
-  }
+import {
+  getBridgeNetwork,
+  getGraphEndpoint,
+  getTokenListUrl,
+  isxDaiChain,
+  uniqueTokens,
+} from './helpers';
+
+export const fetchTokenList = async chainId => {
+  const repoPromise = fetchTokensFromRepo(chainId);
+  const subgraphPromise = fetchTokensFromSubgraph(chainId);
+  const tokens = uniqueTokens(
+    (await repoPromise).concat((await subgraphPromise).tokens),
+  );
+  return tokens;
 };
 
-export const getTokenList = async (chainId) => {
+export const fetchTokensFromRepo = async chainId => {
   const url = getTokenListUrl(chainId);
   const response = await fetch(url);
   if (response.ok) {
     const data = await response.json();
     return data;
   }
-  throw new Error('TokenList not found');
+  // eslint-disable-next-line
+  console.log({
+    defaultTokensError: 'TokenList not found on default-tokens-list repo',
+  });
+  return [];
+};
+
+const homeTokensQuery = gql`
+  query homeTokens {
+    tokens {
+      chainId: homeChainId
+      address: homeAddress
+      name: homeName
+      symbol
+      decimals
+    }
+  }
+`;
+
+const foreignTokensQuery = gql`
+  query foreignTokens {
+    tokens {
+      chainId: foreignChainId
+      address: foreignAddress
+      name: foreignName
+      symbol
+      decimals
+    }
+  }
+`;
+
+export const fetchTokensFromSubgraph = async chainId => {
+  const isxDai = isxDaiChain(chainId);
+  const xDaiChainId = isxDai ? chainId : getBridgeNetwork(chainId);
+
+  const endpoint = getGraphEndpoint(xDaiChainId);
+  const query = isxDai ? homeTokensQuery : foreignTokensQuery;
+
+  return request(endpoint, query);
 };

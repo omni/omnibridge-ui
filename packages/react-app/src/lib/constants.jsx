@@ -82,7 +82,8 @@ export const defaultTokens = {
     symbol: 'STAKE',
     decimals: 18,
     chainId: 1,
-    logoURI: '',
+    logoURI:
+      'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x0Ae055097C6d159879521C384F1D2123D1f195e6/logo.png',
   },
   77: {
     name: 'Stake on xDai',
@@ -98,7 +99,8 @@ export const defaultTokens = {
     symbol: 'STAKE',
     decimals: 18,
     chainId: 42,
-    logoURI: '',
+    logoURI:
+      'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x0Ae055097C6d159879521C384F1D2123D1f195e6/logo.png',
   },
 };
 
@@ -114,4 +116,11 @@ export const mediators = {
   77: '0x40CdfF886715A4012fAD0219D15C98bB149AeF0e',
   1: '0x88ad09518695c6c3712AC10a214bE5109a655671',
   100: '0xf6A78083ca3e2a662D6dd1703c939c8aCE2e268d',
+};
+
+export const defaultTokensUrl = {
+  100: 'https://raw.githubusercontent.com/raid-guild/default-token-list/master/src/tokens/xdai.json',
+  1: 'https://raw.githubusercontent.com/raid-guild/default-token-list/master/src/tokens/mainnet.json',
+  42: 'https://raw.githubusercontent.com/raid-guild/default-token-list/master/src/tokens/kovan.json',
+  77: 'https://raw.githubusercontent.com/raid-guild/default-token-list/master/src/tokens/sokol.json',
 };

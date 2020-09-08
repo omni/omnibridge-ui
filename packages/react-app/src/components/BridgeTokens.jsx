@@ -25,33 +25,37 @@ export const BridgeTokens = () => {
       my="auto"
     >
       <LoadingModal />
-      <Flex w="100%" justify="space-between">
-        <Flex align="flex-start" direction="column">
-          <Text color="greyText" fontSize="sm">
-            From
-          </Text>
-          <Text fontWeight="bold" fontSize="lg">
-            {network.name}
-          </Text>
-        </Flex>
-        <Flex align="flex-end" direction="column">
-          <Text color="greyText" fontSize="sm">
-            To
-          </Text>
-          <Text fontWeight="bold" fontSize="lg" textAlign="right">
-            {network.bridge.name}
-          </Text>
-        </Flex>
-      </Flex>
-      <Grid templateColumns="2fr 1fr 2fr" width="100%" my={4}>
-        <FromToken />
-        <Flex direction="column" px={{ base: 2, md: 2, lg: 4 }}>
-          <UnlockButton />
-          <TransferButton />
-        </Flex>
-        <ToToken />
-      </Grid>
-      <SystemFeedback />
+      {network && (
+        <>
+          <Flex w="100%" justify="space-between">
+            <Flex align="flex-start" direction="column">
+              <Text color="greyText" fontSize="sm">
+                From
+              </Text>
+              <Text fontWeight="bold" fontSize="lg">
+                {network.name}
+              </Text>
+            </Flex>
+            <Flex align="flex-end" direction="column">
+              <Text color="greyText" fontSize="sm">
+                To
+              </Text>
+              <Text fontWeight="bold" fontSize="lg" textAlign="right">
+                {network.bridge.name}
+              </Text>
+            </Flex>
+          </Flex>
+          <Grid templateColumns="2fr 1fr 2fr" width="100%" my={4}>
+            <FromToken />
+            <Flex direction="column" px={{ base: 2, md: 2, lg: 4 }}>
+              <UnlockButton />
+              <TransferButton />
+            </Flex>
+            <ToToken />
+          </Grid>
+          <SystemFeedback />
+        </>
+      )}
     </Flex>
   );
 };

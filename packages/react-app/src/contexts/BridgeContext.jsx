@@ -13,7 +13,7 @@ import {
   fetchAllowance,
   transferAndCallToken,
 } from '../lib/token';
-import { getTokenList } from '../lib/tokenList';
+import { fetchTokenList } from '../lib/tokenList';
 import { Web3Context } from './Web3Context';
 
 export const BridgeContext = React.createContext({});
@@ -128,7 +128,7 @@ export const BridgeProvider = ({ children }) => {
     async (chainId, customTokens) => {
       setLoading(true);
       try {
-        const baseTokenList = await getTokenList(chainId);
+        const baseTokenList = await fetchTokenList(chainId);
         const customTokenList = uniqueTokens(
           baseTokenList.concat(
             customTokens.filter(token => token.chainId === chainId),

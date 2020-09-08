@@ -10,9 +10,11 @@ import { utils } from 'ethers';
 import React, { useContext, useState } from 'react';
 
 import DropDown from '../assets/drop-down.svg';
+import EthLogo from '../assets/eth-logo.png';
 import xDAILogo from '../assets/xdai-logo.png';
 import { BridgeContext } from '../contexts/BridgeContext';
 import { Web3Context } from '../contexts/Web3Context';
+import { isxDaiChain } from '../lib/helpers';
 import { ErrorModal } from './ErrorModal';
 import { SelectTokenModal } from './SelectTokenModal';
 
@@ -33,6 +35,7 @@ export const FromToken = () => {
     }
     onOpen();
   };
+  const fallbackLogo = isxDaiChain(network.value) ? xDAILogo : EthLogo;
   return (
     <Flex align="center" mr={{ base: -4, md: -4, lg: -6 }} position="relative">
       <svg width="100%" viewBox="0 0 381 94" fill="none">
@@ -67,7 +70,10 @@ export const FromToken = () => {
                 overflow="hidden"
                 borderRadius="50%"
               >
-                <Image src={token.logoURI || xDAILogo} />
+                <Image
+                  src={token.logoURI || fallbackLogo}
+                  fallbackSrc={fallbackLogo}
+                />
               </Flex>
               <Text fontSize="lg" fontWeight="bold" mx={2}>
                 {token.name}
