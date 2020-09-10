@@ -25,7 +25,10 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
   );
   const [fee, setFee] = useState(0);
   useEffect(() => {
-    setFee(((fromAmount - toAmount) * 100) / fromAmount);
+    setFee(
+      ((window.BigInt(fromAmount) - window.BigInt(toAmount)) * 100) /
+        window.BigInt(fromAmount),
+    );
   }, [fromAmount, toAmount]);
   const isxDai = isxDaiChain(fromToken.chainId);
   const fromAmt = `${utils.formatEther(fromAmount)} ${fromToken.symbol}${
