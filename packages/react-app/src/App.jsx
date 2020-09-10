@@ -4,6 +4,7 @@ import ApolloClient from 'apollo-boost';
 import React from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 
+import { ErrorBoundary } from './components/ErrorBoundary';
 import { Layout } from './components/Layout';
 import { BridgeProvider } from './contexts/BridgeContext';
 import { Web3Provider } from './contexts/Web3Context';
@@ -18,17 +19,19 @@ export const App = () => {
   return (
     <ChakraProvider theme={theme}>
       <CSSReset />
-      <ApolloProvider client={client}>
-        <Web3Provider>
-          <BridgeProvider>
-            <Router>
-              <Layout>
-                <Routes />
-              </Layout>
-            </Router>
-          </BridgeProvider>
-        </Web3Provider>
-      </ApolloProvider>
+      <ErrorBoundary>
+        <ApolloProvider client={client}>
+          <Web3Provider>
+            <BridgeProvider>
+              <Router>
+                <Layout>
+                  <Routes />
+                </Layout>
+              </Router>
+            </BridgeProvider>
+          </Web3Provider>
+        </ApolloProvider>
+      </ErrorBoundary>
     </ChakraProvider>
   );
 };

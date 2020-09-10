@@ -34,7 +34,7 @@ export const BridgeProvider = ({ children }) => {
       setToAmount(gotToAmount);
       if (isxDaiChain(fromToken.chainId)) {
         setAllowed(true);
-      } else if (amount <= 0) {
+      } else if (window.BigInt(amount) <= 0) {
         setAllowed(false);
       } else {
         const gotAllowance = await fetchAllowance(

@@ -38,19 +38,25 @@ export const SystemFeedback = () => {
             <Flex align="center" justify="space-between">
               <Text color="grey"> Daily Limit </Text>
               <Text fontWeight="bold" ml={4}>
-                {`${utils.formatEther(token.dailyLimit)} ${token.symbol}`}
+                {`${utils.commify(utils.formatEther(token.dailyLimit))} ${
+                  token.symbol
+                }`}
               </Text>
             </Flex>
             <Flex align="center" justify="space-between">
               <Text color="grey"> Maximum per transaction </Text>
               <Text fontWeight="bold" ml={4}>
-                {`${utils.formatEther(token.maxPerTx)} ${token.symbol}`}
+                {`${utils.commify(utils.formatEther(token.maxPerTx))} ${
+                  token.symbol
+                }`}
               </Text>
             </Flex>
             <Flex align="center" justify="space-between">
               <Text color="grey"> Minimum per transaction </Text>
               <Text fontWeight="bold" ml={4}>
-                {`${utils.formatEther(token.minPerTx)} ${token.symbol}`}
+                {`${utils.commify(utils.formatEther(token.minPerTx))} ${
+                  token.symbol
+                }`}
               </Text>
             </Flex>
           </PopoverBody>

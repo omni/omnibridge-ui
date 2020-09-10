@@ -18,8 +18,8 @@ export const UnlockButton = () => {
     if (
       ethersProvider &&
       !networkMismatch &&
-      amount > 0 &&
-      token.balance >= amount
+      window.BigInt(amount) > 0 &&
+      window.BigInt(token.balance) >= window.BigInt(amount)
     ) {
       return approve();
     }
@@ -27,9 +27,9 @@ export const UnlockButton = () => {
       setMessage('Please connect wallet');
     } else if (networkMismatch) {
       setMessage(`Please switch wallet to ${network.name}`);
-    } else if (amount <= 0) {
+    } else if (window.BigInt(amount) <= 0) {
       setMessage('Please specify amount');
-    } else if (token.balance < amount) {
+    } else if (window.BigInt(token.balance) < window.BigInt(amount)) {
       setMessage('Not enough balance');
     }
     return onOpen();

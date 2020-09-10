@@ -20,9 +20,9 @@ export const TransferButton = () => {
     if (
       ethersProvider &&
       !networkMismatch &&
-      amount >= token.minPerTx &&
-      amount < token.maxPerTx &&
-      token.balance >= amount
+      window.BigInt(amount) >= window.BigInt(token.minPerTx) &&
+      window.BigInt(amount) < window.BigInt(token.maxPerTx) &&
+      window.BigInt(token.balance) >= window.BigInt(amount)
     ) {
       return onOpen();
     }
