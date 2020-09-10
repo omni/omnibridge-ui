@@ -26,7 +26,8 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
   const [fee, setFee] = useState(0);
   useEffect(() => {
     setFee(
-      ((window.BigInt(fromAmount) - window.BigInt(toAmount)) * 100) /
+      ((window.BigInt(fromAmount) - window.BigInt(toAmount)) *
+        window.BigInt(100)) /
         window.BigInt(fromAmount),
     );
   }, [fromAmount, toAmount]);
@@ -102,7 +103,7 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
               </Flex>
             </Flex>
             <Flex align="center" fontSize="sm" justify="center" mt={4}>
-              {`Bridge Fees ${fee}%`}
+              {`Bridge Fees ${fee.toString()}%`}
             </Flex>
             <Divider color="#DAE3F0" my={4} />
             <Flex w="100%" fontSize="sm" color="grey" align="center">
