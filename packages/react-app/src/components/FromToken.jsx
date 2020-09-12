@@ -6,7 +6,6 @@ import {
   Text,
   useDisclosure,
 } from '@chakra-ui/core';
-import { utils } from 'ethers';
 import React, { useContext, useState } from 'react';
 
 import DropDown from '../assets/drop-down.svg';
@@ -14,15 +13,13 @@ import EthLogo from '../assets/eth-logo.png';
 import xDAILogo from '../assets/xdai-logo.png';
 import { BridgeContext } from '../contexts/BridgeContext';
 import { Web3Context } from '../contexts/Web3Context';
-import { isxDaiChain } from '../lib/helpers';
+import { formatValue, isxDaiChain, parseValue } from '../lib/helpers';
 import { ErrorModal } from './ErrorModal';
 import { SelectTokenModal } from './SelectTokenModal';
 
 export const FromToken = () => {
   const { ethersProvider, network, networkMismatch } = useContext(Web3Context);
-  const { fromToken: token, fromAmount: amount, setAmount } = useContext(
-    BridgeContext,
-  );
+  const { fromToken: token, setAmount } = useContext(BridgeContext);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [message, setMessage] = useState();
   const onClick = () => {
@@ -36,6 +33,7 @@ export const FromToken = () => {
     onOpen();
   };
   const fallbackLogo = isxDaiChain(network.value) ? xDAILogo : EthLogo;
+  const [input, setInput] = useState('0.00');
   return (
     <Flex align="center" mr={{ base: -4, md: -4, lg: -6 }} position="relative">
       <svg width="100%" viewBox="0 0 381 94" fill="none">
@@ -56,7 +54,10 @@ export const FromToken = () => {
           pr={12}
         >
           <Flex justify="space-between" align="center" color="grey" mb={2}>
-            <Text>{`Balance: ${utils.formatEther(token.balance)}`}</Text>
+            <Text>{`Balance: ${formatValue(
+              token.balance,
+              token.decimals,
+            )}`}</Text>
             <Text>{`\u2248 $${token.balanceInUsd}`}</Text>
           </Flex>
           <Flex align="center" flex={1}>
@@ -90,10 +91,13 @@ export const FromToken = () => {
               <Input
                 variant="unstyled"
                 type="number"
-                value={utils.formatEther(amount)}
+                value={input}
                 textAlign="right"
                 fontWeight="bold"
-                onChange={e => setAmount(utils.parseEther(e.target.value))}
+                onChange={e => {
+                  setInput(e.target.value);
+                  setAmount(parseValue(e.target.value, token.decimals));
+                }}
                 fontSize="3xl"
               />
               <Button
@@ -104,7 +108,10 @@ export const FromToken = () => {
                 fontSize="sm"
                 fontWeight="normal"
                 _hover={{ bg: 'blue.100' }}
-                onClick={() => setAmount(token.balance)}
+                onClick={() => {
+                  setInput(formatValue(token.balance, token.decimals));
+                  setAmount(token.balance);
+                }}
               >
                 Max
               </Button>

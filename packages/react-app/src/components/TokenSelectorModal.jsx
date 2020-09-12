@@ -12,7 +12,6 @@ import {
   ModalHeader,
   Text,
 } from '@chakra-ui/core';
-import { utils } from 'ethers';
 import React, { useContext, useEffect, useState } from 'react';
 
 import EthLogo from '../assets/eth-logo.png';
@@ -21,7 +20,7 @@ import xDAILogo from '../assets/xdai-logo.png';
 import { BridgeContext } from '../contexts/BridgeContext';
 import { Web3Context } from '../contexts/Web3Context';
 import { PlusIcon } from '../icons/PlusIcon';
-import { isxDaiChain } from '../lib/helpers';
+import { formatValue,isxDaiChain } from '../lib/helpers';
 
 export const TokenSelectorModal = ({ onClose, onCustom }) => {
   const { network } = useContext(Web3Context);
@@ -137,7 +136,7 @@ export const TokenSelectorModal = ({ onClose, onCustom }) => {
                 </Text>
               </Flex>
               <Text color="grey" fontWeight="normal">
-                {utils.formatEther(token.balance)}
+                {formatValue(token.balance, token.decimals)}
               </Text>
             </Flex>
           </Button>

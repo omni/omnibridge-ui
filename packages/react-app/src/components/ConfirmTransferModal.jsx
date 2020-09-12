@@ -12,12 +12,11 @@ import {
   ModalOverlay,
   Text,
 } from '@chakra-ui/core';
-import { utils } from 'ethers';
 import React, { useContext, useEffect, useState } from 'react';
 
 import TransferImage from '../assets/confirm-transfer.svg';
 import { BridgeContext } from '../contexts/BridgeContext';
-import { isxDaiChain } from '../lib/helpers';
+import { formatValue,isxDaiChain } from '../lib/helpers';
 
 export const ConfirmTransferModal = ({ isOpen, onClose }) => {
   const { fromToken, toToken, fromAmount, toAmount, transfer } = useContext(
@@ -32,10 +31,10 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
     );
   }, [fromAmount, toAmount]);
   const isxDai = isxDaiChain(fromToken.chainId);
-  const fromAmt = `${utils.formatEther(fromAmount)} ${fromToken.symbol}${
-    isxDai ? ' on xDai' : ''
-  }`;
-  const toAmt = `${utils.formatEther(toAmount)} ${toToken.symbol}${
+  const fromAmt = `${formatValue(fromAmount, fromToken.decimals)} ${
+    fromToken.symbol
+  }${isxDai ? ' on xDai' : ''}`;
+  const toAmt = `${formatValue(toAmount, toToken.decimals)} ${toToken.symbol}${
     isxDai ? '' : ' on xDai'
   }`;
 

@@ -7,7 +7,7 @@ import {
   isxDaiChain,
 } from './helpers';
 import { getEthersProvider } from './providers';
-import { fetchTokenBalance,transferAndCallToken } from './token';
+import { fetchTokenBalance, transferAndCallToken } from './token';
 
 export const fetchBridgedTokenAddress = async (fromChainId, tokenAddress) => {
   const isxDai = isxDaiChain(fromChainId);
@@ -31,7 +31,7 @@ export const fetchBridgedTokenAddress = async (fromChainId, tokenAddress) => {
 };
 
 export const fetchToAmount = async (fromToken, toToken, fromAmount) => {
-  if (fromAmount * 1 === 0 || !fromToken || !toToken) return 0;
+  if (fromAmount <= 0 || !fromToken || !toToken) return 0;
   const isxDai = isxDaiChain(toToken.chainId);
   const xDaiChainId = isxDai
     ? toToken.chainId
@@ -59,7 +59,7 @@ export const fetchToAmount = async (fromToken, toToken, fromAmount) => {
       tokenAddress,
       fromAmount,
     );
-    return (fromAmount - fee).toString();
+    return window.BigInt(fromAmount) - window.BigInt(fee);
   } catch (error) {
     // eslint-disable-next-line
     console.log({ amountError: error });
@@ -118,7 +118,7 @@ export const fetchTokenLimits = async (token, account) => {
     if (isRegistered) {
       [minPerTx, maxPerTx, dailyLimit] = await Promise.all([
         mediatorContract.minPerTx(token.address),
-        mediatorContract.minPerTx(token.address),
+        mediatorContract.maxPerTx(token.address),
         mediatorContract.dailyLimit(token.address),
       ]);
     }
