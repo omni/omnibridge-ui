@@ -11,6 +11,7 @@ import {
   ModalHeader,
   ModalOverlay,
   Text,
+  useBreakpointValue,
 } from '@chakra-ui/core';
 import React, { useContext, useEffect, useState } from 'react';
 
@@ -40,6 +41,7 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
     transfer();
     onClose();
   };
+  const smallScreen = useBreakpointValue({ base: true, md: false });
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered>
@@ -48,6 +50,7 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
           boxShadow="0px 1rem 2rem #617492"
           borderRadius="1rem"
           maxW="30rem"
+          mx={{ base: 12, lg: 0 }}
         >
           <ModalHeader p={6}>
             <Text>Confirm Transfer</Text>
@@ -60,7 +63,11 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
             _focus={{ border: 'none', outline: 'none' }}
           />
           <ModalBody px={6} py={0}>
-            <Flex align="center" fontWeight="bold">
+            <Flex
+              align="center"
+              fontWeight="bold"
+              direction={{ base: 'column', md: 'row' }}
+            >
               <Flex
                 justify="center"
                 align="center"
@@ -74,17 +81,26 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
               </Flex>
               <Flex
                 flex={1}
+                minH="5rem"
+                h="5rem"
+                w={{ base: '10rem', md: 'auto' }}
                 justify="center"
                 align="center"
                 position="relative"
               >
-                <Divider color="#DAE3F0" />
+                <Divider
+                  color="#DAE3F0"
+                  orientation={smallScreen ? 'vertical' : 'horizontal'}
+                />
                 <Image
                   src={TransferImage}
                   position="absolute"
                   left="50%"
                   top="50%"
-                  transform="translate(-50%, -50%)"
+                  transform={{
+                    base: 'translate(-50%, -50%) rotate(90deg)',
+                    md: 'translate(-50%, -50%)',
+                  }}
                 />
               </Flex>
               <Flex
@@ -108,7 +124,12 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
             </Flex>
           </ModalBody>
           <ModalFooter p={6}>
-            <Flex w="100%" justify="space-between" align="center">
+            <Flex
+              w="100%"
+              justify="space-between"
+              align={{ base: 'stretch', md: 'center' }}
+              direction={{ base: 'column', md: 'row' }}
+            >
               <Button
                 px={12}
                 onClick={onClose}
@@ -118,7 +139,12 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
               >
                 Cancel
               </Button>
-              <Button px={12} onClick={onClick} colorScheme="blue">
+              <Button
+                px={12}
+                onClick={onClick}
+                colorScheme="blue"
+                mt={{ base: 2, md: 0 }}
+              >
                 Continue
               </Button>
             </Flex>

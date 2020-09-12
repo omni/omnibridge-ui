@@ -1,4 +1,11 @@
-import { Box, Flex, HStack, Image, Text } from '@chakra-ui/core';
+import {
+  Box,
+  Flex,
+  HStack,
+  Image,
+  Text,
+  useBreakpointValue,
+} from '@chakra-ui/core';
 import React from 'react';
 import { Link } from 'react-router-dom';
 
@@ -10,10 +17,11 @@ import TwitterLogo from '../assets/twitter.svg';
 import xDaiLogo from '../assets/xdai.svg';
 
 export const Footer = () => {
+  const smallScreen = useBreakpointValue({ base: true, sm: false });
   return (
     <Flex
       position="relative"
-      justify="space-between"
+      justify={{ base: 'center', sm: 'space-between' }}
       align="center"
       h={20}
       maxW="75rem"
@@ -23,11 +31,13 @@ export const Footer = () => {
       _hover={{ color: 'blue.500' }}
       transition="0.25s"
     >
-      <Link to="/">
-        <Flex justify="space-around" align="center">
-          <Image src={Logo} />
-        </Flex>
-      </Link>
+      {!smallScreen && (
+        <Link to="/" display={{ base: 'none', sm: 'block' }}>
+          <Flex justify="space-around" align="center">
+            <Image src={Logo} />
+          </Flex>
+        </Link>
+      )}
       <HStack spacing={4}>
         <a
           href="https://xdaichain.com"

@@ -20,7 +20,12 @@ export const SystemFeedback = () => {
   return (
     <Popover>
       <PopoverTrigger>
-        <Flex align="center" color="blue.400" cursor="pointer">
+        <Flex
+          align="center"
+          color="blue.400"
+          cursor="pointer"
+          pb={{ base: 2, md: 0 }}
+        >
           <Image src={Details} mr={2} />
           <Text>System Feedback</Text>
         </Flex>

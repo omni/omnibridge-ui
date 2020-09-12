@@ -19,7 +19,6 @@ const providerOptions = {
 };
 
 const web3Modal = new Web3Modal({
-  network: 'mainnet',
   cacheProvider: true,
   providerOptions,
 });
@@ -84,6 +83,7 @@ export const Web3Provider = ({ children }) => {
         ethersProvider,
         connectWeb3,
         disconnect,
+        providerNetwork,
         network: chosenNetwork,
         setNetwork: setChosenNetwork,
         account,
