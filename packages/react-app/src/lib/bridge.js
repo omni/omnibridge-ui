@@ -1,6 +1,5 @@
 import ethers from 'ethers';
 
-import { ADDRESS_ZERO } from './constants';
 import {
   getAMBAddress,
   getBridgeNetwork,
@@ -8,7 +7,7 @@ import {
   isxDaiChain,
 } from './helpers';
 import { getEthersProvider } from './providers';
-import { transferAndCallToken } from './token';
+import { fetchTokenBalance,transferAndCallToken } from './token';
 
 export const fetchBridgedTokenAddress = async (fromChainId, tokenAddress) => {
   const isxDai = isxDaiChain(fromChainId);
@@ -76,28 +75,23 @@ export const fetchToToken = async (fromToken, account) => {
 
   const toChainId = getBridgeNetwork(fromToken.chainId);
   const isxDai = isxDaiChain(toChainId);
-  const toToken = {
+  return {
     name: isxDai ? `${fromToken.name} on xDai` : fromToken.name.slice(0, -8),
     address: toTokenAddress,
     symbol: fromToken.symbol,
     decimals: 18,
     chainId: toChainId,
     logoURI: '',
-    balance: 0,
+    balance: await fetchTokenBalance(
+      { chainId: toChainId, address: toTokenAddress },
+      account,
+    ),
     balanceInUsd: 0,
   };
-  toToken.balance = await fetchTokenBalance(toToken, account);
-  return toToken;
 };
 
-export const fetchTokenDetails = async (token, account) => {
+export const fetchTokenLimits = async (token, account) => {
   const ethersProvider = getEthersProvider(token.chainId);
-  const tokenAbi = ['function balanceOf(address) view returns (uint256)'];
-  const tokenContract = new ethers.Contract(
-    token.address,
-    tokenAbi,
-    ethersProvider,
-  );
   const mediatorAbi = [
     'function isTokenRegistered(address) view returns (bool)',
     'function minPerTx(address) view returns (uint256)',
@@ -117,14 +111,16 @@ export const fetchTokenDetails = async (token, account) => {
   let maxPerTx = '10000000000000000000000';
   let dailyLimit = '1000000000000000000000000';
   try {
-    isRegistered = await mediatorContract.isTokenRegistered(token.address);
-    if (account) {
-      balance = await tokenContract.balanceOf(account);
-    }
+    [isRegistered, balance] = await Promise.all([
+      mediatorContract.isTokenRegistered(token.address),
+      fetchTokenBalance(token, account),
+    ]);
     if (isRegistered) {
-      minPerTx = await mediatorContract.minPerTx(token.address);
-      maxPerTx = await mediatorContract.maxPerTx(token.address);
-      dailyLimit = await mediatorContract.dailyLimit(token.address);
+      [minPerTx, maxPerTx, dailyLimit] = await Promise.all([
+        mediatorContract.minPerTx(token.address),
+        mediatorContract.minPerTx(token.address),
+        mediatorContract.dailyLimit(token.address),
+      ]);
     }
   } catch (error) {
     // eslint-disable-next-line
@@ -139,22 +135,6 @@ export const fetchTokenDetails = async (token, account) => {
     maxPerTx,
     dailyLimit,
   };
-};
-
-export const fetchTokenBalance = async (token, account) => {
-  if (!account || !token || token.address === ADDRESS_ZERO) {
-    return 0;
-  }
-  const ethersProvider = getEthersProvider(token.chainId);
-  const abi = ['function balanceOf(address) view returns (uint256)'];
-  const tokenContract = new ethers.Contract(token.address, abi, ethersProvider);
-  try {
-    return await tokenContract.balanceOf(account);
-  } catch (error) {
-    // eslint-disable-next-line
-    console.log({ tokenError: error });
-  }
-  return 0;
 };
 
 export const fetchConfirmations = async chainId => {

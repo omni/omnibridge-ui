@@ -1,5 +1,6 @@
 import ethers from 'ethers';
 
+import { ADDRESS_ZERO } from './constants';
 import { getMediatorAddress } from './helpers';
 import { getEthersProvider } from './providers';
 
@@ -27,10 +28,15 @@ export const fetchTokenDetails = async (chainId, tokenAddress) => {
   ];
   const tokenContract = new ethers.Contract(tokenAddress, abi, ethersProvider);
 
+  const [name, symbol, decimals] = await Promise.all([
+    tokenContract.name(),
+    tokenContract.symbol(),
+    tokenContract.decimals(),
+  ]);
   const details = {
-    name: await tokenContract.name(),
-    symbol: await tokenContract.symbol(),
-    decimals: await tokenContract.decimals(),
+    name,
+    symbol,
+    decimals,
   };
   return details;
 };
@@ -56,4 +62,20 @@ export const transferAndCallToken = async (ethersProvider, token, amount) => {
   );
   const mediatorAddress = getMediatorAddress(token.chainId);
   return tokenContract.transferAndCall(mediatorAddress, amount, '0x');
+};
+
+export const fetchTokenBalance = async (token, account) => {
+  if (!account || !token || token.address === ADDRESS_ZERO) {
+    return 0;
+  }
+  const ethersProvider = getEthersProvider(token.chainId);
+  const abi = ['function balanceOf(address) view returns (uint256)'];
+  const tokenContract = new ethers.Contract(token.address, abi, ethersProvider);
+  try {
+    return tokenContract.balanceOf(account);
+  } catch (error) {
+    // eslint-disable-next-line
+    console.log({ tokenError: error });
+  }
+  return 0;
 };
