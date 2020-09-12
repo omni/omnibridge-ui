@@ -23,7 +23,13 @@ export const BridgeHistory = () => {
       <Text fontSize="xl" fontWeight="bold" mb={4}>
         History
       </Text>
-      <Grid templateColumns="2fr 3fr" color="grey" fontSize="sm" px={8} mb={4}>
+      <Grid
+        templateColumns={{ base: '2fr 2fr', md: '2fr 3fr' }}
+        color="grey"
+        fontSize="sm"
+        px={{ base: 4, sm: 8 }}
+        mb={4}
+      >
         <Text>Date</Text>
         <Text>Txn Hash</Text>
       </Grid>

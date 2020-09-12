@@ -62,11 +62,21 @@ const customStyles = {
     cursor: 'pointer',
     border: 'none',
     background: 'transparent',
+    fontWeight: 'bold',
+    paddingLeft: '0.5rem',
   }),
-  indicatorSeparator: () => {},
+  menu: provided => ({
+    ...provided,
+    boxShadow: '0 0.5rem 1rem #CADAEF',
+    backgroundColor: 'white',
+  }),
+  indicatorSeparator: provided => ({
+    ...provided,
+    backgroundColor: 'transparent',
+  }),
 };
 
-export const NetworkSelector = () => {
+export const NetworkSelector = props => {
   const [localNetwork, setLocalNetwork] = useState(0);
   const { setNetwork } = useContext(Web3Context);
   const { setDefaultToken } = useContext(BridgeContext);
@@ -94,21 +104,23 @@ export const NetworkSelector = () => {
   };
 
   return (
-    <Select
-      onChange={onChange}
-      styles={customStyles}
-      fontWeight="bold"
-      defaultValue={networkOptions[localNetwork]}
-      value={networkOptions[localNetwork]}
-      options={networkOptions}
-      isClearable={false}
-      isSearchable={false}
-      hideSelectedOptions
-      components={{
-        Option: CustomSelectOption,
-        SingleValue: CustomSelectValue,
-        DropdownIndicator: CustomDropdownIndicator,
-      }}
-    />
+    <Flex {...props}>
+      <Select
+        onChange={onChange}
+        styles={customStyles}
+        fontWeight="bold"
+        defaultValue={networkOptions[localNetwork]}
+        value={networkOptions[localNetwork]}
+        options={networkOptions}
+        isClearable={false}
+        isSearchable={false}
+        hideSelectedOptions
+        components={{
+          Option: CustomSelectOption,
+          SingleValue: CustomSelectValue,
+          DropdownIndicator: CustomDropdownIndicator,
+        }}
+      />
+    </Flex>
   );
 };

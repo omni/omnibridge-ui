@@ -5,6 +5,7 @@ import {
   defaultTokensUrl,
   graphEndpoints,
   mediators,
+  networkNames,
 } from './constants';
 
 export const getBridgeNetwork = chainId => {
@@ -60,6 +61,20 @@ export const getMediatorAddress = chainId => {
     case 100:
     default:
       return mediators[100];
+  }
+};
+
+export const getNetworkName = chainId => {
+  switch (chainId) {
+    case 1:
+      return networkNames[1];
+    case 42:
+      return networkNames[42];
+    case 77:
+      return networkNames[77];
+    case 100:
+    default:
+      return networkNames[100];
   }
 };
 

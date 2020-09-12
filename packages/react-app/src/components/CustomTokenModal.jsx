@@ -3,15 +3,17 @@ import {
   Flex,
   Input,
   InputGroup,
+  Modal,
   ModalBody,
   ModalCloseButton,
   ModalContent,
   ModalFooter,
   ModalHeader,
+  ModalOverlay,
   Text,
 } from '@chakra-ui/core';
 import { utils } from 'ethers';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useRef,useState } from 'react';
 
 import xDAILogo from '../assets/xdai-logo.png';
 import { BridgeContext } from '../contexts/BridgeContext';
@@ -19,7 +21,7 @@ import { Web3Context } from '../contexts/Web3Context';
 import { uniqueTokens } from '../lib/helpers';
 import { fetchTokenDetails } from '../lib/token';
 
-export const CustomTokenModal = ({ onClose, onBack }) => {
+export const CustomTokenModal = ({ isOpen, onClose, onBack }) => {
   const { setToken } = useContext(BridgeContext);
   const { network } = useContext(Web3Context);
   const [customToken, setCustomToken] = useState({
@@ -76,75 +78,99 @@ export const CustomTokenModal = ({ onClose, onBack }) => {
     }
   };
 
+  const initialRef = useRef();
+
   return (
-    <ModalContent
-      boxShadow="0px 1rem 2rem #617492"
-      borderRadius="1rem"
-      maxW="30rem"
+    <Modal
+      isOpen={isOpen}
+      onClose={onClose}
+      scrollBehavior="inside"
+      isCentered
+      initialFocusRef={initialRef}
     >
-      <ModalHeader p={6}>
-        <Text>Add Custom Token</Text>
-      </ModalHeader>
-      <ModalCloseButton
-        size="lg"
-        top={-10}
-        right={-10}
-        color="white"
-        _focus={{ border: 'none', outline: 'none' }}
-      />
-      <ModalBody px={6} py={0}>
-        <Flex flexDirection="column">
-          <Text mb={2}>Token Contract Address</Text>
-          <InputGroup mb={4} borderColor="#DAE3F0">
-            <Input
-              id="address"
-              placeholder="0xAbC ..."
-              size="sm"
-              onChange={handleChange}
-              _placeholder={{ color: 'grey' }}
-              value={customToken.address}
-            />
-          </InputGroup>
-          <Text mb={2}>Token Symbol</Text>
-          <InputGroup mb={4} borderColor="#DAE3F0">
-            <Input
-              id="symbol"
-              placeholder="ETH"
-              size="sm"
-              onChange={handleChange}
-              _placeholder={{ color: 'grey' }}
-              value={customToken.symbol}
-            />
-          </InputGroup>
-          <Text mb={2}>Decimals of Precision</Text>
-          <InputGroup mb={4} borderColor="#DAE3F0">
-            <Input
-              id="decimals"
-              placeholder="18"
-              size="sm"
-              onChange={handleChange}
-              _placeholder={{ color: 'grey' }}
-              value={customToken.decimals}
-            />
-          </InputGroup>
-        </Flex>
-      </ModalBody>
-      <ModalFooter p={6}>
-        <Flex w="100%" justify="space-between" align="center">
-          <Button
-            px={12}
-            onClick={onBack}
-            background="background"
-            _hover={{ background: '#bfd3f2' }}
-            color="#687D9D"
-          >
-            Back
-          </Button>
-          <Button px={12} onClick={onClick} colorScheme="blue">
-            Add Token
-          </Button>
-        </Flex>
-      </ModalFooter>
-    </ModalContent>
+      <ModalOverlay background="modalBG">
+        <ModalContent
+          boxShadow="0px 1rem 2rem #617492"
+          borderRadius="1rem"
+          maxW="30rem"
+          mx={{ base: 12, lg: 0 }}
+        >
+          <ModalHeader p={6}>
+            <Text>Add Custom Token</Text>
+          </ModalHeader>
+          <ModalCloseButton
+            size="lg"
+            top={-10}
+            right={-10}
+            color="white"
+            _focus={{ border: 'none', outline: 'none' }}
+          />
+          <ModalBody px={6} py={0}>
+            <Flex flexDirection="column">
+              <Text mb={2}>Token Contract Address</Text>
+              <InputGroup mb={4} borderColor="#DAE3F0">
+                <Input
+                  id="address"
+                  placeholder="0xAbC ..."
+                  size="sm"
+                  onChange={handleChange}
+                  _placeholder={{ color: 'grey' }}
+                  value={customToken.address}
+                  ref={initialRef}
+                />
+              </InputGroup>
+              <Text mb={2}>Token Symbol</Text>
+              <InputGroup mb={4} borderColor="#DAE3F0">
+                <Input
+                  id="symbol"
+                  placeholder="ETH"
+                  size="sm"
+                  onChange={handleChange}
+                  _placeholder={{ color: 'grey' }}
+                  value={customToken.symbol}
+                />
+              </InputGroup>
+              <Text mb={2}>Decimals of Precision</Text>
+              <InputGroup mb={4} borderColor="#DAE3F0">
+                <Input
+                  id="decimals"
+                  placeholder="18"
+                  size="sm"
+                  onChange={handleChange}
+                  _placeholder={{ color: 'grey' }}
+                  value={customToken.decimals}
+                />
+              </InputGroup>
+            </Flex>
+          </ModalBody>
+          <ModalFooter p={6}>
+            <Flex
+              w="100%"
+              justify="space-between"
+              align={{ base: 'stretch', md: 'center' }}
+              direction={{ base: 'column', md: 'row' }}
+            >
+              <Button
+                px={12}
+                onClick={onBack}
+                background="background"
+                _hover={{ background: '#bfd3f2' }}
+                color="#687D9D"
+              >
+                Back
+              </Button>
+              <Button
+                px={12}
+                onClick={onClick}
+                colorScheme="blue"
+                mt={{ base: 2, md: 0 }}
+              >
+                Add Token
+              </Button>
+            </Flex>
+          </ModalFooter>
+        </ModalContent>
+      </ModalOverlay>
+    </Modal>
   );
 };

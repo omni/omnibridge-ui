@@ -1,4 +1,4 @@
-import { Flex, Grid, Text } from '@chakra-ui/core';
+import { Flex, Grid, Text, useBreakpointValue } from '@chakra-ui/core';
 import React, { useContext } from 'react';
 
 import { Web3Context } from '../contexts/Web3Context';
@@ -11,6 +11,7 @@ import { UnlockButton } from './UnlockButton';
 
 export const BridgeTokens = () => {
   const { network } = useContext(Web3Context);
+  const smallScreen = useBreakpointValue({ base: true, lg: false });
   return (
     <Flex
       w="calc(100% - 2rem)"
@@ -20,37 +21,69 @@ export const BridgeTokens = () => {
       borderRadius="1rem"
       direction="column"
       align="center"
-      p={8}
+      p={{ base: 4, md: 8 }}
       mx={4}
       my="auto"
     >
       <LoadingModal />
       {network && (
         <>
-          <Flex w="100%" justify="space-between">
-            <Flex align="flex-start" direction="column">
-              <Text color="greyText" fontSize="sm">
-                From
-              </Text>
-              <Text fontWeight="bold" fontSize="lg">
-                {network.name}
-              </Text>
+          {!smallScreen && (
+            <Flex w="100%" justify="space-between">
+              <Flex align="flex-start" direction="column">
+                <Text color="greyText" fontSize="sm">
+                  From
+                </Text>
+                <Text fontWeight="bold" fontSize="lg">
+                  {network.name}
+                </Text>
+              </Flex>
+              <Flex align="flex-end" direction="column">
+                <Text color="greyText" fontSize="sm">
+                  To
+                </Text>
+                <Text fontWeight="bold" fontSize="lg" textAlign="right">
+                  {network.bridge.name}
+                </Text>
+              </Flex>
             </Flex>
-            <Flex align="flex-end" direction="column">
-              <Text color="greyText" fontSize="sm">
-                To
-              </Text>
-              <Text fontWeight="bold" fontSize="lg" textAlign="right">
-                {network.bridge.name}
-              </Text>
-            </Flex>
-          </Flex>
-          <Grid templateColumns="2fr 1fr 2fr" width="100%" my={4}>
+          )}
+          <Grid
+            templateColumns={{ base: 'initial', lg: '2fr 1fr 2fr' }}
+            width="100%"
+            my={4}
+          >
+            {smallScreen && (
+              <Flex align="flex-start" direction="column" m={2}>
+                <Text color="greyText" fontSize="sm">
+                  From
+                </Text>
+                <Text fontWeight="bold" fontSize="lg">
+                  {network.name}
+                </Text>
+              </Flex>
+            )}
             <FromToken />
-            <Flex direction="column" px={{ base: 2, md: 2, lg: 4 }}>
+            <Flex
+              direction="column"
+              px={{ base: 2, lg: 4 }}
+              my={{ base: 2, lg: 0 }}
+              align="center"
+              w="100%"
+            >
               <UnlockButton />
               <TransferButton />
             </Flex>
+            {smallScreen && (
+              <Flex align="flex-end" direction="column" m={2}>
+                <Text color="greyText" fontSize="sm">
+                  To
+                </Text>
+                <Text fontWeight="bold" fontSize="lg" textAlign="right">
+                  {network.bridge.name}
+                </Text>
+              </Flex>
+            )}
             <ToToken />
           </Grid>
           <SystemFeedback />

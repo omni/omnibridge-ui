@@ -40,6 +40,13 @@ export const networkOptions = [
   },
 ];
 
+export const networkNames = {
+  100: 'xDai Chain',
+  1: 'ETH Mainnet',
+  77: 'Sokol Testnet',
+  42: 'Kovan Testnet',
+};
+
 export const chainUrls = {
   100: {
     rpc: 'https://xdai.poanetwork.dev',

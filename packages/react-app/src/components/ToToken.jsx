@@ -1,4 +1,4 @@
-import { Flex, Image, Text } from '@chakra-ui/core';
+import { Flex, Image, Text, useBreakpointValue } from '@chakra-ui/core';
 import React, { useContext } from 'react';
 
 import EthLogo from '../assets/eth-logo.png';
@@ -11,14 +11,25 @@ export const ToToken = () => {
   const { network } = useContext(Web3Context);
   const { toToken: token, toAmount: amount } = useContext(BridgeContext);
   const fallbackLogo = isxDaiChain(network.value) ? EthLogo : xDAILogo;
+  const smallScreen = useBreakpointValue({ base: true, lg: false });
   return (
-    <Flex align="center" ml={{ base: -4, md: -4, lg: -6 }} position="relative">
-      <svg width="100%" viewBox="0 0 381 94" fill="none">
-        <path
-          d="M20.806 4.484A8 8 0 0127.992 0H373a8 8 0 018 8v78a8 8 0 01-8 8H27.992a8 8 0 01-7.186-4.484l-19.085-39a8 8 0 010-7.032l19.085-39z"
-          fill="#EEF4FD"
-        />
-      </svg>
+    <Flex
+      align="center"
+      m={{ base: 2, lg: 0 }}
+      ml={{ base: 2, lg: -6 }}
+      position="relative"
+      borderRadius="0.25rem"
+      background={{ base: '#EEF4FD', lg: 'transparent' }}
+      h={{ base: '6rem', lg: 'auto' }}
+    >
+      {!smallScreen && (
+        <svg width="100%" viewBox="0 0 381 94" fill="none">
+          <path
+            d="M20.806 4.484A8 8 0 0127.992 0H373a8 8 0 018 8v78a8 8 0 01-8 8H27.992a8 8 0 01-7.186-4.484l-19.085-39a8 8 0 010-7.032l19.085-39z"
+            fill="#EEF4FD"
+          />
+        </svg>
+      )}
       {token && (
         <Flex
           position="absolute"
@@ -27,7 +38,7 @@ export const ToToken = () => {
           direction="column"
           py={4}
           pr={4}
-          pl={12}
+          pl={{ base: 4, lg: 12 }}
         >
           <Flex justify="space-between" align="center" color="grey" mb={2}>
             <Text>{`Balance: ${formatValue(
@@ -59,7 +70,7 @@ export const ToToken = () => {
               </Text>
             </Flex>
             <Flex align="center">
-              <Text fontWeight="bold" fontSize="3xl">
+              <Text fontWeight="bold" fontSize="2xl">
                 {formatValue(amount, token.decimals)}
               </Text>
             </Flex>

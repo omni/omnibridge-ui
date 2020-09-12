@@ -43,9 +43,17 @@ export const LoadingModal = () => {
           </Flex>
         )}
         {transaction && totalConfirms && (
-          <ModalContent boxShadow="0px 1rem 2rem #617492" borderRadius="full">
+          <ModalContent
+            boxShadow="0px 1rem 2rem #617492"
+            borderRadius="full"
+            mx={{ base: 12, lg: 0 }}
+            maxW={{ base: '20rem', md: '25rem' }}
+          >
             <ModalBody p={4}>
-              <Flex align="center">
+              <Flex
+                align={{ base: 'center', md: 'stretch' }}
+                direction={{ base: 'column', md: 'row' }}
+              >
                 <Flex
                   height="5rem"
                   width="5rem"
@@ -79,7 +87,7 @@ export const LoadingModal = () => {
                     />
                   </Flex>
                 </Flex>
-                <Flex height="100%" flex={1} direction="column">
+                <Flex flex={1} direction="column">
                   <Text width="100%">Waiting for Block Confirmations...</Text>
                   <Text width="100%" color="grey">
                     {'Monitor at ALM '}
