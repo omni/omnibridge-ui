@@ -30,10 +30,10 @@ export const Footer = () => {
       </Link>
       <HStack spacing={4}>
         <a
-            href="https://xdaichain.com"
-            rel="noreferrer noopener"
-            target="_blank"
-          >
+          href="https://xdaichain.com"
+          rel="noreferrer noopener"
+          target="_blank"
+        >
           <Image src={xDaiLogo} />
         </a>
         <a

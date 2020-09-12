@@ -1,6 +1,6 @@
-import { gql,request } from 'graphql-request';
+import { gql, request } from 'graphql-request';
 
-import { getBridgeNetwork,getGraphEndpoint } from './helpers';
+import { getBridgeNetwork, getGraphEndpoint } from './helpers';
 
 const query = gql`
   query getHistory($recipient: String!) {

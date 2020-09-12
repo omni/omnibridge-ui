@@ -2,13 +2,12 @@ import React, { useCallback, useContext, useState } from 'react';
 
 import {
   fetchToAmount,
-  fetchTokenBalance,
-  fetchTokenDetails,
+  fetchTokenLimits,
   fetchToToken,
   transferTokens,
 } from '../lib/bridge';
 import { getDefaultToken, isxDaiChain, uniqueTokens } from '../lib/helpers';
-import { approveToken, fetchAllowance } from '../lib/token';
+import { approveToken, fetchAllowance, fetchTokenBalance } from '../lib/token';
 import { fetchTokenList } from '../lib/tokenList';
 import { Web3Context } from './Web3Context';
 
@@ -26,6 +25,7 @@ export const BridgeProvider = ({ children }) => {
   const [transaction, setTransaction] = useState(false);
   const [totalConfirms, setTotalConfirms] = useState(0);
   const [tokenList, setTokenList] = useState([]);
+  const [amountInput, setAmountInput] = useState('0.00');
 
   const setAmount = useCallback(
     async amount => {
@@ -51,16 +51,17 @@ export const BridgeProvider = ({ children }) => {
   const setToken = useCallback(
     async token => {
       setLoading(true);
-      const tokenWithDetails = await fetchTokenDetails(token, account);
-      setFromToken(tokenWithDetails);
+      const tokenWithLimits = await fetchTokenLimits(token, account);
+      setFromToken(tokenWithLimits);
+      setAmountInput('0.00');
       setFromAmount(0);
       setToToken();
-      if (isxDaiChain(tokenWithDetails.chainId)) {
+      if (isxDaiChain(tokenWithLimits.chainId)) {
         setAllowed(true);
       } else {
         setAllowed(false);
       }
-      const gotToToken = await fetchToToken(tokenWithDetails, account);
+      const gotToToken = await fetchToToken(tokenWithLimits, account);
       setToToken(gotToToken);
       setToAmount(0);
       setLoading(false);
@@ -172,6 +173,8 @@ export const BridgeProvider = ({ children }) => {
         totalConfirms,
         tokenList,
         setDefaultTokenList,
+        amountInput,
+        setAmountInput,
       }}
     >
       {children}

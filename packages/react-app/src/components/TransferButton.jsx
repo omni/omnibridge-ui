@@ -1,10 +1,10 @@
 import { Flex, Image, Text, useDisclosure } from '@chakra-ui/core';
-import { utils } from 'ethers';
 import React, { useContext, useState } from 'react';
 
 import TransferIcon from '../assets/transfer.svg';
 import { BridgeContext } from '../contexts/BridgeContext';
 import { Web3Context } from '../contexts/Web3Context';
+import { formatValue } from '../lib/helpers';
 import { ConfirmTransferModal } from './ConfirmTransferModal';
 import { ErrorModal } from './ErrorModal';
 
@@ -32,11 +32,17 @@ export const TransferButton = () => {
       setMessage(`Please switch wallet to ${network.name}`);
     } else if (window.BigInt(amount) < window.BigInt(token.minPerTx)) {
       setMessage(
-        `Please specify amount more than ${utils.formatEther(token.minPerTx)}`,
+        `Please specify amount more than ${formatValue(
+          token.minPerTx,
+          token.decimals,
+        )}`,
       );
     } else if (window.BigInt(amount) >= window.BigInt(token.maxPerTx)) {
       setMessage(
-        `Please specify amount less than ${utils.formatEther(token.maxPerTx)}`,
+        `Please specify amount less than ${formatValue(
+          token.maxPerTx,
+          token.decimals,
+        )}`,
       );
     } else if (window.BigInt(token.balance) < window.BigInt(amount)) {
       setMessage('Not enough balance');

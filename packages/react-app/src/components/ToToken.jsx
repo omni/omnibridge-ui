@@ -1,12 +1,11 @@
 import { Flex, Image, Text } from '@chakra-ui/core';
-import { utils } from 'ethers';
 import React, { useContext } from 'react';
 
 import EthLogo from '../assets/eth-logo.png';
 import xDAILogo from '../assets/xdai-logo.png';
 import { BridgeContext } from '../contexts/BridgeContext';
 import { Web3Context } from '../contexts/Web3Context';
-import { isxDaiChain } from '../lib/helpers';
+import { formatValue, isxDaiChain } from '../lib/helpers';
 
 export const ToToken = () => {
   const { network } = useContext(Web3Context);
@@ -31,7 +30,10 @@ export const ToToken = () => {
           pl={12}
         >
           <Flex justify="space-between" align="center" color="grey" mb={2}>
-            <Text>{`Balance: ${utils.formatEther(token.balance)}`}</Text>
+            <Text>{`Balance: ${formatValue(
+              token.balance,
+              token.decimals,
+            )}`}</Text>
             <Text>{`\u2248 $${token.balanceInUsd}`}</Text>
           </Flex>
           <Flex justify="space-between" align="center" flex={1}>
@@ -58,7 +60,7 @@ export const ToToken = () => {
             </Flex>
             <Flex align="center">
               <Text fontWeight="bold" fontSize="3xl">
-                {utils.formatEther(amount)}
+                {formatValue(amount, token.decimals)}
               </Text>
             </Flex>
           </Flex>
