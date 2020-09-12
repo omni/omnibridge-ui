@@ -13,7 +13,7 @@ import {
   Text,
 } from '@chakra-ui/core';
 import { utils } from 'ethers';
-import React, { useContext, useRef,useState } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 
 import xDAILogo from '../assets/xdai-logo.png';
 import { BridgeContext } from '../contexts/BridgeContext';

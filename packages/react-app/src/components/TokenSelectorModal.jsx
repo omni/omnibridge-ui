@@ -15,7 +15,7 @@ import {
   Text,
   useBreakpointValue,
 } from '@chakra-ui/core';
-import React, { useContext, useEffect, useRef,useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import EthLogo from '../assets/eth-logo.png';
 import SearchIcon from '../assets/search.svg';
