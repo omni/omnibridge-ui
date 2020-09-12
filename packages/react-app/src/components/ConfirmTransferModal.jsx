@@ -25,9 +25,7 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
   const [fee, setFee] = useState(0);
   useEffect(() => {
     setFee(
-      ((window.BigInt(fromAmount) - window.BigInt(toAmount)) *
-        window.BigInt(100)) /
-        window.BigInt(fromAmount),
+      ((Number(fromAmount) - Number(toAmount)) * 100) / Number(fromAmount),
     );
   }, [fromAmount, toAmount]);
   const isxDai = isxDaiChain(fromToken.chainId);
@@ -102,7 +100,7 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
               </Flex>
             </Flex>
             <Flex align="center" fontSize="sm" justify="center" mt={4}>
-              {`Bridge Fees ${fee.toString()}%`}
+              {`Bridge Fees ${fee}%`}
             </Flex>
             <Divider color="#DAE3F0" my={4} />
             <Flex w="100%" fontSize="sm" color="grey" align="center">

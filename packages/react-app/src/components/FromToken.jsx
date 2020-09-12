@@ -19,7 +19,12 @@ import { SelectTokenModal } from './SelectTokenModal';
 
 export const FromToken = () => {
   const { ethersProvider, network, networkMismatch } = useContext(Web3Context);
-  const { fromToken: token, setAmount } = useContext(BridgeContext);
+  const {
+    fromToken: token,
+    setAmount,
+    amountInput: input,
+    setAmountInput: setInput,
+  } = useContext(BridgeContext);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [message, setMessage] = useState();
   const onClick = () => {
@@ -33,7 +38,6 @@ export const FromToken = () => {
     onOpen();
   };
   const fallbackLogo = isxDaiChain(network.value) ? xDAILogo : EthLogo;
-  const [input, setInput] = useState('0.00');
   return (
     <Flex align="center" mr={{ base: -4, md: -4, lg: -6 }} position="relative">
       <svg width="100%" viewBox="0 0 381 94" fill="none">
