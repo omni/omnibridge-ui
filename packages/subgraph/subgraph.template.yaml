@@ -6,10 +6,12 @@ schema:
 dataSources:
   - kind: ethereum/contract
     name: Mediator
+    # prettier-ignore
     network: {{network}}
     source:
       abi: Mediator
       address: '{{address}}'
+      # prettier-ignore
       startBlock: {{startBlock}}
     mapping:
       kind: ethereum/events

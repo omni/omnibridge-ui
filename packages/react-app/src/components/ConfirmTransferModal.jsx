@@ -16,7 +16,7 @@ import React, { useContext, useEffect, useState } from 'react';
 
 import TransferImage from '../assets/confirm-transfer.svg';
 import { BridgeContext } from '../contexts/BridgeContext';
-import { formatValue,isxDaiChain } from '../lib/helpers';
+import { formatValue, isxDaiChain } from '../lib/helpers';
 
 export const ConfirmTransferModal = ({ isOpen, onClose }) => {
   const { fromToken, toToken, fromAmount, toAmount, transfer } = useContext(

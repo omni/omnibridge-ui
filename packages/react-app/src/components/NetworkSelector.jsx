@@ -9,7 +9,7 @@ import { networkOptions } from '../lib/constants';
 
 const { Option, DropdownIndicator } = components;
 
-const CustomSelectOption = (props) => {
+const CustomSelectOption = props => {
   const {
     data: { icon, label },
   } = props;
@@ -31,7 +31,7 @@ const CustomSelectOption = (props) => {
   );
 };
 
-const CustomDropdownIndicator = (props) => {
+const CustomDropdownIndicator = props => {
   return (
     <DropdownIndicator {...props}>
       <Flex align="center" justify="center">
@@ -57,7 +57,7 @@ const CustomSelectValue = ({ data: { icon, label } }) => (
 );
 
 const customStyles = {
-  control: (provided) => ({
+  control: provided => ({
     ...provided,
     cursor: 'pointer',
     border: 'none',
@@ -86,7 +86,7 @@ export const NetworkSelector = () => {
     setNetwork(networkOptions[storageNetwork]);
   }, [setNetwork, setDefaultToken]);
 
-  const onChange = (network) => {
+  const onChange = network => {
     setDefaultToken(network.value);
     setNetwork(network);
     setLocalNetwork(network.key);

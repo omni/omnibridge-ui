@@ -5,7 +5,7 @@ import EthLogo from '../assets/eth-logo.png';
 import xDAILogo from '../assets/xdai-logo.png';
 import { BridgeContext } from '../contexts/BridgeContext';
 import { Web3Context } from '../contexts/Web3Context';
-import { formatValue,isxDaiChain } from '../lib/helpers';
+import { formatValue, isxDaiChain } from '../lib/helpers';
 
 export const ToToken = () => {
   const { network } = useContext(Web3Context);

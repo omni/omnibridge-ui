@@ -20,7 +20,7 @@ import xDAILogo from '../assets/xdai-logo.png';
 import { BridgeContext } from '../contexts/BridgeContext';
 import { Web3Context } from '../contexts/Web3Context';
 import { PlusIcon } from '../icons/PlusIcon';
-import { formatValue,isxDaiChain } from '../lib/helpers';
+import { formatValue, isxDaiChain } from '../lib/helpers';
 
 export const TokenSelectorModal = ({ onClose, onCustom }) => {
   const { network } = useContext(Web3Context);
