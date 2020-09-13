@@ -45,21 +45,19 @@ const DropdownIndicator = props => {
 };
 
 const SelectValue = ({ icon, label }) => (
-  <>
-    <Flex
-      cursor="pointer"
-      color="grey"
-      transition="0.25s"
-      padding="2px 8px"
-      _hover={{ color: 'blue.500' }}
-    >
-      {icon}
-      <Text color="black" ml={2} fontWeight="normal">
-        {label}
-      </Text>
-      <DropdownIndicator />
-    </Flex>
-  </>
+  <Flex
+    cursor="pointer"
+    color="grey"
+    transition="0.25s"
+    padding="2px 8px"
+    _hover={{ color: 'blue.500' }}
+  >
+    {icon}
+    <Text color="black" ml={2} fontWeight="normal">
+      {label}
+    </Text>
+    <DropdownIndicator />
+  </Flex>
 );
 
 export const NetworkSelector = props => {
