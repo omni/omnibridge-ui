@@ -1,6 +1,6 @@
 import { gql, request } from 'graphql-request';
 
-import { getBridgeNetwork, getGraphEndpoint } from './helpers';
+import { getGraphEndpoint } from './helpers';
 
 const query = gql`
   query getHistory($recipient: String!) {
@@ -17,9 +17,8 @@ const query = gql`
 
 export const fetchHistory = async (chainId, recipient) => {
   if (!recipient) return { bridgeTransfers: [] };
-  const bridgeChainId = getBridgeNetwork(chainId);
 
-  const endpoint = getGraphEndpoint(bridgeChainId);
+  const endpoint = getGraphEndpoint(chainId);
 
   const variables = {
     recipient,
