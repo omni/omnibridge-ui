@@ -1,10 +1,4 @@
-import {
-  Flex,
-  Image,
-  Text,
-  useBreakpointValue,
-  useDisclosure,
-} from '@chakra-ui/core';
+import { Flex, Image, Text, useDisclosure } from '@chakra-ui/core';
 import React, { useContext, useState } from 'react';
 
 import TransferIcon from '../assets/transfer.svg';
@@ -21,7 +15,6 @@ export const TransferButton = () => {
   );
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [message, setMessage] = useState();
-  const smallScreen = useBreakpointValue({ base: true, lg: false });
   const onClick = () => {
     setMessage();
     if (
@@ -58,6 +51,7 @@ export const TransferButton = () => {
   };
   return (
     <Flex
+      as="button"
       align="center"
       mt={{ base: 2, md: 2, lg: 3 }}
       color="blue.500"
@@ -66,7 +60,6 @@ export const TransferButton = () => {
           ? undefined
           : {
               color: 'blue.600',
-              background: smallScreen ? 'blue.600' : 'transparent',
             }
       }
       cursor={!allowed ? 'not-allowed' : 'pointer'}
@@ -75,9 +68,7 @@ export const TransferButton = () => {
       opacity={!allowed ? 0.4 : 1}
       onClick={onClick}
       borderRadius="0.25rem"
-      background={{ base: 'blue.500', lg: 'transparent' }}
-      h={{ base: '3rem', lg: 'auto' }}
-      w={{ base: '10rem', md: '15rem', lg: 'auto' }}
+      w={{ base: '13rem', lg: 'auto' }}
     >
       {isOpen && message && (
         <ErrorModal message={message} isOpen={isOpen} onClose={onClose} />
@@ -85,14 +76,12 @@ export const TransferButton = () => {
       {isOpen && !message && (
         <ConfirmTransferModal isOpen={isOpen} onClose={onClose} />
       )}
-      {!smallScreen && (
-        <svg width="100%" viewBox="0 0 156 42" fill="none">
-          <path
-            d="M16.914 2.28A4 4 0 0120.526 0h114.948a4 4 0 013.612 2.28l16.19 34c1.264 2.655-.671 5.72-3.611 5.72H4.335C1.395 42-.54 38.935.724 36.28l16.19-34z"
-            fill="currentColor"
-          />
-        </svg>
-      )}
+      <svg width="100%" viewBox="0 0 156 42" fill="none">
+        <path
+          d="M16.914 2.28A4 4 0 0120.526 0h114.948a4 4 0 013.612 2.28l16.19 34c1.264 2.655-.671 5.72-3.611 5.72H4.335C1.395 42-.54 38.935.724 36.28l16.19-34z"
+          fill="currentColor"
+        />
+      </svg>
       <Flex
         position="absolute"
         w="100%"
