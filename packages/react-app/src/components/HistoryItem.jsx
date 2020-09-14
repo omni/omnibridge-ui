@@ -6,6 +6,23 @@ export const HistoryItem = ({ explorer, date, hash }) => {
     base: 'View Transaction',
     md: hash,
   });
+
+  const timestamp = useBreakpointValue({
+    base: new Date(parseInt(date, 10) * 1000).toLocaleTimeString([], {
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    }),
+    md: new Date(parseInt(date, 10) * 1000).toLocaleTimeString([], {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    }),
+  });
   return (
     <Flex
       w="100%"
@@ -16,10 +33,7 @@ export const HistoryItem = ({ explorer, date, hash }) => {
       mb={4}
     >
       <Grid templateColumns={{ base: '2fr 2fr', md: '2fr 3fr' }} w="100%">
-        <Text>{`${date.toLocaleTimeString([], {
-          hour: '2-digit',
-          minute: '2-digit',
-        })} ${date.toLocaleDateString().replaceAll('/', '.')}`}</Text>
+        <Text>{timestamp}</Text>
         <Link
           color="blue.500"
           href={`${explorer}/tx/${hash}`}
