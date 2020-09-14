@@ -39,10 +39,7 @@ export const WalletSelector = props => {
       {account && (
         <Popover placement="bottom-end">
           <PopoverTrigger>
-            <Button
-              colorScheme={networkMismatch ? 'red' : 'blue'}
-              _focus={{ border: 'none' }}
-            >
+            <Button colorScheme={networkMismatch ? 'red' : 'blue'}>
               {networkMismatch ? (
                 <ErrorIcon size={4} mr={2} color="white" />
               ) : (
@@ -55,7 +52,7 @@ export const WalletSelector = props => {
             boxShadow="0 0.5rem 1rem #CADAEF"
             border="none"
             width="auto"
-            _focus={{ border: 'none', outline: 'none' }}
+            // _focus={{ border: 'none', outline: 'none' }}
             right={0}
             maxW="25rem"
           >

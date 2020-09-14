@@ -26,7 +26,7 @@ export const ErrorModal = ({ message, isOpen, onClose }) => {
             top={-10}
             right={-10}
             color="white"
-            _focus={{ border: 'none', outline: 'none' }}
+            // _focus={{ border: 'none', outline: 'none' }}
           />
           <ModalBody p={4}>
             <Flex

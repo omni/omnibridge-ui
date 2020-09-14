@@ -36,7 +36,7 @@ export const Header = () => {
         </Link>
         <Button
           variant="link"
-          _focus={{ outline: 'none', border: 'none' }}
+          // _focus={{ outline: 'none', border: 'none' }}
           display={{ base: 'block', md: 'none' }}
           color="blue.500"
           _hover={{ color: 'blue.600' }}
