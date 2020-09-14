@@ -51,7 +51,7 @@ const SelectValue = ({ icon, label }) => (
     cursor="pointer"
     color="grey"
     transition="0.25s"
-    padding="2px 8px"
+    px={4}
     _hover={{ color: 'blue.500' }}
   >
     {icon}
@@ -115,6 +115,7 @@ export const NetworkSelector = props => {
         <PopoverTrigger>
           <Button
             p={0}
+            background="transparent"
             _hover={{ background: 'transparent' }}
             onClick={handleOpen}
           >
