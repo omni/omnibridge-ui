@@ -6,53 +6,125 @@ The [multi-token extension](https://docs.tokenbridge.net/eth-xdai-amb-bridge/mul
 
 This project is a monorepo created with [Yarn Workspaces](https://classic.yarnpkg.com/en/docs/workspaces/) and [Create Eth App](https://github.com/paulrberg/create-eth-app).
 
+[comment]: # 'git ls-tree -r --name-only HEAD | tree --fromfile'
+
 ```
 xdai-omnibridge
-├── README.md
-├── node_modules
-├── package.json
+├── .eslintrc.json
+├── .firebaserc
+├── .github
+│   └── workflows
+│       └── main.yml
 ├── .gitignore
-└── packages
-    ├── contracts
-    │   ├── README.json
-    │   ├── package.json
-    │   └── src
-    │       ├── abis
-    │       │   ├── erc20.json
-    │       │   └── ownable.json
-    │       ├── addresses.js
-    │       └── index.js
-    ├── react-app
-    │   ├── README.md
-    │   ├── node_modules
-    │   ├── package.json
-    │   ├── public
-    │   │   ├── favicon.ico
-    │   │   ├── index.html
-    │   │   ├── logo192.png
-    │   │   ├── logo512.png
-    │   │   ├── manifest.json
-    │   │   └── robots.txt
-    │   └── src
-    │       ├── App.css
-    │       ├── App.js
-    │       ├── App.test.js
-    │       ├── ethereumLogo.svg
-    │       ├── index.css
-    │       ├── index.js
-    │       ├── serviceWorker.js
-    │       └── setupTests.js
-    └── subgraph
-        ├── README.md
-        ├── abis
-        │   └── erc20.json
-        ├── package.json
-        ├── schema.graphql
-        ├── src
-        │   └── mappings
-        │       ├── tokens.ts
-        │       └── transfers.ts
-        └── subgraph.yaml
+├── .prettierrc.json
+├── README.md
+├── firebase.json
+├── package.json
+├── packages
+│   ├── react-app
+│   │   ├── README.md
+│   │   ├── package.json
+│   │   ├── public
+│   │   │   ├── android-chrome-192x192.png
+│   │   │   ├── android-chrome-512x512.png
+│   │   │   ├── apple-touch-icon.png
+│   │   │   ├── browserconfig.xml
+│   │   │   ├── favicon-16x16.png
+│   │   │   ├── favicon-32x32.png
+│   │   │   ├── favicon.ico
+│   │   │   ├── index.html
+│   │   │   ├── manifest.json
+│   │   │   ├── mstile-150x150.png
+│   │   │   ├── robots.txt
+│   │   │   └── safari-pinned-tab.svg
+│   │   └── src
+│   │       ├── App.jsx
+│   │       ├── Routes.jsx
+│   │       ├── assets
+│   │       │   ├── close.svg
+│   │       │   ├── confirm-transfer.svg
+│   │       │   ├── details.svg
+│   │       │   ├── down-triangle.svg
+│   │       │   ├── drop-down.svg
+│   │       │   ├── eth-logo.png
+│   │       │   ├── footer-logo.svg
+│   │       │   ├── github.svg
+│   │       │   ├── loading.svg
+│   │       │   ├── logo.svg
+│   │       │   ├── raid-guild-logo.svg
+│   │       │   ├── search.svg
+│   │       │   ├── telegram.svg
+│   │       │   ├── transfer.svg
+│   │       │   ├── twitter.svg
+│   │       │   ├── unlock.svg
+│   │       │   ├── up-triangle.svg
+│   │       │   ├── xdai-logo.png
+│   │       │   └── xdai.svg
+│   │       ├── components
+│   │       │   ├── BridgeHistory.jsx
+│   │       │   ├── BridgeTokens.jsx
+│   │       │   ├── ConfirmTransferModal.jsx
+│   │       │   ├── CustomTokenModal.jsx
+│   │       │   ├── ErrorBoundary.jsx
+│   │       │   ├── ErrorModal.jsx
+│   │       │   ├── Footer.jsx
+│   │       │   ├── FromToken.jsx
+│   │       │   ├── Header.jsx
+│   │       │   ├── HistoryItem.jsx
+│   │       │   ├── Layout.jsx
+│   │       │   ├── LoadingModal.jsx
+│   │       │   ├── NetworkSelector.jsx
+│   │       │   ├── ProgressRing.jsx
+│   │       │   ├── SelectTokenModal.jsx
+│   │       │   ├── SystemFeedback.jsx
+│   │       │   ├── ToToken.jsx
+│   │       │   ├── TokenSelectorModal.jsx
+│   │       │   ├── TransferButton.jsx
+│   │       │   ├── UnlockButton.jsx
+│   │       │   └── WalletSelector.jsx
+│   │       ├── config.js
+│   │       ├── contexts
+│   │       │   ├── BridgeContext.jsx
+│   │       │   └── Web3Context.jsx
+│   │       ├── icons
+│   │       │   ├── DownArrowIcon.jsx
+│   │       │   ├── ErrorIcon.jsx
+│   │       │   ├── HistoryIcon.jsx
+│   │       │   ├── NetworkIcon.jsx
+│   │       │   ├── PlusIcon.jsx
+│   │       │   └── WalletIcon.jsx
+│   │       ├── index.jsx
+│   │       ├── lib
+│   │       │   ├── bridge.js
+│   │       │   ├── constants.jsx
+│   │       │   ├── helpers.js
+│   │       │   ├── history.js
+│   │       │   ├── providers.js
+│   │       │   ├── proxy.js
+│   │       │   ├── token.js
+│   │       │   └── tokenList.js
+│   │       ├── pages
+│   │       │   ├── History.jsx
+│   │       │   └── Home.jsx
+│   │       └── theme.js
+│   └── subgraph
+│       ├── README.md
+│       ├── config
+│       │   ├── kovan.json
+│       │   ├── mainnet.json
+│       │   ├── sokol.json
+│       │   └── xdai.json
+│       ├── package.json
+│       ├── schema.graphql
+│       ├── src
+│       │   ├── abis
+│       │   │   ├── mediator.json
+│       │   │   └── token.json
+│       │   └── mappings
+│       │       ├── bridge.ts
+│       │       └── helpers.ts
+│       └── subgraph.template.yaml
+└── yarn.lock
 ```
 
 Owing to this dependency on Yarn Workspaces, Create Eth App can't be used with npm.

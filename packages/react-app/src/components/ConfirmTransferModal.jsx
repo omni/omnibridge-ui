@@ -60,7 +60,7 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
             top={-10}
             right={-10}
             color="white"
-            _focus={{ border: 'none', outline: 'none' }}
+            // _focus={{ border: 'none', outline: 'none' }}
           />
           <ModalBody px={6} py={0}>
             <Flex

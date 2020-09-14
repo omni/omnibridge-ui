@@ -36,7 +36,7 @@ export const SystemFeedback = () => {
         minW="20rem"
         w="auto"
         maxW="30rem"
-        _focus={{ border: 'none', outline: 'none' }}
+        // _focus={{ border: 'none', outline: 'none' }}
       >
         <PopoverArrow />
         {token && (

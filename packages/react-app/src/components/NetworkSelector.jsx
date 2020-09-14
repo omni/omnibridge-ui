@@ -1,85 +1,75 @@
-import { Flex, Text } from '@chakra-ui/core';
+import {
+  Button,
+  Flex,
+  Popover,
+  PopoverBody,
+  PopoverContent,
+  PopoverTrigger,
+  Text,
+} from '@chakra-ui/core';
 import React, { useContext, useEffect, useState } from 'react';
-import Select, { components } from 'react-select';
 
 import { BridgeContext } from '../contexts/BridgeContext';
 import { Web3Context } from '../contexts/Web3Context';
 import { DownArrowIcon } from '../icons/DownArrowIcon';
 import { networkOptions } from '../lib/constants';
 
-const { Option, DropdownIndicator } = components;
+const SelectOption = props => {
+  const { onChange, network } = props;
+  const { icon, label } = network;
 
-const CustomSelectOption = props => {
-  const {
-    data: { icon, label },
-  } = props;
   return (
-    <Option {...props}>
-      <Flex
-        align="center"
-        cursor="pointer"
-        color="grey"
-        transition="0.25s"
+    <Flex transition="0.25s" _hover={{ background: 'background' }}>
+      <Button
+        background="transparent"
+        width="100%"
+        justifyContent="flex-start"
+        fontWeight="normal"
         _hover={{ color: 'blue.500' }}
+        color="grey"
+        onClick={() => onChange(network)}
       >
         {icon}
         <Text color="black" ml={2}>
           {label}
         </Text>
-      </Flex>
-    </Option>
+      </Button>
+    </Flex>
   );
 };
 
-const CustomDropdownIndicator = props => {
+const DropdownIndicator = () => {
   return (
-    <DropdownIndicator {...props}>
-      <Flex align="center" justify="center">
-        <DownArrowIcon fontSize={8} color="black" />;
-      </Flex>
-    </DropdownIndicator>
+    <Flex align="center" justify="center" paddingLeft="15px">
+      <DownArrowIcon fontSize={8} color="black" />
+    </Flex>
   );
 };
 
-const CustomSelectValue = ({ data: { icon, label } }) => (
+const SelectValue = ({ icon, label }) => (
   <Flex
-    align="center"
     cursor="pointer"
     color="grey"
     transition="0.25s"
+    padding="2px 8px"
     _hover={{ color: 'blue.500' }}
   >
     {icon}
-    <Text color="black" ml={2}>
+    <Text color="black" ml={2} fontWeight="bold">
       {label}
     </Text>
+    <DropdownIndicator />
   </Flex>
 );
-
-const customStyles = {
-  control: provided => ({
-    ...provided,
-    cursor: 'pointer',
-    border: 'none',
-    background: 'transparent',
-    fontWeight: 'bold',
-    paddingLeft: '0.5rem',
-  }),
-  menu: provided => ({
-    ...provided,
-    boxShadow: '0 0.5rem 1rem #CADAEF',
-    backgroundColor: 'white',
-  }),
-  indicatorSeparator: provided => ({
-    ...provided,
-    backgroundColor: 'transparent',
-  }),
-};
 
 export const NetworkSelector = props => {
   const [localNetwork, setLocalNetwork] = useState(0);
   const { setNetwork } = useContext(Web3Context);
   const { setDefaultToken } = useContext(BridgeContext);
+
+  const [isOpen, setIsOpen] = React.useState(false);
+  const open = () => setIsOpen(true);
+  const close = () => setIsOpen(false);
 
   useEffect(() => {
     let storageNetwork = parseInt(
@@ -97,30 +87,48 @@ export const NetworkSelector = props => {
   }, [setNetwork, setDefaultToken]);
 
   const onChange = network => {
+    close();
     setDefaultToken(network.value);
     setNetwork(network);
     setLocalNetwork(network.key);
     window.localStorage.setItem('chosenNetwork', network.key);
   };
 
+  const currentNetwork = networkOptions[localNetwork];
+  const selectOptions = networkOptions
+    .filter(network => currentNetwork.value !== network.value)
+    .map(network => {
+      return (
+        <SelectOption
+          onChange={onChange}
+          network={network}
+          key={network.key.toString()}
+        />
+      );
+    });
+
+  const handleOpen = isOpen ? close : open;
+
   return (
     <Flex {...props}>
-      <Select
-        onChange={onChange}
-        styles={customStyles}
-        fontWeight="bold"
-        defaultValue={networkOptions[localNetwork]}
-        value={networkOptions[localNetwork]}
-        options={networkOptions}
-        isClearable={false}
-        isSearchable={false}
-        hideSelectedOptions
-        components={{
-          Option: CustomSelectOption,
-          SingleValue: CustomSelectValue,
-          DropdownIndicator: CustomDropdownIndicator,
-        }}
-      />
+      <Popover isOpen={isOpen} onClose={close} placement="bottom">
+        <PopoverTrigger>
+          <Button
+            p={0}
+            _hover={{ background: 'transparent' }}
+            onClick={handleOpen}
+          >
+            <SelectValue {...currentNetwork} />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent
+          width="min-content"
+          border="1px solid rgba(226,232,240, 0.8)"
+          boxShadow="0 0.5rem 1rem #CADAEF"
+        >
+          <PopoverBody padding={0}>{selectOptions}</PopoverBody>
+        </PopoverContent>
+      </Popover>
     </Flex>
   );
 };
