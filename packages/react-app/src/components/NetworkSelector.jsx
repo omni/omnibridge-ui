@@ -19,12 +19,14 @@ const SelectOption = props => {
   const { icon, label } = network;
 
   return (
-    <Flex color="grey" transition="0.25s">
+    <Flex transition="0.25s" _hover={{ background: 'background' }}>
       <Button
         background="transparent"
         width="100%"
         justifyContent="flex-start"
-        _hover={{ color: 'blue.500', background: 'gray.100', zIndex: 4 }}
+        fontWeight="normal"
+        _hover={{ color: 'blue.500' }}
+        color="grey"
         onClick={() => onChange(network)}
       >
         {icon}
@@ -36,7 +38,7 @@ const SelectOption = props => {
   );
 };
 
-const DropdownIndicator = props => {
+const DropdownIndicator = () => {
   return (
     <Flex align="center" justify="center" paddingLeft="15px">
       <DownArrowIcon fontSize={8} color="black" />
@@ -53,7 +55,7 @@ const SelectValue = ({ icon, label }) => (
     _hover={{ color: 'blue.500' }}
   >
     {icon}
-    <Text color="black" ml={2} fontWeight="normal">
+    <Text color="black" ml={2} fontWeight="bold">
       {label}
     </Text>
     <DropdownIndicator />
@@ -109,7 +111,7 @@ export const NetworkSelector = props => {
 
   return (
     <Flex {...props}>
-      <Popover isOpen={isOpen} placement="bottom">
+      <Popover isOpen={isOpen} onClose={close} placement="bottom">
         <PopoverTrigger>
           <Button
             p={0}
@@ -120,7 +122,6 @@ export const NetworkSelector = props => {
           </Button>
         </PopoverTrigger>
         <PopoverContent
-          zIndex={4}
           width="min-content"
           border="1px solid rgba(226,232,240, 0.8)"
           boxShadow="0 0.5rem 1rem #CADAEF"
