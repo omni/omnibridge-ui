@@ -25,7 +25,7 @@ export const BridgeProvider = ({ children }) => {
   const [transaction, setTransaction] = useState(false);
   const [totalConfirms, setTotalConfirms] = useState(0);
   const [tokenList, setTokenList] = useState([]);
-  const [amountInput, setAmountInput] = useState('0.00');
+  const [amountInput, setAmountInput] = useState('');
 
   const setAmount = useCallback(
     async amount => {
@@ -53,7 +53,7 @@ export const BridgeProvider = ({ children }) => {
       setLoading(true);
       const tokenWithLimits = await fetchTokenLimits(token, account);
       setFromToken(tokenWithLimits);
-      setAmountInput('0.00');
+      setAmountInput('');
       setFromAmount(0);
       setToToken();
       if (isxDaiChain(tokenWithLimits.chainId)) {
