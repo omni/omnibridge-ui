@@ -182,8 +182,8 @@ export const getTokenListUrl = chainId => {
 export const formatValue = (num, dec) => {
   const number = window.BigInt(num);
   const round = window.BigInt(10 ** Number(dec));
-  const value = Number((number * window.BigInt(100)) / round) / 100;
-  return value.toFixed(2);
+  const value = Number((number * window.BigInt(1000)) / round) / 1000;
+  return value.toFixed(3);
 };
 
 export const parseValue = (val, dec) => {

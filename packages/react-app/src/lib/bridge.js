@@ -1,4 +1,4 @@
-import ethers from 'ethers';
+import { BigNumber, Contract } from 'ethers';
 
 import {
   getAMBAddress,
@@ -18,11 +18,7 @@ export const fetchBridgedTokenAddress = async (fromChainId, tokenAddress) => {
     'function foreignTokenAddress(address) view returns (address)',
     'function homeTokenAddress(address) view returns (address)',
   ];
-  const mediatorContract = new ethers.Contract(
-    mediatorAddress,
-    abi,
-    ethersProvider,
-  );
+  const mediatorContract = new Contract(mediatorAddress, abi, ethersProvider);
 
   if (isxDai) {
     return mediatorContract.foreignTokenAddress(tokenAddress);
@@ -44,11 +40,7 @@ export const fetchToAmount = async (fromToken, toToken, fromAmount) => {
     'function HOME_TO_FOREIGN_FEE() view returns (uint256)',
     'function calculateFee(bytes32, address, uint256) view returns (uint256)',
   ];
-  const mediatorContract = new ethers.Contract(
-    mediatorAddress,
-    abi,
-    ethersProvider,
-  );
+  const mediatorContract = new Contract(mediatorAddress, abi, ethersProvider);
 
   try {
     const feeType = isxDai
@@ -99,7 +91,7 @@ export const fetchTokenLimits = async (token, account) => {
     'function dailyLimit(address) view returns (uint256)',
   ];
   const mediatorAddress = getMediatorAddress(token.chainId);
-  const mediatorContract = new ethers.Contract(
+  const mediatorContract = new Contract(
     mediatorAddress,
     mediatorAbi,
     ethersProvider,
@@ -107,9 +99,16 @@ export const fetchTokenLimits = async (token, account) => {
   let isRegistered = false;
   let balance = 0;
   const balanceInUsd = 0;
-  let minPerTx = '1000000000000000000';
-  let maxPerTx = '10000000000000000000000';
-  let dailyLimit = '1000000000000000000000000';
+  // ETH/ERC20 Default Limits
+  const isxDai = isxDaiChain(token.chainId);
+  let minPerTx = BigNumber.from(10).pow(
+    isxDai ? token.decimals : token.decimals - 3,
+  );
+  if (minPerTx.lt(1)) {
+    minPerTx = BigNumber.from(1);
+  }
+  let maxPerTx = BigNumber.from(10).pow(token.decimals + 9);
+  let dailyLimit = BigNumber.from(10).pow(token.decimals + 18);
   try {
     [isRegistered, balance] = await Promise.all([
       mediatorContract.isTokenRegistered(token.address),
@@ -141,14 +140,14 @@ export const fetchConfirmations = async chainId => {
   const ethersProvider = getEthersProvider(chainId);
   const abi = ['function requiredBlockConfirmations() view returns (uint256)'];
   const address = getAMBAddress(chainId);
-  const ambContract = new ethers.Contract(address, abi, ethersProvider);
+  const ambContract = new Contract(address, abi, ethersProvider);
   return ambContract.requiredBlockConfirmations();
 };
 
 export const relayTokens = async (ethersProvider, token, amount) => {
   const mediatorAddress = getMediatorAddress(token.chainId);
   const abi = ['function relayTokens(address, uint256)'];
-  const mediatorContract = new ethers.Contract(
+  const mediatorContract = new Contract(
     mediatorAddress,
     abi,
     ethersProvider.getSigner(),
