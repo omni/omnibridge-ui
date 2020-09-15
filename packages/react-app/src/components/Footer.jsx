@@ -9,9 +9,9 @@ import {
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-import RaidGuildLogo from '../assets/raid-guild-logo.svg';
 import { GithubIcon } from '../icons/GithubIcon';
 import { OmniBridgeIcon } from '../icons/OmniBridgeIcon';
+import { RaidGuildIcon } from '../icons/RaidGuildIcon';
 import { TelegramIcon } from '../icons/TelegramIcon';
 import { TwitterIcon } from '../icons/TwitterIcon';
 import { XDaiIcon } from '../icons/XDaiIcon';
@@ -90,7 +90,7 @@ export const Footer = () => {
             transition="0.25s"
           >
             <Text>Built by</Text>
-            <Image src={RaidGuildLogo} ml={2} />
+            <RaidGuildIcon boxSize={16} ml={2} />
           </Flex>
         </a>
       </HStack>
