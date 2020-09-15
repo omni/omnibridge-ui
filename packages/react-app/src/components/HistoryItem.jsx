@@ -14,7 +14,7 @@ export const HistoryItem = ({ explorer, date, hash }) => {
       hour: '2-digit',
       minute: '2-digit',
     }),
-    md: new Date(parseInt(date, 10) * 1000).toLocaleTimeString([], {
+    lg: new Date(parseInt(date, 10) * 1000).toLocaleTimeString([], {
       weekday: 'long',
       year: 'numeric',
       month: 'long',

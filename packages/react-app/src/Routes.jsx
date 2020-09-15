@@ -6,12 +6,8 @@ import { Home } from './pages/Home';
 
 export const Routes = () => (
   <Switch>
-    <Route exact path="/">
-      <Home />
-    </Route>
-    <Route path="/history">
-      <History />
-    </Route>
+    <Route exact path="/" component={Home} />
+    <Route path="/history" component={History} />
     <Redirect to="/" />
   </Switch>
 );

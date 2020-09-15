@@ -7,24 +7,23 @@ import { fetchHistory } from '../lib/history';
 import { HistoryItem } from './HistoryItem';
 import { LoadingModal } from './LoadingModal';
 
-export const BridgeHistory = () => {
+export const BridgeHistory = ({ page }) => {
   const [history, setHistory] = useState();
   const [explorer, setExplorer] = useState();
   const [loading, setLoading] = useState(true);
   const { network, account } = useContext(Web3Context);
   useEffect(() => {
-    setLoading(true);
     async function getHistory() {
-      const gotHistory = await fetchHistory(network.value, account);
+      const gotHistory = await fetchHistory(network.value, account, page);
       setHistory(gotHistory.bridgeTransfers);
+      setLoading(false);
     }
-    getHistory();
     setExplorer(getExplorerUrl(network.chainId));
-    setLoading(false);
-  }, [network, account, setHistory]);
+    getHistory();
+  }, [network, account, setHistory, page]);
   return (
     <Flex w="100%" maxW="75rem" direction="column" mt={8} px={8}>
-      <LoadingModal />
+      <LoadingModal loadingProps={loading} />
       <Text fontSize="xl" fontWeight="bold" mb={4}>
         History
       </Text>
@@ -43,7 +42,7 @@ export const BridgeHistory = () => {
           <HistoryItem
             key={item.txHash}
             explorer={explorer}
-            date={item.timestamp} // {new Date(parseInt(item.timestamp, 10) * 1000)}
+            date={item.timestamp}
             hash={item.txHash}
           />
         ))
