@@ -78,7 +78,7 @@ export const Header = () => {
             px={4}
             fontWeight="bold"
             color="grey"
-            transition="0.5s"
+            transition="0.25s"
             _hover={{ color: 'blue.500' }}
           >
             <HistoryIcon mr={2} />

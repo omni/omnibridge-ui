@@ -9,12 +9,12 @@ import {
 import React from 'react';
 import { Link } from 'react-router-dom';
 
-import Logo from '../assets/footer-logo.svg';
-import GithubLogo from '../assets/github.svg';
 import RaidGuildLogo from '../assets/raid-guild-logo.svg';
-import TelegramLogo from '../assets/telegram.svg';
-import TwitterLogo from '../assets/twitter.svg';
-import xDaiLogo from '../assets/xdai.svg';
+import { GithubIcon } from '../icons/GithubIcon';
+import { OmniBridgeIcon } from '../icons/OmniBridgeIcon';
+import { TelegramIcon } from '../icons/TelegramIcon';
+import { TwitterIcon } from '../icons/TwitterIcon';
+import { XDaiIcon } from '../icons/XDaiIcon';
 
 export const Footer = () => {
   const smallScreen = useBreakpointValue({ base: true, sm: false });
@@ -28,52 +28,67 @@ export const Footer = () => {
       px={8}
       w="100%"
       color="grey"
-      _hover={{ color: 'blue.500' }}
-      transition="0.25s"
     >
       {!smallScreen && (
         <Link to="/" display={{ base: 'none', sm: 'block' }}>
-          <Flex justify="space-around" align="center">
-            <Image src={Logo} />
+          <Flex
+            justify="space-around"
+            align="center"
+            _hover={{ color: 'blue.500' }}
+            transition="0.25s"
+          >
+            <OmniBridgeIcon w={6} />
           </Flex>
         </Link>
       )}
       <HStack spacing={4}>
-        <a
-          href="https://xdaichain.com"
-          rel="noreferrer noopener"
-          target="_blank"
-        >
-          <Image src={xDaiLogo} />
-        </a>
-        <a
-          href="https://twitter.com/xdaichain"
-          rel="noreferrer noopener"
-          target="_blank"
-        >
-          <Image src={TwitterLogo} />
-        </a>
-        <a
-          href="https://t.me/xdaistable"
-          rel="noreferrer noopener"
-          target="_blank"
-        >
-          <Image src={TelegramLogo} />
-        </a>
-        <a
-          href="https://github.com/xdaichain"
-          rel="noreferrer noopener"
-          target="_blank"
-        >
-          <Image src={GithubLogo} />
-        </a>
+        <Box _hover={{ color: 'blue.500' }}>
+          <a
+            href="https://xdaichain.com"
+            rel="noreferrer noopener"
+            target="_blank"
+          >
+            <XDaiIcon />
+          </a>
+        </Box>
+        <Box _hover={{ color: 'blue.500' }} transition="0.25s">
+          <a
+            href="https://twitter.com/xdaichain"
+            rel="noreferrer noopener"
+            target="_blank"
+          >
+            <TwitterIcon />
+          </a>
+        </Box>
+        <Box _hover={{ color: 'blue.500' }} transition="0.25s">
+          <a
+            href="https://t.me/xdaistable"
+            rel="noreferrer noopener"
+            target="_blank"
+          >
+            <TelegramIcon />
+          </a>
+        </Box>
+        <Box _hover={{ color: 'blue.500' }} transition="0.25s">
+          <a
+            href="https://github.com/xdaichain"
+            rel="noreferrer noopener"
+            target="_blank"
+          >
+            <GithubIcon />
+          </a>
+        </Box>
         <Box w="1px" h={5} background="grey" />
         <a
           href="https://raidguild.org"
           rel="noreferrer noopener"
           target="_blank"
         >
-          <Flex align="center" _hover={{}}>
+          <Flex
+            align="center"
+            _hover={{ color: 'blue.500' }}
+            transition="0.25s"
+          >
             <Text>Built by</Text>
             <Image src={RaidGuildLogo} ml={2} />
           </Flex>

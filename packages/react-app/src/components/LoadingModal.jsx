@@ -21,14 +21,14 @@ const getTransactionString = hash => {
   return `${hash.substr(0, 6)}...${hash.substr(len - 4, len - 1)}`;
 };
 
-export const LoadingModal = () => {
+export const LoadingModal = ({ loadingProps }) => {
   const { loading, fromToken, transaction, totalConfirms } = useContext(
     BridgeContext,
   );
 
   return (
     <Modal
-      isOpen={loading}
+      isOpen={loading || loadingProps}
       closeOnEsc={false}
       closeOnOverlayClick={false}
       isCentered
