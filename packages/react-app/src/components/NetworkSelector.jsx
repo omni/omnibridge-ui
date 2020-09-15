@@ -53,6 +53,7 @@ const SelectValue = ({ icon, label }) => (
     transition="0.25s"
     px={4}
     _hover={{ color: 'blue.500' }}
+    align="center"
   >
     {icon}
     <Text color="black" ml={2} fontWeight="bold">
