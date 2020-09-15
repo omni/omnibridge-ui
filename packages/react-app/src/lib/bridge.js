@@ -71,7 +71,7 @@ export const fetchToToken = async (fromToken, account) => {
     name: isxDai ? `${fromToken.name} on xDai` : fromToken.name.slice(0, -8),
     address: toTokenAddress,
     symbol: fromToken.symbol,
-    decimals: 18,
+    decimals: fromToken.decimals,
     chainId: toChainId,
     logoURI: '',
     balance: await fetchTokenBalance(
