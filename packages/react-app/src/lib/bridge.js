@@ -107,9 +107,10 @@ export const fetchTokenLimits = async (token, account) => {
   let isRegistered = false;
   let balance = 0;
   const balanceInUsd = 0;
-  let minPerTx = '1000000000000000000';
-  let maxPerTx = '10000000000000000000000';
-  let dailyLimit = '1000000000000000000000000';
+  // ETH/ERC20 Default Limits
+  let minPerTx = '0.0001';
+  let maxPerTx = '1000000000';
+  let dailyLimit = '1000000000000000000';
   try {
     [isRegistered, balance] = await Promise.all([
       mediatorContract.isTokenRegistered(token.address),
@@ -117,11 +118,28 @@ export const fetchTokenLimits = async (token, account) => {
     ]);
     if (isRegistered) {
       [minPerTx, maxPerTx, dailyLimit] = await Promise.all([
-        mediatorContract.minPerTx(token.address),
-        mediatorContract.maxPerTx(token.address),
-        mediatorContract.dailyLimit(token.address),
+        mediatorContract.minPerTx(token.address).div(10 ** token.decimals),
+        mediatorContract.maxPerTx(token.address).div(10 ** token.decimals),
+        mediatorContract.dailyLimit(token.address).div(10 ** token.decimals),
       ]);
+    } else {
+      console.log(token.decimals);
+      const isxDai = isxDaiChain(token.chainId);
+      if (!isxDai) {
+        minPerTx = '0.0001';
+        maxPerTx = '1000000000';
+        dailyLimit = '1000000000000000000';
+      } else {
+        minPerTx = '1';
+        maxPerTx = '1000000000';
+        dailyLimit = '1000000000000000000';
+      }
     }
+    console.log({
+      minPerTx,
+      maxPerTx,
+      dailyLimit,
+    });
   } catch (error) {
     // eslint-disable-next-line
     console.log({ tokenError: error });
