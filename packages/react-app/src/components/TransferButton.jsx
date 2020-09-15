@@ -1,5 +1,4 @@
 import { Flex, Image, Text, useDisclosure } from '@chakra-ui/core';
-import ethers from 'ethers';
 import React, { useContext, useState } from 'react';
 
 import TransferIcon from '../assets/transfer.svg';
@@ -21,23 +20,9 @@ export const TransferButton = () => {
     if (
       ethersProvider &&
       !networkMismatch &&
-      ethers.BigNumber.from(amount)
-        .mul(10)
-        .pow(token.decimals)
-        .gte(
-          ethers.BigNumber.from(parseFloat(token.minPerTx))
-            .mul(10)
-            .pow(token.decimals),
-        ) &&
-      ethers.BigNumber.from(amount)
-        .mul(10)
-        .pow(token.decimals)
-        .lt(
-          ethers.BigNumber.from(parseFloat(token.maxPerTx))
-            .mul(10)
-            .pow(token.decimals),
-        ) &&
-      ethers.BigNumber.from(token.balance).gte(ethers.BigNumber.from(amount))
+      window.BigInt(amount) >= window.BigInt(token.minPerTx) &&
+      window.BigInt(amount) < window.BigInt(token.maxPerTx) &&
+      window.BigInt(token.balance) >= window.BigInt(amount)
     ) {
       return onOpen();
     }
@@ -45,41 +30,21 @@ export const TransferButton = () => {
       setMessage('Please connect wallet');
     } else if (networkMismatch) {
       setMessage(`Please switch wallet to ${network.name}`);
-    } else if (
-      ethers.BigNumber.from(amount)
-        .mul(10)
-        .pow(token.decimals)
-        .lt(
-          ethers.BigNumber.from(parseFloat(token.minPerTx))
-            .mul(10)
-            .pow(token.decimals),
-        )
-    ) {
+    } else if (window.BigInt(amount) < window.BigInt(token.minPerTx)) {
       setMessage(
         `Please specify amount more than ${formatValue(
           token.minPerTx,
           token.decimals,
         )}`,
       );
-    } else if (
-      ethers.BigNumber.from(amount)
-        .mul(10)
-        .pow(token.decimals)
-        .gte(
-          ethers.BigNumber.from(parseFloat(token.maxPerTx))
-            .mul(10)
-            .pow(token.decimals),
-        )
-    ) {
+    } else if (window.BigInt(amount) >= window.BigInt(token.maxPerTx)) {
       setMessage(
         `Please specify amount less than ${formatValue(
           token.maxPerTx,
           token.decimals,
         )}`,
       );
-    } else if (
-      ethers.BigNumber.from(token.balance).lt(ethers.BigNumber.from(amount))
-    ) {
+    } else if (window.BigInt(token.balance) < window.BigInt(amount)) {
       setMessage('Not enough balance');
     }
     return onOpen();
