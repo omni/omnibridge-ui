@@ -1,4 +1,4 @@
-import { BigNumber,Contract } from 'ethers';
+import { BigNumber, Contract } from 'ethers';
 
 import {
   getAMBAddress,
