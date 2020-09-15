@@ -33,9 +33,9 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
   const fromAmt = `${formatValue(fromAmount, fromToken.decimals)} ${
     fromToken.symbol
   }${isxDai ? ' on xDai' : ''}`;
-  const toAmt = `${formatValue(toAmount, toToken.decimals)} ${toToken.symbol}${
-    isxDai ? '' : ' on xDai'
-  }`;
+  const toAmt = `${formatValue(toAmount, fromToken.decimals)} ${
+    toToken.symbol
+  }${isxDai ? '' : ' on xDai'}`;
 
   const onClick = () => {
     transfer();
