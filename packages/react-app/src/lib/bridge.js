@@ -78,7 +78,6 @@ export const fetchToToken = async (fromToken, account) => {
       { chainId: toChainId, address: toTokenAddress },
       account,
     ),
-    balanceInUsd: 0,
   };
 };
 
@@ -98,7 +97,6 @@ export const fetchTokenLimits = async (token, account) => {
   );
   let isRegistered = false;
   let balance = 0;
-  const balanceInUsd = 0;
   // ETH/ERC20 Default Limits
   const isxDai = isxDaiChain(token.chainId);
   let minPerTx = BigNumber.from(10).pow(
@@ -129,7 +127,6 @@ export const fetchTokenLimits = async (token, account) => {
     ...token,
     isRegistered,
     balance,
-    balanceInUsd,
     minPerTx,
     maxPerTx,
     dailyLimit,
