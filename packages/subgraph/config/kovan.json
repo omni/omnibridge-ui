@@ -1,5 +1,6 @@
 {
   "network": "kovan",
   "startBlock": "20007099",
-  "address": "0xA960d095470f7509955d5402e36d9DB984B5C8E2"
+  "mediator": "0xA960d095470f7509955d5402e36d9DB984B5C8E2",
+  "amb": "0xFe446bEF1DbF7AFE24E81e05BC8B271C1BA9a560"
 }
