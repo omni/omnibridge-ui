@@ -20,7 +20,7 @@ export const ToToken = () => {
       position="relative"
       borderRadius="0.25rem"
       background={{ base: '#EEF4FD', lg: 'transparent' }}
-      h={{ base: '6rem', lg: 'auto' }}
+      minH={8}
     >
       {!smallScreen && (
         <svg width="100%" viewBox="0 0 381 94" fill="none">
@@ -32,22 +32,20 @@ export const ToToken = () => {
       )}
       {token && (
         <Flex
-          position="absolute"
+          position={{ base: 'relative', lg: 'absolute' }}
+          h={{ base: 'auto', lg: '100%' }}
           w="100%"
-          h="100%"
           direction="column"
           py={4}
           pr={4}
           pl={{ base: 4, lg: 12 }}
         >
-          <Flex justify="space-between" align="center" color="grey" mb={2}>
-            <Text>{`Balance: ${formatValue(
-              token.balance,
-              token.decimals,
-            )}`}</Text>
-            <Text>{`\u2248 $${token.balanceInUsd}`}</Text>
-          </Flex>
-          <Flex justify="space-between" align="center" flex={1}>
+          <Flex
+            justify="space-between"
+            align={{ base: 'stretch', sm: 'center' }}
+            mb={2}
+            direction={{ base: 'column', sm: 'row' }}
+          >
             <Flex align="center">
               <Flex
                 justify="center"
@@ -69,11 +67,14 @@ export const ToToken = () => {
                 {token.name}
               </Text>
             </Flex>
-            <Flex align="center">
-              <Text fontWeight="bold" fontSize="2xl">
-                {formatValue(amount, token.decimals)}
-              </Text>
-            </Flex>
+            <Text color="grey" mt={{ base: 2, lg: 0 }}>
+              {`Balance: ${formatValue(token.balance, token.decimals)}`}
+            </Text>
+          </Flex>
+          <Flex align="flex-end" flex={1}>
+            <Text fontWeight="bold" fontSize="2xl">
+              {formatValue(amount, token.decimals)}
+            </Text>
           </Flex>
         </Flex>
       )}

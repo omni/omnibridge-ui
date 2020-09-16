@@ -48,8 +48,12 @@ export const FromToken = () => {
       position="relative"
       borderRadius="0.25rem"
       border={{ base: '1px solid #DAE3F0', lg: 'none' }}
-      h={{ base: '6rem', lg: 'auto' }}
+      minH={8}
     >
+      {message && (
+        <ErrorModal message={message} isOpen={isOpen} onClose={onClose} />
+      )}
+      {!message && <SelectTokenModal onClose={onClose} isOpen={isOpen} />}
       {!smallScreen && (
         <svg width="100%" viewBox="0 0 381 94" fill="none">
           <path
@@ -61,22 +65,20 @@ export const FromToken = () => {
       )}
       {token && (
         <Flex
-          position="absolute"
+          position={{ base: 'relative', lg: 'absolute' }}
+          h={{ base: 'auto', lg: '100%' }}
           w="100%"
-          h="100%"
           direction="column"
           py={4}
           pl={4}
           pr={{ base: 4, lg: 12 }}
         >
-          <Flex justify="space-between" align="center" color="grey" mb={2}>
-            <Text>{`Balance: ${formatValue(
-              token.balance,
-              token.decimals,
-            )}`}</Text>
-            <Text>{`\u2248 $${token.balanceInUsd}`}</Text>
-          </Flex>
-          <Flex align="center" flex={1}>
+          <Flex
+            justify="space-between"
+            align={{ base: 'stretch', sm: 'center' }}
+            mb={2}
+            direction={{ base: 'column', sm: 'row' }}
+          >
             <Flex align="center" cursor="pointer" onClick={onClick}>
               <Flex
                 justify="center"
@@ -97,42 +99,40 @@ export const FromToken = () => {
               </Text>
               <Image src={DropDown} cursor="pointer" />
             </Flex>
-            {isOpen && message && (
-              <ErrorModal message={message} isOpen={isOpen} onClose={onClose} />
-            )}
-            {isOpen && !message && (
-              <SelectTokenModal onClose={onClose} isOpen={isOpen} />
-            )}
-            <Flex align="center" justify="flex-end" flex={1}>
-              <Input
-                variant="unstyled"
-                type="number"
-                value={input}
-                placeholder="0.000"
-                textAlign="right"
-                fontWeight="bold"
-                onChange={e => {
-                  setInput(e.target.value);
-                  setAmount(parseValue(e.target.value, token.decimals));
-                }}
-                fontSize="2xl"
-              />
-              <Button
-                ml={2}
-                color="blue.500"
-                bg="blue.50"
-                size="sm"
-                fontSize="sm"
-                fontWeight="normal"
-                _hover={{ bg: 'blue.100' }}
-                onClick={() => {
-                  setInput(formatValue(token.balance, token.decimals));
-                  setAmount(token.balance);
-                }}
-              >
-                Max
-              </Button>
-            </Flex>
+            <Text color="grey" mt={{ base: 2, lg: 0 }}>
+              {`Balance: ${formatValue(token.balance, token.decimals)}`}
+            </Text>
+          </Flex>
+          <Flex align="flex-end" flex={1}>
+            <Input
+              flex={1}
+              variant="unstyled"
+              type="number"
+              value={input}
+              placeholder="0.000"
+              textAlign="left"
+              fontWeight="bold"
+              onChange={e => {
+                setInput(e.target.value);
+                setAmount(parseValue(e.target.value, token.decimals));
+              }}
+              fontSize="2xl"
+            />
+            <Button
+              ml={2}
+              color="blue.500"
+              bg="blue.50"
+              size="sm"
+              fontSize="sm"
+              fontWeight="normal"
+              _hover={{ bg: 'blue.100' }}
+              onClick={() => {
+                setInput(formatValue(token.balance, token.decimals));
+                setAmount(token.balance);
+              }}
+            >
+              Max
+            </Button>
           </Flex>
         </Flex>
       )}
