@@ -2,18 +2,26 @@ import { Flex, Grid, Text } from '@chakra-ui/core';
 import React, { useContext, useEffect, useState } from 'react';
 
 import { Web3Context } from '../contexts/Web3Context';
-import { fetchHistory } from '../lib/history';
+import { fetchHistory, fetchNumHistory } from '../lib/history';
 import { HistoryItem } from './HistoryItem';
+import { HistoryPagination } from './HistoryPagination';
 import { LoadingModal } from './LoadingModal';
 
 export const BridgeHistory = ({ page }) => {
   const [history, setHistory] = useState();
   const [loading, setLoading] = useState(true);
   const { network, account } = useContext(Web3Context);
+  const [numPages, setNumPages] = useState(0);
+
   useEffect(() => {
     async function getHistory() {
-      const gotHistory = await fetchHistory(network.value, account, page);
-      setHistory(gotHistory.userRequests);
+      setLoading(true);
+      const [gotHistory, totalItems] = await Promise.all([
+        fetchHistory(network.value, account, page),
+        fetchNumHistory(network.value, account),
+      ]);
+      setHistory(gotHistory);
+      setNumPages(Math.ceil(totalItems / 10));
       setLoading(false);
     }
     getHistory();
@@ -34,15 +42,20 @@ export const BridgeHistory = ({ page }) => {
         <Text>Date</Text>
         <Text>Txn Hash</Text>
       </Grid>
-      {!loading && history && history.length > 0 ? (
-        history.map(item => (
-          <HistoryItem
-            key={item.txHash}
-            chainId={network.value}
-            date={item.timestamp}
-            hash={item.txHash}
-          />
-        ))
+      {history && history.length > 0 ? (
+        <>
+          {history.map(item => (
+            <HistoryItem
+              key={item.txHash}
+              chainId={network.value}
+              date={item.timestamp}
+              hash={item.txHash}
+            />
+          ))}
+          {numPages && (
+            <HistoryPagination numPages={numPages} currentPage={page} />
+          )}
+        </>
       ) : (
         <Grid templateColumns="5fr" w="100%">
           <Text align="center">No History Found</Text>
