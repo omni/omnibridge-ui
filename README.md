@@ -47,19 +47,13 @@ xdai-omnibridge
 │   │       │   ├── down-triangle.svg
 │   │       │   ├── drop-down.svg
 │   │       │   ├── eth-logo.png
-│   │       │   ├── footer-logo.svg
-│   │       │   ├── github.svg
 │   │       │   ├── loading.svg
 │   │       │   ├── logo.svg
-│   │       │   ├── raid-guild-logo.svg
 │   │       │   ├── search.svg
-│   │       │   ├── telegram.svg
 │   │       │   ├── transfer.svg
-│   │       │   ├── twitter.svg
 │   │       │   ├── unlock.svg
 │   │       │   ├── up-triangle.svg
-│   │       │   ├── xdai-logo.png
-│   │       │   └── xdai.svg
+│   │       │   └── xdai-logo.png
 │   │       ├── components
 │   │       │   ├── BridgeHistory.jsx
 │   │       │   ├── BridgeTokens.jsx
@@ -71,6 +65,7 @@ xdai-omnibridge
 │   │       │   ├── FromToken.jsx
 │   │       │   ├── Header.jsx
 │   │       │   ├── HistoryItem.jsx
+│   │       │   ├── HistoryPagination.jsx
 │   │       │   ├── Layout.jsx
 │   │       │   ├── LoadingModal.jsx
 │   │       │   ├── NetworkSelector.jsx
@@ -89,12 +84,21 @@ xdai-omnibridge
 │   │       ├── icons
 │   │       │   ├── DownArrowIcon.jsx
 │   │       │   ├── ErrorIcon.jsx
+│   │       │   ├── GithubIcon.jsx
 │   │       │   ├── HistoryIcon.jsx
+│   │       │   ├── LeftIcon.jsx
 │   │       │   ├── NetworkIcon.jsx
+│   │       │   ├── OmniBridgeIcon.jsx
 │   │       │   ├── PlusIcon.jsx
-│   │       │   └── WalletIcon.jsx
+│   │       │   ├── RaidGuildIcon.jsx
+│   │       │   ├── RightIcon.jsx
+│   │       │   ├── TelegramIcon.jsx
+│   │       │   ├── TwitterIcon.jsx
+│   │       │   ├── WalletIcon.jsx
+│   │       │   └── XDaiIcon.jsx
 │   │       ├── index.jsx
 │   │       ├── lib
+│   │       │   ├── amb.js
 │   │       │   ├── bridge.js
 │   │       │   ├── constants.jsx
 │   │       │   ├── helpers.js
@@ -118,9 +122,11 @@ xdai-omnibridge
 │       ├── schema.graphql
 │       ├── src
 │       │   ├── abis
+│       │   │   ├── amb.json
 │       │   │   ├── mediator.json
 │       │   │   └── token.json
 │       │   └── mappings
+│       │       ├── amb.ts
 │       │       ├── bridge.ts
 │       │       └── helpers.ts
 │       └── subgraph.template.yaml
@@ -158,6 +164,17 @@ Your app is ready to be deployed!
 
 ### Subgraph
 
+#### `yarn subgraph:auth`
+
+```sh
+GRAPH_ACCESS_TOKEN=your-access-token-here yarn subgraph:auth
+```
+
+#### `yarn subgraph:prepare-<network>`
+
+Generates subgraph.yaml for particular network.
+Supported networks are kovan, sokol, xdai and mainnet.
+
 #### `yarn subgraph:codegen`
 
 Generates AssemblyScript types for smart contract ABIs and the subgraph schema.
@@ -166,12 +183,6 @@ Generates AssemblyScript types for smart contract ABIs and the subgraph schema.
 
 Compiles the subgraph to WebAssembly.
 
-#### `yarn subgraph:auth`
+#### `yarn subgraph:deploy-<network>`
 
-```sh
-GRAPH_ACCESS_TOKEN=your-access-token-here yarn subgraph:auth
-```
-
-#### `yarn subgraph:deploy`
-
-Deploys the subgraph to the official Graph Node.<br/>
+Deploys the subgraph for particular network to the official Graph Node.<br/>
