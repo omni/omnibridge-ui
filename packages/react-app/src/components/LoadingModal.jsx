@@ -22,7 +22,7 @@ const getTransactionString = hash => {
 };
 
 export const LoadingModal = ({ loadingProps }) => {
-  const { loading, fromToken, transaction, totalConfirms } = useContext(
+  const { loading, fromToken, txHash, receipt, totalConfirms } = useContext(
     BridgeContext,
   );
 
@@ -34,7 +34,7 @@ export const LoadingModal = ({ loadingProps }) => {
       isCentered
     >
       <ModalOverlay background="modalBG">
-        {(!transaction || totalConfirms === 0) && (
+        {(!receipt || totalConfirms === 0) && (
           <Flex direction="column" align="center">
             <Image src={LoadingImage} mb={4} />
             <Text color="white" fontWeight="bold">
@@ -42,7 +42,7 @@ export const LoadingModal = ({ loadingProps }) => {
             </Text>
           </Flex>
         )}
-        {transaction && totalConfirms && (
+        {receipt && totalConfirms && (
           <ModalContent
             boxShadow="0px 1rem 2rem #617492"
             borderRadius="full"
@@ -65,8 +65,8 @@ export const LoadingModal = ({ loadingProps }) => {
                   position="relative"
                 >
                   <Text>{`${
-                    transaction.confirmations < totalConfirms
-                      ? transaction.confirmations
+                    receipt.confirmations < totalConfirms
+                      ? receipt.confirmations
                       : totalConfirms
                   }/${totalConfirms}`}</Text>
                   <Flex
@@ -79,8 +79,8 @@ export const LoadingModal = ({ loadingProps }) => {
                       radius={47.5}
                       stroke={5}
                       progress={
-                        transaction.confirmations < totalConfirms
-                          ? transaction.confirmations
+                        receipt.confirmations < totalConfirms
+                          ? receipt.confirmations
                           : totalConfirms
                       }
                       totalProgress={totalConfirms}
@@ -92,12 +92,12 @@ export const LoadingModal = ({ loadingProps }) => {
                   <Text width="100%" color="grey">
                     {'Monitor at ALM '}
                     <Link
-                      href={getMonitorUrl(fromToken.chainId, transaction.hash)}
+                      href={getMonitorUrl(fromToken.chainId, txHash)}
                       rel="noreferrer noopener"
                       target="_blank"
                       color="blue.500"
                     >
-                      {getTransactionString(transaction.hash)}
+                      {getTransactionString(txHash)}
                     </Link>
                   </Text>
                 </Flex>

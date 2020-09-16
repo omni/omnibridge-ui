@@ -1,11 +1,7 @@
 import { BigNumber, Contract } from 'ethers';
 
-import {
-  getAMBAddress,
-  getBridgeNetwork,
-  getMediatorAddress,
-  isxDaiChain,
-} from './helpers';
+import { fetchConfirmations } from './amb';
+import { getBridgeNetwork, getMediatorAddress, isxDaiChain } from './helpers';
 import { getEthersProvider } from './providers';
 import { fetchTokenBalance, transferAndCallToken } from './token';
 
@@ -131,14 +127,6 @@ export const fetchTokenLimits = async (token, account) => {
     maxPerTx,
     dailyLimit,
   };
-};
-
-export const fetchConfirmations = async chainId => {
-  const ethersProvider = getEthersProvider(chainId);
-  const abi = ['function requiredBlockConfirmations() view returns (uint256)'];
-  const address = getAMBAddress(chainId);
-  const ambContract = new Contract(address, abi, ethersProvider);
-  return ambContract.requiredBlockConfirmations();
 };
 
 export const relayTokens = async (ethersProvider, token, amount) => {

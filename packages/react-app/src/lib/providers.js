@@ -1,16 +1,10 @@
 import ethers from 'ethers';
+import memoize from 'fast-memoize';
 
 import { getRPCUrl } from './helpers';
 
-const ethersProviders = {};
+const rawGetEthersProvider = chainId =>
+  new ethers.providers.JsonRpcProvider(getRPCUrl(chainId));
+const memoized = memoize(rawGetEthersProvider);
 
-export const getEthersProvider = chainId => {
-  if (ethersProviders[chainId]) {
-    return ethersProviders[chainId];
-  }
-  const ethersProvider = new ethers.providers.JsonRpcProvider(
-    getRPCUrl(chainId),
-  );
-  ethersProviders[chainId] = ethersProvider;
-  return ethersProvider;
-};
+export const getEthersProvider = chainId => memoized(chainId);

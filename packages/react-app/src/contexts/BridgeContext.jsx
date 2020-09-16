@@ -1,5 +1,6 @@
-import React, { useCallback, useContext, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 
+import { getMessageCallStatus, getMessageFromReceipt } from '../lib/amb';
 import {
   fetchToAmount,
   fetchTokenLimits,
@@ -10,6 +11,8 @@ import { getDefaultToken, isxDaiChain, uniqueTokens } from '../lib/helpers';
 import { approveToken, fetchAllowance, fetchTokenBalance } from '../lib/token';
 import { fetchTokenList } from '../lib/tokenList';
 import { Web3Context } from './Web3Context';
+
+const POLLING_INTERVAL = 2000;
 
 export const BridgeContext = React.createContext({});
 
@@ -22,7 +25,8 @@ export const BridgeProvider = ({ children }) => {
   const [toAmount, setToAmount] = useState(0);
   const [allowed, setAllowed] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [transaction, setTransaction] = useState(false);
+  const [txHash, setTxHash] = useState();
+  const [receipt, setReceipt] = useState();
   const [totalConfirms, setTotalConfirms] = useState(0);
   const [tokenList, setTokenList] = useState([]);
   const [amountInput, setAmountInput] = useState('');
@@ -99,26 +103,68 @@ export const BridgeProvider = ({ children }) => {
         fromAmount,
       );
       setTotalConfirms(numConfirms);
-      setTransaction(tx);
-      const handler = async () => {
-        const receipt = await ethersProvider.getTransactionReceipt(tx.hash);
-        if (receipt) {
-          receipt.hash = tx.hash;
-          setTransaction(receipt);
-        }
-      };
-
-      ethersProvider.on('block', handler);
-      await tx.wait(numConfirms);
-      ethersProvider.removeListener('block', handler);
-      await setToken(fromToken);
-      setTransaction();
+      setTxHash(tx.hash);
     } catch (error) {
+      setTxHash();
+      setLoading(false);
       // eslint-disable-next-line
       console.log({ transferError: error });
     }
-    setLoading(false);
-  }, [fromToken, ethersProvider, fromAmount, setToken]);
+  }, [fromToken, ethersProvider, fromAmount]);
+
+  useEffect(() => {
+    const subscriptions = [];
+    const unsubscribe = () => {
+      subscriptions.forEach(s => {
+        clearTimeout(s);
+      });
+    };
+    if (!txHash) return unsubscribe;
+
+    const { chainId } = fromToken;
+    let message = null;
+    let status = false;
+
+    const getReceipt = async () => {
+      try {
+        const txReceipt = await ethersProvider.getTransactionReceipt(txHash);
+        setReceipt(txReceipt);
+
+        if (txReceipt) {
+          message = getMessageFromReceipt(chainId, txReceipt);
+        }
+
+        if (message) {
+          status = await getMessageCallStatus(chainId, message);
+        }
+
+        if (status) {
+          await setToken(fromToken);
+          setTxHash();
+          setReceipt();
+          setLoading(false);
+        }
+
+        if (!txReceipt || !message || !status) {
+          const timeoutId = setTimeout(() => getReceipt(), POLLING_INTERVAL);
+          subscriptions.push(timeoutId);
+        }
+      } catch (error) {
+        setTxHash();
+        setReceipt();
+        setLoading(false);
+        // eslint-disable-next-line
+        console.log({ receiptError: error });
+      }
+    };
+
+    // unsubscribe from previous polls
+    unsubscribe();
+
+    getReceipt();
+    // unsubscribe when unmount component
+    return unsubscribe;
+  }, [txHash, ethersProvider, setToken, fromToken]);
 
   const setDefaultTokenList = useCallback(
     async (chainId, customTokens) => {
@@ -169,7 +215,8 @@ export const BridgeProvider = ({ children }) => {
         approve,
         transfer,
         loading,
-        transaction,
+        txHash,
+        receipt,
         totalConfirms,
         tokenList,
         setDefaultTokenList,
