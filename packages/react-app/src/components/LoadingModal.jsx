@@ -22,9 +22,14 @@ const getTransactionString = hash => {
 };
 
 export const LoadingModal = ({ loadingProps }) => {
-  const { loading, fromToken, txHash, receipt, totalConfirms } = useContext(
-    BridgeContext,
-  );
+  const {
+    loading,
+    loadingText,
+    fromToken,
+    txHash,
+    receipt,
+    totalConfirms,
+  } = useContext(BridgeContext);
 
   return (
     <Modal
@@ -87,8 +92,14 @@ export const LoadingModal = ({ loadingProps }) => {
                     />
                   </Flex>
                 </Flex>
-                <Flex flex={1} direction="column">
-                  <Text width="100%">Waiting for Block Confirmations...</Text>
+                <Flex
+                  flex={1}
+                  direction="column"
+                  align={{ base: 'stretch', md: 'center' }}
+                >
+                  <Text width="100%">
+                    {`${loadingText || 'Waiting for Block Confirmations'}...`}
+                  </Text>
                   <Text width="100%" color="grey">
                     {'Monitor at ALM '}
                     <Link

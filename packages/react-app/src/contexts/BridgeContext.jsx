@@ -25,6 +25,7 @@ export const BridgeProvider = ({ children }) => {
   const [toAmount, setToAmount] = useState(0);
   const [allowed, setAllowed] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [loadingText, setLoadingText] = useState();
   const [txHash, setTxHash] = useState();
   const [receipt, setReceipt] = useState();
   const [totalConfirms, setTotalConfirms] = useState(0);
@@ -107,6 +108,7 @@ export const BridgeProvider = ({ children }) => {
     } catch (error) {
       setTxHash();
       setLoading(false);
+      setLoadingText();
       // eslint-disable-next-line
       console.log({ transferError: error });
     }
@@ -132,6 +134,10 @@ export const BridgeProvider = ({ children }) => {
 
         if (txReceipt) {
           message = getMessageFromReceipt(chainId, txReceipt);
+          // console.log(txReceipt.confirmations);
+          if (txReceipt.confirmations > totalConfirms) {
+            setLoadingText('Waiting for Execution');
+          }
         }
 
         if (message) {
@@ -139,10 +145,11 @@ export const BridgeProvider = ({ children }) => {
         }
 
         if (status) {
-          await setToken(fromToken);
           setTxHash();
           setReceipt();
+          await setToken(fromToken);
           setLoading(false);
+          setLoadingText();
         }
 
         if (!txReceipt || !message || !status) {
@@ -153,6 +160,7 @@ export const BridgeProvider = ({ children }) => {
         setTxHash();
         setReceipt();
         setLoading(false);
+        setLoadingText();
         // eslint-disable-next-line
         console.log({ receiptError: error });
       }
@@ -164,7 +172,7 @@ export const BridgeProvider = ({ children }) => {
     getReceipt();
     // unsubscribe when unmount component
     return unsubscribe;
-  }, [txHash, ethersProvider, setToken, fromToken]);
+  }, [txHash, totalConfirms, ethersProvider, setToken, fromToken]);
 
   const setDefaultTokenList = useCallback(
     async (chainId, customTokens) => {
@@ -215,6 +223,7 @@ export const BridgeProvider = ({ children }) => {
         approve,
         transfer,
         loading,
+        loadingText,
         txHash,
         receipt,
         totalConfirms,
