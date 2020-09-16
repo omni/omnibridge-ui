@@ -1,3 +1,10 @@
+type UserRequest @entity {
+  id: ID!
+  user: Bytes!
+  timestamp: BigInt!
+  txHash: String!
+}
+
 type BridgeTransfer @entity {
   id: ID!
   token: Bytes!

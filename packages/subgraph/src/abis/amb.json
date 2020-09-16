@@ -1,0 +1,20 @@
+[
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": true, "name": "messageId", "type": "bytes32" },
+      { "indexed": false, "name": "encodedData", "type": "bytes" }
+    ],
+    "name": "UserRequestForAffirmation",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": true, "name": "messageId", "type": "bytes32" },
+      { "indexed": false, "name": "encodedData", "type": "bytes" }
+    ],
+    "name": "UserRequestForSignature",
+    "type": "event"
+  }
+]
