@@ -1,7 +1,9 @@
 import { Flex, Grid, Link, Text, useBreakpointValue } from '@chakra-ui/core';
 import React from 'react';
 
-export const HistoryItem = ({ explorer, date, hash }) => {
+import { getMonitorUrl } from '../lib/helpers';
+
+export const HistoryItem = ({ chainId, date, hash }) => {
   const linkText = useBreakpointValue({
     base: 'View Transaction',
     md: hash,
@@ -36,7 +38,7 @@ export const HistoryItem = ({ explorer, date, hash }) => {
         <Text>{timestamp}</Text>
         <Link
           color="blue.500"
-          href={`${explorer}/tx/${hash}`}
+          href={getMonitorUrl(chainId, hash)}
           rel="noreferrer noopener"
           target="_blank"
         >

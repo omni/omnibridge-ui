@@ -2,23 +2,20 @@ import { Flex, Grid, Text } from '@chakra-ui/core';
 import React, { useContext, useEffect, useState } from 'react';
 
 import { Web3Context } from '../contexts/Web3Context';
-import { getExplorerUrl } from '../lib/helpers';
 import { fetchHistory } from '../lib/history';
 import { HistoryItem } from './HistoryItem';
 import { LoadingModal } from './LoadingModal';
 
 export const BridgeHistory = ({ page }) => {
   const [history, setHistory] = useState();
-  const [explorer, setExplorer] = useState();
   const [loading, setLoading] = useState(true);
   const { network, account } = useContext(Web3Context);
   useEffect(() => {
     async function getHistory() {
       const gotHistory = await fetchHistory(network.value, account, page);
-      setHistory(gotHistory.bridgeTransfers);
+      setHistory(gotHistory.userRequests);
       setLoading(false);
     }
-    setExplorer(getExplorerUrl(network.chainId));
     getHistory();
   }, [network, account, setHistory, page]);
   return (
@@ -41,7 +38,7 @@ export const BridgeHistory = ({ page }) => {
         history.map(item => (
           <HistoryItem
             key={item.txHash}
-            explorer={explorer}
+            chainId={network.value}
             date={item.timestamp}
             hash={item.txHash}
           />

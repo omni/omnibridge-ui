@@ -3,12 +3,12 @@ import { gql, request } from 'graphql-request';
 import { getGraphEndpoint } from './helpers';
 
 const query = gql`
-  query getHistory($recipient: String!, $skip: Int!) {
-    bridgeTransfers(
+  query getHistory($user: String!, $skip: Int!) {
+    userRequests(
       first: 10
       skip: $skip
       orderBy: timestamp
-      where: { recipient_contains: $recipient }
+      where: { user_contains: $user }
       orderDirection: desc
     ) {
       txHash
@@ -17,13 +17,13 @@ const query = gql`
   }
 `;
 
-export const fetchHistory = async (chainId, recipient, page) => {
-  if (!recipient) return { bridgeTransfers: [] };
+export const fetchHistory = async (chainId, user, page) => {
+  if (!user) return { userRequests: [] };
 
   const endpoint = getGraphEndpoint(chainId);
 
   const variables = {
-    recipient,
+    user,
     skip: (page - 1) * 10,
   };
 
