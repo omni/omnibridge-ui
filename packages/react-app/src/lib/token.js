@@ -66,6 +66,8 @@ export const transferAndCallToken = async (ethersProvider, token, amount) => {
 
 export const fetchTokenBalance = async (token, account) => {
   if (!account || !token || token.address === ADDRESS_ZERO) {
+    // eslint-disable-next-line
+    console.log({ balanceError: 'Returning balance as 0', account, token });
     return 0;
   }
   const ethersProvider = getEthersProvider(token.chainId);

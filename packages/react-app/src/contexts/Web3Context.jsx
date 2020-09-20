@@ -66,6 +66,7 @@ export const Web3Provider = ({ children }) => {
   const disconnect = useCallback(async () => {
     web3Modal.clearCachedProvider();
     setAccount();
+    setEthersProvider();
   }, []);
 
   useEffect(() => {

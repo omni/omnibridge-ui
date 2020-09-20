@@ -176,6 +176,7 @@ export const BridgeProvider = ({ children }) => {
 
   const setDefaultTokenList = useCallback(
     async (chainId, customTokens) => {
+      if (!account) return;
       setLoading(true);
       try {
         const baseTokenList = await fetchTokenList(chainId);
