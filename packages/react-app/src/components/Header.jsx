@@ -31,7 +31,7 @@ export const Header = () => {
         <Link to="/">
           <Flex justify="space-around" align="center">
             <Image src={Logo} mr={4} />
-            <Text fontWeight="bold">Multi Token Bridge</Text>
+            <Text fontWeight="bold">OmniBridge</Text>
           </Flex>
         </Link>
         <Button

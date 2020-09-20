@@ -30,12 +30,10 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
     );
   }, [fromAmount, toAmount]);
   const isxDai = isxDaiChain(fromToken.chainId);
-  const fromAmt = `${formatValue(fromAmount, fromToken.decimals)} ${
-    fromToken.symbol
-  }${isxDai ? ' on xDai' : ''}`;
-  const toAmt = `${formatValue(toAmount, toToken.decimals)} ${toToken.symbol}${
-    isxDai ? '' : ' on xDai'
-  }`;
+  const fromAmt = formatValue(fromAmount, fromToken.decimals);
+  const fromUnit = fromToken.symbol + (isxDai ? ' on xDai' : '');
+  const toAmt = formatValue(toAmount, toToken.decimals);
+  const toUnit = toToken.symbol + (isxDai ? '' : ' on xDai');
 
   const onClick = () => {
     transfer();
@@ -63,21 +61,23 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
             // _focus={{ border: 'none', outline: 'none' }}
           />
           <ModalBody px={6} py={0}>
-            <Flex
-              align="center"
-              fontWeight="bold"
-              direction={{ base: 'column', md: 'row' }}
-            >
+            <Flex align="center" direction={{ base: 'column', md: 'row' }}>
               <Flex
                 justify="center"
                 align="center"
+                direction="column"
                 border="1px solid #DAE3F0"
                 borderRadius="0.25rem"
                 w="10rem"
                 h="4rem"
                 px={4}
               >
-                <Text textAlign="center">{fromAmt}</Text>
+                <Text textAlign="center" fontWeight="bold">
+                  {fromAmt}
+                </Text>
+                <Text textAlign="center" fontSize="sm">
+                  {fromUnit}
+                </Text>
               </Flex>
               <Flex
                 flex={1}
@@ -106,13 +106,19 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
               <Flex
                 justify="center"
                 align="center"
+                direction="column"
                 border="1px solid #DAE3F0"
                 borderRadius="0.25rem"
                 w="10rem"
                 h="4rem"
                 px={4}
               >
-                <Text textAlign="center">{toAmt}</Text>
+                <Text textAlign="center" fontWeight="bold">
+                  {toAmt}
+                </Text>
+                <Text textAlign="center" fontSize="sm">
+                  {toUnit}
+                </Text>
               </Flex>
             </Flex>
             <Flex align="center" fontSize="sm" justify="center" mt={4}>
