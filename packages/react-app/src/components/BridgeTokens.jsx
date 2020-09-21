@@ -1,6 +1,14 @@
-import { Flex, Grid, Text, useBreakpointValue } from '@chakra-ui/core';
+import {
+  Alert,
+  AlertIcon,
+  Flex,
+  Grid,
+  Text,
+  useBreakpointValue,
+} from '@chakra-ui/core';
 import React, { useContext } from 'react';
 
+import { BridgeContext } from '../contexts/BridgeContext';
 import { Web3Context } from '../contexts/Web3Context';
 import { FromToken } from './FromToken';
 import { LoadingModal } from './LoadingModal';
@@ -9,9 +17,25 @@ import { ToToken } from './ToToken';
 import { TransferButton } from './TransferButton';
 import { UnlockButton } from './UnlockButton';
 
+const DaiWarning = () => {
+  return (
+    <Flex align="flex-middle" direction="column">
+      <Alert status="warning" borderRadius={5} mb={5}>
+        <AlertIcon />
+        <Text fontSize="small">
+          Bridges erc20 Dai to xDai, not the xDai Native token.
+        </Text>
+      </Alert>
+    </Flex>
+  );
+};
+
 export const BridgeTokens = () => {
   const { network } = useContext(Web3Context);
   const smallScreen = useBreakpointValue({ base: true, lg: false });
+  const { fromToken: token } = useContext(BridgeContext);
+  const isERC20Dai = token && token.symbol === 'DAI';
+
   return (
     <Flex
       w="calc(100% - 2rem)"
@@ -38,6 +62,7 @@ export const BridgeTokens = () => {
                   {network.name}
                 </Text>
               </Flex>
+              {isERC20Dai && <DaiWarning />}
               <Flex align="flex-end" direction="column">
                 <Text color="greyText" fontSize="sm">
                   To
