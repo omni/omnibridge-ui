@@ -2,7 +2,6 @@ import {
   Flex,
   Image,
   Popover,
-  PopoverArrow,
   PopoverBody,
   PopoverContent,
   PopoverTrigger,
@@ -38,7 +37,6 @@ export const SystemFeedback = () => {
         maxW="30rem"
         // _focus={{ border: 'none', outline: 'none' }}
       >
-        <PopoverArrow />
         {token && (
           <PopoverBody width="100%" align="center" fontSize="sm">
             <Flex align="center" justify="space-between">
