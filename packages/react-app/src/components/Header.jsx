@@ -67,7 +67,7 @@ export const Header = () => {
         direction={{ base: 'column', md: 'row' }}
         spacing={4}
         display={{ base: isOpen ? 'flex' : 'none', md: 'flex' }}
-        zIndex={{ base: 1, md: 'auto' }}
+        // zIndex={{ base: 1, md: 'auto' }}
         w={{ base: '100%', md: 'auto' }}
         align={{ base: 'flex-start', md: 'center' }}
         pb={{ base: 4, md: 0 }}
