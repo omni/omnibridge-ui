@@ -34,6 +34,8 @@ export const fetchTokenDetails = async (chainId, tokenAddress) => {
     tokenContract.decimals(),
   ]);
   const details = {
+    address: tokenAddress,
+    chainId,
     name,
     symbol,
     decimals: Number(decimals),

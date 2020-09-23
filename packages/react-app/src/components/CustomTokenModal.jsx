@@ -33,6 +33,9 @@ export const CustomTokenModal = ({ isOpen, onClose, onBack }) => {
     logo: xDAILogo,
   });
 
+  const [addressInput, setAddressInput] = useState('');
+  const [addressInvalid, setAddressInvalid] = useState(false);
+
   const onClick = () => {
     onClose();
     addCustomToken();
@@ -60,19 +63,22 @@ export const CustomTokenModal = ({ isOpen, onClose, onBack }) => {
   };
 
   const handleChange = async e => {
-    if (e.target.id === 'address' && utils.isAddress(e.target.value)) {
-      const tokenAddress = e.target.value;
-      const customTokenDetails = await fetchTokenDetails(
-        network.value,
-        tokenAddress,
-      );
-      setCustomToken({
-        ...customToken,
-        address: tokenAddress,
-        name: customTokenDetails.name,
-        symbol: customTokenDetails.symbol,
-        decimals: customTokenDetails.decimals,
-      });
+    if (e.target.id === 'address') {
+      setAddressInput(e.target.value);
+      if (utils.isAddress(e.target.value)) {
+        const tokenAddress = e.target.value;
+        fetchTokenDetails(network.value, tokenAddress)
+          .then(tokenDetails => {
+            setAddressInvalid(false);
+            setCustomToken({
+              ...customToken,
+              ...tokenDetails,
+            });
+          })
+          .catch(() => setAddressInvalid(true));
+      } else {
+        setAddressInvalid(true);
+      }
     } else {
       setCustomToken({ ...customToken, [e.target.id]: e.target.value });
     }
@@ -115,8 +121,9 @@ export const CustomTokenModal = ({ isOpen, onClose, onBack }) => {
                   size="sm"
                   onChange={handleChange}
                   _placeholder={{ color: 'grey' }}
-                  value={customToken.address}
+                  value={addressInput}
                   ref={initialRef}
+                  isInvalid={addressInvalid}
                 />
               </InputGroup>
               <Text mb={2}>Token Symbol</Text>
