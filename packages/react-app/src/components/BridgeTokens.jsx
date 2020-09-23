@@ -1,11 +1,4 @@
-import {
-  Alert,
-  AlertIcon,
-  Flex,
-  Grid,
-  Text,
-  useBreakpointValue,
-} from '@chakra-ui/core';
+import { Flex, Grid, Text, useBreakpointValue } from '@chakra-ui/core';
 import React, { useContext } from 'react';
 
 import { BridgeContext } from '../contexts/BridgeContext';
@@ -21,7 +14,7 @@ import { UnlockButton } from './UnlockButton';
 export const BridgeTokens = () => {
   const { network } = useContext(Web3Context);
   const { fromToken } = useContext(BridgeContext);
-  const isERC20Dai = isERC20DaiAddress(fromToken)
+  const isERC20Dai = isERC20DaiAddress(fromToken);
   const smallScreen = useBreakpointValue({ base: true, lg: false });
 
   return (

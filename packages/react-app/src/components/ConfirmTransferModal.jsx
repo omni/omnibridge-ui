@@ -1,6 +1,4 @@
 import {
-  Alert,
-  AlertIcon,
   Button,
   Divider,
   Flex,
@@ -17,11 +15,10 @@ import {
 } from '@chakra-ui/core';
 import React, { useContext, useEffect, useState } from 'react';
 
-import { DaiWarning, isERC20DaiAddress } from './DaiWarning';
-
 import TransferImage from '../assets/confirm-transfer.svg';
 import { BridgeContext } from '../contexts/BridgeContext';
 import { formatValue, isxDaiChain } from '../lib/helpers';
+import { DaiWarning, isERC20DaiAddress } from './DaiWarning';
 
 export const ConfirmTransferModal = ({ isOpen, onClose }) => {
   const { fromToken, toToken, fromAmount, toAmount, transfer } = useContext(
