@@ -17,6 +17,8 @@ import {
 } from '@chakra-ui/core';
 import React, { useContext, useEffect, useState } from 'react';
 
+import { DaiWarning, isERC20DaiAddress } from './DaiWarning';
+
 import TransferImage from '../assets/confirm-transfer.svg';
 import { BridgeContext } from '../contexts/BridgeContext';
 import { formatValue, isxDaiChain } from '../lib/helpers';
@@ -36,7 +38,7 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
   const fromUnit = fromToken.symbol + (isxDai ? ' on xDai' : '');
   const toAmt = formatValue(toAmount, toToken.decimals);
   const toUnit = toToken.symbol + (isxDai ? '' : ' on xDai');
-  const isERC20Dai = toToken.symbol === 'DAI';
+  const isERC20Dai = isERC20DaiAddress(fromToken);
 
   const onClick = () => {
     transfer();
@@ -54,14 +56,7 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
           mx={{ base: 12, lg: 0 }}
         >
           <ModalHeader p={6}>
-            {isERC20Dai && (
-              <Alert status="warning" borderRadius={5} mb={5}>
-                <AlertIcon />
-                <Text fontSize="small">
-                  Bridges erc20 Dai to xDai, not the xDai Native token.
-                </Text>
-              </Alert>
-            )}
+            {isERC20Dai && <DaiWarning />}
             <Text>Confirm Transfer</Text>
           </ModalHeader>
           <ModalCloseButton

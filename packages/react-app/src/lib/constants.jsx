@@ -4,6 +4,7 @@ import { CONFIG } from '../config';
 import { NetworkIcon } from '../icons/NetworkIcon';
 
 export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000';
+export const ETEHEREUM_NETWORKS = [1, 42];
 
 export const networkOptions = [
   {
