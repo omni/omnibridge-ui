@@ -1,3 +1,5 @@
+import { BigNumber } from 'ethers';
+
 import {
   ambs,
   chainUrls,
@@ -194,3 +196,15 @@ export const parseValue = (val, dec) => {
   const round = window.BigInt(10 ** Number(dec));
   return (window.BigInt(Math.floor(value * 100)) * round) / window.BigInt(100);
 };
+
+// ETH/ERC20 Default Limits
+export const defaultMinPerTx = (isxDai, decimals) => {
+  let minPerTx = BigNumber.from(10).pow(isxDai ? decimals : decimals - 3);
+  if (minPerTx.lt(1)) {
+    minPerTx = BigNumber.from(1);
+  }
+  return minPerTx;
+};
+export const defaultMaxPerTx = decimals => BigNumber.from(10).pow(decimals + 9);
+export const defaultDailyLimit = decimals =>
+  BigNumber.from(10).pow(decimals + 18);
