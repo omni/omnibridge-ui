@@ -7,7 +7,14 @@ import {
   fetchToToken,
   transferTokens,
 } from '../lib/bridge';
-import { getDefaultToken, isxDaiChain, uniqueTokens } from '../lib/helpers';
+import {
+  defaultDailyLimit,
+  defaultMaxPerTx,
+  defaultMinPerTx,
+  getDefaultToken,
+  isxDaiChain,
+  uniqueTokens,
+} from '../lib/helpers';
 import { approveToken, fetchAllowance, fetchTokenBalance } from '../lib/token';
 import { fetchTokenList } from '../lib/tokenList';
 import { Web3Context } from './Web3Context';
@@ -56,18 +63,28 @@ export const BridgeProvider = ({ children }) => {
   const setToken = useCallback(
     async token => {
       setLoading(true);
-      const tokenWithLimits = await fetchTokenLimits(token, account);
+      const tokenWithLimits = {
+        ...token,
+        balance: await fetchTokenBalance(token, account),
+        minPerTx: defaultMinPerTx(isxDaiChain(token.chainId), token.decimals),
+        maxPerTx: defaultMaxPerTx(token.decimals),
+        dailyLimit: defaultDailyLimit(token.decimals),
+      };
       setFromToken(tokenWithLimits);
+      fetchTokenLimits(token).then(tokenLimits => {
+        setFromToken({ ...tokenWithLimits, ...tokenLimits });
+      });
       setAmountInput('');
       setFromAmount(0);
-      setToToken();
       if (isxDaiChain(tokenWithLimits.chainId)) {
         setAllowed(true);
       } else {
         setAllowed(false);
       }
-      const gotToToken = await fetchToToken(tokenWithLimits, account);
-      setToToken(gotToToken);
+      setToToken();
+      fetchToToken(tokenWithLimits, account).then(gotToToken => {
+        setToToken(gotToToken);
+      });
       setToAmount(0);
       setLoading(false);
     },

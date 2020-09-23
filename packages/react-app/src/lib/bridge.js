@@ -1,7 +1,14 @@
-import { BigNumber, Contract } from 'ethers';
+import { Contract } from 'ethers';
 
 import { fetchConfirmations } from './amb';
-import { getBridgeNetwork, getMediatorAddress, isxDaiChain } from './helpers';
+import {
+  defaultDailyLimit,
+  defaultMaxPerTx,
+  defaultMinPerTx,
+  getBridgeNetwork,
+  getMediatorAddress,
+  isxDaiChain,
+} from './helpers';
 import { getEthersProvider } from './providers';
 import { fetchTokenBalance, transferAndCallToken } from './token';
 
@@ -77,7 +84,7 @@ export const fetchToToken = async (fromToken, account) => {
   };
 };
 
-export const fetchTokenLimits = async (token, account) => {
+export const fetchTokenLimits = async token => {
   const ethersProvider = getEthersProvider(token.chainId);
   const mediatorAbi = [
     'function isTokenRegistered(address) view returns (bool)',
@@ -91,23 +98,14 @@ export const fetchTokenLimits = async (token, account) => {
     mediatorAbi,
     ethersProvider,
   );
-  let isRegistered = false;
-  let balance = 0;
-  // ETH/ERC20 Default Limits
   const isxDai = isxDaiChain(token.chainId);
-  let minPerTx = BigNumber.from(10).pow(
-    isxDai ? token.decimals : token.decimals - 3,
-  );
-  if (minPerTx.lt(1)) {
-    minPerTx = BigNumber.from(1);
-  }
-  let maxPerTx = BigNumber.from(10).pow(token.decimals + 9);
-  let dailyLimit = BigNumber.from(10).pow(token.decimals + 18);
+  let minPerTx = defaultMinPerTx(isxDai, token.decimals);
+  let maxPerTx = defaultMaxPerTx(token.decimals);
+  let dailyLimit = defaultDailyLimit(token.decimals);
   try {
-    [isRegistered, balance] = await Promise.all([
-      mediatorContract.isTokenRegistered(token.address),
-      fetchTokenBalance(token, account),
-    ]);
+    const isRegistered = await mediatorContract.isTokenRegistered(
+      token.address,
+    );
     if (isRegistered) {
       [minPerTx, maxPerTx, dailyLimit] = await Promise.all([
         mediatorContract.minPerTx(token.address),
@@ -120,9 +118,6 @@ export const fetchTokenLimits = async (token, account) => {
     console.log({ tokenError: error });
   }
   return {
-    ...token,
-    isRegistered,
-    balance,
     minPerTx,
     maxPerTx,
     dailyLimit,
