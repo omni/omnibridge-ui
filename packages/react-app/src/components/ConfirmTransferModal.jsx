@@ -18,6 +18,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import TransferImage from '../assets/confirm-transfer.svg';
 import { BridgeContext } from '../contexts/BridgeContext';
 import { formatValue, isxDaiChain } from '../lib/helpers';
+import { DaiWarning, isERC20DaiAddress } from './DaiWarning';
 
 export const ConfirmTransferModal = ({ isOpen, onClose }) => {
   const { fromToken, toToken, fromAmount, toAmount, transfer } = useContext(
@@ -34,6 +35,7 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
   const fromUnit = fromToken.symbol + (isxDai ? ' on xDai' : '');
   const toAmt = formatValue(toAmount, toToken.decimals);
   const toUnit = toToken.symbol + (isxDai ? '' : ' on xDai');
+  const isERC20Dai = isERC20DaiAddress(fromToken);
 
   const onClick = () => {
     transfer();
@@ -51,6 +53,7 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
           mx={{ base: 12, lg: 0 }}
         >
           <ModalHeader p={6}>
+            {isERC20Dai && <DaiWarning />}
             <Text>Confirm Transfer</Text>
           </ModalHeader>
           <ModalCloseButton
