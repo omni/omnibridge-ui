@@ -1,17 +1,29 @@
 import { Flex, Image, Text, useBreakpointValue } from '@chakra-ui/core';
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 
 import EthLogo from '../assets/eth-logo.png';
 import xDAILogo from '../assets/xdai-logo.png';
 import { BridgeContext } from '../contexts/BridgeContext';
 import { Web3Context } from '../contexts/Web3Context';
 import { formatValue, isxDaiChain } from '../lib/helpers';
+import { fetchTokenBalance } from '../lib/token';
 
 export const ToToken = () => {
-  const { network } = useContext(Web3Context);
-  const { toToken: token, toAmount: amount } = useContext(BridgeContext);
+  const { network, account } = useContext(Web3Context);
+  const {
+    toToken: token,
+    toAmount: amount,
+    toBalance: balance,
+    setToBalance: setBalance,
+  } = useContext(BridgeContext);
   const fallbackLogo = isxDaiChain(network.value) ? EthLogo : xDAILogo;
   const smallScreen = useBreakpointValue({ base: true, lg: false });
+  useEffect(() => {
+    if (token && account) {
+      setBalance();
+      fetchTokenBalance(token, account).then(b => setBalance(b));
+    }
+  }, [token, account, setBalance]);
   return (
     <Flex
       align="center"
@@ -67,9 +79,11 @@ export const ToToken = () => {
                 {token.name}
               </Text>
             </Flex>
-            <Text color="grey" mt={{ base: 2, lg: 0 }}>
-              {`Balance: ${formatValue(token.balance, token.decimals)}`}
-            </Text>
+            {balance >= 0 && (
+              <Text color="grey" mt={{ base: 2, lg: 0 }}>
+                {`Balance: ${formatValue(balance, token.decimals)}`}
+              </Text>
+            )}
           </Flex>
           <Flex align="flex-end" flex={1}>
             <Text fontWeight="bold" fontSize="2xl">

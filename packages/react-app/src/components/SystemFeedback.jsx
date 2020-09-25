@@ -15,7 +15,7 @@ import { BridgeContext } from '../contexts/BridgeContext';
 import { formatValue } from '../lib/helpers';
 
 export const SystemFeedback = () => {
-  const { fromToken: token } = useContext(BridgeContext);
+  const { fromToken: token, tokenLimits } = useContext(BridgeContext);
   return (
     <Popover>
       <PopoverTrigger>
@@ -37,13 +37,13 @@ export const SystemFeedback = () => {
         maxW="30rem"
         // _focus={{ border: 'none', outline: 'none' }}
       >
-        {token && (
+        {token && tokenLimits && (
           <PopoverBody width="100%" align="center" fontSize="sm">
             <Flex align="center" justify="space-between">
               <Text color="grey"> Daily Limit </Text>
               <Text fontWeight="bold" ml={4}>
                 {`${utils.commify(
-                  formatValue(token.dailyLimit, token.decimals),
+                  formatValue(tokenLimits.dailyLimit, token.decimals),
                 )} ${token.symbol}`}
               </Text>
             </Flex>
@@ -51,7 +51,7 @@ export const SystemFeedback = () => {
               <Text color="grey"> Maximum per transaction </Text>
               <Text fontWeight="bold" ml={4}>
                 {`${utils.commify(
-                  formatValue(token.maxPerTx, token.decimals),
+                  formatValue(tokenLimits.maxPerTx, token.decimals),
                 )} ${token.symbol}`}
               </Text>
             </Flex>
@@ -59,7 +59,7 @@ export const SystemFeedback = () => {
               <Text color="grey"> Minimum per transaction </Text>
               <Text fontWeight="bold" ml={4}>
                 {`${utils.commify(
-                  formatValue(token.minPerTx, token.decimals),
+                  formatValue(tokenLimits.minPerTx, token.decimals),
                 )} ${token.symbol}`}
               </Text>
             </Flex>

@@ -1,4 +1,4 @@
-import { Alert, AlertIcon, Flex, Link,Text } from '@chakra-ui/core';
+import { Alert, AlertIcon, Flex, Link, Text } from '@chakra-ui/core';
 import React from 'react';
 
 import { isxDaiChain } from '../lib/helpers';
