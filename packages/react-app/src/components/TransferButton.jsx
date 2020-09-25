@@ -10,9 +10,13 @@ import { ErrorModal } from './ErrorModal';
 
 export const TransferButton = () => {
   const { network, networkMismatch, ethersProvider } = useContext(Web3Context);
-  const { fromAmount: amount, allowed, fromToken: token } = useContext(
-    BridgeContext,
-  );
+  const {
+    fromAmount: amount,
+    fromToken: token,
+    fromBalance: balance,
+    tokenLimits,
+    allowed,
+  } = useContext(BridgeContext);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [message, setMessage] = useState();
   const onClick = () => {
@@ -20,9 +24,9 @@ export const TransferButton = () => {
     if (
       ethersProvider &&
       !networkMismatch &&
-      window.BigInt(amount) >= window.BigInt(token.minPerTx) &&
-      window.BigInt(amount) < window.BigInt(token.maxPerTx) &&
-      window.BigInt(token.balance) >= window.BigInt(amount)
+      window.BigInt(amount) >= window.BigInt(tokenLimits.minPerTx) &&
+      window.BigInt(amount) < window.BigInt(tokenLimits.maxPerTx) &&
+      window.BigInt(balance) >= window.BigInt(amount)
     ) {
       return onOpen();
     }
@@ -30,21 +34,21 @@ export const TransferButton = () => {
       setMessage('Please connect wallet');
     } else if (networkMismatch) {
       setMessage(`Please switch wallet to ${network.name}`);
-    } else if (window.BigInt(amount) < window.BigInt(token.minPerTx)) {
+    } else if (window.BigInt(amount) < window.BigInt(tokenLimits.minPerTx)) {
       setMessage(
         `Please specify amount more than ${formatValue(
-          token.minPerTx,
+          tokenLimits.minPerTx,
           token.decimals,
         )}`,
       );
-    } else if (window.BigInt(amount) >= window.BigInt(token.maxPerTx)) {
+    } else if (window.BigInt(amount) >= window.BigInt(tokenLimits.maxPerTx)) {
       setMessage(
         `Please specify amount less than ${formatValue(
-          token.maxPerTx,
+          tokenLimits.maxPerTx,
           token.decimals,
         )}`,
       );
-    } else if (window.BigInt(token.balance) < window.BigInt(amount)) {
+    } else if (window.BigInt(balance) < window.BigInt(amount)) {
       setMessage('Not enough balance');
     }
     return onOpen();

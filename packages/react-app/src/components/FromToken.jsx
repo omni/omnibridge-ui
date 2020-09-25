@@ -7,7 +7,7 @@ import {
   useBreakpointValue,
   useDisclosure,
 } from '@chakra-ui/core';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 import DropDown from '../assets/drop-down.svg';
 import EthLogo from '../assets/eth-logo.png';
@@ -15,13 +15,18 @@ import xDAILogo from '../assets/xdai-logo.png';
 import { BridgeContext } from '../contexts/BridgeContext';
 import { Web3Context } from '../contexts/Web3Context';
 import { formatValue, isxDaiChain, parseValue } from '../lib/helpers';
+import { fetchTokenBalance } from '../lib/token';
 import { ErrorModal } from './ErrorModal';
 import { SelectTokenModal } from './SelectTokenModal';
 
 export const FromToken = () => {
-  const { ethersProvider, network, networkMismatch } = useContext(Web3Context);
+  const { ethersProvider, network, networkMismatch, account } = useContext(
+    Web3Context,
+  );
   const {
     fromToken: token,
+    fromBalance: balance,
+    setFromBalance: setBalance,
     setAmount,
     amountInput: input,
     setAmountInput: setInput,
@@ -40,6 +45,13 @@ export const FromToken = () => {
   };
   const smallScreen = useBreakpointValue({ base: true, lg: false });
   const fallbackLogo = isxDaiChain(network.value) ? xDAILogo : EthLogo;
+
+  useEffect(() => {
+    if (token && account) {
+      setBalance();
+      fetchTokenBalance(token, account).then(b => setBalance(b));
+    }
+  }, [token, account, setBalance]);
   return (
     <Flex
       align="center"
@@ -99,9 +111,11 @@ export const FromToken = () => {
               </Text>
               <Image src={DropDown} cursor="pointer" />
             </Flex>
-            <Text color="grey" mt={{ base: 2, lg: 0 }}>
-              {`Balance: ${formatValue(token.balance, token.decimals)}`}
-            </Text>
+            {balance >= 0 && (
+              <Text color="grey" mt={{ base: 2, lg: 0 }}>
+                {`Balance: ${formatValue(balance, token.decimals)}`}
+              </Text>
+            )}
           </Flex>
           <Flex align="flex-end" flex={1}>
             <Input
@@ -127,8 +141,8 @@ export const FromToken = () => {
               fontWeight="normal"
               _hover={{ bg: 'blue.100' }}
               onClick={() => {
-                setInput(formatValue(token.balance, token.decimals));
-                setAmount(token.balance);
+                setInput(formatValue(balance, token.decimals));
+                setAmount(balance);
               }}
             >
               Max

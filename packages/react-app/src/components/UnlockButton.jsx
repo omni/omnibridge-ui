@@ -8,9 +8,12 @@ import { ErrorModal } from './ErrorModal';
 
 export const UnlockButton = () => {
   const { network, networkMismatch, ethersProvider } = useContext(Web3Context);
-  const { fromAmount: amount, allowed, approve, fromToken: token } = useContext(
-    BridgeContext,
-  );
+  const {
+    fromAmount: amount,
+    fromBalance: balance,
+    allowed,
+    approve,
+  } = useContext(BridgeContext);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [message, setMessage] = useState();
   const onClick = () => {
@@ -19,7 +22,7 @@ export const UnlockButton = () => {
       ethersProvider &&
       !networkMismatch &&
       window.BigInt(amount) > 0 &&
-      window.BigInt(token.balance) >= window.BigInt(amount)
+      window.BigInt(balance) >= window.BigInt(amount)
     ) {
       return approve();
     }
@@ -29,7 +32,7 @@ export const UnlockButton = () => {
       setMessage(`Please switch wallet to ${network.name}`);
     } else if (window.BigInt(amount) <= 0) {
       setMessage('Please specify amount');
-    } else if (window.BigInt(token.balance) < window.BigInt(amount)) {
+    } else if (window.BigInt(balance) < window.BigInt(amount)) {
       setMessage('Not enough balance');
     }
     return onOpen();

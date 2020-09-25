@@ -38,6 +38,9 @@ export const BridgeProvider = ({ children }) => {
   const [totalConfirms, setTotalConfirms] = useState(0);
   const [tokenList, setTokenList] = useState([]);
   const [amountInput, setAmountInput] = useState('');
+  const [fromBalance, setFromBalance] = useState();
+  const [toBalance, setToBalance] = useState();
+  const [tokenLimits, setTokenLimits] = useState();
 
   const setAmount = useCallback(
     async amount => {
@@ -60,39 +63,33 @@ export const BridgeProvider = ({ children }) => {
     [account, fromToken, toToken],
   );
 
-  const setToken = useCallback(
-    async token => {
-      setLoading(true);
-      const tokenWithLimits = {
-        ...token,
-        balance: await fetchTokenBalance(token, account),
-        minPerTx: defaultMinPerTx(isxDaiChain(token.chainId), token.decimals),
-        maxPerTx: defaultMaxPerTx(token.decimals),
-        dailyLimit: defaultDailyLimit(token.decimals),
-      };
-      setFromToken(tokenWithLimits);
-      fetchTokenLimits(token).then(tokenLimits => {
-        setFromToken({ ...tokenWithLimits, ...tokenLimits });
-      });
-      setAmountInput('');
-      setFromAmount(0);
-      if (isxDaiChain(tokenWithLimits.chainId)) {
-        setAllowed(true);
-      } else {
-        setAllowed(false);
-      }
-      setToToken();
-      fetchToToken(tokenWithLimits, account).then(gotToToken => {
-        setToToken(gotToToken);
-      });
-      setToAmount(0);
-      setLoading(false);
-    },
-    [account],
-  );
+  const setToken = useCallback(async token => {
+    setLoading(true);
+    setFromToken(token);
+    setTokenLimits({
+      minPerTx: defaultMinPerTx(isxDaiChain(token.chainId), token.decimals),
+      maxPerTx: defaultMaxPerTx(token.decimals),
+      dailyLimit: defaultDailyLimit(token.decimals),
+    });
+    fetchTokenLimits(token).then(limits => {
+      setTokenLimits(limits);
+    });
+    setAmountInput('');
+    setFromAmount(0);
+    if (isxDaiChain(token.chainId)) {
+      setAllowed(true);
+    } else {
+      setAllowed(false);
+    }
+    setToToken();
+    const gotToToken = await fetchToToken(token);
+    setToToken(gotToToken);
+    setToAmount(0);
+    setLoading(false);
+  }, []);
 
   const setDefaultToken = useCallback(
-    async chainId => {
+    chainId => {
       setFromToken();
       setToToken();
       setToken(getDefaultToken(chainId));
@@ -151,7 +148,6 @@ export const BridgeProvider = ({ children }) => {
 
         if (txReceipt) {
           message = getMessageFromReceipt(chainId, txReceipt);
-          // console.log(txReceipt.confirmations);
           if (txReceipt.confirmations > totalConfirms) {
             setLoadingText('Waiting for Execution');
           }
@@ -249,6 +245,11 @@ export const BridgeProvider = ({ children }) => {
         setDefaultTokenList,
         amountInput,
         setAmountInput,
+        fromBalance,
+        setFromBalance,
+        toBalance,
+        setToBalance,
+        tokenLimits,
       }}
     >
       {children}

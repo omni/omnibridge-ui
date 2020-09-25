@@ -10,7 +10,7 @@ import {
   isxDaiChain,
 } from './helpers';
 import { getEthersProvider } from './providers';
-import { fetchTokenBalance, transferAndCallToken } from './token';
+import { transferAndCallToken } from './token';
 
 export const fetchBridgedTokenAddress = async (fromChainId, tokenAddress) => {
   const isxDai = isxDaiChain(fromChainId);
@@ -62,7 +62,7 @@ export const fetchToAmount = async (fromToken, toToken, fromAmount) => {
   }
 };
 
-export const fetchToToken = async (fromToken, account) => {
+export const fetchToToken = async fromToken => {
   const toTokenAddress = await fetchBridgedTokenAddress(
     fromToken.chainId,
     fromToken.address,
@@ -77,10 +77,6 @@ export const fetchToToken = async (fromToken, account) => {
     decimals: fromToken.decimals,
     chainId: toChainId,
     logoURI: '',
-    balance: await fetchTokenBalance(
-      { chainId: toChainId, address: toTokenAddress },
-      account,
-    ),
   };
 };
 
