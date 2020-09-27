@@ -15,7 +15,11 @@ import {
   isxDaiChain,
   uniqueTokens,
 } from '../lib/helpers';
-import { approveToken, fetchAllowance, fetchTokenBalance } from '../lib/token';
+import {
+  approveToken,
+  fetchAllowance,
+  fetchTokenBalanceWithProvider,
+} from '../lib/token';
 import { fetchTokenList } from '../lib/tokenList';
 import { Web3Context } from './Web3Context';
 
@@ -189,7 +193,10 @@ export const BridgeProvider = ({ children }) => {
 
   const setDefaultTokenList = useCallback(
     async (chainId, customTokens) => {
-      if (!account) return;
+      if (!account || !ethersProvider) return;
+      const networkMismatch =
+        chainId !== (await ethersProvider.getNetwork()).chainId;
+      if (networkMismatch) return;
       setLoading(true);
       try {
         const baseTokenList = await fetchTokenList(chainId);
@@ -201,7 +208,11 @@ export const BridgeProvider = ({ children }) => {
         const tokenListWithBalance = await Promise.all(
           customTokenList.map(async token => ({
             ...token,
-            balance: await fetchTokenBalance(token, account),
+            balance: await fetchTokenBalanceWithProvider(
+              ethersProvider,
+              token,
+              account,
+            ),
           })),
         );
         const sortedTokenList = tokenListWithBalance.sort(function checkBalance(
@@ -220,7 +231,7 @@ export const BridgeProvider = ({ children }) => {
       }
       setLoading(false);
     },
-    [account],
+    [account, ethersProvider],
   );
 
   return (

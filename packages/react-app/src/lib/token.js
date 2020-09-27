@@ -83,3 +83,24 @@ export const fetchTokenBalance = async (token, account) => {
   }
   return 0;
 };
+
+export const fetchTokenBalanceWithProvider = async (
+  ethersProvider,
+  token,
+  account,
+) => {
+  if (!account || !token || token.address === ADDRESS_ZERO || !ethersProvider) {
+    // eslint-disable-next-line
+    console.log({ balanceError: 'Returning balance as 0', account, token });
+    return 0;
+  }
+  const abi = ['function balanceOf(address) view returns (uint256)'];
+  const tokenContract = new ethers.Contract(token.address, abi, ethersProvider);
+  try {
+    return tokenContract.balanceOf(account);
+  } catch (error) {
+    // eslint-disable-next-line
+    console.log({ tokenError: error });
+  }
+  return 0;
+};
