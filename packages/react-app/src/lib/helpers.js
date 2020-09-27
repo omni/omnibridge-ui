@@ -188,13 +188,22 @@ export const formatValue = (num, dec) => {
   return value.toFixed(3);
 };
 
-export const parseValue = (val, dec) => {
-  if (!val) {
+const countDecimals = function (value) {
+  if (Math.floor(value) === value) return 0;
+  return value.toString().split('.')[1].length || 0;
+};
+
+export const parseValue = (num, dec) => {
+  if (!num) {
     return window.BigInt(0);
   }
-  const value = Number(val);
+  const number = Number(num);
+  const numberDec = countDecimals(number);
   const round = window.BigInt(10 ** Number(dec));
-  return (window.BigInt(Math.floor(value * 100)) * round) / window.BigInt(100);
+  const value =
+    (window.BigInt(Math.floor(number * 10 ** numberDec)) * round) /
+    window.BigInt(10 ** numberDec);
+  return value;
 };
 
 // ETH/ERC20 Default Limits
