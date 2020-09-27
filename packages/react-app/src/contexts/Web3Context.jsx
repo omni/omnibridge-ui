@@ -67,6 +67,7 @@ export const Web3Provider = ({ children }) => {
     web3Modal.clearCachedProvider();
     setAccount();
     setEthersProvider();
+    setProviderNetwork();
   }, []);
 
   useEffect(() => {

@@ -188,7 +188,7 @@ export const formatValue = (num, dec) => {
   return value.toFixed(3);
 };
 
-const countDecimals = function (value) {
+const countDecimals = value => {
   if (Math.floor(value) === value) return 0;
   return value.toString().split('.')[1].length || 0;
 };
