@@ -59,6 +59,7 @@ xdai-omnibridge
 │   │       │   ├── BridgeTokens.jsx
 │   │       │   ├── ConfirmTransferModal.jsx
 │   │       │   ├── CustomTokenModal.jsx
+│   │       │   ├── DaiWarning.jsx
 │   │       │   ├── ErrorBoundary.jsx
 │   │       │   ├── ErrorModal.jsx
 │   │       │   ├── Footer.jsx
