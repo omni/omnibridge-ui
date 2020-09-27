@@ -125,7 +125,7 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
               </Flex>
             </Flex>
             <Flex align="center" fontSize="sm" justify="center" mt={4}>
-              {`Bridge Fees ${fee}%`}
+              {`Bridge Fees ${Number(fee.toFixed(3))}%`}
             </Flex>
             <Divider color="#DAE3F0" my={4} />
             <Flex w="100%" fontSize="sm" color="grey" align="center">

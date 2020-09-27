@@ -134,7 +134,7 @@ xdai-omnibridge
 └── yarn.lock
 ```
 
-Owing to this dependency on Yarn Workspaces, Create Eth App can't be used with npm.
+Owing to this dependency on Yarn Workspaces, xdai-omnibridge can't be used with npm.
 
 ## Available Scripts
 

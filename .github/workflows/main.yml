@@ -13,7 +13,7 @@ jobs:
         uses: actions/checkout@master
 
       - name: Install Dependencies
-        run: yarn
+        run: yarn --frozen-lockfile
 
       - name: Build
         run: yarn react-app:build
