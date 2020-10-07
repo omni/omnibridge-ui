@@ -165,6 +165,11 @@ export const BridgeProvider = ({ children }) => {
           setTxHash();
           setReceipt();
           await setToken(fromToken);
+          fetchTokenBalanceWithProvider(
+            ethersProvider,
+            fromToken,
+            account,
+          ).then(b => setFromBalance(b));
           setLoading(false);
           setLoadingText();
         }
