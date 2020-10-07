@@ -34,7 +34,7 @@ export const BridgeProvider = ({ children }) => {
   const [toToken, setToToken] = useState();
   const [fromAmount, setFromAmount] = useState(0);
   const [toAmount, setToAmount] = useState(0);
-  const [allowed, setAllowed] = useState(false);
+  const [allowed, setAllowed] = useState(true);
   const [loading, setLoading] = useState(false);
   const [loadingText, setLoadingText] = useState();
   const [txHash, setTxHash] = useState();
@@ -53,8 +53,6 @@ export const BridgeProvider = ({ children }) => {
       setToAmount(gotToAmount);
       if (isxDaiChain(fromToken.chainId)) {
         setAllowed(true);
-      } else if (window.BigInt(amount) <= 0) {
-        setAllowed(false);
       } else {
         const gotAllowance = await fetchAllowance(
           fromToken.chainId,
@@ -80,11 +78,7 @@ export const BridgeProvider = ({ children }) => {
     });
     setAmountInput('');
     setFromAmount(0);
-    if (isxDaiChain(token.chainId)) {
-      setAllowed(true);
-    } else {
-      setAllowed(false);
-    }
+    setAllowed(true);
     setToToken();
     const gotToToken = await fetchToToken(token);
     setToToken(gotToToken);
@@ -194,7 +188,7 @@ export const BridgeProvider = ({ children }) => {
     getReceipt();
     // unsubscribe when unmount component
     return unsubscribe;
-  }, [txHash, totalConfirms, ethersProvider, setToken, fromToken]);
+  }, [txHash, totalConfirms, ethersProvider, setToken, fromToken, account]);
 
   const setDefaultTokenList = useCallback(
     async (chainId, customTokens) => {

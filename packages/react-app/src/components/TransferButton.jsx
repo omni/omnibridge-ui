@@ -70,7 +70,9 @@ export const TransferButton = () => {
       transition="0.25s"
       position="relative"
       opacity={!allowed ? 0.4 : 1}
-      onClick={onClick}
+      onClick={() => {
+        if (allowed) onClick();
+      }}
       borderRadius="0.25rem"
       w={{ base: '13rem', lg: 'auto' }}
     >
