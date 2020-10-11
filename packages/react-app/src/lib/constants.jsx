@@ -22,22 +22,22 @@ export const networkOptions = [
     name: 'ETH Mainnet',
     icon: <NetworkIcon />,
   },
-  {
-    value: 77,
-    key: 2,
-    bridge: { chainId: 42, name: 'Kovan Testnet' },
-    label: 'Sokol',
-    name: 'Sokol Testnet',
-    icon: <NetworkIcon />,
-  },
-  {
-    value: 42,
-    key: 3,
-    bridge: { chainId: 77, name: 'Sokol Testnet' },
-    label: 'Kovan',
-    name: 'Kovan Testnet',
-    icon: <NetworkIcon />,
-  },
+  // {
+  //   value: 77,
+  //   key: 2,
+  //   bridge: { chainId: 42, name: 'Kovan Testnet' },
+  //   label: 'Sokol',
+  //   name: 'Sokol Testnet',
+  //   icon: <NetworkIcon />,
+  // },
+  // {
+  //   value: 42,
+  //   key: 3,
+  //   bridge: { chainId: 77, name: 'Sokol Testnet' },
+  //   label: 'Kovan',
+  //   name: 'Kovan Testnet',
+  //   icon: <NetworkIcon />,
+  // },
 ];
 
 export const networkNames = {
