@@ -9,6 +9,7 @@ import {
   mediators,
   networkNames,
 } from './constants';
+import { getOverriddenMediator,isOverridden } from './overrides';
 
 export const getBridgeNetwork = chainId => {
   switch (chainId) {
@@ -52,7 +53,10 @@ export const getDefaultToken = chainId => {
   }
 };
 
-export const getMediatorAddress = chainId => {
+export const getMediatorAddress = (tokenAddress, chainId) => {
+  if (isOverridden(tokenAddress)) {
+    return getOverriddenMediator(tokenAddress, chainId);
+  }
   switch (chainId) {
     case 1:
       return mediators[1];

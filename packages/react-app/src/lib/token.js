@@ -10,7 +10,7 @@ export const fetchAllowance = (chainId, account, tokenAddress) => {
   const abi = ['function allowance(address, address) view returns (uint256)'];
   const tokenContract = new ethers.Contract(tokenAddress, abi, ethersProvider);
   try {
-    const mediatorAddress = getMediatorAddress(chainId);
+    const mediatorAddress = getMediatorAddress(tokenAddress, chainId);
     return tokenContract.allowance(account, mediatorAddress);
   } catch (error) {
     // eslint-disable-next-line
@@ -50,7 +50,7 @@ export const approveToken = async (ethersProvider, token, amount) => {
     abi,
     ethersProvider.getSigner(),
   );
-  const mediatorAddress = getMediatorAddress(token.chainId);
+  const mediatorAddress = getMediatorAddress(token.address, token.chainId);
   const tx = await tokenContract.approve(mediatorAddress, amount);
   return tx.wait();
 };
@@ -62,7 +62,7 @@ export const transferAndCallToken = async (ethersProvider, token, amount) => {
     abi,
     ethersProvider.getSigner(),
   );
-  const mediatorAddress = getMediatorAddress(token.chainId);
+  const mediatorAddress = getMediatorAddress(token.address, token.chainId);
   return tokenContract.transferAndCall(mediatorAddress, amount, '0x');
 };
 
