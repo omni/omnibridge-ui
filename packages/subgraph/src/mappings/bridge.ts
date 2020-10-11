@@ -2,7 +2,7 @@ import { log, dataSource } from '@graphprotocol/graph-ts';
 import { TokensBridged, NewTokenRegistered } from '../types/Mediator/Mediator';
 import { BridgeTransfer, Token } from '../types/schema';
 
-import { fetchTokenInfo } from './helpers';
+import { fetchTokenInfo, overrides } from './helpers';
 
 export function handleBridgeTransfer(event: TokensBridged): void {
   log.debug('Parsing TokensBridged', []);
@@ -20,6 +20,13 @@ export function handleBridgeTransfer(event: TokensBridged): void {
 
 export function handleNewToken(event: NewTokenRegistered): void {
   log.debug('Parsing NewTokenRegistered', []);
+  if (overrides.indexOf(event.params.homeToken.toHex()) != -1) {
+    log.debug('Overriding homeToken {} and foreignToken {}', [
+      event.params.homeToken.toHex(),
+      event.params.foreignToken.toHex(),
+    ]);
+    return;
+  }
   let id = event.params.homeToken.toHex();
   let token = new Token(id);
   token.homeAddress = event.params.homeToken;

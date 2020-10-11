@@ -31,3 +31,7 @@ export function fetchTokenInfo(address: Address): TokenObject | null {
 
   return tokenObject;
 }
+
+export const overrides: string[] = [
+  '0x750ecf8c11867ce5dbc556592c5bb1e0c6d16538',
+];
