@@ -29,7 +29,6 @@ export const BridgeContext = React.createContext({});
 
 export const BridgeProvider = ({ children }) => {
   const { ethersProvider, account } = useContext(Web3Context);
-
   const [fromToken, setFromToken] = useState();
   const [toToken, setToToken] = useState();
   const [fromAmount, setFromAmount] = useState(0);
@@ -58,33 +57,39 @@ export const BridgeProvider = ({ children }) => {
           fromToken.chainId,
           account,
           fromToken.address,
+          ethersProvider
         );
         setAllowed(window.BigInt(gotAllowance) >= window.BigInt(amount));
       }
     },
-    [account, fromToken, toToken],
+    [account, fromToken, toToken, ethersProvider],
   );
 
-  const setToken = useCallback(async token => {
-    setLoading(true);
-    setFromToken(token);
-    setTokenLimits({
-      minPerTx: defaultMinPerTx(isxDaiChain(token.chainId), token.decimals),
-      maxPerTx: defaultMaxPerTx(token.decimals),
-      dailyLimit: defaultDailyLimit(token.decimals),
-    });
-    fetchTokenLimits(token).then(limits => {
-      setTokenLimits(limits);
-    });
-    setAmountInput('');
-    setFromAmount(0);
-    setAllowed(true);
-    setToToken();
-    const gotToToken = await fetchToToken(token);
-    setToToken(gotToToken);
-    setToAmount(0);
-    setLoading(false);
-  }, []);
+  const setToken = useCallback(
+    async token => {
+      setLoading(true);
+      setFromToken(token);
+      setTokenLimits({
+        minPerTx: defaultMinPerTx(isxDaiChain(token.chainId), token.decimals),
+        maxPerTx: defaultMaxPerTx(token.decimals),
+        dailyLimit: defaultDailyLimit(token.decimals),
+      });
+      if (ethersProvider) {
+        fetchTokenLimits(token, ethersProvider).then(limits => {
+          setTokenLimits(limits);
+        });
+      }
+      setAmountInput('');
+      setFromAmount(0);
+      setAllowed(true);
+      setToToken();
+      const gotToToken = await fetchToToken(token);
+      setToToken(gotToToken);
+      setToAmount(0);
+      setLoading(false);
+    },
+    [ethersProvider],
+  );
 
   const setDefaultToken = useCallback(
     chainId => {
@@ -152,7 +157,7 @@ export const BridgeProvider = ({ children }) => {
         }
 
         if (message) {
-          status = await getMessageCallStatus(chainId, message);
+          status = await getMessageCallStatus(chainId, message, ethersProvider);
         }
 
         if (status) {

@@ -15,7 +15,7 @@ import xDAILogo from '../assets/xdai-logo.png';
 import { BridgeContext } from '../contexts/BridgeContext';
 import { Web3Context } from '../contexts/Web3Context';
 import { formatValue, isxDaiChain, parseValue } from '../lib/helpers';
-import { fetchTokenBalance } from '../lib/token';
+import { fetchTokenBalanceWithProvider } from '../lib/token';
 import { ErrorModal } from './ErrorModal';
 import { SelectTokenModal } from './SelectTokenModal';
 
@@ -47,11 +47,13 @@ export const FromToken = () => {
   const fallbackLogo = isxDaiChain(network.value) ? xDAILogo : EthLogo;
 
   useEffect(() => {
-    if (token && account) {
+    if (!networkMismatch && token && account && ethersProvider) {
       setBalance();
-      fetchTokenBalance(token, account).then(b => setBalance(b));
+      fetchTokenBalanceWithProvider(ethersProvider, token, account).then(b =>
+        setBalance(b),
+      );
     }
-  }, [token, account, setBalance]);
+  }, [token, account, setBalance, ethersProvider, networkMismatch]);
   return (
     <Flex
       align="center"
