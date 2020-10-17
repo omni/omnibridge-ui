@@ -65,31 +65,26 @@ export const BridgeProvider = ({ children }) => {
     [account, fromToken, toToken, ethersProvider],
   );
 
-  const setToken = useCallback(
-    async token => {
-      setLoading(true);
-      setFromToken(token);
-      setTokenLimits({
-        minPerTx: defaultMinPerTx(isxDaiChain(token.chainId), token.decimals),
-        maxPerTx: defaultMaxPerTx(token.decimals),
-        dailyLimit: defaultDailyLimit(token.decimals),
-      });
-      if (ethersProvider) {
-        fetchTokenLimits(token, ethersProvider).then(limits => {
-          setTokenLimits(limits);
-        });
-      }
-      setAmountInput('');
-      setFromAmount(0);
-      setAllowed(true);
-      setToToken();
-      const gotToToken = await fetchToToken(token);
-      setToToken(gotToToken);
-      setToAmount(0);
-      setLoading(false);
-    },
-    [ethersProvider],
-  );
+  const setToken = useCallback(async token => {
+    setLoading(true);
+    setFromToken(token);
+    setTokenLimits({
+      minPerTx: defaultMinPerTx(isxDaiChain(token.chainId), token.decimals),
+      maxPerTx: defaultMaxPerTx(token.decimals),
+      dailyLimit: defaultDailyLimit(token.decimals),
+    });
+    fetchTokenLimits(token, ethersProvider).then(limits => {
+      setTokenLimits(limits);
+    });
+    setAmountInput('');
+    setFromAmount(0);
+    setAllowed(true);
+    setToToken();
+    const gotToToken = await fetchToToken(token);
+    setToToken(gotToToken);
+    setToAmount(0);
+    setLoading(false);
+  }, [ethersProvider]);
 
   const setDefaultToken = useCallback(
     chainId => {
@@ -198,9 +193,10 @@ export const BridgeProvider = ({ children }) => {
   const setDefaultTokenList = useCallback(
     async (chainId, customTokens) => {
       if (!account || !ethersProvider) return;
-      const networkMismatch =
-        chainId !== (await ethersProvider.getNetwork()).chainId;
+
+      const networkMismatch = chainId !== (await ethersProvider.getNetwork()).chainId;
       if (networkMismatch) return;
+
       setLoading(true);
       try {
         const baseTokenList = await fetchTokenList(chainId);
