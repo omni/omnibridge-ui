@@ -20,7 +20,7 @@ import { ErrorModal } from './ErrorModal';
 import { SelectTokenModal } from './SelectTokenModal';
 
 export const FromToken = () => {
-  const { ethersProvider, network, networkMismatch, account } = useContext(
+  const { ethersProvider, providerNetwork, network, networkMismatch, account } = useContext(
     Web3Context,
   );
   const {
@@ -47,13 +47,14 @@ export const FromToken = () => {
   const fallbackLogo = isxDaiChain(network.value) ? xDAILogo : EthLogo;
 
   useEffect(() => {
-    if (!networkMismatch && token && account && ethersProvider) {
+    if (token && account && providerNetwork && providerNetwork.chainId === token.chainId) {
       setBalance();
       fetchTokenBalanceWithProvider(ethersProvider, token, account).then(b =>
         setBalance(b),
       );
     }
-  }, [token, account, setBalance, ethersProvider, networkMismatch]);
+  }, [token, account, setBalance, ethersProvider, providerNetwork]);
+
   return (
     <Flex
       align="center"

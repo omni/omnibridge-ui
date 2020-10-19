@@ -148,5 +148,5 @@ export const transferTokens = async (ethersProvider, token, amount) => {
   const totalConfirms = parseInt(await confirmsPromise, 10);
   const tx = await txPromise;
 
-  return [tx, totalConfirms, ethersProvider];
+  return [tx, totalConfirms];
 };

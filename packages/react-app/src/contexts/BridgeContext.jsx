@@ -28,7 +28,7 @@ const POLLING_INTERVAL = 2000;
 export const BridgeContext = React.createContext({});
 
 export const BridgeProvider = ({ children }) => {
-  const { ethersProvider, account } = useContext(Web3Context);
+  const { ethersProvider, account, network, providerNetwork } = useContext(Web3Context);
   const [fromToken, setFromToken] = useState();
   const [toToken, setToToken] = useState();
   const [fromAmount, setFromAmount] = useState(0);
@@ -73,9 +73,11 @@ export const BridgeProvider = ({ children }) => {
       maxPerTx: defaultMaxPerTx(token.decimals),
       dailyLimit: defaultDailyLimit(token.decimals),
     });
-    fetchTokenLimits(token, ethersProvider).then(limits => {
-      setTokenLimits(limits);
-    });
+    if (providerNetwork && token.chainId === providerNetwork.chainId) {
+      fetchTokenLimits(token, ethersProvider).then(limits => {
+        setTokenLimits(limits);
+      });
+    }
     setAmountInput('');
     setFromAmount(0);
     setAllowed(true);
@@ -84,7 +86,7 @@ export const BridgeProvider = ({ children }) => {
     setToToken(gotToToken);
     setToAmount(0);
     setLoading(false);
-  }, [ethersProvider]);
+  }, [ethersProvider, providerNetwork]);
 
   const setDefaultToken = useCallback(
     chainId => {
