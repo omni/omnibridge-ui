@@ -10,14 +10,15 @@ import {
 import React, { useContext, useEffect, useState } from 'react';
 
 import DropDown from '../assets/drop-down.svg';
-import EthLogo from '../assets/eth-logo.png';
-import xDAILogo from '../assets/xdai-logo.png';
 import { BridgeContext } from '../contexts/BridgeContext';
 import { Web3Context } from '../contexts/Web3Context';
-import { formatValue, isxDaiChain, parseValue } from '../lib/helpers';
+
+import { formatValue, parseValue } from '../lib/helpers';
 import { fetchTokenBalanceWithProvider } from '../lib/token';
+
 import { ErrorModal } from './ErrorModal';
 import { SelectTokenModal } from './SelectTokenModal';
+import { Logo } from './Logo';
 
 export const FromToken = () => {
   const { ethersProvider, providerNetwork, network, networkMismatch, account } = useContext(
@@ -44,7 +45,6 @@ export const FromToken = () => {
     onOpen();
   };
   const smallScreen = useBreakpointValue({ base: true, lg: false });
-  const fallbackLogo = isxDaiChain(network.value) ? xDAILogo : EthLogo;
 
   useEffect(() => {
     if (token && account && providerNetwork && providerNetwork.chainId === token.chainId) {
@@ -104,10 +104,7 @@ export const FromToken = () => {
                 overflow="hidden"
                 borderRadius="50%"
               >
-                <Image
-                  src={token.logoURI || fallbackLogo}
-                  fallbackSrc={fallbackLogo}
-                />
+                <Logo uri={token.logoURI} />
               </Flex>
               <Text fontSize="lg" fontWeight="bold" mx={2}>
                 {token.name}

@@ -131,12 +131,13 @@ export const fetchTokenLimits = async (token, walletProvider) => {
 export const relayTokens = async (ethersProvider, token, amount) => {
   const mediatorAddress = getMediatorAddress(token.address, token.chainId);
   const abi = ['function relayTokens(address, uint256)'];
-  const mediatorContract = new Contract(
-    mediatorAddress,
-    abi,
-    ethersProvider.getSigner(),
-  );
+  const signer = ethersProvider.getSigner();
+  const mediatorContract = new Contract(mediatorAddress, abi, signer);
 
+  if (isOverridden(token.address)) {
+    // TODO: remove this check when abis of both mediators are same.
+    return mediatorContract.relayTokens(await signer.getAddress(), amount);
+  }
   return mediatorContract.relayTokens(token.address, amount);
 };
 

@@ -1,22 +1,20 @@
-import { Flex, Image, Text, useBreakpointValue } from '@chakra-ui/core';
+import { Flex, Text, useBreakpointValue } from '@chakra-ui/core';
 import React, { useContext, useEffect } from 'react';
 
-import EthLogo from '../assets/eth-logo.png';
-import xDAILogo from '../assets/xdai-logo.png';
 import { BridgeContext } from '../contexts/BridgeContext';
 import { Web3Context } from '../contexts/Web3Context';
-import { formatValue, isxDaiChain } from '../lib/helpers';
+import { formatValue } from '../lib/helpers';
 import { fetchTokenBalance } from '../lib/token';
+import { Logo } from './Logo';
 
 export const ToToken = () => {
-  const { network, account } = useContext(Web3Context);
+  const { account } = useContext(Web3Context);
   const {
     toToken: token,
     toAmount: amount,
     toBalance: balance,
     setToBalance: setBalance,
   } = useContext(BridgeContext);
-  const fallbackLogo = isxDaiChain(network.value) ? EthLogo : xDAILogo;
   const smallScreen = useBreakpointValue({ base: true, lg: false });
   useEffect(() => {
     if (token && account) {
@@ -70,10 +68,7 @@ export const ToToken = () => {
                 borderRadius="50%"
                 mr={2}
               >
-                <Image
-                  src={token.logoURI || fallbackLogo}
-                  fallbackSrc={fallbackLogo}
-                />
+                <Logo uri={token.logoURI} reverseFallback />
               </Flex>
               <Text fontSize="lg" fontWeight="bold">
                 {token.name}
