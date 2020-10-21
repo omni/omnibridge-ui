@@ -1,9 +1,9 @@
 import { Image } from '@chakra-ui/core';
+import React, { useContext, useState } from 'react';
 
-import { Web3Context } from '../contexts/Web3Context';
 import EthLogo from '../assets/eth-logo.png';
 import xDAILogo from '../assets/xdai-logo.png';
-import React, { useContext, useState } from 'react';
+import { Web3Context } from '../contexts/Web3Context';
 import { isxDaiChain, uriToHttp } from '../lib/helpers';
 
 const BAD_SRCS = {};
@@ -21,7 +21,7 @@ export const Logo = ({ uri, reverseFallback = false }) => {
 
   if (uri) {
     const srcs = uriToHttp(uri);
-    const src = srcs.find(src => !BAD_SRCS[src]);
+    const src = srcs.find(s => !BAD_SRCS[s]);
 
     if (src) {
       return (

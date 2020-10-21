@@ -34,7 +34,7 @@ export const fetchDefaultTokens = async chainId => {
   }
   // eslint-disable-next-line
   console.log({
-    defaultTokensError: 'TokenList not found on default-tokens-list repo',
+    defaultTokensError: `DefaultTokenList not found for chainId ${chainId}`,
   });
   return [];
 };
