@@ -15,7 +15,6 @@ import {
 import { utils } from 'ethers';
 import React, { useContext, useRef, useState } from 'react';
 
-import xDAILogo from '../assets/xdai-logo.png';
 import { BridgeContext } from '../contexts/BridgeContext';
 import { Web3Context } from '../contexts/Web3Context';
 import { uniqueTokens } from '../lib/helpers';
@@ -30,7 +29,7 @@ export const CustomTokenModal = ({ isOpen, onClose, onBack }) => {
     symbol: '',
     decimals: 0,
     chainId: network.value,
-    logo: xDAILogo,
+    logo: '',
   });
 
   const [addressInput, setAddressInput] = useState('');
