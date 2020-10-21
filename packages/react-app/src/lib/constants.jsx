@@ -129,8 +129,8 @@ export const ambs = {
 };
 
 export const defaultTokensUrl = {
-  100: 'https://raw.githubusercontent.com/raid-guild/default-token-list/master/src/tokens/xdai.json',
-  1: 'https://raw.githubusercontent.com/raid-guild/default-token-list/master/src/tokens/mainnet.json',
-  42: 'https://raw.githubusercontent.com/raid-guild/default-token-list/master/src/tokens/kovan.json',
-  77: 'https://raw.githubusercontent.com/raid-guild/default-token-list/master/src/tokens/sokol.json',
+  100: 'https://tokens.honeyswap.org',
+  1: 'https://tokens.uniswap.org',
+  // 42: '',
+  // 77: '',
 };

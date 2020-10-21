@@ -9,7 +9,7 @@ import {
   mediators,
   networkNames,
 } from './constants';
-import { getOverriddenMediator,isOverridden } from './overrides';
+import { getOverriddenMediator, isOverridden } from './overrides';
 
 export const getBridgeNetwork = chainId => {
   switch (chainId) {
@@ -221,3 +221,21 @@ export const defaultMinPerTx = (isxDai, decimals) => {
 export const defaultMaxPerTx = decimals => BigNumber.from(10).pow(decimals + 9);
 export const defaultDailyLimit = decimals =>
   BigNumber.from(10).pow(decimals + 18);
+
+export const uriToHttp = (uri) => {
+  const protocol = uri.split(':')[0].toLowerCase()
+  switch (protocol) {
+    case 'https':
+      return [uri]
+    case 'http':
+      return ['https' + uri.substr(4), uri]
+    case 'ipfs':
+      const hash = uri.match(/^ipfs:(\/\/)?(.*)$/i)?.[2]
+      return [`https://cloudflare-ipfs.com/ipfs/${hash}/`, `https://ipfs.io/ipfs/${hash}/`]
+    case 'ipns':
+      const name = uri.match(/^ipns:(\/\/)?(.*)$/i)?.[2]
+      return [`https://cloudflare-ipfs.com/ipns/${name}/`, `https://ipfs.io/ipns/${name}/`]
+    default:
+      return []
+  }
+}
