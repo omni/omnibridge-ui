@@ -4,11 +4,16 @@ import { ADDRESS_ZERO } from './constants';
 import { getMediatorAddress } from './helpers';
 import { getEthersProvider } from './providers';
 
-export const fetchAllowance = (chainId, account, tokenAddress) => {
+export const fetchAllowance = (
+  chainId,
+  account,
+  tokenAddress,
+  walletProvider,
+) => {
   if (!account) return 0;
-  const ethersProvider = getEthersProvider(chainId);
+
   const abi = ['function allowance(address, address) view returns (uint256)'];
-  const tokenContract = new ethers.Contract(tokenAddress, abi, ethersProvider);
+  const tokenContract = new ethers.Contract(tokenAddress, abi, walletProvider);
   try {
     const mediatorAddress = getMediatorAddress(tokenAddress, chainId);
     return tokenContract.allowance(account, mediatorAddress);

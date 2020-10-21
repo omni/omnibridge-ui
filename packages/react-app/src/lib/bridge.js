@@ -72,7 +72,7 @@ export const fetchToAmount = async (fromToken, toToken, fromAmount) => {
 export const fetchToToken = async fromToken => {
   const toTokenAddress = await fetchToTokenAddress(
     fromToken.chainId,
-    fromToken.address,
+    fromToken.address
   );
 
   const toChainId = getBridgeNetwork(fromToken.chainId);
@@ -87,9 +87,8 @@ export const fetchToToken = async fromToken => {
   };
 };
 
-export const fetchTokenLimits = async token => {
+export const fetchTokenLimits = async (token, walletProvider) => {
   const isOverriddenToken = isOverridden(token.address);
-  const ethersProvider = getEthersProvider(token.chainId);
   const mediatorAbi = [
     'function isTokenRegistered(address) view returns (bool)',
     'function minPerTx(address) view returns (uint256)',
@@ -97,10 +96,11 @@ export const fetchTokenLimits = async token => {
     'function dailyLimit(address) view returns (uint256)',
   ];
   const mediatorAddress = getMediatorAddress(token.address, token.chainId);
+
   const mediatorContract = new Contract(
     mediatorAddress,
     mediatorAbi,
-    ethersProvider,
+    walletProvider,
   );
   const isxDai = isxDaiChain(token.chainId);
   let minPerTx = defaultMinPerTx(isxDai, token.decimals);
@@ -142,7 +142,7 @@ export const relayTokens = async (ethersProvider, token, amount) => {
 };
 
 export const transferTokens = async (ethersProvider, token, amount) => {
-  const confirmsPromise = fetchConfirmations(token.chainId);
+  const confirmsPromise = fetchConfirmations(token.chainId, ethersProvider);
   const txPromise = isxDaiChain(token.chainId)
     ? transferAndCallToken(ethersProvider, token, amount)
     : relayTokens(ethersProvider, token, amount);

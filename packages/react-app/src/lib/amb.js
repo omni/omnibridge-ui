@@ -1,13 +1,11 @@
 import { Contract, utils } from 'ethers';
 
 import { getAMBAddress, getBridgeNetwork, isxDaiChain } from './helpers';
-import { getEthersProvider } from './providers';
 
-export const fetchConfirmations = async chainId => {
-  const ethersProvider = getEthersProvider(chainId);
+export const fetchConfirmations = async (chainId, walletProvider) => {
   const abi = ['function requiredBlockConfirmations() view returns (uint256)'];
   const address = getAMBAddress(chainId);
-  const ambContract = new Contract(address, abi, ethersProvider);
+  const ambContract = new Contract(address, abi, walletProvider);
   return ambContract.requiredBlockConfirmations();
 };
 
@@ -41,13 +39,12 @@ export const getMessageFromReceipt = (chainId, txReceipt) => {
   return getMessageId(txReceipt, bridgeAddress, eventAbi);
 };
 
-export const getMessageCallStatus = (chainId, messageId) => {
+export const getMessageCallStatus = (chainId, messageId, walletProvider) => {
   const abi = [
     'function messageCallStatus(bytes32 messageId) external view returns (bool)',
   ];
   const otherChainId = getBridgeNetwork(chainId);
-  const ethersProvider = getEthersProvider(otherChainId);
   const address = getAMBAddress(otherChainId);
-  const ambContract = new Contract(address, abi, ethersProvider);
+  const ambContract = new Contract(address, abi, walletProvider);
   return ambContract.messageCallStatus(messageId);
 };
