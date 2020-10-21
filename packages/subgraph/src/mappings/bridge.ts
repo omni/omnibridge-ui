@@ -4,7 +4,6 @@ import { BridgeTransfer, Token } from '../types/schema';
 
 import { fetchTokenInfo, overrides } from './helpers';
 
-
 export function handleBridgeTransfer(event: TokensBridged): void {
   log.debug('Parsing TokensBridged', []);
   let txHash = event.transaction.hash.toHex();

@@ -28,7 +28,7 @@ const POLLING_INTERVAL = 2000;
 export const BridgeContext = React.createContext({});
 
 export const BridgeProvider = ({ children }) => {
-  const { ethersProvider, account, network, providerNetwork } = useContext(Web3Context);
+  const { ethersProvider, account, providerNetwork } = useContext(Web3Context);
   const [fromToken, setFromToken] = useState();
   const [toToken, setToToken] = useState();
   const [fromAmount, setFromAmount] = useState(0);
@@ -57,7 +57,7 @@ export const BridgeProvider = ({ children }) => {
           fromToken.chainId,
           account,
           fromToken.address,
-          ethersProvider
+          ethersProvider,
         );
         setAllowed(window.BigInt(gotAllowance) >= window.BigInt(amount));
       }
@@ -65,28 +65,31 @@ export const BridgeProvider = ({ children }) => {
     [account, fromToken, toToken, ethersProvider],
   );
 
-  const setToken = useCallback(async token => {
-    setLoading(true);
-    setFromToken(token);
-    setTokenLimits({
-      minPerTx: defaultMinPerTx(isxDaiChain(token.chainId), token.decimals),
-      maxPerTx: defaultMaxPerTx(token.decimals),
-      dailyLimit: defaultDailyLimit(token.decimals),
-    });
-    if (providerNetwork && token.chainId === providerNetwork.chainId) {
-      fetchTokenLimits(token, ethersProvider).then(limits => {
-        setTokenLimits(limits);
+  const setToken = useCallback(
+    async token => {
+      setLoading(true);
+      setFromToken(token);
+      setTokenLimits({
+        minPerTx: defaultMinPerTx(isxDaiChain(token.chainId), token.decimals),
+        maxPerTx: defaultMaxPerTx(token.decimals),
+        dailyLimit: defaultDailyLimit(token.decimals),
       });
-    }
-    setAmountInput('');
-    setFromAmount(0);
-    setAllowed(true);
-    setToToken();
-    const gotToToken = await fetchToToken(token);
-    setToToken(gotToToken);
-    setToAmount(0);
-    setLoading(false);
-  }, [ethersProvider, providerNetwork]);
+      if (providerNetwork && token.chainId === providerNetwork.chainId) {
+        fetchTokenLimits(token, ethersProvider).then(limits => {
+          setTokenLimits(limits);
+        });
+      }
+      setAmountInput('');
+      setFromAmount(0);
+      setAllowed(true);
+      setToToken();
+      const gotToToken = await fetchToToken(token);
+      setToToken(gotToToken);
+      setToAmount(0);
+      setLoading(false);
+    },
+    [ethersProvider, providerNetwork],
+  );
 
   const setDefaultToken = useCallback(
     chainId => {
@@ -196,7 +199,8 @@ export const BridgeProvider = ({ children }) => {
     async (chainId, customTokens) => {
       if (!account || !ethersProvider) return;
 
-      const networkMismatch = chainId !== (await ethersProvider.getNetwork()).chainId;
+      const networkMismatch =
+        chainId !== (await ethersProvider.getNetwork()).chainId;
       if (networkMismatch) return;
 
       setLoading(true);

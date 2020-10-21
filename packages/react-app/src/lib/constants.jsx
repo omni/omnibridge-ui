@@ -131,6 +131,6 @@ export const ambs = {
 export const defaultTokensUrl = {
   100: 'https://tokens.honeyswap.org',
   1: 'https://tokens.uniswap.org',
-  // 42: '',
-  // 77: '',
+  42: '',
+  77: '',
 };

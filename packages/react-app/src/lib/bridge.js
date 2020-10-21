@@ -72,7 +72,7 @@ export const fetchToAmount = async (fromToken, toToken, fromAmount) => {
 export const fetchToToken = async fromToken => {
   const toTokenAddress = await fetchToTokenAddress(
     fromToken.chainId,
-    fromToken.address
+    fromToken.address,
   );
 
   const toChainId = getBridgeNetwork(fromToken.chainId);
