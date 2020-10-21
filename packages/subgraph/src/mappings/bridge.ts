@@ -1,8 +1,9 @@
-import { log, dataSource } from '@graphprotocol/graph-ts';
+import { log, dataSource, Address } from '@graphprotocol/graph-ts';
 import { TokensBridged, NewTokenRegistered } from '../types/Mediator/Mediator';
 import { BridgeTransfer, Token } from '../types/schema';
 
 import { fetchTokenInfo, overrides } from './helpers';
+
 
 export function handleBridgeTransfer(event: TokensBridged): void {
   log.debug('Parsing TokensBridged', []);
@@ -20,19 +21,23 @@ export function handleBridgeTransfer(event: TokensBridged): void {
 
 export function handleNewToken(event: NewTokenRegistered): void {
   log.debug('Parsing NewTokenRegistered', []);
-  if (overrides.indexOf(event.params.homeToken.toHex()) != -1) {
-    log.debug('Overriding homeToken {} and foreignToken {}', [
-      event.params.homeToken.toHex(),
+  let homeToken = event.params.homeToken;
+
+  if (overrides.isSet(homeToken)) {
+    let override = overrides.get(homeToken);
+    log.info('Overriding homeToken {} with {} for foreignToken {}', [
+      homeToken.toHex(),
+      override.address.toHex(),
       event.params.foreignToken.toHex(),
     ]);
-    return;
+    homeToken = override.address;
   }
-  let id = event.params.homeToken.toHex();
+  let id = homeToken.toHex();
   let token = new Token(id);
-  token.homeAddress = event.params.homeToken;
+  token.homeAddress = homeToken;
   token.foreignAddress = event.params.foreignToken;
 
-  let tokenObject = fetchTokenInfo(event.params.homeToken);
+  let tokenObject = fetchTokenInfo(homeToken);
   token.homeName = tokenObject.name;
   token.foreignName = tokenObject.name.slice(0, -8);
   token.symbol = tokenObject.symbol;
