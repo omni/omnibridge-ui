@@ -17,13 +17,12 @@ import {
 } from '@chakra-ui/core';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 
-import EthLogo from '../assets/eth-logo.png';
 import SearchIcon from '../assets/search.svg';
-import xDAILogo from '../assets/xdai-logo.png';
 import { BridgeContext } from '../contexts/BridgeContext';
 import { Web3Context } from '../contexts/Web3Context';
 import { PlusIcon } from '../icons/PlusIcon';
-import { formatValue, isxDaiChain } from '../lib/helpers';
+import { formatValue } from '../lib/helpers';
+import { Logo } from './Logo';
 
 export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
   const { network } = useContext(Web3Context);
@@ -31,7 +30,6 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
     BridgeContext,
   );
   const [filteredTokenList, setFilteredTokenList] = useState([]);
-  const fallbackLogo = isxDaiChain(network.value) ? xDAILogo : EthLogo;
 
   const onClick = token => {
     setToken(token);
@@ -143,10 +141,7 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
                       overflow="hidden"
                       borderRadius="50%"
                     >
-                      <Image
-                        src={token.logoURI || fallbackLogo}
-                        fallbackSrc={fallbackLogo}
-                      />
+                      <Logo uri={token.logoURI} />
                     </Flex>
                     <Text fontSize="lg" fontWeight="bold" mx={2}>
                       {token.symbol}

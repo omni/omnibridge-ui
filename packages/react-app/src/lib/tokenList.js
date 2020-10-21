@@ -1,3 +1,5 @@
+import schema from '@uniswap/token-lists/src/tokenlist.schema.json';
+import Ajv from 'ajv';
 import { gql, request } from 'graphql-request';
 
 import {
@@ -9,20 +11,26 @@ import {
 } from './helpers';
 
 export const fetchTokenList = async chainId => {
-  const repoPromise = fetchTokensFromRepo(chainId);
-  const subgraphPromise = fetchTokensFromSubgraph(chainId);
-  const tokens = uniqueTokens(
-    (await repoPromise).concat((await subgraphPromise).tokens),
-  );
+  const [defaultTokens, subgraphTokens] = await Promise.all([
+    fetchDefaultTokens(chainId),
+    fetchTokensFromSubgraph(chainId),
+  ]);
+  const tokens = uniqueTokens(defaultTokens.concat(subgraphTokens));
   return tokens;
 };
 
-export const fetchTokensFromRepo = async chainId => {
+const tokenListValidator = new Ajv({ allErrors: true }).compile(schema);
+
+export const fetchDefaultTokens = async chainId => {
   const url = getTokenListUrl(chainId);
-  const response = await fetch(url);
-  if (response.ok) {
-    const data = await response.json();
-    return data;
+  if (url) {
+    const response = await fetch(url);
+    if (response.ok) {
+      const json = await response.json();
+      if (tokenListValidator(json)) {
+        return json.tokens.filter(token => token.chainId === chainId);
+      }
+    }
   }
   // eslint-disable-next-line
   console.log({
@@ -62,5 +70,6 @@ export const fetchTokensFromSubgraph = async chainId => {
   const endpoint = getGraphEndpoint(xDaiChainId);
   const query = isxDai ? homeTokensQuery : foreignTokensQuery;
 
-  return request(endpoint, query);
+  const data = await request(endpoint, query);
+  return data.tokens;
 };
