@@ -17,6 +17,9 @@ export const ToToken = () => {
   } = useContext(BridgeContext);
   const smallScreen = useBreakpointValue({ base: true, lg: false });
   useEffect(() => {
+    if (!account) {
+      setBalance();
+    }
     if (token && account) {
       setBalance();
       fetchTokenBalance(token, account).then(b => setBalance(b));

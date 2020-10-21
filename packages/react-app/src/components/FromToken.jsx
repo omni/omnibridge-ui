@@ -49,6 +49,9 @@ export const FromToken = () => {
   const smallScreen = useBreakpointValue({ base: true, lg: false });
 
   useEffect(() => {
+    if (!account) {
+      setBalance();
+    }
     if (
       token &&
       account &&

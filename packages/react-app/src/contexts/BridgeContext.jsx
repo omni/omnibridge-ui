@@ -157,7 +157,7 @@ export const BridgeProvider = ({ children }) => {
         }
 
         if (message) {
-          status = await getMessageCallStatus(chainId, message, ethersProvider);
+          status = await getMessageCallStatus(chainId, message);
         }
 
         if (status) {
