@@ -6,7 +6,7 @@ import {
   Text,
   useBreakpointValue,
   useDisclosure,
-} from '@chakra-ui/core';
+} from '@chakra-ui/react';
 import React, { useContext, useEffect, useState } from 'react';
 
 import DropDown from '../assets/drop-down.svg';

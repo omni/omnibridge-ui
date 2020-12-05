@@ -1,4 +1,4 @@
-import { Image } from '@chakra-ui/core';
+import { Image } from '@chakra-ui/react';
 import React, { useContext, useState } from 'react';
 
 import EthLogo from '../assets/eth-logo.png';

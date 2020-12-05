@@ -1,4 +1,4 @@
-import { Box, Flex, HStack, Text, useBreakpointValue } from '@chakra-ui/core';
+import { Box, Flex, HStack, Text, useBreakpointValue } from '@chakra-ui/react';
 import React from 'react';
 import { Link } from 'react-router-dom';
 

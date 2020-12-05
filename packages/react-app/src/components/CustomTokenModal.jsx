@@ -11,7 +11,7 @@ import {
   ModalHeader,
   ModalOverlay,
   Text,
-} from '@chakra-ui/core';
+} from '@chakra-ui/react';
 import { utils } from 'ethers';
 import React, { useContext, useRef, useState } from 'react';
 

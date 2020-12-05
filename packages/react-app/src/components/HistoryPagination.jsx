@@ -1,4 +1,4 @@
-import { Button, Flex, HStack } from '@chakra-ui/core';
+import { Button, Flex, HStack } from '@chakra-ui/react';
 import React, { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 

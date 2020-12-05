@@ -1,4 +1,4 @@
-import { Flex, Image } from '@chakra-ui/core';
+import { Flex, Image } from '@chakra-ui/react';
 import React from 'react';
 
 import DownTriangle from '../assets/down-triangle.svg';

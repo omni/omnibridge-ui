@@ -1,4 +1,4 @@
-import { ChakraProvider, CSSReset } from '@chakra-ui/core';
+import { ChakraProvider, CSSReset } from '@chakra-ui/react';
 import React from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 

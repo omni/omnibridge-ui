@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "xdai-omnibridge"
+    "default": "xdai-omnibridge",
+    "staging": "sokol-omnibridge"
   }
 }

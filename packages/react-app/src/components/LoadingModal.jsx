@@ -7,7 +7,7 @@ import {
   ModalContent,
   ModalOverlay,
   Text,
-} from '@chakra-ui/core';
+} from '@chakra-ui/react';
 import React, { useContext } from 'react';
 
 import LoadingImage from '../assets/loading.svg';
@@ -38,14 +38,16 @@ export const LoadingModal = ({ loadingProps }) => {
       closeOnOverlayClick={false}
       isCentered
     >
-      <ModalOverlay background="modalBG">
+      <ModalOverlay background="modalBG" transition="background 0s">
         {(!receipt || totalConfirms === 0) && (
-          <Flex direction="column" align="center">
-            <Image src={LoadingImage} mb={4} />
-            <Text color="white" fontWeight="bold">
-              Loading ...
-            </Text>
-          </Flex>
+          <ModalContent background="none" boxShadow="none" borderRadius="0">
+            <Flex direction="column" align="center" justify="center">
+              <Image src={LoadingImage} mb={4} />
+              <Text color="white" fontWeight="bold">
+                Loading ...
+              </Text>
+            </Flex>
+          </ModalContent>
         )}
         {receipt && totalConfirms && (
           <ModalContent
