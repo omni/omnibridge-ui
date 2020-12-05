@@ -1,4 +1,4 @@
-import { Flex, Image, Text, useDisclosure } from '@chakra-ui/core';
+import { Flex, Image, Text, useDisclosure } from '@chakra-ui/react';
 import React, { useContext, useState } from 'react';
 
 import TransferIcon from '../assets/transfer.svg';

@@ -14,7 +14,7 @@ import {
   ModalOverlay,
   Text,
   useBreakpointValue,
-} from '@chakra-ui/core';
+} from '@chakra-ui/react';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import SearchIcon from '../assets/search.svg';

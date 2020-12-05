@@ -50,6 +50,7 @@ export const theme = {
     background: '#EEF4FD',
     greyText: '#75818D',
     modalBG: 'rgba(98, 118, 148, 0.9)',
+    modalOpaqueBG: 'rgba(98, 118, 148, 1)',
   },
   fonts: {
     ...chakraTheme.fonts,

@@ -1,4 +1,4 @@
-import { Flex, Grid, Link, Text, useBreakpointValue } from '@chakra-ui/core';
+import { Flex, Grid, Link, Text, useBreakpointValue } from '@chakra-ui/react';
 import React from 'react';
 
 import { getMonitorUrl } from '../lib/helpers';

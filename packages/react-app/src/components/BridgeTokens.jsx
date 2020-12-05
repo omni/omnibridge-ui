@@ -1,4 +1,4 @@
-import { Flex, Grid, Text, useBreakpointValue } from '@chakra-ui/core';
+import { Flex, Grid, Text, useBreakpointValue } from '@chakra-ui/react';
 import React, { useContext } from 'react';
 
 import { BridgeContext } from '../contexts/BridgeContext';

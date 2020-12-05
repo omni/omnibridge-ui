@@ -6,7 +6,7 @@ import {
   PopoverContent,
   PopoverTrigger,
   Text,
-} from '@chakra-ui/core';
+} from '@chakra-ui/react';
 import React, { useContext, useEffect, useState } from 'react';
 
 import { BridgeContext } from '../contexts/BridgeContext';

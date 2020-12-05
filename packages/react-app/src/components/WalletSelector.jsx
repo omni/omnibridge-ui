@@ -6,7 +6,7 @@ import {
   PopoverContent,
   PopoverTrigger,
   Text,
-} from '@chakra-ui/core';
+} from '@chakra-ui/react';
 import React, { useContext } from 'react';
 
 import { Web3Context } from '../contexts/Web3Context';

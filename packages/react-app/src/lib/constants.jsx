@@ -5,39 +5,41 @@ import { NetworkIcon } from '../icons/NetworkIcon';
 
 export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000';
 
-export const networkOptions = [
+// export const networkOptions = [ // prod
+//   {
+//     value: 100,
+//     key: 0,
+//     bridge: { chainId: 1, name: 'ETH Mainnet' },
+//     label: 'xDai',
+//     name: 'xDai Chain',
+//     icon: <NetworkIcon />,
+//   },
+//   {
+//     value: 1,
+//     key: 1,
+//     bridge: { chainId: 100, name: 'xDai Chain' },
+//     label: 'Mainnet',
+//     name: 'ETH Mainnet',
+//     icon: <NetworkIcon />,
+//   },
+// ];
+export const networkOptions = [ // stage
   {
-    value: 100,
+    value: 77,
     key: 0,
-    bridge: { chainId: 1, name: 'ETH Mainnet' },
-    label: 'xDai',
-    name: 'xDai Chain',
+    bridge: { chainId: 42, name: 'Kovan Testnet' },
+    label: 'Sokol',
+    name: 'Sokol Testnet',
     icon: <NetworkIcon />,
   },
   {
-    value: 1,
+    value: 42,
     key: 1,
-    bridge: { chainId: 100, name: 'xDai Chain' },
-    label: 'Mainnet',
-    name: 'ETH Mainnet',
+    bridge: { chainId: 77, name: 'Sokol Testnet' },
+    label: 'Kovan',
+    name: 'Kovan Testnet',
     icon: <NetworkIcon />,
   },
-  // {
-  //   value: 77,
-  //   key: 2,
-  //   bridge: { chainId: 42, name: 'Kovan Testnet' },
-  //   label: 'Sokol',
-  //   name: 'Sokol Testnet',
-  //   icon: <NetworkIcon />,
-  // },
-  // {
-  //   value: 42,
-  //   key: 3,
-  //   bridge: { chainId: 77, name: 'Sokol Testnet' },
-  //   label: 'Kovan',
-  //   name: 'Kovan Testnet',
-  //   icon: <NetworkIcon />,
-  // },
 ];
 
 export const networkNames = {
