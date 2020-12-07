@@ -5,6 +5,7 @@ import { Web3Context } from '../contexts/Web3Context';
 import { fetchHistory, fetchNumHistory } from '../lib/history';
 import { HistoryItem } from './HistoryItem';
 import { HistoryPagination } from './HistoryPagination';
+import { NoHistory } from './NoHistory';
 import { LoadingModal } from './LoadingModal';
 
 export const BridgeHistory = ({ page }) => {
@@ -40,7 +41,7 @@ export const BridgeHistory = ({ page }) => {
           borderColor="grey"
           borderRadius="4px"
         >
-          Show only received
+          Show only unreceived
         </Checkbox>
       </Flex>
 
@@ -69,9 +70,7 @@ export const BridgeHistory = ({ page }) => {
           )}
         </>
       ) : (
-        <Grid templateColumns="5fr" w="100%">
-          <Text align="center">No History Found</Text>
-        </Grid>
+          <NoHistory />
       )}
     </Flex>
   );

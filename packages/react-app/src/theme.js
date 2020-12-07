@@ -48,6 +48,7 @@ export const theme = {
     },
     grey: '#A0B6D7',
     background: '#EEF4FD',
+    lightBackground: '#F2F6FB',
     greyText: '#75818D',
     modalBG: 'rgba(98, 118, 148, 0.9)',
     modalOpaqueBG: 'rgba(98, 118, 148, 1)',
