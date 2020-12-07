@@ -20,7 +20,7 @@ jobs:
         env:
           REACT_APP_INFURA_ID: ${{ secrets.INFURA_ID }}
 
-      - name: Deploy to Firebase
+      - name: Use Staging
         uses: w9jds/firebase-action@master
         with:
           args: use staging
