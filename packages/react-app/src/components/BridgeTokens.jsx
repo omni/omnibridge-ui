@@ -3,6 +3,7 @@ import React, { useContext } from 'react';
 
 import { BridgeContext } from '../contexts/BridgeContext';
 import { Web3Context } from '../contexts/Web3Context';
+import { ClaimTokensModal } from './ClaimTokens';
 import { DaiWarning, isERC20DaiAddress } from './DaiWarning';
 import { FromToken } from './FromToken';
 import { LoadingModal } from './LoadingModal';
@@ -10,7 +11,6 @@ import { SystemFeedback } from './SystemFeedback';
 import { ToToken } from './ToToken';
 import { TransferButton } from './TransferButton';
 import { UnlockButton } from './UnlockButton';
-import { ClaimTokensModal } from './ClaimTokens';
 
 export const BridgeTokens = () => {
   const { network } = useContext(Web3Context);

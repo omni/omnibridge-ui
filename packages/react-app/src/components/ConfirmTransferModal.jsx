@@ -16,8 +16,8 @@ import {
 } from '@chakra-ui/react';
 import React, { useContext, useEffect, useState } from 'react';
 
-import TransferImage from '../assets/confirm-transfer.svg';
 import AlertImage from '../assets/alert.svg';
+import TransferImage from '../assets/confirm-transfer.svg';
 import { BridgeContext } from '../contexts/BridgeContext';
 import { formatValue, isxDaiChain } from '../lib/helpers';
 import { DaiWarning, isERC20DaiAddress } from './DaiWarning';

@@ -30,18 +30,18 @@ export const Web3Provider = ({ children }) => {
   const [account, setAccount] = useState();
   const [networkMismatch, setNetworkMismatch] = useState(false);
 
-  const setWeb3Provider = async (provider, updateAccount = false) => {
-    if (provider) {
-      const web3Provider = new Web3(provider);
-      const _ethersProvider = new ethers.providers.Web3Provider(
+  const setWeb3Provider = async (prov, updateAccount = false) => {
+    if (prov) {
+      const web3Provider = new Web3(prov);
+      const provider = new ethers.providers.Web3Provider(
         web3Provider.currentProvider,
       );
 
-      setEthersProvider(_ethersProvider);
-      const network = await _ethersProvider.getNetwork();
+      setEthersProvider(provider);
+      const network = await provider.getNetwork();
       setProviderChainId(network.chainId);
       if (updateAccount) {
-        const signer = _ethersProvider.getSigner();
+        const signer = provider.getSigner();
         const gotAccount = await signer.getAddress();
         setAccount(gotAccount);
       }

@@ -3,8 +3,8 @@ import {
   Flex,
   Menu,
   MenuButton,
-  MenuList,
   MenuItem,
+  MenuList,
   Text,
 } from '@chakra-ui/react';
 import React, { useContext, useEffect, useState } from 'react';

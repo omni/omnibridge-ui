@@ -1,34 +1,43 @@
 import {
-  Image,
+  Button,
   Flex,
   Grid,
+  Image,
   Link,
   Text,
-  Button,
   useBreakpointValue,
 } from '@chakra-ui/react';
-import { Web3Context } from '../contexts/Web3Context';
-import React, { useState, useContext, useEffect } from 'react';
-import RightArrowImage from '../assets/right-arrow.svg';
-import BlueTickImage from '../assets/blue-tick.svg';
+import { BigNumber, utils } from 'ethers';
+import React, { useContext } from 'react';
 
+import BlueTickImage from '../assets/blue-tick.svg';
+import RightArrowImage from '../assets/right-arrow.svg';
+import { Web3Context } from '../contexts/Web3Context';
+import { executeSignatures } from '../lib/amb';
 import {
+  getBridgeNetwork,
+  getExplorerUrl,
   getMonitorUrl,
   getNetworkTag,
-  getBridgeNetwork,
   isxDaiChain,
-  getExplorerUrl,
 } from '../lib/helpers';
-import { executeSignatures } from '../lib/amb';
-import { utils, BigNumber } from 'ethers';
-import { fetchTokenDetails } from '../lib/token';
+
 const { formatUnits } = utils;
 
 const shortenHash = hash =>
-  hash.slice(0, 6) + '...' + hash.slice(hash.length - 4, hash.length);
+  `${hash.slice(0, 6)}...${hash.slice(hash.length - 4, hash.length)}`;
 
 export const HistoryItem = ({
-  data: { chainId, timestamp, sendingTx, receivingTx, amount, token, message },
+  data: {
+    chainId,
+    timestamp,
+    sendingTx,
+    receivingTx,
+    amount,
+    decimals,
+    symbol,
+    message,
+  },
 }) => {
   const { providerChainId, ethersProvider } = useContext(Web3Context);
   const bridgeChainId = getBridgeNetwork(chainId);
@@ -57,11 +66,11 @@ export const HistoryItem = ({
     }
   };
 
-  const [tokenDetails, setTokenDetails] = useState();
+  // const [tokenDetails, setTokenDetails] = useState();
 
-  useEffect(() => {
-    fetchTokenDetails(chainId, token).then(details => setTokenDetails(details));
-  }, [chainId, token, setTokenDetails]);
+  // useEffect(() => {
+  //   fetchTokenDetails(chainId, token).then(details => setTokenDetails(details));
+  // }, [chainId, token, setTokenDetails]);
 
   return (
     <Flex
@@ -73,7 +82,7 @@ export const HistoryItem = ({
       mb={4}
     >
       <Grid
-        //templateColumns={{ base: '2fr 2fr', md: '2fr 3fr' }}
+        // templateColumns={{ base: '2fr 2fr', md: '2fr 3fr' }}
         templateColumns="1fr 1.25fr 1fr 1fr 1.25fr 0.5fr"
         w="100%"
       >
@@ -101,12 +110,10 @@ export const HistoryItem = ({
             {shortenHash(receivingTx)}
           </Link>
         ) : (
-          <Text></Text>
+          <Text />
         )}
         <Text>
-          {tokenDetails
-            ? `${formatUnits(BigNumber.from(amount), tokenDetails.decimals)} ${tokenDetails.symbol}`
-            : ''}
+          {formatUnits(BigNumber.from(amount), decimals)} {symbol}
         </Text>
         {receivingTx ? (
           <Flex align="center">

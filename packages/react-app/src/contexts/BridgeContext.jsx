@@ -157,9 +157,8 @@ export const BridgeProvider = ({ children }) => {
               setLoadingText();
               unsubscribe();
               return;
-            } else {
-              setLoadingText('Waiting for Execution');
             }
+            setLoadingText('Waiting for Execution');
           }
         }
 

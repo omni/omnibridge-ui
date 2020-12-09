@@ -1,5 +1,5 @@
-import React from 'react';
 import { Flex } from '@chakra-ui/react';
+import React from 'react';
 
 import { CONFIG } from '../config';
 import { NetworkIcon } from '../icons/NetworkIcon';

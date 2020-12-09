@@ -35,6 +35,9 @@ export function handleInitiateTransfer(event: TokensBridgingInitiated): void {
   request.txHash = txHash;
   request.timestamp = event.block.timestamp;
   request.token = event.params.token;
+  let tokenInfo = fetchTokenInfo(event.params.token);
+  request.decimals = tokenInfo.decimals;
+  request.symbol = tokenInfo.symbol;
   request.user = event.params.sender;
   request.amount = event.params.value;
   request.messageId = event.params.messageId;

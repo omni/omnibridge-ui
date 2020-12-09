@@ -13,7 +13,7 @@ import DropDown from '../assets/drop-down.svg';
 import { BridgeContext } from '../contexts/BridgeContext';
 import { Web3Context } from '../contexts/Web3Context';
 import { formatValue, parseValue } from '../lib/helpers';
-import { fetchTokenBalanceWithProvider, fetchTokenBalance } from '../lib/token';
+import { fetchTokenBalance, fetchTokenBalanceWithProvider } from '../lib/token';
 import { ErrorModal } from './ErrorModal';
 import { Logo } from './Logo';
 import { SelectTokenModal } from './SelectTokenModal';
@@ -52,10 +52,7 @@ export const FromToken = () => {
   useEffect(() => {
     setBalance();
     if (token && account) {
-      if (
-        providerChainId === token.chainId &&
-        !networkMismatch
-      ) {
+      if (providerChainId === token.chainId && !networkMismatch) {
         fetchTokenBalanceWithProvider(ethersProvider, token, account).then(b =>
           setBalance(b),
         );
@@ -142,7 +139,7 @@ export const FromToken = () => {
                   textAlign="right"
                   {...(smallScreen
                     ? {}
-                    : { position: 'absolute', bottom: "4px", right: 0 })}
+                    : { position: 'absolute', bottom: '4px', right: 0 })}
                 >
                   {`Balance: ${formatValue(balance, token.decimals)}`}
                 </Text>

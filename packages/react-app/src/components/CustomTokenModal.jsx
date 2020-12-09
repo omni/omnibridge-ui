@@ -16,11 +16,11 @@ import {
 import { utils } from 'ethers';
 import React, { useContext, useRef, useState } from 'react';
 
+import CustomTokenImage from '../assets/custom-token.png';
 import { BridgeContext } from '../contexts/BridgeContext';
 import { Web3Context } from '../contexts/Web3Context';
 import { uniqueTokens } from '../lib/helpers';
 import { fetchTokenDetails } from '../lib/token';
-import CustomTokenImage from '../assets/custom-token.png';
 
 export const CustomTokenModal = ({ isOpen, onClose, onBack }) => {
   const { setToken } = useContext(BridgeContext);
@@ -104,7 +104,7 @@ export const CustomTokenModal = ({ isOpen, onClose, onBack }) => {
         >
           <ModalHeader p={6}>
             <Text>Add Custom Token</Text>
-            <Image src={CustomTokenImage} w="100%" mt={4}/>
+            <Image src={CustomTokenImage} w="100%" mt={4} />
           </ModalHeader>
           <ModalCloseButton
             size="lg"

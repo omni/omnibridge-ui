@@ -1,8 +1,8 @@
 import { gql, request } from 'graphql-request';
+import { useContext, useEffect, useState } from 'react';
 
 import { Web3Context } from '../contexts/Web3Context';
-import { getGraphEndpoint, getBridgeNetwork } from './helpers';
-import { useContext, useEffect, useState } from 'react';
+import { getBridgeNetwork, getGraphEndpoint } from './helpers';
 
 const pageSize = 1000;
 
@@ -18,6 +18,8 @@ const historyQuery = gql`
       timestamp
       amount
       token
+      decimals
+      symbol
       message {
         msgData
         signatures
@@ -36,7 +38,9 @@ export const getTransfers = async (user, chainId) => {
   let page = 0;
   const first = pageSize;
 
+  // eslint-disable-next-line no-constant-condition
   while (true) {
+    // eslint-disable-next-line no-await-in-loop
     const data = await request(getGraphEndpoint(chainId), historyQuery, {
       user,
       first,
@@ -51,25 +55,25 @@ export const getTransfers = async (user, chainId) => {
       (data.requests.length < pageSize && data.executions.length < pageSize)
     )
       break;
-    page++;
+    page += 1;
   }
 
   return { requests, executions };
 };
 
 function combineRequestsWithExecutions(requests, executions, chainId) {
-  return requests.map(request => {
-    const execution = executions.find(
-      execution => execution.messageId === request.messageId,
-    );
+  return requests.map(req => {
+    const execution = executions.find(exec => exec.messageId === req.messageId);
     return {
       chainId,
-      timestamp: request.timestamp,
-      sendingTx: request.txHash,
+      timestamp: req.timestamp,
+      sendingTx: req.txHash,
       receivingTx: execution ? execution.txHash : null,
-      amount: request.amount,
-      token: request.token,
-      message: { ...request.message, messageId: request.messageId },
+      amount: req.amount,
+      token: req.token,
+      decimals: req.decimals,
+      symbol: req.symbol,
+      message: { ...req.message, messageId: req.messageId },
     };
   });
 }
@@ -82,7 +86,7 @@ export function useUserHistory() {
   const bridgeChainId = getBridgeNetwork(chainId);
 
   useEffect(() => {
-    if (!account || !network.value) return;
+    if (!account || !network.value) return () => undefined;
     async function update() {
       const [
         { requests: homeRequests, executions: homeExecutions },
@@ -111,7 +115,7 @@ export function useUserHistory() {
     const interval = 10000; // 10 seconds
     const intervalId = setInterval(update, interval);
     return () => clearInterval(intervalId);
-  }, [account]);
+  }, [chainId, bridgeChainId, network.value, account]);
 
   return { transfers, loading };
 }
