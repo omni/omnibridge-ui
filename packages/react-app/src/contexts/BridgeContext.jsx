@@ -28,7 +28,7 @@ const POLLING_INTERVAL = 2000;
 export const BridgeContext = React.createContext({});
 
 export const BridgeProvider = ({ children }) => {
-  const { ethersProvider, account, providerNetwork } = useContext(Web3Context);
+  const { ethersProvider, account, providerChainId } = useContext(Web3Context);
   const [fromToken, setFromToken] = useState();
   const [toToken, setToToken] = useState();
   const [fromAmount, setFromAmount] = useState(0);
@@ -74,7 +74,7 @@ export const BridgeProvider = ({ children }) => {
         maxPerTx: defaultMaxPerTx(token.decimals),
         dailyLimit: defaultDailyLimit(token.decimals),
       });
-      if (providerNetwork && token.chainId === providerNetwork.chainId) {
+      if (token.chainId === providerChainId) {
         fetchTokenLimits(token, ethersProvider).then(limits => {
           setTokenLimits(limits);
         });
@@ -88,7 +88,7 @@ export const BridgeProvider = ({ children }) => {
       setToAmount(0);
       setLoading(false);
     },
-    [ethersProvider, providerNetwork],
+    [ethersProvider, providerChainId],
   );
 
   const setDefaultToken = useCallback(
@@ -152,7 +152,14 @@ export const BridgeProvider = ({ children }) => {
         if (txReceipt) {
           message = getMessageFromReceipt(chainId, txReceipt);
           if (txReceipt.confirmations > totalConfirms) {
-            setLoadingText('Waiting for Execution');
+            if (isxDaiChain(chainId)) {
+              setLoading(false);
+              setLoadingText();
+              unsubscribe();
+              return;
+            } else {
+              setLoadingText('Waiting for Execution');
+            }
           }
         }
 
@@ -163,12 +170,6 @@ export const BridgeProvider = ({ children }) => {
         if (status) {
           setTxHash();
           setReceipt();
-          await setToken(fromToken);
-          fetchTokenBalanceWithProvider(
-            ethersProvider,
-            fromToken,
-            account,
-          ).then(b => setFromBalance(b));
           setLoading(false);
           setLoadingText();
         }

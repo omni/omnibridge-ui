@@ -16,5 +16,75 @@
     ],
     "name": "UserRequestForSignature",
     "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": true, "name": "sender", "type": "address" },
+      { "indexed": true, "name": "executor", "type": "address" },
+      { "indexed": true, "name": "messageId", "type": "bytes32" },
+      { "indexed": false, "name": "status", "type": "bool" }
+    ],
+    "name": "RelayedMessage",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": true, "name": "sender", "type": "address" },
+      { "indexed": true, "name": "executor", "type": "address" },
+      { "indexed": true, "name": "messageId", "type": "bytes32" },
+      { "indexed": false, "name": "status", "type": "bool" }
+    ],
+    "name": "AffirmationCompleted",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": true, "name": "signer", "type": "address" },
+      { "indexed": false, "name": "messageHash", "type": "bytes32" }
+    ],
+    "name": "SignedForUserRequest",
+    "type": "event"
+  },
+  {
+    "type": "event",
+    "name": "CollectedSignatures",
+    "inputs": [
+      {
+        "type": "address",
+        "name": "authorityResponsibleForRelay",
+        "indexed": false
+      },
+      { "type": "bytes32", "name": "messageHash", "indexed": false },
+      {
+        "type": "uint256",
+        "name": "NumberOfCollectedSignatures",
+        "indexed": false
+      }
+    ],
+    "anonymous": false
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "payable": false,
+    "outputs": [{ "type": "bytes", "name": "" }],
+    "name": "signature",
+    "inputs": [
+      { "type": "bytes32", "name": "_hash" },
+      { "type": "uint256", "name": "_index" }
+    ],
+    "constant": true
+  },
+  {
+    "type": "function",
+    "stateMutability": "view",
+    "payable": false,
+    "outputs": [{ "type": "bytes", "name": "" }],
+    "name": "message",
+    "inputs": [{ "type": "bytes32", "name": "_hash" }],
+    "constant": true
   }
 ]

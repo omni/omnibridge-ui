@@ -10,10 +10,11 @@ import { SystemFeedback } from './SystemFeedback';
 import { ToToken } from './ToToken';
 import { TransferButton } from './TransferButton';
 import { UnlockButton } from './UnlockButton';
+import { ClaimTokensModal } from './ClaimTokens';
 
 export const BridgeTokens = () => {
   const { network } = useContext(Web3Context);
-  const { fromToken } = useContext(BridgeContext);
+  const { loading, fromToken } = useContext(BridgeContext);
   const isERC20Dai = isERC20DaiAddress(fromToken);
   const smallScreen = useBreakpointValue({ base: true, lg: false });
 
@@ -30,7 +31,7 @@ export const BridgeTokens = () => {
       mx={4}
       my="auto"
     >
-      <LoadingModal />
+      {loading ? <LoadingModal /> : <ClaimTokensModal />}
       {network && (
         <>
           {!smallScreen && (

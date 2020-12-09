@@ -49,7 +49,7 @@ export const LoadingModal = ({ loadingProps }) => {
             </Flex>
           </ModalContent>
         )}
-        {receipt && totalConfirms && (
+          {receipt && totalConfirms > 0 && (
           <ModalContent
             boxShadow="0px 1rem 2rem #617492"
             borderRadius="full"

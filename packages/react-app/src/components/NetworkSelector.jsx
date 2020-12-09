@@ -1,10 +1,10 @@
 import {
   Button,
   Flex,
-  Popover,
-  PopoverBody,
-  PopoverContent,
-  PopoverTrigger,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
   Text,
 } from '@chakra-ui/react';
 import React, { useContext, useEffect, useState } from 'react';
@@ -19,22 +19,24 @@ const SelectOption = props => {
   const { icon, label } = network;
 
   return (
-    <Flex transition="0.25s" _hover={{ background: 'background' }}>
-      <Button
-        background="transparent"
-        width="100%"
-        justifyContent="flex-start"
-        fontWeight="normal"
-        _hover={{ color: 'blue.500' }}
-        color="grey"
-        onClick={() => onChange(network)}
-      >
-        {icon}
-        <Text color="black" ml={2}>
-          {label}
-        </Text>
-      </Button>
-    </Flex>
+    <MenuItem onClick={() => onChange(network)} p={0}>
+      <Flex transition="0.25s" width="100%">
+        <Button
+          as="div"
+          background="white"
+          width="100%"
+          justifyContent="flex-start"
+          fontWeight="normal"
+          _hover={{ background: 'background', color: 'blue.500' }}
+          color="grey"
+        >
+          {icon}
+          <Text color="black" ml={2}>
+            {label}
+          </Text>
+        </Button>
+      </Flex>
+    </MenuItem>
   );
 };
 
@@ -47,14 +49,7 @@ const DropdownIndicator = () => {
 };
 
 const SelectValue = ({ icon, label }) => (
-  <Flex
-    cursor="pointer"
-    color="grey"
-    transition="0.25s"
-    px={4}
-    _hover={{ color: 'blue.500' }}
-    align="center"
-  >
+  <Flex px={4} align="center">
     {icon}
     <Text color="black" ml={2} fontWeight="bold">
       {label}
@@ -67,10 +62,6 @@ export const NetworkSelector = props => {
   const [localNetwork, setLocalNetwork] = useState(0);
   const { setNetwork } = useContext(Web3Context);
   const { setDefaultToken } = useContext(BridgeContext);
-
-  const [isOpen, setIsOpen] = React.useState(false);
-  const open = () => setIsOpen(true);
-  const close = () => setIsOpen(false);
 
   useEffect(() => {
     let storageNetwork = parseInt(
@@ -88,7 +79,6 @@ export const NetworkSelector = props => {
   }, [setNetwork, setDefaultToken]);
 
   const onChange = network => {
-    close();
     setDefaultToken(network.value);
     setNetwork(network);
     setLocalNetwork(network.key);
@@ -108,29 +98,28 @@ export const NetworkSelector = props => {
       );
     });
 
-  const handleOpen = isOpen ? close : open;
-
   return (
     <Flex {...props}>
-      <Popover isOpen={isOpen} onClose={close} placement="bottom">
-        <PopoverTrigger>
-          <Button
-            p={0}
-            background="transparent"
-            _hover={{ background: 'transparent' }}
-            onClick={handleOpen}
-          >
-            <SelectValue {...currentNetwork} />
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent
-          width="min-content"
-          border="1px solid rgba(226,232,240, 0.8)"
-          boxShadow="0 0.5rem 1rem #CADAEF"
+      <Menu>
+        <MenuButton
+          p={0}
+          background="transparent"
+          color="grey"
+          transition="0.25s"
+          _hover={{ color: 'blue.500' }}
         >
-          <PopoverBody padding={0}>{selectOptions}</PopoverBody>
-        </PopoverContent>
-      </Popover>
+          <SelectValue {...currentNetwork} />
+        </MenuButton>
+        <MenuList
+          boxShadow="0 0.5rem 1rem #CADAEF"
+          border="none"
+          p={0}
+          w="auto"
+          minW="8rem"
+        >
+          {selectOptions}
+        </MenuList>
+      </Menu>
     </Flex>
   );
 };

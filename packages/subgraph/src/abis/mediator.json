@@ -11,6 +11,17 @@
     "type": "event"
   },
   {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": true, "name": "token", "type": "address" },
+      { "indexed": true, "name": "sender", "type": "address" },
+      { "indexed": false, "name": "value", "type": "uint256" },
+      { "indexed": true, "name": "messageId", "type": "bytes32" }
+    ],
+    "name": "TokensBridgingInitiated",
+    "type": "event"
+  },
+  {
     "type": "event",
     "name": "NewTokenRegistered",
     "inputs": [

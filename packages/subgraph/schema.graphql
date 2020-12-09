@@ -1,18 +1,33 @@
 type UserRequest @entity {
   id: ID!
-  user: Bytes!
+  user: Bytes
+  token: Bytes
+  amount: BigInt
+  timestamp: BigInt!
+  txHash: String!
+  messageId: Bytes
+  encodedData: Bytes
+  message: Message
+}
+
+type Execution @entity {
+  id: ID!
+  user: Bytes
+  token: Bytes
+  amount: BigInt
+  sender: Bytes
+  executor: Bytes
+  messageId: Bytes
+  status: Boolean
   timestamp: BigInt!
   txHash: String!
 }
 
-type BridgeTransfer @entity {
+type Message @entity {
   id: ID!
-  token: Bytes!
-  recipient: Bytes!
-  value: BigInt!
-  messageId: Bytes!
-  timestamp: BigInt!
-  txHash: String!
+  msgHash: Bytes
+  msgData: Bytes
+  signatures: [Bytes!]
 }
 
 type Token @entity {

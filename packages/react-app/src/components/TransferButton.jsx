@@ -4,7 +4,7 @@ import React, { useContext, useState } from 'react';
 import TransferIcon from '../assets/transfer.svg';
 import { BridgeContext } from '../contexts/BridgeContext';
 import { Web3Context } from '../contexts/Web3Context';
-import { formatValue } from '../lib/helpers';
+import { formatValue, isxDaiChain } from '../lib/helpers';
 import { ConfirmTransferModal } from './ConfirmTransferModal';
 import { ErrorModal } from './ErrorModal';
 
@@ -17,6 +17,7 @@ export const TransferButton = () => {
     tokenLimits,
     allowed,
   } = useContext(BridgeContext);
+  const isxDai = token && token.chainId && isxDaiChain(token.chainId);
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [message, setMessage] = useState();
   const onClick = () => {
@@ -58,12 +59,12 @@ export const TransferButton = () => {
       as="button"
       align="center"
       mt={{ base: 2, md: 2, lg: 3 }}
-      color="blue.500"
+      color={isxDai ? 'purple.300' : 'blue.500'}
       _hover={
         !allowed
           ? undefined
           : {
-              color: 'blue.600',
+              color: isxDai ? 'purple.400' : 'blue.600',
             }
       }
       cursor={!allowed ? 'not-allowed' : 'pointer'}
@@ -96,7 +97,7 @@ export const TransferButton = () => {
         align="center"
       >
         <Text color="white" fontWeight="bold">
-          Transfer
+          {isxDai ? 'Request' : 'Transfer'}
         </Text>
         <Image src={TransferIcon} ml={2} />
       </Flex>
