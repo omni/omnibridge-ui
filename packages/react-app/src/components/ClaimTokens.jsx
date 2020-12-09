@@ -1,7 +1,6 @@
 import {
   Box,
   Button,
-  Divider,
   Flex,
   Image,
   Modal,
@@ -15,11 +14,11 @@ import {
 } from '@chakra-ui/react';
 import React, { useContext, useEffect, useState } from 'react';
 
+import ChangeNetworkImage from '../assets/change-network.png';
+import ClaimTokenImage from '../assets/claim.svg';
 import InfoImage from '../assets/info.svg';
 import { BridgeContext } from '../contexts/BridgeContext';
-import { isxDaiChain, getNetworkName } from '../lib/helpers';
-import ClaimTokenImage from '../assets/claim.svg';
-import ChangeNetworkImage from '../assets/change-network.png';
+import { getNetworkName, isxDaiChain } from '../lib/helpers';
 
 export const ClaimTokensModal = () => {
   const { receipt, fromToken, toToken, totalConfirms } = useContext(
@@ -34,12 +33,12 @@ export const ClaimTokensModal = () => {
   };
 
   const onClick = () => {
-    console.log('claimTokens();');
+    // console.log('claimTokens();');
     onClose();
   };
 
   useEffect(() => {
-    console.log({ receipt, totalConfirms });
+    // console.log({ receipt, totalConfirms });
     if (
       receipt &&
       totalConfirms > 0 &&

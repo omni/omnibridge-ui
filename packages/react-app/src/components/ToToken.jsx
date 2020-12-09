@@ -91,7 +91,7 @@ export const ToToken = () => {
                   textAlign="right"
                   {...(smallScreen
                     ? {}
-                    : { position: 'absolute', bottom: "4px", right: 0 })}
+                    : { position: 'absolute', bottom: '4px', right: 0 })}
                 >
                   {`Balance: ${formatValue(balance, token.decimals)}`}
                 </Text>

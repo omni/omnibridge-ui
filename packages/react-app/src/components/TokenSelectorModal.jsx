@@ -102,7 +102,13 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
               </Link>
             </Flex>
           </ModalHeader>
-          <ModalCloseButton size="lg" top={-10} right={-10} color="white" p={2}/>
+          <ModalCloseButton
+            size="lg"
+            top={-10}
+            right={-10}
+            color="white"
+            p={2}
+          />
           <ModalBody>
             <Text color="grey" mb={2}>
               Search Name or Paste Token Contract Address

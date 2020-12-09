@@ -1,37 +1,32 @@
-import { Flex, Grid, Text, Checkbox } from '@chakra-ui/react';
+import { Checkbox, Flex, Grid, Text } from '@chakra-ui/react';
 import React, { useState } from 'react';
+import { Redirect } from 'react-router-dom';
 
 import { useUserHistory } from '../lib/history';
 import { HistoryItem } from './HistoryItem';
-// import { HistoryPagination } from './HistoryPagination';
-import { NoHistory } from './NoHistory';
+import { HistoryPagination } from './HistoryPagination';
 import { LoadingModal } from './LoadingModal';
+import { NoHistory } from './NoHistory';
 
-export const BridgeHistory = (/*{ page }*/) => {
-  // const [loading, setLoading] = useState(true);
-  // const [numPages, setNumPages] = useState(0);
+const TOTAL_PER_PAGE = 10;
+
+export const BridgeHistory = ({ page }) => {
   const [onlyUnReceived, setOnlyUnReceived] = useState(false);
 
-  //useEffect(() => {
-  //  async function getHistory() {
-  //    setLoading(true);
-  //    const [gotHistory, totalItems] = await Promise.all([
-  //      fetchHistory(network.value, account, page),
-  //      fetchNumHistory(network.value, account),
-  //    ]);
-  //    setHistory(gotHistory);
-  //    console.log(totalItems);
-  //    setNumPages(0);
-  //    //setNumPages(Math.ceil(totalItems / 10));
-  //    setLoading(false);
-  //  }
-  //  getHistory();
-  //}, [network, account, setHistory, page]);
-  //
-  const { transfers: history, loading } = useUserHistory();
-  const filteredHistory = onlyUnReceived
-    ? history.filter(i => i.receivingTx === null)
-    : history;
+  const { transfers, loading } = useUserHistory();
+  const filteredTransfers = onlyUnReceived
+    ? transfers.filter(i => i.receivingTx === null)
+    : transfers;
+
+  const numPages = Math.ceil(filteredTransfers.length / TOTAL_PER_PAGE);
+  const displayHistory = filteredTransfers.slice(
+    (page - 1) * TOTAL_PER_PAGE,
+    Math.min(page * TOTAL_PER_PAGE, filteredTransfers.length),
+  );
+
+  if (page > numPages) {
+    return <Redirect to="/history" />;
+  }
 
   return (
     <Flex w="100%" maxW="75rem" direction="column" mt={8} px={8}>
@@ -53,10 +48,10 @@ export const BridgeHistory = (/*{ page }*/) => {
             </Checkbox>
           </Flex>
 
-          {history && history.length > 0 ? (
+          {transfers && transfers.length > 0 ? (
             <>
               <Grid
-                //templateColumns={{ base: '2fr 2fr', md: '2fr 3fr' }}
+                // templateColumns={{ base: '2fr 2fr', md: '2fr 3fr' }}
                 templateColumns="1fr 1.25fr 1fr 1fr 1.25fr 0.5fr"
                 color="grey"
                 fontSize="sm"
@@ -70,12 +65,12 @@ export const BridgeHistory = (/*{ page }*/) => {
                 <Text>Amount</Text>
                 <Text>Status</Text>
               </Grid>
-              {filteredHistory.map(item => (
+              {displayHistory.map(item => (
                 <HistoryItem key={item.sendingTx} data={item} />
               ))}
-              {/*numPages && (
-            <HistoryPagination numPages={numPages} currentPage={page} />
-          )*/}
+              {numPages && (
+                <HistoryPagination numPages={numPages} currentPage={page} />
+              )}
             </>
           ) : (
             <NoHistory />

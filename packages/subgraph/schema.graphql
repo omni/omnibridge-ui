@@ -2,6 +2,8 @@ type UserRequest @entity {
   id: ID!
   user: Bytes
   token: Bytes
+  decimals: Int
+  symbol: String
   amount: BigInt
   timestamp: BigInt!
   txHash: String!
