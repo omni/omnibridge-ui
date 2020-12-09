@@ -14,6 +14,12 @@ export const BridgeHistory = ({ page }) => {
   const [onlyUnReceived, setOnlyUnReceived] = useState(false);
 
   const { transfers, loading } = useUserHistory();
+  if (loading)
+    return (
+      <Flex w="100%" maxW="75rem" direction="column" mt={8} px={8}>
+        <LoadingModal loadingProps={true} />
+      </Flex>
+    );
   const filteredTransfers = onlyUnReceived
     ? transfers.filter(i => i.receivingTx === null)
     : transfers;
@@ -30,52 +36,46 @@ export const BridgeHistory = ({ page }) => {
 
   return (
     <Flex w="100%" maxW="75rem" direction="column" mt={8} px={8}>
-      {loading ? (
-        <LoadingModal loadingProps={loading} />
-      ) : (
-        <>
-          <Flex justify="space-between" align="center">
-            <Text fontSize="xl" fontWeight="bold" mb={4}>
-              History
-            </Text>
-            <Checkbox
-              isChecked={onlyUnReceived}
-              onChange={e => setOnlyUnReceived(e.target.checked)}
-              borderColor="grey"
-              borderRadius="4px"
-            >
-              Show only unreceived
-            </Checkbox>
-          </Flex>
+      <Flex justify="space-between" align="center">
+        <Text fontSize="xl" fontWeight="bold" mb={4}>
+          History
+        </Text>
+        <Checkbox
+          isChecked={onlyUnReceived}
+          onChange={e => setOnlyUnReceived(e.target.checked)}
+          borderColor="grey"
+          borderRadius="4px"
+        >
+          Show only unreceived
+        </Checkbox>
+      </Flex>
 
-          {transfers && transfers.length > 0 ? (
-            <>
-              <Grid
-                // templateColumns={{ base: '2fr 2fr', md: '2fr 3fr' }}
-                templateColumns="1fr 1.25fr 1fr 1fr 1.25fr 0.5fr"
-                color="grey"
-                fontSize="sm"
-                px={{ base: 4, sm: 8 }}
-                mb={4}
-              >
-                <Text>Date</Text>
-                <Text>Direction</Text>
-                <Text>Sending Tx</Text>
-                <Text>Receiving Tx</Text>
-                <Text>Amount</Text>
-                <Text>Status</Text>
-              </Grid>
-              {displayHistory.map(item => (
-                <HistoryItem key={item.sendingTx} data={item} />
-              ))}
-              {numPages && (
-                <HistoryPagination numPages={numPages} currentPage={page} />
-              )}
-            </>
-          ) : (
-            <NoHistory />
+      {transfers && transfers.length > 0 ? (
+        <>
+          <Grid
+            // templateColumns={{ base: '2fr 2fr', md: '2fr 3fr' }}
+            templateColumns="1fr 1.25fr 1fr 1fr 1.25fr 0.5fr"
+            color="grey"
+            fontSize="sm"
+            px={{ base: 4, sm: 8 }}
+            mb={4}
+          >
+            <Text>Date</Text>
+            <Text>Direction</Text>
+            <Text>Sending Tx</Text>
+            <Text>Receiving Tx</Text>
+            <Text>Amount</Text>
+            <Text>Status</Text>
+          </Grid>
+          {displayHistory.map(item => (
+            <HistoryItem key={item.sendingTx} data={item} />
+          ))}
+          {numPages && (
+            <HistoryPagination numPages={numPages} currentPage={page} />
           )}
         </>
+      ) : (
+        <NoHistory />
       )}
     </Flex>
   );
