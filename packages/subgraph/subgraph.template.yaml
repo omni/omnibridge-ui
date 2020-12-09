@@ -27,6 +27,8 @@ dataSources:
       eventHandlers:
         - event: TokensBridged(indexed address,indexed address,uint256,indexed bytes32)
           handler: handleBridgeTransfer
+        - event: TokensBridgingInitiated(indexed address,indexed address,uint256,indexed bytes32)
+          handler: handleInitiateTransfer
         - event: NewTokenRegistered(indexed address,indexed address)
           handler: handleNewToken
       file: ./src/mappings/bridge.ts
@@ -53,5 +55,11 @@ dataSources:
           handler: handleUserRequestForSignature
         - event: UserRequestForAffirmation(indexed bytes32,bytes)
           handler: handleUserRequestForAffirmation
+        - event: RelayedMessage(indexed address,indexed address,indexed bytes32,bool)
+          handler: handleRelayedMessage
+        - event: AffirmationCompleted(indexed address,indexed address,indexed bytes32,bool)
+          handler: handleAffirmationCompleted
+        - event: CollectedSignatures(address,bytes32,uint256)
+          handler: handleCollectedSignatures
       file: ./src/mappings/amb.ts
       language: wasm/assemblyscript

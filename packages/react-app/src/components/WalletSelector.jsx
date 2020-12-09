@@ -24,7 +24,7 @@ export const WalletSelector = props => {
     connectWeb3,
     disconnect,
     account,
-    providerNetwork,
+    providerChainId,
     network,
     networkMismatch,
   } = useContext(Web3Context);
@@ -59,8 +59,7 @@ export const WalletSelector = props => {
             <PopoverBody width="100%" align="center" p={4}>
               <Flex justify="space-between" align="center">
                 <Text>
-                  {' '}
-                  Connected to {getNetworkName(providerNetwork.chainId)}{' '}
+                  Connected to {getNetworkName(providerChainId)}
                 </Text>
                 <Button colorScheme="blue" onClick={disconnect}>
                   <Text> Disconnect </Text>

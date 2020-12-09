@@ -1,4 +1,5 @@
 import {
+  Box,
   Button,
   Divider,
   Flex,
@@ -16,6 +17,7 @@ import {
 import React, { useContext, useEffect, useState } from 'react';
 
 import TransferImage from '../assets/confirm-transfer.svg';
+import AlertImage from '../assets/alert.svg';
 import { BridgeContext } from '../contexts/BridgeContext';
 import { formatValue, isxDaiChain } from '../lib/helpers';
 import { DaiWarning, isERC20DaiAddress } from './DaiWarning';
@@ -49,7 +51,7 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
         <ModalContent
           boxShadow="0px 1rem 2rem #617492"
           borderRadius="1rem"
-          maxW="30rem"
+          maxW="33.75rem"
           mx={{ base: 12, lg: 0 }}
         >
           <ModalHeader p={6}>
@@ -61,7 +63,7 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
             top={-10}
             right={-10}
             color="white"
-            // _focus={{ border: 'none', outline: 'none' }}
+            p={2}
           />
           <ModalBody px={6} py={0}>
             <Flex align="center" direction={{ base: 'column', md: 'row' }}>
@@ -128,9 +130,39 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
               {`Bridge Fees ${Number(fee.toFixed(3))}%`}
             </Flex>
             <Divider color="#DAE3F0" my={4} />
-            <Flex w="100%" fontSize="sm" color="grey" align="center">
-              {`Please confirm that you would like to send ${fromAmt} and receive ${toAmt}.`}
-            </Flex>
+            <Box w="100%" fontSize="sm" color={isxDai ? 'black' : 'grey'}>
+              <Text as="span">{`Please confirm that you would like to send `}</Text>
+              <Text as="b">{`${fromAmt} ${fromUnit}`}</Text>
+              <Text as="span">{` and receive `}</Text>
+              <Text as="b">{`${toAmt} ${toUnit}`}</Text>
+            </Box>
+            {isxDai && (
+              <Flex
+                mt={4}
+                w="100%"
+                borderRadius="4px"
+                border="1px solid #DAE3F0"
+              >
+                <Flex
+                  bg="#FFF7EF"
+                  borderLeftRadius="4px"
+                  border="1px solid #FFAA5C"
+                  justify="center"
+                  align="center"
+                  minW="4rem"
+                  flex={1}
+                >
+                  <Image src={AlertImage} />
+                </Flex>
+                <Flex align="center" fontSize="12px" p={4}>
+                  <Text>
+                    The claim process requires 2 transactions, one on xDai chain
+                    and one on ETH Mainnet. You will need some xDai and some ETH
+                    to complete.
+                  </Text>
+                </Flex>
+              </Flex>
+            )}
           </ModalBody>
           <ModalFooter p={6}>
             <Flex

@@ -10,6 +10,7 @@ import { Logo } from './Logo';
 export const ToToken = () => {
   const { account } = useContext(Web3Context);
   const {
+    receipt,
     toToken: token,
     toAmount: amount,
     toBalance: balance,
@@ -24,7 +25,7 @@ export const ToToken = () => {
       setBalance();
       fetchTokenBalance(token, account).then(b => setBalance(b));
     }
-  }, [token, account, setBalance]);
+  }, [receipt, token, account, setBalance]);
   return (
     <Flex
       align="center"
@@ -55,7 +56,7 @@ export const ToToken = () => {
         >
           <Flex
             justify="space-between"
-            align={{ base: 'stretch', sm: 'center' }}
+            align={{ base: 'stretch', sm: 'flex-start' }}
             mb={2}
             direction={{ base: 'column', sm: 'row' }}
           >
@@ -78,12 +79,39 @@ export const ToToken = () => {
               </Text>
             </Flex>
             {balance >= 0 && (
-              <Text color="grey" mt={{ base: 2, lg: 0 }}>
-                {`Balance: ${formatValue(balance, token.decimals)}`}
-              </Text>
+              <Flex
+                flex={1}
+                justify="flex-end"
+                align="center"
+                h="100%"
+                position="relative"
+              >
+                <Text
+                  color="grey"
+                  textAlign="right"
+                  {...(smallScreen
+                    ? {}
+                    : { position: 'absolute', bottom: "4px", right: 0 })}
+                >
+                  {`Balance: ${formatValue(balance, token.decimals)}`}
+                </Text>
+              </Flex>
             )}
           </Flex>
-          <Flex align="flex-end" flex={1}>
+          <Flex
+            align="flex-end"
+            flex={1}
+            {...(!smallScreen
+              ? {
+                  position: 'absolute',
+                  left: 0,
+                  bottom: 0,
+                  pl: 12,
+                  pr: 4,
+                  pb: 4,
+                }
+              : {})}
+          >
             <Text fontWeight="bold" fontSize="2xl">
               {formatValue(amount, token.decimals)}
             </Text>

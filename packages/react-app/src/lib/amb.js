@@ -50,3 +50,41 @@ export const getMessageCallStatus = (chainId, messageId) => {
   const ambContract = new Contract(address, abi, ethersProvider);
   return ambContract.messageCallStatus(messageId);
 };
+
+export function strip0x(input) {
+  return input.replace(/^0x/, '');
+}
+
+export function signatureToVRS(rawSignature) {
+  const signature = strip0x(rawSignature);
+  const v = signature.substr(64 * 2);
+  const r = signature.substr(0, 32 * 2);
+  const s = signature.substr(32 * 2, 32 * 2);
+  return { v, r, s };
+}
+
+export function packSignatures(array) {
+  const length = strip0x(utils.hexValue(array.length));
+  const msgLength = length.length === 1 ? `0${length}` : length;
+  let v = '';
+  let r = '';
+  let s = '';
+  array.forEach(e => {
+    v = v.concat(e.v);
+    r = r.concat(e.r);
+    s = s.concat(e.s);
+  });
+  return `0x${msgLength}${v}${r}${s}`;
+}
+
+export const executeSignatures = (ethersProvider, chainId, message) => {
+  const abi = [
+    'function executeSignatures(bytes messageData, bytes signatures) external',
+  ];
+  const signatures = packSignatures(
+    message.signatures.map(s => signatureToVRS(s)),
+  );
+  const address = getAMBAddress(chainId);
+  const ambContract = new Contract(address, abi, ethersProvider.getSigner());
+  return ambContract.executeSignatures(message.msgData, signatures);
+};

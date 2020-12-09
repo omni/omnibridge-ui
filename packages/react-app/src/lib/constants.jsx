@@ -1,4 +1,5 @@
 import React from 'react';
+import { Flex } from '@chakra-ui/react';
 
 import { CONFIG } from '../config';
 import { NetworkIcon } from '../icons/NetworkIcon';
@@ -23,7 +24,8 @@ export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000';
 //     icon: <NetworkIcon />,
 //   },
 // ];
-export const networkOptions = [ // stage
+export const networkOptions = [
+  // stage
   {
     value: 77,
     key: 0,
@@ -135,4 +137,27 @@ export const defaultTokensUrl = {
   1: 'https://tokens.uniswap.org',
   42: '',
   77: '',
+};
+
+export const Tag = ({ bg, txt }) => (
+  <Flex
+    justify="center"
+    align="center"
+    bg={bg}
+    borderRadius="6px"
+    px="0.75rem"
+    height="2rem"
+    fontSize="sm"
+    color="white"
+    fontWeight="600"
+  >
+    {txt}
+  </Flex>
+);
+
+export const networkTags = {
+  100: <Tag bg="#4DA9A6" txt="xDai" />,
+  1: <Tag bg="#5A74DA" txt="Ethereum" />,
+  42: <Tag bg="#5A74DA" txt="Kovan" />,
+  77: <Tag bg="#4DA9A6" txt="Sokol" />,
 };
