@@ -20,16 +20,9 @@ jobs:
         env:
           REACT_APP_INFURA_ID: ${{ secrets.INFURA_ID }}
 
-      - name: Use Staging
-        uses: w9jds/firebase-action@master
-        with:
-          args: use staging
-        env:
-          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-
       - name: Deploy to Firebase
         uses: w9jds/firebase-action@master
         with:
-          args: deploy --only hosting
+          args: deploy --only hosting --project sokol
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
