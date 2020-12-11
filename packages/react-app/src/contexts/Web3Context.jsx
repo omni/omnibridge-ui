@@ -85,7 +85,9 @@ export const Web3Provider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    window.ethereum.autoRefreshOnNetworkChange = false;
+    if (window.ethereum) {
+      window.ethereum.autoRefreshOnNetworkChange = false;
+    }
     if (web3Modal.cachedProvider) {
       connectWeb3().catch(error => {
         // eslint-disable-next-line
