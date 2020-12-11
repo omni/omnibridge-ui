@@ -6,7 +6,6 @@ import {
   getBridgeNetwork,
   getGraphEndpoint,
   getTokenListUrl,
-  isxDaiChain,
   uniqueTokens,
 } from './helpers';
 
@@ -64,12 +63,16 @@ const foreignTokensQuery = gql`
 `;
 
 export const fetchTokensFromSubgraph = async chainId => {
-  const isxDai = isxDaiChain(chainId);
-  const xDaiChainId = isxDai ? chainId : getBridgeNetwork(chainId);
-
-  const endpoint = getGraphEndpoint(xDaiChainId);
-  const query = isxDai ? homeTokensQuery : foreignTokensQuery;
-
-  const data = await request(endpoint, query);
-  return data.tokens;
+  const homeEndpoint = getGraphEndpoint(chainId);
+  const foreignChainId = getBridgeNetwork(chainId);
+  const foreignEndpoint = getGraphEndpoint(foreignChainId);
+  const [homeData, foreignData] = await Promise.all([
+    request(homeEndpoint, homeTokensQuery),
+    request(foreignEndpoint, foreignTokensQuery),
+  ]);
+  const homeTokens = homeData && homeData.tokens ? homeData.tokens : [];
+  const foreignTokens =
+    foreignData && foreignData.tokens ? foreignData.tokens : [];
+  console.log({homeTokens, foreignTokens});
+  return homeTokens.concat(foreignTokens);
 };

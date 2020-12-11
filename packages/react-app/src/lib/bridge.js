@@ -11,26 +11,53 @@ import {
 } from './helpers';
 import { getOverriddenToToken, isOverridden } from './overrides';
 import { getEthersProvider } from './providers';
-import { transferAndCallToken } from './token';
+import { transferAndCallToken, fetchTokenDetails } from './token';
 
-export const fetchToTokenAddress = async (fromChainId, tokenAddress) => {
-  if (isOverridden(tokenAddress)) {
-    return getOverriddenToToken(tokenAddress, fromChainId);
-  }
+export const fetchToTokenDetails = async (
+  fromName,
+  fromChainId,
+  fromAddress,
+) => {
+  const toChainId = getBridgeNetwork(fromChainId);
   const isxDai = isxDaiChain(fromChainId);
-  const xDaiChainId = isxDai ? fromChainId : getBridgeNetwork(fromChainId);
-  const ethersProvider = getEthersProvider(xDaiChainId);
-  const mediatorAddress = getMediatorAddress(tokenAddress, xDaiChainId);
-  const abi = [
-    'function foreignTokenAddress(address) view returns (address)',
-    'function homeTokenAddress(address) view returns (address)',
-  ];
-  const mediatorContract = new Contract(mediatorAddress, abi, ethersProvider);
-
-  if (isxDai) {
-    return mediatorContract.foreignTokenAddress(tokenAddress);
+  if (isOverridden(fromAddress)) {
+    return fetchTokenDetails(
+      toChainId,
+      getOverriddenToToken(fromAddress, fromChainId),
+    );
   }
-  return mediatorContract.homeTokenAddress(tokenAddress);
+  const fromEthersProvider = getEthersProvider(fromChainId);
+  const toEthersProvider = getEthersProvider(toChainId);
+  const fromMediatorAddress = getMediatorAddress(fromAddress, fromChainId);
+  const toMediatorAddress = getMediatorAddress(fromAddress, toChainId);
+  const abi = [
+    'function isRegisteredAsNativeToken(address) view returns (bool)',
+    'function bridgedTokenAddress(address) view returns (address)',
+    'function nativeTokenAddress(address) view returns (address)',
+  ];
+  const fromMediatorContract = new Contract(
+    fromMediatorAddress,
+    abi,
+    fromEthersProvider,
+  );
+  const isNativeToken = await fromMediatorContract.isRegisteredAsNativeToken(
+    fromAddress,
+  );
+
+  if (isNativeToken) {
+    const toMediatorContract = new Contract(
+      toMediatorAddress,
+      abi,
+      toEthersProvider,
+    );
+
+    const toAddress = await toMediatorContract.bridgedTokenAddress(fromAddress);
+    const toName = isxDai ? fromName + ' on Mainnet' : fromName + ' on xDai';
+    return { name: toName, chainId: toChainId, address: toAddress };
+  }
+  const toAddress = await fromMediatorContract.nativeTokenAddress(fromAddress);
+  const toName = isxDai ? fromName.slice(0, -8) : fromName.slice(0, -11);
+  return { name: toName, chainId: toChainId, address: toAddress };
 };
 
 export const fetchToAmount = async (fromToken, toToken, fromAmount) => {
@@ -69,21 +96,18 @@ export const fetchToAmount = async (fromToken, toToken, fromAmount) => {
   }
 };
 
-export const fetchToToken = async fromToken => {
-  const toTokenAddress = await fetchToTokenAddress(
+export const fetchToToken = async (fromToken) => {
+  const toToken = await fetchToTokenDetails(
+    fromToken.name,
     fromToken.chainId,
     fromToken.address,
   );
 
-  const toChainId = getBridgeNetwork(fromToken.chainId);
-  const isxDai = isxDaiChain(toChainId);
   return {
-    name: isxDai ? `${fromToken.name} on xDai` : fromToken.name.slice(0, -8),
-    address: toTokenAddress,
     symbol: fromToken.symbol,
     decimals: fromToken.decimals,
-    chainId: toChainId,
     logoURI: '',
+    ...toToken,
   };
 };
 

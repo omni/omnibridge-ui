@@ -98,6 +98,7 @@ export const defaultTokens = {
   77: {
     name: 'FaucetToken on xDai',
     address: '0x1b457c787792d17bea8d41885ada00e764712cdd',
+    //0xF69BA830398B031382Df776b19C312CF468A01c8
     symbol: 'FAU',
     decimals: 18,
     chainId: 77,
@@ -105,6 +106,7 @@ export const defaultTokens = {
   42: {
     name: 'FaucetToken',
     address: '0xfab46e002bbf0b4509813474841e0716e6730136',
+    //0xD089cAFDE5Ffad1190dF379b12933e661905c72d
     symbol: 'FAU',
     decimals: 18,
     chainId: 42,
