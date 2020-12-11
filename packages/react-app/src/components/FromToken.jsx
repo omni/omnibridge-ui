@@ -3,6 +3,7 @@ import {
   Flex,
   Image,
   Input,
+  Spinner,
   Text,
   useBreakpointValue,
   useDisclosure,
@@ -49,16 +50,25 @@ export const FromToken = () => {
   };
   const smallScreen = useBreakpointValue({ base: true, lg: false });
 
+  const [balanceLoading, setBalanceLoading] = useState(false);
   useEffect(() => {
-    setBalance();
     if (token && account) {
+      setBalanceLoading(true);
       if (providerChainId === token.chainId && !networkMismatch) {
-        fetchTokenBalanceWithProvider(ethersProvider, token, account).then(b =>
-          setBalance(b),
+        fetchTokenBalanceWithProvider(ethersProvider, token, account).then(
+          b => {
+            setBalance(b);
+            setBalanceLoading(false);
+          },
         );
       } else {
-        fetchTokenBalance(token, account).then(b => setBalance(b));
+        fetchTokenBalance(token, account).then(b => {
+          setBalance(b);
+          setBalanceLoading(false);
+        });
       }
+    } else {
+      setBalance();
     }
   }, [
     token,
@@ -68,6 +78,7 @@ export const FromToken = () => {
     ethersProvider,
     providerChainId,
     networkMismatch,
+    setBalanceLoading,
   ]);
 
   return (
@@ -126,14 +137,16 @@ export const FromToken = () => {
               </Text>
               <Image src={DropDown} cursor="pointer" />
             </Flex>
-            {balance >= 0 && (
-              <Flex
-                flex={1}
-                justify="flex-end"
-                align="center"
-                h="100%"
-                position="relative"
-              >
+            <Flex
+              flex={1}
+              justify="flex-end"
+              align="center"
+              h="100%"
+              position="relative"
+            >
+              {balanceLoading ? (
+                <Spinner size="sm" color="grey" />
+              ) : (
                 <Text
                   color="grey"
                   textAlign="right"
@@ -141,10 +154,10 @@ export const FromToken = () => {
                     ? {}
                     : { position: 'absolute', bottom: '4px', right: 0 })}
                 >
-                  {`Balance: ${formatValue(balance, token.decimals)}`}
+                  {`Balance: ${formatValue(balance || 0, token.decimals)}`}
                 </Text>
-              </Flex>
-            )}
+              )}
+            </Flex>
           </Flex>
           <Flex
             align="flex-end"

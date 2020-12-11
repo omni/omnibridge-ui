@@ -64,8 +64,6 @@ export function handleNewToken(event: NewTokenRegistered): void {
   token.foreignAddress = event.params.foreignToken;
 
   let tokenObject = fetchTokenInfo(homeToken);
-  token.homeName = tokenObject.name;
-  token.foreignName = tokenObject.name.slice(0, -8);
   token.symbol = tokenObject.symbol;
   token.decimals = tokenObject.decimals;
 
@@ -73,9 +71,23 @@ export function handleNewToken(event: NewTokenRegistered): void {
   if (network == 'xdai') {
     token.homeChainId = 100;
     token.foreignChainId = 1;
+    token.homeName = tokenObject.name;
+    token.foreignName = tokenObject.name.slice(0, -8);
   } else if (network == 'poa-sokol') {
     token.homeChainId = 77;
     token.foreignChainId = 42;
+    token.homeName = tokenObject.name;
+    token.foreignName = tokenObject.name.slice(0, -8);
+  } else if (network == 'kovan') {
+    token.homeChainId = 42;
+    token.foreignChainId = 77;
+    token.homeName = tokenObject.name;
+    token.foreignName = tokenObject.name.slice(0, -11);
+  } else if (network == 'mainnet') {
+    token.homeChainId = 1;
+    token.foreignChainId = 100;
+    token.homeName = tokenObject.name;
+    token.foreignName = tokenObject.name.slice(0, -11);
   }
 
   token.save();

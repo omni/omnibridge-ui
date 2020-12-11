@@ -1,5 +1,5 @@
 {
-  "name": "@project/subgraph",
+  "name": "@omnibridge/subgraph",
   "version": "1.0.0",
   "dependencies": {
     "@graphprotocol/graph-cli": "0.18.0",

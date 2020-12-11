@@ -1,5 +1,5 @@
 {
-  "name": "@project/react-app",
+  "name": "@omnibridge/react-app",
   "version": "1.0.0",
   "browserslist": {
     "production": [

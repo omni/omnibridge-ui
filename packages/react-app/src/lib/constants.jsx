@@ -1,4 +1,3 @@
-import { Flex } from '@chakra-ui/react';
 import React from 'react';
 
 import { CONFIG } from '../config';
@@ -6,43 +5,46 @@ import { NetworkIcon } from '../icons/NetworkIcon';
 
 export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000';
 
-// export const networkOptions = [ // prod
-//   {
-//     value: 100,
-//     key: 0,
-//     bridge: { chainId: 1, name: 'ETH Mainnet' },
-//     label: 'xDai',
-//     name: 'xDai Chain',
-//     icon: <NetworkIcon />,
-//   },
-//   {
-//     value: 1,
-//     key: 1,
-//     bridge: { chainId: 100, name: 'xDai Chain' },
-//     label: 'Mainnet',
-//     name: 'ETH Mainnet',
-//     icon: <NetworkIcon />,
-//   },
-// ];
-export const networkOptions = [
-  // stage
-  {
-    value: 77,
-    key: 0,
-    bridge: { chainId: 42, name: 'Kovan Testnet' },
-    label: 'Sokol',
-    name: 'Sokol Testnet',
-    icon: <NetworkIcon />,
-  },
-  {
-    value: 42,
-    key: 1,
-    bridge: { chainId: 77, name: 'Sokol Testnet' },
-    label: 'Kovan',
-    name: 'Kovan Testnet',
-    icon: <NetworkIcon />,
-  },
-];
+export const networkOptions =
+  CONFIG.network === 77
+    ? [
+        // sokol
+        {
+          value: 77,
+          key: 0,
+          bridge: { chainId: 42, name: 'Kovan Testnet' },
+          label: 'Sokol',
+          name: 'Sokol Testnet',
+          icon: <NetworkIcon />,
+        },
+        {
+          value: 42,
+          key: 1,
+          bridge: { chainId: 77, name: 'Sokol Testnet' },
+          label: 'Kovan',
+          name: 'Kovan Testnet',
+          icon: <NetworkIcon />,
+        },
+      ]
+    : [
+        // xdai
+        {
+          value: 100,
+          key: 0,
+          bridge: { chainId: 1, name: 'ETH Mainnet' },
+          label: 'xDai',
+          name: 'xDai Chain',
+          icon: <NetworkIcon />,
+        },
+        {
+          value: 1,
+          key: 1,
+          bridge: { chainId: 100, name: 'xDai Chain' },
+          label: 'Mainnet',
+          name: 'ETH Mainnet',
+          icon: <NetworkIcon />,
+        },
+      ];
 
 export const networkNames = {
   100: 'xDai Chain',
@@ -98,6 +100,7 @@ export const defaultTokens = {
   77: {
     name: 'FaucetToken on xDai',
     address: '0x1b457c787792d17bea8d41885ada00e764712cdd',
+    // 0xF69BA830398B031382Df776b19C312CF468A01c8
     symbol: 'FAU',
     decimals: 18,
     chainId: 77,
@@ -105,6 +108,7 @@ export const defaultTokens = {
   42: {
     name: 'FaucetToken',
     address: '0xfab46e002bbf0b4509813474841e0716e6730136',
+    // 0xD089cAFDE5Ffad1190dF379b12933e661905c72d
     symbol: 'FAU',
     decimals: 18,
     chainId: 42,
@@ -137,27 +141,4 @@ export const defaultTokensUrl = {
   1: 'https://tokens.uniswap.org',
   42: '',
   77: '',
-};
-
-export const Tag = ({ bg, txt }) => (
-  <Flex
-    justify="center"
-    align="center"
-    bg={bg}
-    borderRadius="6px"
-    px="0.75rem"
-    height="2rem"
-    fontSize="sm"
-    color="white"
-    fontWeight="600"
-  >
-    {txt}
-  </Flex>
-);
-
-export const networkTags = {
-  100: <Tag bg="#4DA9A6" txt="xDai" />,
-  1: <Tag bg="#5A74DA" txt="Ethereum" />,
-  42: <Tag bg="#5A74DA" txt="Kovan" />,
-  77: <Tag bg="#4DA9A6" txt="Sokol" />,
 };

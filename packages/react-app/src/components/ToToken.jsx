@@ -1,5 +1,5 @@
-import { Flex, Text, useBreakpointValue } from '@chakra-ui/react';
-import React, { useContext, useEffect } from 'react';
+import { Flex, Spinner, Text, useBreakpointValue } from '@chakra-ui/react';
+import React, { useContext, useEffect, useState } from 'react';
 
 import { BridgeContext } from '../contexts/BridgeContext';
 import { Web3Context } from '../contexts/Web3Context';
@@ -13,19 +13,23 @@ export const ToToken = () => {
     receipt,
     toToken: token,
     toAmount: amount,
+    toAmountLoading: loading,
     toBalance: balance,
     setToBalance: setBalance,
   } = useContext(BridgeContext);
   const smallScreen = useBreakpointValue({ base: true, lg: false });
+  const [balanceLoading, setBalanceLoading] = useState(false);
   useEffect(() => {
-    if (!account) {
-      setBalance();
-    }
     if (token && account) {
+      setBalanceLoading(true);
+      fetchTokenBalance(token, account).then(b => {
+        setBalance(b);
+        setBalanceLoading(false);
+      });
+    } else {
       setBalance();
-      fetchTokenBalance(token, account).then(b => setBalance(b));
     }
-  }, [receipt, token, account, setBalance]);
+  }, [receipt, token, account, setBalance, setBalanceLoading]);
   return (
     <Flex
       align="center"
@@ -78,14 +82,16 @@ export const ToToken = () => {
                 {token.name}
               </Text>
             </Flex>
-            {balance >= 0 && (
-              <Flex
-                flex={1}
-                justify="flex-end"
-                align="center"
-                h="100%"
-                position="relative"
-              >
+            <Flex
+              flex={1}
+              justify="flex-end"
+              align="center"
+              h="100%"
+              position="relative"
+            >
+              {balanceLoading ? (
+                <Spinner size="sm" color="grey" />
+              ) : (
                 <Text
                   color="grey"
                   textAlign="right"
@@ -93,13 +99,14 @@ export const ToToken = () => {
                     ? {}
                     : { position: 'absolute', bottom: '4px', right: 0 })}
                 >
-                  {`Balance: ${formatValue(balance, token.decimals)}`}
+                  {`Balance: ${formatValue(balance || 0, token.decimals)}`}
                 </Text>
-              </Flex>
-            )}
+              )}
+            </Flex>
           </Flex>
           <Flex
-            align="flex-end"
+            justify="center"
+            direction="column"
             flex={1}
             {...(!smallScreen
               ? {
@@ -111,10 +118,15 @@ export const ToToken = () => {
                   pb: 4,
                 }
               : {})}
+            h="52px"
           >
-            <Text fontWeight="bold" fontSize="2xl">
-              {formatValue(amount, token.decimals)}
-            </Text>
+            {loading ? (
+              <Spinner color="black" size="sm" />
+            ) : (
+              <Text fontWeight="bold" fontSize="2xl">
+                {formatValue(amount, token.decimals)}
+              </Text>
+            )}
           </Flex>
         </Flex>
       )}
