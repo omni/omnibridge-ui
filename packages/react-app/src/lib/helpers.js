@@ -8,7 +8,6 @@ import {
   graphEndpoints,
   mediators,
   networkNames,
-  networkTags,
 } from './constants';
 import { getOverriddenMediator, isOverridden } from './overrides';
 
@@ -246,5 +245,3 @@ export const uriToHttp = uri => {
       return [];
   }
 };
-
-export const getNetworkTag = chainId => networkTags[chainId];

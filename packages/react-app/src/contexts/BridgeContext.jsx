@@ -1,5 +1,7 @@
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 
+import { useFeeType } from '../hooks/useFeeType';
+import { useRewardAddress } from '../hooks/useRewardAddress';
 import { getMessageCallStatus, getMessageFromReceipt } from '../lib/amb';
 import {
   fetchToAmount,
@@ -33,6 +35,7 @@ export const BridgeProvider = ({ children }) => {
   const [toToken, setToToken] = useState();
   const [fromAmount, setFromAmount] = useState(0);
   const [toAmount, setToAmount] = useState(0);
+  const [toAmountLoading, setToAmountLoading] = useState(false);
   const [allowed, setAllowed] = useState(true);
   const [loading, setLoading] = useState(false);
   const [loadingText, setLoadingText] = useState();
@@ -45,24 +48,43 @@ export const BridgeProvider = ({ children }) => {
   const [toBalance, setToBalance] = useState();
   const [tokenLimits, setTokenLimits] = useState();
 
+  const isRewardAddress = useRewardAddress();
+  const { homeToForeignFeeType, foreignToHomeFeeType } = useFeeType();
+
   const setAmount = useCallback(
-    async amount => {
+    amount => {
       setFromAmount(amount);
-      const gotToAmount = await fetchToAmount(fromToken, toToken, amount);
-      setToAmount(gotToAmount);
+      setToAmountLoading(true);
+      const isxDai = isxDaiChain(toToken.chainId);
+      const feeType = isxDai ? foreignToHomeFeeType : homeToForeignFeeType;
+      fetchToAmount(isRewardAddress, feeType, fromToken, toToken, amount).then(
+        gotToAmount => {
+          setToAmount(gotToAmount);
+          setToAmountLoading(false);
+        },
+      );
       if (isxDaiChain(fromToken.chainId)) {
         setAllowed(true);
       } else {
-        const gotAllowance = await fetchAllowance(
+        fetchAllowance(
           fromToken.chainId,
           account,
           fromToken.address,
           ethersProvider,
+        ).then(gotAllowance =>
+          setAllowed(window.BigInt(gotAllowance) >= window.BigInt(amount)),
         );
-        setAllowed(window.BigInt(gotAllowance) >= window.BigInt(amount));
       }
     },
-    [account, fromToken, toToken, ethersProvider],
+    [
+      account,
+      fromToken,
+      toToken,
+      ethersProvider,
+      isRewardAddress,
+      homeToForeignFeeType,
+      foreignToHomeFeeType,
+    ],
   );
 
   const setToken = useCallback(
@@ -245,6 +267,7 @@ export const BridgeProvider = ({ children }) => {
       value={{
         fromAmount,
         toAmount,
+        toAmountLoading,
         setAmount,
         fromToken,
         toToken,

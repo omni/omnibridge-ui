@@ -17,7 +17,7 @@ export const BridgeHistory = ({ page }) => {
   if (loading)
     return (
       <Flex w="100%" maxW="75rem" direction="column" mt={8} px={8}>
-        <LoadingModal loadingProps={true} />
+        <LoadingModal loadingProps />
       </Flex>
     );
   const filteredTransfers = onlyUnReceived

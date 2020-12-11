@@ -73,6 +73,5 @@ export const fetchTokensFromSubgraph = async chainId => {
   const homeTokens = homeData && homeData.tokens ? homeData.tokens : [];
   const foreignTokens =
     foreignData && foreignData.tokens ? foreignData.tokens : [];
-  console.log({homeTokens, foreignTokens});
   return homeTokens.concat(foreignTokens);
 };

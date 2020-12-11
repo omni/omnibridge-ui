@@ -11,7 +11,7 @@ import {
 } from './helpers';
 import { getOverriddenToToken, isOverridden } from './overrides';
 import { getEthersProvider } from './providers';
-import { transferAndCallToken, fetchTokenDetails } from './token';
+import { fetchTokenDetails, transferAndCallToken } from './token';
 
 export const fetchToTokenDetails = async (
   fromName,
@@ -52,7 +52,7 @@ export const fetchToTokenDetails = async (
     );
 
     const toAddress = await toMediatorContract.bridgedTokenAddress(fromAddress);
-    const toName = isxDai ? fromName + ' on Mainnet' : fromName + ' on xDai';
+    const toName = isxDai ? `${fromName} on Mainnet` : `${fromName} on xDai`;
     return { name: toName, chainId: toChainId, address: toAddress };
   }
   const toAddress = await fromMediatorContract.nativeTokenAddress(fromAddress);
@@ -60,9 +60,15 @@ export const fetchToTokenDetails = async (
   return { name: toName, chainId: toChainId, address: toAddress };
 };
 
-export const fetchToAmount = async (fromToken, toToken, fromAmount) => {
+export const fetchToAmount = async (
+  isRewardAddress,
+  feeType,
+  fromToken,
+  toToken,
+  fromAmount,
+) => {
   if (fromAmount <= 0 || !fromToken || !toToken) return 0;
-  if (isOverridden(fromToken.address)) {
+  if (isRewardAddress || isOverridden(fromToken.address)) {
     return fromAmount;
   }
   const isxDai = isxDaiChain(toToken.chainId);
@@ -73,16 +79,11 @@ export const fetchToAmount = async (fromToken, toToken, fromAmount) => {
   const ethersProvider = getEthersProvider(xDaiChainId);
   const mediatorAddress = getMediatorAddress(tokenAddress, xDaiChainId);
   const abi = [
-    'function FOREIGN_TO_HOME_FEE() view returns (uint256)',
-    'function HOME_TO_FOREIGN_FEE() view returns (uint256)',
     'function calculateFee(bytes32, address, uint256) view returns (uint256)',
   ];
   const mediatorContract = new Contract(mediatorAddress, abi, ethersProvider);
 
   try {
-    const feeType = isxDai
-      ? await mediatorContract.FOREIGN_TO_HOME_FEE()
-      : await mediatorContract.HOME_TO_FOREIGN_FEE();
     const fee = await mediatorContract.calculateFee(
       feeType,
       tokenAddress,
@@ -96,7 +97,7 @@ export const fetchToAmount = async (fromToken, toToken, fromAmount) => {
   }
 };
 
-export const fetchToToken = async (fromToken) => {
+export const fetchToToken = async fromToken => {
   const toToken = await fetchToTokenDetails(
     fromToken.name,
     fromToken.chainId,

@@ -38,9 +38,8 @@ const overrides = {
 export const isOverridden = tokenAddress =>
   Object.keys(overrides).indexOf(tokenAddress) !== -1;
 
-export const getOverriddenToToken = (tokenAddress, chainId) => {
-  return overrides[tokenAddress][chainId].to;
-};
+export const getOverriddenToToken = (tokenAddress, chainId) =>
+  overrides[tokenAddress][chainId].to;
 
 export const getOverriddenMediator = (tokenAddress, chainId) =>
   overrides[tokenAddress][chainId].mediator;

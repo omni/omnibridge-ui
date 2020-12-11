@@ -18,7 +18,6 @@ import {
   getBridgeNetwork,
   getExplorerUrl,
   getMonitorUrl,
-  getNetworkTag,
   isxDaiChain,
 } from '../lib/helpers';
 
@@ -26,6 +25,31 @@ const { formatUnits } = utils;
 
 const shortenHash = hash =>
   `${hash.slice(0, 6)}...${hash.slice(hash.length - 4, hash.length)}`;
+
+const Tag = ({ bg, txt }) => (
+  <Flex
+    justify="center"
+    align="center"
+    bg={bg}
+    borderRadius="6px"
+    px="0.75rem"
+    height="2rem"
+    fontSize="sm"
+    color="white"
+    fontWeight="600"
+  >
+    {txt}
+  </Flex>
+);
+
+const networkTags = {
+  100: <Tag bg="#4DA9A6" txt="xDai" />,
+  1: <Tag bg="#5A74DA" txt="Ethereum" />,
+  42: <Tag bg="#5A74DA" txt="Kovan" />,
+  77: <Tag bg="#4DA9A6" txt="Sokol" />,
+};
+
+const getNetworkTag = chainId => networkTags[chainId];
 
 export const HistoryItem = ({
   data: {
