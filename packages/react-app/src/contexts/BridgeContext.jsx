@@ -1,8 +1,7 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useState } from 'react';
 
 import { useFeeType } from '../hooks/useFeeType';
 import { useRewardAddress } from '../hooks/useRewardAddress';
-import { getMessageCallStatus, getMessageFromReceipt } from '../lib/amb';
 import {
   fetchToAmount,
   fetchTokenLimits,
@@ -25,8 +24,6 @@ import {
 import { fetchTokenList } from '../lib/tokenList';
 import { Web3Context } from './Web3Context';
 
-const POLLING_INTERVAL = 2000;
-
 export const BridgeContext = React.createContext({});
 
 export const BridgeProvider = ({ children }) => {
@@ -38,9 +35,7 @@ export const BridgeProvider = ({ children }) => {
   const [toAmountLoading, setToAmountLoading] = useState(false);
   const [allowed, setAllowed] = useState(true);
   const [loading, setLoading] = useState(false);
-  const [loadingText, setLoadingText] = useState();
   const [txHash, setTxHash] = useState();
-  const [receipt, setReceipt] = useState();
   const [totalConfirms, setTotalConfirms] = useState(0);
   const [tokenList, setTokenList] = useState([]);
   const [amountInput, setAmountInput] = useState('');
@@ -115,11 +110,18 @@ export const BridgeProvider = ({ children }) => {
 
   const setDefaultToken = useCallback(
     chainId => {
-      setFromToken();
-      setToToken();
-      setToken(getDefaultToken(chainId));
+      console.log({ chainId, fromToken, toToken });
+      if (fromToken && toToken && toToken.chainId === chainId) {
+        console.log('switch');
+        const token = { ...toToken };
+        setToToken(fromToken);
+        setFromToken(token);
+      } else if (!fromToken || fromToken.chainId !== chainId) {
+        console.log('new');
+        setToken(getDefaultToken(chainId));
+      }
     },
-    [setToken],
+    [setToken, fromToken, toToken],
   );
 
   const approve = useCallback(async () => {
@@ -142,80 +144,15 @@ export const BridgeProvider = ({ children }) => {
         fromToken,
         fromAmount,
       );
+      console.log({ tx, numConfirms });
       setTotalConfirms(numConfirms);
       setTxHash(tx.hash);
     } catch (error) {
-      setTxHash();
       setLoading(false);
-      setLoadingText();
       // eslint-disable-next-line
       console.log({ transferError: error });
     }
   }, [fromToken, ethersProvider, fromAmount]);
-
-  useEffect(() => {
-    const subscriptions = [];
-    const unsubscribe = () => {
-      subscriptions.forEach(s => {
-        clearTimeout(s);
-      });
-    };
-    if (!txHash) return unsubscribe;
-
-    const { chainId } = fromToken;
-    let message = null;
-    let status = false;
-
-    const getReceipt = async () => {
-      try {
-        const txReceipt = await ethersProvider.getTransactionReceipt(txHash);
-        setReceipt(txReceipt);
-
-        if (txReceipt) {
-          message = getMessageFromReceipt(chainId, txReceipt);
-          if (txReceipt.confirmations > totalConfirms) {
-            if (isxDaiChain(chainId)) {
-              setLoading(false);
-              setLoadingText();
-              unsubscribe();
-              return;
-            }
-            setLoadingText('Waiting for Execution');
-          }
-        }
-
-        if (message) {
-          status = await getMessageCallStatus(chainId, message);
-        }
-
-        if (status) {
-          setTxHash();
-          setReceipt();
-          setLoading(false);
-          setLoadingText();
-        }
-
-        if (!txReceipt || !message || !status) {
-          const timeoutId = setTimeout(() => getReceipt(), POLLING_INTERVAL);
-          subscriptions.push(timeoutId);
-        }
-      } catch (error) {
-        setTxHash();
-        setReceipt();
-        setLoading(false);
-        setLoadingText();
-        // eslint-disable-next-line
-        console.log({ receiptError: error });
-      }
-    };
-
-    // unsubscribe from previous polls
-    unsubscribe();
-
-    getReceipt();
-    // unsubscribe when unmount component
-    return unsubscribe;
-  }, [txHash, totalConfirms, ethersProvider, setToken, fromToken, account]);
 
   const setDefaultTokenList = useCallback(
     async (chainId, customTokens) => {
@@ -277,9 +214,8 @@ export const BridgeProvider = ({ children }) => {
         approve,
         transfer,
         loading,
-        loadingText,
+        setLoading,
         txHash,
-        receipt,
         totalConfirms,
         tokenList,
         setDefaultTokenList,

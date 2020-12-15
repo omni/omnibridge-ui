@@ -1,6 +1,13 @@
 import { Contract, utils } from 'ethers';
+import { gql, request } from 'graphql-request';
 
-import { getAMBAddress, getBridgeNetwork, isxDaiChain } from './helpers';
+import { CONFIG } from '../config';
+import {
+  getAMBAddress,
+  getBridgeNetwork,
+  getGraphEndpoint,
+  isxDaiChain,
+} from './helpers';
 import { getEthersProvider } from './providers';
 
 export const fetchConfirmations = async (chainId, walletProvider) => {
@@ -87,4 +94,31 @@ export const executeSignatures = (ethersProvider, chainId, message) => {
   const address = getAMBAddress(chainId);
   const ambContract = new Contract(address, abi, ethersProvider.getSigner());
   return ambContract.executeSignatures(message.msgData, signatures);
+};
+
+const signaturesQuery = gql`
+  query getCollectedSignatures($messageId: String!) {
+    requests: userRequests(
+      where: { messageId_contains: $messageId }
+      first: 1
+    ) {
+      message {
+        signatures
+      }
+    }
+  }
+`;
+
+export const getCollectedSignatures = async messageId => {
+  const data = await request(
+    getGraphEndpoint(CONFIG.network),
+    signaturesQuery,
+    {
+      messageId,
+    },
+  );
+
+  return !!data && !!data.requests && data.requests.length > 0
+    ? data.requests.message.signatures
+    : [];
 };

@@ -90,19 +90,13 @@ export const HistoryItem = ({
     }
   };
 
-  // const [tokenDetails, setTokenDetails] = useState();
-
-  // useEffect(() => {
-  //   fetchTokenDetails(chainId, token).then(details => setTokenDetails(details));
-  // }, [chainId, token, setTokenDetails]);
-
   return (
     <Flex
       w="100%"
       background="white"
       boxShadow="0px 1rem 2rem rgba(204, 218, 238, 0.8)"
       borderRadius="1rem"
-      p={{ base: 4, sm: 8 }}
+      p={4}
       mb={4}
     >
       <Grid
@@ -110,7 +104,7 @@ export const HistoryItem = ({
         templateColumns="1fr 1.25fr 1fr 1fr 1.25fr 0.5fr"
         w="100%"
       >
-        <Text>{timestampString}</Text>
+        <Text my="auto">{timestampString}</Text>
         <Flex align="center">
           {getNetworkTag(chainId)}
           <Image src={RightArrowImage} mx="0.5rem" />
@@ -121,6 +115,7 @@ export const HistoryItem = ({
           href={getMonitorUrl(chainId, sendingTx)}
           rel="noreferrer noopener"
           target="_blank"
+          my="auto"
         >
           {shortenHash(sendingTx)}
         </Link>
@@ -130,13 +125,14 @@ export const HistoryItem = ({
             href={`${getExplorerUrl(bridgeChainId)}/tx/${receivingTx}`}
             rel="noreferrer noopener"
             target="_blank"
+            my="auto"
           >
             {shortenHash(receivingTx)}
           </Link>
         ) : (
           <Text />
         )}
-        <Text>
+        <Text my="auto">
           {formatUnits(BigNumber.from(amount), decimals)} {symbol}
         </Text>
         {receivingTx ? (

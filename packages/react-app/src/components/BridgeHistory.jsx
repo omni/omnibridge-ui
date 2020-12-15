@@ -35,7 +35,7 @@ export const BridgeHistory = ({ page }) => {
   }
 
   return (
-    <Flex w="100%" maxW="75rem" direction="column" mt={8} px={8}>
+    <Flex maxW="75rem" direction="column" mt={8} mx={8} w="calc(100% - 4rem)">
       <Flex justify="space-between" align="center">
         <Text fontSize="xl" fontWeight="bold" mb={4}>
           History
@@ -57,7 +57,7 @@ export const BridgeHistory = ({ page }) => {
             templateColumns="1fr 1.25fr 1fr 1fr 1.25fr 0.5fr"
             color="grey"
             fontSize="sm"
-            px={{ base: 4, sm: 8 }}
+            px={4}
             mb={4}
           >
             <Text>Date</Text>

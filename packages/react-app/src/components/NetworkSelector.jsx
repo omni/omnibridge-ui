@@ -7,7 +7,7 @@ import {
   MenuList,
   Text,
 } from '@chakra-ui/react';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 
 import { BridgeContext } from '../contexts/BridgeContext';
 import { Web3Context } from '../contexts/Web3Context';
@@ -60,8 +60,18 @@ const SelectValue = ({ icon, label }) => (
 
 export const NetworkSelector = props => {
   const [localNetwork, setLocalNetwork] = useState(0);
-  const { setNetwork } = useContext(Web3Context);
+  const { providerChainId, setNetwork } = useContext(Web3Context);
   const { setDefaultToken } = useContext(BridgeContext);
+
+  const updateNetwork = useCallback(
+    network => {
+      setDefaultToken(network.value);
+      setLocalNetwork(network.key);
+      setNetwork(network);
+      window.localStorage.setItem('chosenNetwork', network.key);
+    },
+    [setDefaultToken, setNetwork],
+  );
 
   useEffect(() => {
     let storageNetwork = parseInt(
@@ -73,19 +83,23 @@ export const NetworkSelector = props => {
     } else {
       storageNetwork %= networkOptions.length;
     }
-    setDefaultToken(networkOptions[storageNetwork].value);
-    setLocalNetwork(storageNetwork);
-    setNetwork(networkOptions[storageNetwork]);
-  }, [setNetwork, setDefaultToken]);
+    updateNetwork(networkOptions[storageNetwork]);
+  }, [setNetwork, setDefaultToken, updateNetwork]);
 
   const onChange = network => {
-    setDefaultToken(network.value);
-    setNetwork(network);
-    setLocalNetwork(network.key);
-    window.localStorage.setItem('chosenNetwork', network.key);
+    updateNetwork(network);
   };
 
   const currentNetwork = networkOptions[localNetwork];
+
+  useEffect(() => {
+    const network = networkOptions.find(n => n.value === providerChainId);
+    console.log({ network });
+    if (network && localNetwork !== network.key) {
+      updateNetwork(network);
+    }
+  }, [providerChainId, updateNetwork, localNetwork]);
+
   const selectOptions = networkOptions
     .filter(network => currentNetwork.value !== network.value)
     .map(network => {
