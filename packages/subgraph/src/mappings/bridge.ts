@@ -10,10 +10,10 @@ import { fetchTokenInfo, overrides } from './helpers';
 
 export function handleBridgeTransfer(event: TokensBridged): void {
   log.debug('Parsing TokensBridged', []);
-  let txHash = event.transaction.hash.toHex();
-  let execution = Execution.load(txHash);
+  let txHash = event.transaction.hash;
+  let execution = Execution.load(txHash.toHex());
   if (execution == null) {
-    execution = new Execution(txHash);
+    execution = new Execution(txHash.toHex());
   }
   execution.txHash = txHash;
   execution.timestamp = event.block.timestamp;
@@ -27,10 +27,10 @@ export function handleBridgeTransfer(event: TokensBridged): void {
 
 export function handleInitiateTransfer(event: TokensBridgingInitiated): void {
   log.debug('Parsing TokensBridged', []);
-  let txHash = event.transaction.hash.toHex();
-  let request = UserRequest.load(txHash);
+  let txHash = event.transaction.hash;
+  let request = UserRequest.load(txHash.toHex());
   if (request == null) {
-    request = new UserRequest(txHash);
+    request = new UserRequest(txHash.toHex());
   }
   request.txHash = txHash;
   request.timestamp = event.block.timestamp;

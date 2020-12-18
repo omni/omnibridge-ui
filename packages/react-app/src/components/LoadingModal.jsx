@@ -13,13 +13,9 @@ import React, { useContext, useEffect, useState } from 'react';
 import LoadingImage from '../assets/loading.svg';
 import { BridgeContext } from '../contexts/BridgeContext';
 import { Web3Context } from '../contexts/Web3Context';
-import {
-  getCollectedSignatures,
-  getMessageCallStatus,
-  getMessageFromReceipt,
-} from '../lib/amb';
+import { getMessageCallStatus, getMessageFromTxHash } from '../lib/amb';
 import { getMonitorUrl, isxDaiChain } from '../lib/helpers';
-import { ClaimTokensModal } from './ClaimTokensModal';
+import { NeedsConfirmationModal } from './NeedsConfirmationModal';
 import { ProgressRing } from './ProgressRing';
 
 const POLLING_INTERVAL = 1000;
@@ -32,7 +28,7 @@ const getTransactionString = hash => {
 
 export const LoadingModal = ({ loadingProps }) => {
   const [receipt, setReceipt] = useState();
-  const { ethersProvider, account } = useContext(Web3Context);
+  const { ethersProvider, account, providerChainId } = useContext(Web3Context);
   const {
     loading,
     setLoading,
@@ -56,8 +52,8 @@ export const LoadingModal = ({ loadingProps }) => {
 
     const { chainId } = fromToken;
     let message = null;
-    let collectedSignatures = false;
     let status = false;
+    let isxDai = isxDaiChain(chainId);
 
     const getReceipt = async () => {
       try {
@@ -68,34 +64,36 @@ export const LoadingModal = ({ loadingProps }) => {
           setLoadingText('Collecting Signatures');
         }
 
-        if (txReceipt && !message) {
-          message = getMessageFromReceipt(chainId, txReceipt);
+        if (txReceipt && (!message || (isxDai && !message.signatures))) {
+          message = await getMessageFromTxHash(chainId, txHash);
         }
 
-        if (message && collectedSignatures) {
-          setLoadingText('Waiting for Execution');
-          if (isxDaiChain(chainId)) {
+        if (message) {
+          if (isxDai && message.signatures) {
             setNeedsConfirmation(true);
             unsubscribe();
+            setReceipt();
+            setLoading(false);
+            setLoadingText();
             return;
+          } else if (!isxDai) {
+            setLoadingText('Waiting for Execution');
+            status = await getMessageCallStatus(chainId, message);
           }
-          status = await getMessageCallStatus(chainId, message);
-        } else if (message) {
-          collectedSignatures = await getCollectedSignatures(message);
         }
 
         if (status) {
+          unsubscribe();
           setReceipt();
           setLoading(false);
           setLoadingText();
+          return;
         }
 
         if (
           !txReceipt ||
           !message ||
-          !status ||
-          !collectedSignatures ||
-          !needsConfirmation
+          (isxDai ? !message.signatures : !status)
         ) {
           const timeoutId = setTimeout(() => getReceipt(), POLLING_INTERVAL);
           subscriptions.push(timeoutId);
@@ -115,10 +113,24 @@ export const LoadingModal = ({ loadingProps }) => {
     getReceipt();
     // unsubscribe when unmount component
     return unsubscribe;
-  }, [txHash, totalConfirms, ethersProvider, setToken, fromToken, account, setLoading, needsConfirmation]);
+  }, [
+    txHash,
+    totalConfirms,
+    ethersProvider,
+    setToken,
+    fromToken,
+    account,
+    setLoading,
+  ]);
+
+  useEffect(() => {
+      setNeedsConfirmation(needs => isxDaiChain(providerChainId) && needs)
+  }, [providerChainId]);
+
+  console.log({ needsConfirmation });
 
   return needsConfirmation ? (
-    <ClaimTokensModal setNeedsConfirmation={setNeedsConfirmation} />
+    <NeedsConfirmationModal />
   ) : (
     <Modal
       isOpen={loading || loadingProps}

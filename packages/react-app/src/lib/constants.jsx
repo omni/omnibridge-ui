@@ -87,6 +87,7 @@ export const defaultTokens = {
     symbol: 'STAKE',
     decimals: 18,
     chainId: 100,
+    mode: 'erc677',
   },
   1: {
     name: 'Stake',
@@ -96,6 +97,7 @@ export const defaultTokens = {
     chainId: 1,
     logoURI:
       'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/0x0Ae055097C6d159879521C384F1D2123D1f195e6/logo.png',
+    mode: 'erc20',
   },
   77: {
     name: 'FaucetToken on xDai',
@@ -104,6 +106,7 @@ export const defaultTokens = {
     symbol: 'FAU',
     decimals: 18,
     chainId: 77,
+    mode: 'erc677',
   },
   42: {
     name: 'FaucetToken',
@@ -112,6 +115,7 @@ export const defaultTokens = {
     symbol: 'FAU',
     decimals: 18,
     chainId: 42,
+    mode: 'erc20',
   },
 };
 

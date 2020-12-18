@@ -41,5 +41,8 @@ export const isOverridden = tokenAddress =>
 export const getOverriddenToToken = (tokenAddress, chainId) =>
   overrides[tokenAddress][chainId].to;
 
+export const getOverriddenMode = (tokenAddress, chainId) =>
+  overrides[tokenAddress][chainId].mode;
+
 export const getOverriddenMediator = (tokenAddress, chainId) =>
   overrides[tokenAddress][chainId].mediator;

@@ -2,11 +2,11 @@ import { Checkbox, Flex, Grid, Text } from '@chakra-ui/react';
 import React, { useState } from 'react';
 import { Redirect } from 'react-router-dom';
 
-import { useUserHistory } from '../lib/history';
 import { HistoryItem } from './HistoryItem';
 import { HistoryPagination } from './HistoryPagination';
 import { LoadingModal } from './LoadingModal';
 import { NoHistory } from './NoHistory';
+import { useUserHistory } from '../lib/history';
 
 const TOTAL_PER_PAGE = 10;
 
@@ -14,12 +14,14 @@ export const BridgeHistory = ({ page }) => {
   const [onlyUnReceived, setOnlyUnReceived] = useState(false);
 
   const { transfers, loading } = useUserHistory();
-  if (loading)
+
+  if (loading) {
     return (
       <Flex w="100%" maxW="75rem" direction="column" mt={8} px={8}>
-        <LoadingModal loadingProps />
+        <LoadingModal loadingProps={true} />
       </Flex>
     );
+  }
   const filteredTransfers = onlyUnReceived
     ? transfers.filter(i => i.receivingTx === null)
     : transfers;
@@ -30,7 +32,7 @@ export const BridgeHistory = ({ page }) => {
     Math.min(page * TOTAL_PER_PAGE, filteredTransfers.length),
   );
 
-  if (page > numPages) {
+  if (numPages > 1 && page > numPages) {
     return <Redirect to="/history" />;
   }
 
@@ -50,7 +52,7 @@ export const BridgeHistory = ({ page }) => {
         </Checkbox>
       </Flex>
 
-      {transfers && transfers.length > 0 ? (
+      {displayHistory.length > 0 ? (
         <>
           <Grid
             // templateColumns={{ base: '2fr 2fr', md: '2fr 3fr' }}

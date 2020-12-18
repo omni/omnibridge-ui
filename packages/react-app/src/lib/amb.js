@@ -84,7 +84,7 @@ export function packSignatures(array) {
   return `0x${msgLength}${v}${r}${s}`;
 }
 
-export const executeSignatures = (ethersProvider, chainId, message) => {
+export const executeSignatures = async (ethersProvider, chainId, message) => {
   const abi = [
     'function executeSignatures(bytes messageData, bytes signatures) external',
   ];
@@ -93,32 +93,34 @@ export const executeSignatures = (ethersProvider, chainId, message) => {
   );
   const address = getAMBAddress(chainId);
   const ambContract = new Contract(address, abi, ethersProvider.getSigner());
-  return ambContract.executeSignatures(message.msgData, signatures);
+  const tx = await ambContract.executeSignatures(message.msgData, signatures);
+  await tx.wait();
+  return tx.hash;
 };
 
-const signaturesQuery = gql`
-  query getCollectedSignatures($messageId: String!) {
-    requests: userRequests(
-      where: { messageId_contains: $messageId }
+const messagesQuery = gql`
+  query getMessage($txHash: String!) {
+    messages(
+      where: { txHash_contains: $txHash }
       first: 1
     ) {
-      message {
+        msgId
+        msgData
         signatures
-      }
     }
   }
 `;
 
-export const getCollectedSignatures = async messageId => {
+export const getMessageFromTxHash = async (chainId, txHash) => {
   const data = await request(
-    getGraphEndpoint(CONFIG.network),
-    signaturesQuery,
+    getGraphEndpoint(chainId),
+    messagesQuery,
     {
-      messageId,
+      txHash,
     },
   );
 
-  return !!data && !!data.requests && data.requests.length > 0
-    ? data.requests.message.signatures
-    : [];
+  return data && data.messages && data.messages.length > 0
+    ? data.messages[0]
+    : null;
 };

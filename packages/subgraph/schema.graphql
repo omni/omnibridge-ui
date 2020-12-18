@@ -6,7 +6,7 @@ type UserRequest @entity {
   symbol: String
   amount: BigInt
   timestamp: BigInt!
-  txHash: String!
+  txHash: Bytes!
   messageId: Bytes
   encodedData: Bytes
   message: Message
@@ -22,11 +22,13 @@ type Execution @entity {
   messageId: Bytes
   status: Boolean
   timestamp: BigInt!
-  txHash: String!
+  txHash: Bytes!
 }
 
 type Message @entity {
   id: ID!
+  msgId: Bytes
+  txHash: Bytes!
   msgHash: Bytes
   msgData: Bytes
   signatures: [Bytes!]

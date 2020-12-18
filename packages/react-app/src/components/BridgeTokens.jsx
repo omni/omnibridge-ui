@@ -6,6 +6,7 @@ import { Web3Context } from '../contexts/Web3Context';
 import { DaiWarning, isERC20DaiAddress } from './DaiWarning';
 import { FromToken } from './FromToken';
 import { LoadingModal } from './LoadingModal';
+import { ClaimTokensModal } from './ClaimTokensModal';
 import { SystemFeedback } from './SystemFeedback';
 import { ToToken } from './ToToken';
 import { TransferButton } from './TransferButton';
@@ -31,6 +32,7 @@ export const BridgeTokens = () => {
       my="auto"
     >
       <LoadingModal />
+      <ClaimTokensModal />
       {network && (
         <>
           {!smallScreen && (

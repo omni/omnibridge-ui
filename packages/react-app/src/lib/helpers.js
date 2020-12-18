@@ -53,10 +53,14 @@ export const getDefaultToken = chainId => {
   }
 };
 
-export const getMediatorAddress = (tokenAddress, chainId) => {
+export const getMediatorAddressWithOverride = (tokenAddress, chainId) => {
   if (isOverridden(tokenAddress)) {
     return getOverriddenMediator(tokenAddress, chainId);
   }
+  return getMediatorAddress(chainId);
+};
+
+export const getMediatorAddress = (chainId) => {
   switch (chainId) {
     case 1:
       return mediators[1];

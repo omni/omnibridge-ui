@@ -20,6 +20,7 @@ import {
   approveToken,
   fetchAllowance,
   fetchTokenBalanceWithProvider,
+  fetchTokenDetails,
 } from '../lib/token';
 import { fetchTokenList } from '../lib/tokenList';
 import { Web3Context } from './Web3Context';
@@ -58,13 +59,12 @@ export const BridgeProvider = ({ children }) => {
           setToAmountLoading(false);
         },
       );
-      if (isxDaiChain(fromToken.chainId)) {
+      if (fromToken.mode === "erc677") {
         setAllowed(true);
       } else {
         fetchAllowance(
-          fromToken.chainId,
+          fromToken,
           account,
-          fromToken.address,
           ethersProvider,
         ).then(gotAllowance =>
           setAllowed(window.BigInt(gotAllowance) >= window.BigInt(amount)),
@@ -83,8 +83,18 @@ export const BridgeProvider = ({ children }) => {
   );
 
   const setToken = useCallback(
-    async token => {
+    async tokenWithoutMode => {
       setLoading(true);
+      setFromToken();
+      setToToken();
+      setAmountInput('');
+      setFromAmount(0);
+      setAllowed(true);
+      setToAmount(0);
+      const [token, gotToToken] = await Promise.all([
+        fetchTokenDetails(tokenWithoutMode),
+        fetchToToken(tokenWithoutMode),
+      ]);
       setFromToken(token);
       setTokenLimits({
         minPerTx: defaultMinPerTx(isxDaiChain(token.chainId), token.decimals),
@@ -96,13 +106,7 @@ export const BridgeProvider = ({ children }) => {
           setTokenLimits(limits);
         });
       }
-      setAmountInput('');
-      setFromAmount(0);
-      setAllowed(true);
-      setToToken();
-      const gotToToken = await fetchToToken(token);
       setToToken(gotToToken);
-      setToAmount(0);
       setLoading(false);
     },
     [ethersProvider, providerChainId],
@@ -142,6 +146,7 @@ export const BridgeProvider = ({ children }) => {
       const [tx, numConfirms] = await transferTokens(
         ethersProvider,
         fromToken,
+        account,
         fromAmount,
       );
       console.log({ tx, numConfirms });
@@ -152,7 +157,7 @@ export const BridgeProvider = ({ children }) => {
       // eslint-disable-next-line
       console.log({ transferError: error });
     }
-  }, [fromToken, ethersProvider, fromAmount]);
+  }, [fromToken, account, ethersProvider, fromAmount]);
 
   const setDefaultTokenList = useCallback(
     async (chainId, customTokens) => {
@@ -198,6 +203,7 @@ export const BridgeProvider = ({ children }) => {
     },
     [account, ethersProvider],
   );
+
 
   return (
     <BridgeContext.Provider
