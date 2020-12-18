@@ -10,20 +10,20 @@ import {
 } from '@chakra-ui/react';
 import { BigNumber, utils } from 'ethers';
 import React, { useContext, useState } from 'react';
-import { ErrorModal } from './ErrorModal';
 
 import BlueTickImage from '../assets/blue-tick.svg';
 import RightArrowImage from '../assets/right-arrow.svg';
+import { CONFIG } from '../config';
 import { Web3Context } from '../contexts/Web3Context';
 import { executeSignatures } from '../lib/amb';
 import {
   getBridgeNetwork,
   getExplorerUrl,
   getMonitorUrl,
-  isxDaiChain,
   getNetworkName,
+  isxDaiChain,
 } from '../lib/helpers';
-import { CONFIG } from '../config';
+import { ErrorModal } from './ErrorModal';
 
 const { formatUnits } = utils;
 
@@ -168,7 +168,7 @@ export const HistoryItem = ({
         <Text my="auto">
           {formatUnits(BigNumber.from(amount), decimals)} {symbol}
         </Text>
-        {!!receiving ? (
+        {receiving ? (
           <Flex align="center">
             <Image src={BlueTickImage} mr="0.5rem" />
             <Text color="blue.500">Claimed</Text>

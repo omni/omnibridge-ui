@@ -85,7 +85,7 @@ export const Header = () => {
           </Flex>
         </Link>
         <WalletSelector />
-        {/*<NetworkSelector /> */}
+        {/* <NetworkSelector /> */}
       </Stack>
     </Flex>
   );

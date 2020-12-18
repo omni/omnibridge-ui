@@ -20,12 +20,9 @@ import { Logo } from './Logo';
 import { SelectTokenModal } from './SelectTokenModal';
 
 export const FromToken = () => {
-  const {
-    ethersProvider,
-    network,
-    networkMismatch,
-    account,
-  } = useContext(Web3Context);
+  const { ethersProvider, network, networkMismatch, account } = useContext(
+    Web3Context,
+  );
   const {
     receipt,
     fromToken: token,

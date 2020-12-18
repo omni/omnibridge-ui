@@ -2,11 +2,11 @@ import { Checkbox, Flex, Grid, Text } from '@chakra-ui/react';
 import React, { useState } from 'react';
 import { Redirect } from 'react-router-dom';
 
+import { useUserHistory } from '../lib/history';
 import { HistoryItem } from './HistoryItem';
 import { HistoryPagination } from './HistoryPagination';
 import { LoadingModal } from './LoadingModal';
 import { NoHistory } from './NoHistory';
-import { useUserHistory } from '../lib/history';
 
 const TOTAL_PER_PAGE = 10;
 
@@ -18,7 +18,7 @@ export const BridgeHistory = ({ page }) => {
   if (loading) {
     return (
       <Flex w="100%" maxW="75rem" direction="column" mt={8} px={8}>
-        <LoadingModal loadingProps={true} />
+        <LoadingModal loadingProps />
       </Flex>
     );
   }

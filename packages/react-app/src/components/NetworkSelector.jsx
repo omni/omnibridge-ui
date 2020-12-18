@@ -94,7 +94,6 @@ export const NetworkSelector = props => {
 
   useEffect(() => {
     const network = networkOptions.find(n => n.value === providerChainId);
-    console.log({ network });
     if (network && localNetwork !== network.key) {
       updateNetwork(network);
     }

@@ -1,7 +1,6 @@
 import { Contract, utils } from 'ethers';
 import { gql, request } from 'graphql-request';
 
-import { CONFIG } from '../config';
 import {
   getAMBAddress,
   getBridgeNetwork,
@@ -100,25 +99,18 @@ export const executeSignatures = async (ethersProvider, chainId, message) => {
 
 const messagesQuery = gql`
   query getMessage($txHash: String!) {
-    messages(
-      where: { txHash_contains: $txHash }
-      first: 1
-    ) {
-        msgId
-        msgData
-        signatures
+    messages(where: { txHash_contains: $txHash }, first: 1) {
+      msgId
+      msgData
+      signatures
     }
   }
 `;
 
 export const getMessageFromTxHash = async (chainId, txHash) => {
-  const data = await request(
-    getGraphEndpoint(chainId),
-    messagesQuery,
-    {
-      txHash,
-    },
-  );
+  const data = await request(getGraphEndpoint(chainId), messagesQuery, {
+    txHash,
+  });
 
   return data && data.messages && data.messages.length > 0
     ? data.messages[0]

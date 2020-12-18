@@ -2,8 +2,12 @@ import { Contract } from 'ethers';
 
 import { ADDRESS_ZERO } from './constants';
 import { getMediatorAddress } from './helpers';
+import {
+  getOverriddenMediator,
+  getOverriddenMode,
+  isOverridden,
+} from './overrides';
 import { getEthersProvider } from './providers';
-import { isOverridden, getOverriddenMode, getOverriddenMediator } from './overrides';
 
 export const fetchAllowance = (
   { mediator, address },
@@ -25,16 +29,18 @@ export const fetchAllowance = (
 
 export const getMode = async (
   ethersProvider,
-  isOverridden,
+  isOverriddenToken,
   mediatorAddress,
   token,
 ) => {
-  if (isOverridden) {
+  if (isOverriddenToken) {
     return getOverriddenMode(token.address, token.chainId);
   }
   const abi = ['function nativeTokenAddress(address) view returns (address)'];
   const mediatorContract = new Contract(mediatorAddress, abi, ethersProvider);
-  const nativeTokenAddress = await mediatorContract.nativeTokenAddress(token.address);
+  const nativeTokenAddress = await mediatorContract.nativeTokenAddress(
+    token.address,
+  );
   if (nativeTokenAddress === ADDRESS_ZERO) return 'erc20';
   return 'erc677';
 };
@@ -69,7 +75,6 @@ export const fetchTokenDetails = async token => {
     mode,
     mediator: mediatorAddress,
   };
-  console.log({details});
   return details;
 };
 

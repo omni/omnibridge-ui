@@ -12,17 +12,17 @@ import {
   ModalOverlay,
   Text,
 } from '@chakra-ui/react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import React, { useContext, useState, useEffect } from 'react';
 
 import ClaimTokenImage from '../assets/claim.svg';
-import ClaimTokensImage from '../assets/multiple-claim.svg';
-import InfoImage from '../assets/info.svg';
 import ErrorImage from '../assets/error.svg';
-import { getBridgeNetwork, getNetworkName, isxDaiChain } from '../lib/helpers';
-import { executeSignatures } from '../lib/amb';
-import { Web3Context } from '../contexts/Web3Context';
+import InfoImage from '../assets/info.svg';
+import ClaimTokensImage from '../assets/multiple-claim.svg';
 import { CONFIG } from '../config';
+import { Web3Context } from '../contexts/Web3Context';
+import { executeSignatures } from '../lib/amb';
+import { getBridgeNetwork, getNetworkName, isxDaiChain } from '../lib/helpers';
 import { useXDaiTransfers } from '../lib/history';
 
 export const ClaimTokensModal = () => {
@@ -32,20 +32,26 @@ export const ClaimTokensModal = () => {
   const [needsClaim, setNeedsClaim] = useState([]);
   const [isOpen, setOpen] = useState(false);
   const [transfer, setTransfer] = useState();
+  const isxDai = isxDaiChain(providerChainId);
+  const { message, symbol, receivingTx } = transfer || {};
+
+  const onClose = () => {
+    setTransfer();
+    setOpen(false);
+  };
 
   useEffect(() => {
     const claimTokens = parseInt(
       window.sessionStorage.getItem('claimTokens'),
       10,
     );
-    if (!!transfers) {
+    if (transfers) {
       const filteredTransfers = transfers.filter(t => !t.receivingTx);
-      console.log({ filteredTransfers, claimTokens });
       setNeedsClaim(filteredTransfers);
       if (!transfer && filteredTransfers.length === 1) {
         setTransfer(filteredTransfers[0]);
       } else if (transfer) {
-        setTransfer(transfers.find(t => t.sendingTx === message.txHash));
+        setTransfer(transfers.find(t => t.sendingTx === transfer.sendingTx));
       }
       if (
         !isxDai &&
@@ -55,15 +61,8 @@ export const ClaimTokensModal = () => {
         window.sessionStorage.setItem('claimTokens', filteredTransfers.length);
       }
     }
-  }, [transfers, transfer]);
+  }, [transfers, transfer, isxDai]);
 
-  const { message, symbol, receivingTx } = transfer || {};
-  const isxDai = isxDaiChain(providerChainId);
-
-  const onClose = () => {
-    setTransfer();
-    setOpen(false);
-  };
   const executed = !!receivingTx;
   const claimable =
     !isxDai &&
@@ -72,8 +71,6 @@ export const ClaimTokensModal = () => {
     message.msgData &&
     message.signatures &&
     !executed;
-
-  console.log({ claiming, claimable, message, executed });
 
   const claimTokens = async () => {
     if (!claimable) return;
@@ -203,7 +200,12 @@ export const ClaimTokensModal = () => {
                 </Button>
               ) : (
                 <Link to="/history" display="flex">
-                  <Button px={12} colorScheme="blue" mt={{ base: 2, md: 0 }} w="100%">
+                  <Button
+                    px={12}
+                    colorScheme="blue"
+                    mt={{ base: 2, md: 0 }}
+                    w="100%"
+                  >
                     Claim
                   </Button>
                 </Link>

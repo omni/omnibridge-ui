@@ -9,12 +9,12 @@ import {
 } from '@chakra-ui/react';
 import React, { useContext, useEffect } from 'react';
 
+import { BridgeContext } from '../contexts/BridgeContext';
 import { Web3Context } from '../contexts/Web3Context';
 import { ErrorIcon } from '../icons/ErrorIcon';
 import { WalletIcon } from '../icons/WalletIcon';
-import { getNetworkName } from '../lib/helpers';
 import { networkOptions } from '../lib/constants';
-import { BridgeContext } from '../contexts/BridgeContext';
+import { getNetworkName } from '../lib/helpers';
 
 const getAccountString = account => {
   const len = account.length;

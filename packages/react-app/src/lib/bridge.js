@@ -181,7 +181,6 @@ export const transferTokens = async (
   receiver,
   amount,
 ) => {
-  console.log({token, receiver, amount});
   const confirmsPromise = fetchConfirmations(token.chainId, ethersProvider);
   const txPromise = relayTokens(ethersProvider, token, receiver, amount);
   const [tx, confirms] = await Promise.all([txPromise, confirmsPromise]);

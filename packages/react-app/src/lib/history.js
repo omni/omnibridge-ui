@@ -1,9 +1,9 @@
 import { gql, request } from 'graphql-request';
 import { useContext, useEffect, useState } from 'react';
 
+import { CONFIG } from '../config';
 import { Web3Context } from '../contexts/Web3Context';
 import { getBridgeNetwork, getGraphEndpoint } from './helpers';
-import { CONFIG } from '../config';
 
 const pageSize = 1000;
 

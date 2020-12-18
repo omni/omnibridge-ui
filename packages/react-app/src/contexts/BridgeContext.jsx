@@ -59,14 +59,10 @@ export const BridgeProvider = ({ children }) => {
           setToAmountLoading(false);
         },
       );
-      if (fromToken.mode === "erc677") {
+      if (fromToken.mode === 'erc677') {
         setAllowed(true);
       } else {
-        fetchAllowance(
-          fromToken,
-          account,
-          ethersProvider,
-        ).then(gotAllowance =>
+        fetchAllowance(fromToken, account, ethersProvider).then(gotAllowance =>
           setAllowed(window.BigInt(gotAllowance) >= window.BigInt(amount)),
         );
       }
@@ -114,14 +110,11 @@ export const BridgeProvider = ({ children }) => {
 
   const setDefaultToken = useCallback(
     chainId => {
-      console.log({ chainId, fromToken, toToken });
       if (fromToken && toToken && toToken.chainId === chainId) {
-        console.log('switch');
         const token = { ...toToken };
         setToToken(fromToken);
         setFromToken(token);
       } else if (!fromToken || fromToken.chainId !== chainId) {
-        console.log('new');
         setToken(getDefaultToken(chainId));
       }
     },
@@ -134,7 +127,7 @@ export const BridgeProvider = ({ children }) => {
       await approveToken(ethersProvider, fromToken, fromAmount);
       setAllowed(true);
     } catch (error) {
-      // eslint-disable-next-line
+      // eslint-disable-next-line no-console
       console.log({ approveError: error });
     }
     setLoading(false);
@@ -149,12 +142,11 @@ export const BridgeProvider = ({ children }) => {
         account,
         fromAmount,
       );
-      console.log({ tx, numConfirms });
       setTotalConfirms(numConfirms);
       setTxHash(tx.hash);
     } catch (error) {
       setLoading(false);
-      // eslint-disable-next-line
+      // eslint-disable-next-line no-console
       console.log({ transferError: error });
     }
   }, [fromToken, account, ethersProvider, fromAmount]);
@@ -203,7 +195,6 @@ export const BridgeProvider = ({ children }) => {
     },
     [account, ethersProvider],
   );
-
 
   return (
     <BridgeContext.Provider

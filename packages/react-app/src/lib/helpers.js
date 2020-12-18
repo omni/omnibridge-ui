@@ -60,7 +60,7 @@ export const getMediatorAddressWithOverride = (tokenAddress, chainId) => {
   return getMediatorAddress(chainId);
 };
 
-export const getMediatorAddress = (chainId) => {
+export const getMediatorAddress = chainId => {
   switch (chainId) {
     case 1:
       return mediators[1];

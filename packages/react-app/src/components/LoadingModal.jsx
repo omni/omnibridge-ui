@@ -47,13 +47,12 @@ export const LoadingModal = ({ loadingProps }) => {
       });
     };
 
-    console.log({ txHash, ethersProvider });
     if (!txHash || !ethersProvider) return unsubscribe;
 
     const { chainId } = fromToken;
     let message = null;
     let status = false;
-    let isxDai = isxDaiChain(chainId);
+    const isxDai = isxDaiChain(chainId);
 
     const getReceipt = async () => {
       try {
@@ -76,7 +75,8 @@ export const LoadingModal = ({ loadingProps }) => {
             setLoading(false);
             setLoadingText();
             return;
-          } else if (!isxDai) {
+          }
+          if (!isxDai) {
             setLoadingText('Waiting for Execution');
             status = await getMessageCallStatus(chainId, message);
           }
@@ -102,7 +102,7 @@ export const LoadingModal = ({ loadingProps }) => {
         setReceipt();
         setLoading(false);
         setLoadingText();
-        // eslint-disable-next-line
+        // eslint-disable-next-line no-console
         console.log({ receiptError: error });
       }
     };
@@ -124,10 +124,8 @@ export const LoadingModal = ({ loadingProps }) => {
   ]);
 
   useEffect(() => {
-      setNeedsConfirmation(needs => isxDaiChain(providerChainId) && needs)
+    setNeedsConfirmation(needs => isxDaiChain(providerChainId) && needs);
   }, [providerChainId]);
-
-  console.log({ needsConfirmation });
 
   return needsConfirmation ? (
     <NeedsConfirmationModal />
