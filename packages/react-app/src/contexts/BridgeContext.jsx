@@ -8,6 +8,7 @@ import {
   fetchToToken,
   transferTokens,
 } from '../lib/bridge';
+import { LARGEST_UINT256 } from '../lib/constants';
 import {
   defaultDailyLimit,
   defaultMaxPerTx,
@@ -124,7 +125,11 @@ export const BridgeProvider = ({ children }) => {
   const approve = useCallback(async () => {
     setLoading(true);
     try {
-      await approveToken(ethersProvider, fromToken, fromAmount);
+      const approvalAmount =
+        window.localStorage.getItem('infinite-unlock') === 'true'
+          ? LARGEST_UINT256
+          : fromAmount;
+      await approveToken(ethersProvider, fromToken, approvalAmount);
       setAllowed(true);
     } catch (error) {
       // eslint-disable-next-line no-console

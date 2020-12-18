@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 
 import Logo from '../assets/logo.svg';
 import { HistoryIcon } from '../icons/HistoryIcon';
+import { UpdateSettings } from './UpdateSettings';
 import { WalletSelector } from './WalletSelector';
 
 export const Header = () => {
@@ -64,7 +65,7 @@ export const Header = () => {
       <Stack
         position={{ base: 'relative', md: 'static' }}
         direction={{ base: 'column', md: 'row' }}
-        spacing={4}
+        spacing={6}
         display={{ base: isOpen ? 'flex' : 'none', md: 'flex' }}
         // zIndex={{ base: 1, md: 'auto' }}
         w={{ base: '100%', md: 'auto' }}
@@ -74,7 +75,6 @@ export const Header = () => {
         <Link to="/history">
           <Flex
             align="center"
-            px={4}
             fontWeight="bold"
             color="grey"
             transition="0.25s"
@@ -84,6 +84,7 @@ export const Header = () => {
             <Text color="black"> History</Text>
           </Flex>
         </Link>
+        <UpdateSettings />
         <WalletSelector />
         {/* <NetworkSelector /> */}
       </Stack>

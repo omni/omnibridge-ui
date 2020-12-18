@@ -142,7 +142,7 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
                       justify="center"
                       align="center"
                       background="white"
-                      borderColor="1px solid #DAE3F0"
+                      border="1px solid #DAE3F0"
                       boxSize={8}
                       overflow="hidden"
                       borderRadius="50%"

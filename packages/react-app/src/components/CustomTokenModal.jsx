@@ -16,7 +16,7 @@ import {
 import { utils } from 'ethers';
 import React, { useContext, useRef, useState } from 'react';
 
-import CustomTokenImage from '../assets/custom-token.png';
+import CustomTokenImage from '../assets/custom-token.svg';
 import { BridgeContext } from '../contexts/BridgeContext';
 import { Web3Context } from '../contexts/Web3Context';
 import { uniqueTokens } from '../lib/helpers';
