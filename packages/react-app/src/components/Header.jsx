@@ -1,5 +1,6 @@
 import { Button, Flex, Image, Stack, Text } from '@chakra-ui/react';
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import { Web3Context } from '../contexts/Web3Context';
 import { Link } from 'react-router-dom';
 
 import Logo from '../assets/logo.svg';
@@ -8,6 +9,7 @@ import { UpdateSettings } from './UpdateSettings';
 import { WalletSelector } from './WalletSelector';
 
 export const Header = () => {
+  const { account } = useContext(Web3Context);
   const [isOpen, setOpen] = useState(false);
   const toggleOpen = () => setOpen(open => !open);
 
@@ -67,26 +69,29 @@ export const Header = () => {
         direction={{ base: 'column', md: 'row' }}
         spacing={6}
         display={{ base: isOpen ? 'flex' : 'none', md: 'flex' }}
-        // zIndex={{ base: 1, md: 'auto' }}
         w={{ base: '100%', md: 'auto' }}
         align={{ base: 'flex-start', md: 'center' }}
         pb={{ base: 4, md: 0 }}
       >
-        <Link to="/history">
-          <Flex
-            align="center"
-            fontWeight="bold"
-            color="grey"
-            transition="0.25s"
-            _hover={{ color: 'blue.500' }}
-          >
-            <HistoryIcon mr={2} />
-            <Text color="black"> History</Text>
-          </Flex>
-        </Link>
-        <UpdateSettings />
-        <WalletSelector />
-        {/* <NetworkSelector /> */}
+        {account && (
+          <>
+            <Link to="/history">
+              <Flex
+                align="center"
+                fontWeight="bold"
+                color="grey"
+                transition="0.25s"
+                _hover={{ color: 'blue.500' }}
+              >
+                <HistoryIcon mr={2} />
+                <Text color="black"> History</Text>
+              </Flex>
+            </Link>
+            <UpdateSettings />
+            <WalletSelector />
+            {/* <NetworkSelector /> */}
+          </>
+        )}
       </Stack>
     </Flex>
   );

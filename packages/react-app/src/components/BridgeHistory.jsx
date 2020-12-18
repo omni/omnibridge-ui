@@ -72,7 +72,7 @@ export const BridgeHistory = ({ page }) => {
           {displayHistory.map(item => (
             <HistoryItem key={item.sendingTx} data={item} />
           ))}
-          {numPages && (
+          {numPages > 1 && (
             <HistoryPagination numPages={numPages} currentPage={page} />
           )}
         </>
