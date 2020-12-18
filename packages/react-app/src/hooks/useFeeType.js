@@ -16,7 +16,7 @@ export const useFeeType = () => {
 
   useEffect(() => {
     const ethersProvider = getEthersProvider(chainId);
-    const mediatorAddress = getMediatorAddress('', chainId);
+    const mediatorAddress = getMediatorAddress(chainId);
     const abi = [
       'function FOREIGN_TO_HOME_FEE() view returns (bytes32)',
       'function HOME_TO_FOREIGN_FEE() view returns (bytes32)',

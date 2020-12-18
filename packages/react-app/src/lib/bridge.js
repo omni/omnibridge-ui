@@ -11,25 +11,22 @@ import {
 } from './helpers';
 import { getOverriddenToToken, isOverridden } from './overrides';
 import { getEthersProvider } from './providers';
-import { fetchTokenDetails, transferAndCallToken } from './token';
+import { fetchTokenDetails } from './token';
 
-export const fetchToTokenDetails = async (
-  fromName,
-  fromChainId,
-  fromAddress,
-) => {
+export const fetchToTokenDetails = async ({
+  name: fromName,
+  chainId: fromChainId,
+  address: fromAddress,
+}) => {
   const toChainId = getBridgeNetwork(fromChainId);
   const isxDai = isxDaiChain(fromChainId);
   if (isOverridden(fromAddress)) {
-    return fetchTokenDetails(
-      toChainId,
-      getOverriddenToToken(fromAddress, fromChainId),
-    );
+    return fetchTokenDetails(getOverriddenToToken(fromAddress, fromChainId));
   }
   const fromEthersProvider = getEthersProvider(fromChainId);
   const toEthersProvider = getEthersProvider(toChainId);
-  const fromMediatorAddress = getMediatorAddress(fromAddress, fromChainId);
-  const toMediatorAddress = getMediatorAddress(fromAddress, toChainId);
+  const fromMediatorAddress = getMediatorAddress(fromChainId);
+  const toMediatorAddress = getMediatorAddress(toChainId);
   const abi = [
     'function isRegisteredAsNativeToken(address) view returns (bool)',
     'function bridgedTokenAddress(address) view returns (address)',
@@ -53,11 +50,23 @@ export const fetchToTokenDetails = async (
 
     const toAddress = await toMediatorContract.bridgedTokenAddress(fromAddress);
     const toName = isxDai ? `${fromName} on Mainnet` : `${fromName} on xDai`;
-    return { name: toName, chainId: toChainId, address: toAddress };
+    return {
+      name: toName,
+      chainId: toChainId,
+      address: toAddress,
+      mode: 'erc677',
+      mediator: toMediatorAddress,
+    };
   }
   const toAddress = await fromMediatorContract.nativeTokenAddress(fromAddress);
   const toName = isxDai ? fromName.slice(0, -8) : fromName.slice(0, -11);
-  return { name: toName, chainId: toChainId, address: toAddress };
+  return {
+    name: toName,
+    chainId: toChainId,
+    address: toAddress,
+    mode: 'erc20',
+    mediator: toMediatorAddress,
+  };
 };
 
 export const fetchToAmount = async (
@@ -72,12 +81,10 @@ export const fetchToAmount = async (
     return fromAmount;
   }
   const isxDai = isxDaiChain(toToken.chainId);
-  const xDaiChainId = isxDai
-    ? toToken.chainId
-    : getBridgeNetwork(toToken.chainId);
+  const xDaiChainId = isxDai ? toToken.chainId : fromToken.chainId;
   const tokenAddress = isxDai ? toToken.address : fromToken.address;
   const ethersProvider = getEthersProvider(xDaiChainId);
-  const mediatorAddress = getMediatorAddress(tokenAddress, xDaiChainId);
+  const mediatorAddress = isxDai ? toToken.mediator : fromToken.mediator;
   const abi = [
     'function calculateFee(bytes32, address, uint256) view returns (uint256)',
   ];
@@ -98,11 +105,7 @@ export const fetchToAmount = async (
 };
 
 export const fetchToToken = async fromToken => {
-  const toToken = await fetchToTokenDetails(
-    fromToken.name,
-    fromToken.chainId,
-    fromToken.address,
-  );
+  const toToken = await fetchToTokenDetails(fromToken);
 
   return {
     symbol: fromToken.symbol,
@@ -120,10 +123,9 @@ export const fetchTokenLimits = async (token, walletProvider) => {
     'function maxPerTx(address) view returns (uint256)',
     'function dailyLimit(address) view returns (uint256)',
   ];
-  const mediatorAddress = getMediatorAddress(token.address, token.chainId);
 
   const mediatorContract = new Contract(
-    mediatorAddress,
+    token.mediator,
     mediatorAbi,
     walletProvider,
   );
@@ -153,26 +155,35 @@ export const fetchTokenLimits = async (token, walletProvider) => {
   };
 };
 
-export const relayTokens = async (ethersProvider, token, amount) => {
-  const mediatorAddress = getMediatorAddress(token.address, token.chainId);
-  const abi = ['function relayTokens(address, uint256)'];
+export const relayTokens = async (ethersProvider, token, receiver, amount) => {
+  const abi = [
+    'function relayTokens(address, uint256)',
+    'function transferAndCall(address, uint256, bytes)',
+  ];
   const signer = ethersProvider.getSigner();
-  const mediatorContract = new Contract(mediatorAddress, abi, signer);
-
-  if (isOverridden(token.address)) {
-    // TODO: remove this check when abis of both mediators are same.
-    return mediatorContract.relayTokens(await signer.getAddress(), amount);
+  const { mode, mediator, address } = token;
+  const mediatorContract = new Contract(mediator, abi, signer);
+  const tokenContract = new Contract(address, abi, ethersProvider.getSigner());
+  switch (mode) {
+    case 'erc677':
+      return tokenContract.transferAndCall(mediator, amount, '0x');
+    case 'dedicated-erc20':
+      return mediatorContract.relayTokens(receiver, amount);
+    case 'erc20':
+    default:
+      return mediatorContract.relayTokens(token.address, amount);
   }
-  return mediatorContract.relayTokens(token.address, amount);
 };
 
-export const transferTokens = async (ethersProvider, token, amount) => {
+export const transferTokens = async (
+  ethersProvider,
+  token,
+  receiver,
+  amount,
+) => {
   const confirmsPromise = fetchConfirmations(token.chainId, ethersProvider);
-  const txPromise = isxDaiChain(token.chainId)
-    ? transferAndCallToken(ethersProvider, token, amount)
-    : relayTokens(ethersProvider, token, amount);
-  const totalConfirms = parseInt(await confirmsPromise, 10);
-  const tx = await txPromise;
+  const txPromise = relayTokens(ethersProvider, token, receiver, amount);
+  const [tx, confirms] = await Promise.all([txPromise, confirmsPromise]);
 
-  return [tx, totalConfirms];
+  return [tx, parseInt(confirms, 10)];
 };

@@ -14,7 +14,7 @@ export const useRewardAddress = () => {
   useEffect(() => {
     if (!account) return;
     const ethersProvider = getEthersProvider(chainId);
-    const mediatorAddress = getMediatorAddress('', chainId);
+    const mediatorAddress = getMediatorAddress(chainId);
     const abi = ['function isRewardAddress(address) view returns (bool)'];
     const mediatorContract = new Contract(mediatorAddress, abi, ethersProvider);
 

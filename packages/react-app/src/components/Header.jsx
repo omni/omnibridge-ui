@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom';
 
 import Logo from '../assets/logo.svg';
 import { HistoryIcon } from '../icons/HistoryIcon';
-import { NetworkSelector } from './NetworkSelector';
 import { WalletSelector } from './WalletSelector';
 
 export const Header = () => {
@@ -18,8 +17,8 @@ export const Header = () => {
       align={{ base: 'stretch', md: 'center' }}
       maxW="75rem"
       minH={20}
-      px={8}
-      w="100%"
+      mx={8}
+      w="calc(100% - 4rem)"
       background={isOpen ? { base: 'white', md: 'transparent' } : 'transparent'}
       direction={{ base: 'column', md: 'row' }}
       mb={isOpen ? { base: 4, md: 0 } : 0}
@@ -86,7 +85,7 @@ export const Header = () => {
           </Flex>
         </Link>
         <WalletSelector />
-        <NetworkSelector />
+        {/* <NetworkSelector /> */}
       </Stack>
     </Flex>
   );

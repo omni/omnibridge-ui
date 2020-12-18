@@ -6,20 +6,24 @@ import {
   Link,
   Text,
   useBreakpointValue,
+  useDisclosure,
 } from '@chakra-ui/react';
 import { BigNumber, utils } from 'ethers';
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 
 import BlueTickImage from '../assets/blue-tick.svg';
 import RightArrowImage from '../assets/right-arrow.svg';
+import { CONFIG } from '../config';
 import { Web3Context } from '../contexts/Web3Context';
 import { executeSignatures } from '../lib/amb';
 import {
   getBridgeNetwork,
   getExplorerUrl,
   getMonitorUrl,
+  getNetworkName,
   isxDaiChain,
 } from '../lib/helpers';
+import { ErrorModal } from './ErrorModal';
 
 const { formatUnits } = utils;
 
@@ -65,6 +69,7 @@ export const HistoryItem = ({
 }) => {
   const { providerChainId, ethersProvider } = useContext(Web3Context);
   const bridgeChainId = getBridgeNetwork(chainId);
+  const [receiving, setReceiving] = useState(receivingTx);
 
   const timestampString = useBreakpointValue({
     base: new Date(parseInt(timestamp, 10) * 1000).toLocaleTimeString([], {
@@ -84,17 +89,30 @@ export const HistoryItem = ({
     // }),
   });
 
-  const claimTokens = () => {
-    if (!isxDaiChain(providerChainId)) {
-      executeSignatures(ethersProvider, providerChainId, message);
+  const { onOpen, isOpen, onClose } = useDisclosure();
+  const claimable = message && message.msgData && message.signatures;
+  const isxDai = isxDaiChain(providerChainId);
+  const [loading, setLoading] = useState(false);
+  const claimTokens = async () => {
+    if (loading || !claimable) return;
+    if (isxDai) {
+      onOpen();
+    } else {
+      setLoading(true);
+      try {
+        const tx = await executeSignatures(
+          ethersProvider,
+          providerChainId,
+          message,
+        );
+        setReceiving(tx);
+      } catch (executeError) {
+        // eslint-disable-next-line no-console
+        console.log({ executeError });
+      }
+      setLoading(false);
     }
   };
-
-  // const [tokenDetails, setTokenDetails] = useState();
-
-  // useEffect(() => {
-  //   fetchTokenDetails(chainId, token).then(details => setTokenDetails(details));
-  // }, [chainId, token, setTokenDetails]);
 
   return (
     <Flex
@@ -102,15 +120,24 @@ export const HistoryItem = ({
       background="white"
       boxShadow="0px 1rem 2rem rgba(204, 218, 238, 0.8)"
       borderRadius="1rem"
-      p={{ base: 4, sm: 8 }}
+      p={4}
       mb={4}
     >
+      {isxDai && (
+        <ErrorModal
+          message={`Please switch wallet to ${getNetworkName(
+            getBridgeNetwork(CONFIG.network),
+          )}`}
+          isOpen={isOpen}
+          onClose={onClose}
+        />
+      )}
       <Grid
         // templateColumns={{ base: '2fr 2fr', md: '2fr 3fr' }}
         templateColumns="1fr 1.25fr 1fr 1fr 1.25fr 0.5fr"
         w="100%"
       >
-        <Text>{timestampString}</Text>
+        <Text my="auto">{timestampString}</Text>
         <Flex align="center">
           {getNetworkTag(chainId)}
           <Image src={RightArrowImage} mx="0.5rem" />
@@ -121,32 +148,40 @@ export const HistoryItem = ({
           href={getMonitorUrl(chainId, sendingTx)}
           rel="noreferrer noopener"
           target="_blank"
+          my="auto"
         >
           {shortenHash(sendingTx)}
         </Link>
-        {receivingTx ? (
+        {receiving ? (
           <Link
             color="blue.500"
-            href={`${getExplorerUrl(bridgeChainId)}/tx/${receivingTx}`}
+            href={`${getExplorerUrl(bridgeChainId)}/tx/${receiving}`}
             rel="noreferrer noopener"
             target="_blank"
+            my="auto"
           >
-            {shortenHash(receivingTx)}
+            {shortenHash(receiving)}
           </Link>
         ) : (
           <Text />
         )}
-        <Text>
+        <Text my="auto">
           {formatUnits(BigNumber.from(amount), decimals)} {symbol}
         </Text>
-        {receivingTx ? (
+        {receiving ? (
           <Flex align="center">
             <Image src={BlueTickImage} mr="0.5rem" />
             <Text color="blue.500">Claimed</Text>
           </Flex>
         ) : (
           <Flex align="center">
-            <Button size="sm" colorScheme="blue" onClick={claimTokens}>
+            <Button
+              size="sm"
+              colorScheme="blue"
+              onClick={claimTokens}
+              isDisabled={!claimable}
+              isLoading={loading}
+            >
               Claim
             </Button>
           </Flex>

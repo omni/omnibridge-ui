@@ -3,7 +3,7 @@ import React, { useContext } from 'react';
 
 import { BridgeContext } from '../contexts/BridgeContext';
 import { Web3Context } from '../contexts/Web3Context';
-import { ClaimTokensModal } from './ClaimTokens';
+import { ClaimTokensModal } from './ClaimTokensModal';
 import { DaiWarning, isERC20DaiAddress } from './DaiWarning';
 import { FromToken } from './FromToken';
 import { LoadingModal } from './LoadingModal';
@@ -14,13 +14,13 @@ import { UnlockButton } from './UnlockButton';
 
 export const BridgeTokens = () => {
   const { network } = useContext(Web3Context);
-  const { loading, fromToken } = useContext(BridgeContext);
+  const { fromToken } = useContext(BridgeContext);
   const isERC20Dai = isERC20DaiAddress(fromToken);
   const smallScreen = useBreakpointValue({ base: true, lg: false });
 
   return (
     <Flex
-      w="calc(100% - 2rem)"
+      w="calc(100% - 4rem)"
       maxW="75rem"
       background="white"
       boxShadow="0px 1rem 2rem rgba(204, 218, 238, 0.8)"
@@ -28,10 +28,11 @@ export const BridgeTokens = () => {
       direction="column"
       align="center"
       p={{ base: 4, md: 8 }}
-      mx={4}
+      mx={8}
       my="auto"
     >
-      {loading ? <LoadingModal /> : <ClaimTokensModal />}
+      <LoadingModal />
+      <ClaimTokensModal />
       {network && (
         <>
           {!smallScreen && (

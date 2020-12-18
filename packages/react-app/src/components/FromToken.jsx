@@ -14,19 +14,15 @@ import DropDown from '../assets/drop-down.svg';
 import { BridgeContext } from '../contexts/BridgeContext';
 import { Web3Context } from '../contexts/Web3Context';
 import { formatValue, parseValue } from '../lib/helpers';
-import { fetchTokenBalance, fetchTokenBalanceWithProvider } from '../lib/token';
+import { fetchTokenBalance } from '../lib/token';
 import { ErrorModal } from './ErrorModal';
 import { Logo } from './Logo';
 import { SelectTokenModal } from './SelectTokenModal';
 
 export const FromToken = () => {
-  const {
-    ethersProvider,
-    providerChainId,
-    network,
-    networkMismatch,
-    account,
-  } = useContext(Web3Context);
+  const { ethersProvider, network, networkMismatch, account } = useContext(
+    Web3Context,
+  );
   const {
     receipt,
     fromToken: token,
@@ -36,6 +32,7 @@ export const FromToken = () => {
     amountInput: input,
     setAmountInput: setInput,
   } = useContext(BridgeContext);
+
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [message, setMessage] = useState();
   const onClick = () => {
@@ -49,37 +46,19 @@ export const FromToken = () => {
     onOpen();
   };
   const smallScreen = useBreakpointValue({ base: true, lg: false });
-
   const [balanceLoading, setBalanceLoading] = useState(false);
+
   useEffect(() => {
     if (token && account) {
       setBalanceLoading(true);
-      if (providerChainId === token.chainId && !networkMismatch) {
-        fetchTokenBalanceWithProvider(ethersProvider, token, account).then(
-          b => {
-            setBalance(b);
-            setBalanceLoading(false);
-          },
-        );
-      } else {
-        fetchTokenBalance(token, account).then(b => {
-          setBalance(b);
-          setBalanceLoading(false);
-        });
-      }
+      fetchTokenBalance(token, account).then(b => {
+        setBalance(b);
+        setBalanceLoading(false);
+      });
     } else {
       setBalance();
     }
-  }, [
-    token,
-    receipt,
-    account,
-    setBalance,
-    ethersProvider,
-    providerChainId,
-    networkMismatch,
-    setBalanceLoading,
-  ]);
+  }, [receipt, token, account, setBalance, setBalanceLoading]);
 
   return (
     <Flex

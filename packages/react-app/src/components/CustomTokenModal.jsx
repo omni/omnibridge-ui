@@ -68,7 +68,7 @@ export const CustomTokenModal = ({ isOpen, onClose, onBack }) => {
       setAddressInput(e.target.value);
       if (utils.isAddress(e.target.value)) {
         const tokenAddress = e.target.value;
-        fetchTokenDetails(network.value, tokenAddress)
+        fetchTokenDetails({ chainId: network.value, address: tokenAddress })
           .then(tokenDetails => {
             setAddressInvalid(false);
             setCustomToken({
@@ -112,7 +112,6 @@ export const CustomTokenModal = ({ isOpen, onClose, onBack }) => {
             right={-10}
             color="white"
             p={2}
-            // _focus={{ border: 'none', outline: 'none' }}
           />
           <ModalBody px={6} py={0}>
             <Flex direction="column">

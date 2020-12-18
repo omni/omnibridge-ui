@@ -1,6 +1,7 @@
 import { gql, request } from 'graphql-request';
 import { useContext, useEffect, useState } from 'react';
 
+import { CONFIG } from '../config';
 import { Web3Context } from '../contexts/Web3Context';
 import { getBridgeNetwork, getGraphEndpoint } from './helpers';
 
@@ -10,6 +11,8 @@ const historyQuery = gql`
   query getHistory($user: String!, $first: Int!, $skip: Int!) {
     requests: userRequests(
       where: { user_contains: $user }
+      orderBy: txHash
+      orderDirection: desc
       first: $first
       skip: $skip
     ) {
@@ -21,16 +24,109 @@ const historyQuery = gql`
       decimals
       symbol
       message {
+        txHash
         msgData
         signatures
       }
     }
-    executions(where: { user_contains: $user }, first: $first, skip: $skip) {
+    executions(
+      where: { user_contains: $user }
+      first: $first
+      skip: $skip
+      orderBy: txHash
+      orderDirection: desc
+    ) {
       txHash
       messageId
     }
   }
 `;
+
+const requestsQuery = gql`
+  query getRequests($user: String!, $first: Int!, $skip: Int!) {
+    requests: userRequests(
+      where: { user_contains: $user }
+      orderBy: txHash
+      orderDirection: desc
+      first: $first
+      skip: $skip
+    ) {
+      txHash
+      messageId
+      timestamp
+      amount
+      token
+      decimals
+      symbol
+      message {
+        txHash
+        msgData
+        signatures
+      }
+    }
+  }
+`;
+
+const executionsQuery = gql`
+  query getRequests($user: String!, $first: Int!, $skip: Int!) {
+    executions(
+      where: { user_contains: $user }
+      first: $first
+      skip: $skip
+      orderBy: txHash
+      orderDirection: desc
+    ) {
+      txHash
+      messageId
+    }
+  }
+`;
+
+export const getExecutions = async (user, chainId) => {
+  let executions = [];
+  let page = 0;
+  const first = pageSize;
+
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    // eslint-disable-next-line no-await-in-loop
+    const data = await request(getGraphEndpoint(chainId), executionsQuery, {
+      user,
+      first,
+      skip: page * pageSize,
+    });
+    if (data) {
+      executions = data.executions.concat(executions);
+    }
+    if (!data || data.executions.length < pageSize) break;
+    page += 1;
+  }
+
+  return { executions };
+};
+
+export const getRequests = async (user, chainId) => {
+  let requests = [];
+  let page = 0;
+  const first = pageSize;
+
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    // eslint-disable-next-line no-await-in-loop
+    const data = await request(getGraphEndpoint(chainId), requestsQuery, {
+      user,
+      first,
+      skip: page * pageSize,
+    });
+    if (data) {
+      requests = data.requests.concat(requests);
+    }
+    if (!data || data.requests.length < pageSize) break;
+    page += 1;
+  }
+
+  return { requests };
+};
 
 export const getTransfers = async (user, chainId) => {
   let requests = [];
@@ -79,14 +175,14 @@ function combineRequestsWithExecutions(requests, executions, chainId) {
 }
 
 export function useUserHistory() {
-  const { network, account } = useContext(Web3Context);
-  const [transfers, setTransfers] = useState([]);
+  const { account } = useContext(Web3Context);
+  const [transfers, setTransfers] = useState();
   const [loading, setLoading] = useState(true);
-  const chainId = network.value;
-  const bridgeChainId = getBridgeNetwork(chainId);
+  const chainId = CONFIG.network;
 
   useEffect(() => {
-    if (!account || !network.value) return () => undefined;
+    if (!account || !chainId) return () => undefined;
+    const bridgeChainId = getBridgeNetwork(chainId);
     async function update() {
       const [
         { requests: homeRequests, executions: homeExecutions },
@@ -111,11 +207,44 @@ export function useUserHistory() {
       setTransfers(allTransfers);
       setLoading(false);
     }
+    setLoading(true);
     update();
     const interval = 10000; // 10 seconds
     const intervalId = setInterval(update, interval);
     return () => clearInterval(intervalId);
-  }, [chainId, bridgeChainId, network.value, account]);
+  }, [chainId, account]);
+
+  return { transfers, loading };
+}
+
+export function useXDaiTransfers() {
+  const { account } = useContext(Web3Context);
+  const [transfers, setTransfers] = useState();
+  const [loading, setLoading] = useState(true);
+  const chainId = CONFIG.network;
+
+  useEffect(() => {
+    if (!account || !chainId) return () => undefined;
+    const bridgeChainId = getBridgeNetwork(chainId);
+    async function update() {
+      setLoading(true);
+      const [{ requests }, { executions }] = await Promise.all([
+        getRequests(account, chainId),
+        getExecutions(account, bridgeChainId),
+      ]);
+      const xDaiTransfers = combineRequestsWithExecutions(
+        requests,
+        executions,
+        chainId,
+      ).sort((a, b) => b.timestamp - a.timestamp);
+      setTransfers(xDaiTransfers);
+      setLoading(false);
+    }
+    update();
+    const interval = 10000; // 10 seconds
+    const intervalId = setInterval(update, interval);
+    return () => clearInterval(intervalId);
+  }, [chainId, account]);
 
   return { transfers, loading };
 }

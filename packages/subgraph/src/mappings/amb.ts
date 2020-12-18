@@ -14,14 +14,16 @@ export function handleUserRequestForAffirmation(
   event: UserRequestForAffirmation,
 ): void {
   log.debug('Parsing UserRequestForAffirmation', []);
-  let txHash = event.transaction.hash.toHex();
-  let request = UserRequest.load(txHash);
+  let txHash = event.transaction.hash;
+  let request = UserRequest.load(txHash.toHex());
   if (request == null) {
-    request = new UserRequest(txHash);
+    request = new UserRequest(txHash.toHex());
   }
   let message = new Message(
     crypto.keccak256(event.params.encodedData).toHexString(),
   );
+  message.msgId = event.params.messageId;
+  message.txHash = txHash;
   message.save();
   request.txHash = txHash;
   request.timestamp = event.block.timestamp;
@@ -35,14 +37,16 @@ export function handleUserRequestForSignature(
   event: UserRequestForSignature,
 ): void {
   log.debug('Parsing UserRequestForSignature', []);
-  let txHash = event.transaction.hash.toHex();
-  let request = UserRequest.load(txHash);
+  let txHash = event.transaction.hash;
+  let request = UserRequest.load(txHash.toHex());
   if (request == null) {
-    request = new UserRequest(txHash);
+    request = new UserRequest(txHash.toHex());
   }
   let message = new Message(
     crypto.keccak256(event.params.encodedData).toHexString(),
   );
+  message.msgId = event.params.messageId;
+  message.txHash = txHash;
   message.save();
   request.txHash = txHash;
   request.timestamp = event.block.timestamp;
@@ -54,10 +58,10 @@ export function handleUserRequestForSignature(
 
 export function handleRelayedMessage(event: RelayedMessage): void {
   log.debug('Parsing RelayedMessage', []);
-  let txHash = event.transaction.hash.toHex();
-  let execution = Execution.load(txHash);
+  let txHash = event.transaction.hash;
+  let execution = Execution.load(txHash.toHex());
   if (execution == null) {
-    execution = new Execution(txHash);
+    execution = new Execution(txHash.toHex());
   }
   execution.txHash = txHash;
   execution.timestamp = event.block.timestamp;
@@ -70,10 +74,10 @@ export function handleRelayedMessage(event: RelayedMessage): void {
 
 export function handleAffirmationCompleted(event: AffirmationCompleted): void {
   log.debug('Parsing AffirmationCompleted', []);
-  let txHash = event.transaction.hash.toHex();
-  let execution = Execution.load(txHash);
+  let txHash = event.transaction.hash;
+  let execution = Execution.load(txHash.toHex());
   if (execution == null) {
-    execution = new Execution(txHash);
+    execution = new Execution(txHash.toHex());
   }
   execution.txHash = txHash;
   execution.timestamp = event.block.timestamp;

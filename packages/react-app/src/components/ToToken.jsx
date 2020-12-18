@@ -17,8 +17,10 @@ export const ToToken = () => {
     toBalance: balance,
     setToBalance: setBalance,
   } = useContext(BridgeContext);
+
   const smallScreen = useBreakpointValue({ base: true, lg: false });
   const [balanceLoading, setBalanceLoading] = useState(false);
+
   useEffect(() => {
     if (token && account) {
       setBalanceLoading(true);
@@ -30,6 +32,7 @@ export const ToToken = () => {
       setBalance();
     }
   }, [receipt, token, account, setBalance, setBalanceLoading]);
+
   return (
     <Flex
       align="center"
