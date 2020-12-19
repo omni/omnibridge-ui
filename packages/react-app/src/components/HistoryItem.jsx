@@ -158,7 +158,11 @@ export const HistoryItem = ({
             {getNetworkTag(bridgeChainId)}
           </Flex>
         </Flex>
-        <Flex align="center" justify="space-between" mb={{ base: 1, md: 0 }}>
+        <Flex
+          align="center"
+          justify={{ base: 'space-between', md: 'center' }}
+          mb={{ base: 1, md: 0 }}
+        >
           <Text display={{ base: 'inline-block', md: 'none' }} color="greyText">
             Sending Tx
           </Text>
@@ -173,7 +177,11 @@ export const HistoryItem = ({
             {shortenHash(sendingTx)}
           </Link>
         </Flex>
-        <Flex align="center" justify="space-between" mb={{ base: 1, md: 0 }}>
+        <Flex
+          align="center"
+          justify={{ base: 'space-between', md: 'center' }}
+          mb={{ base: 1, md: 0 }}
+        >
           <Text display={{ base: 'inline-block', md: 'none' }} color="greyText">
             Receiving Tx
           </Text>
@@ -192,7 +200,11 @@ export const HistoryItem = ({
             <Text />
           )}
         </Flex>
-        <Flex align="center" justify="space-between" mb={{ base: 1, md: 0 }}>
+        <Flex
+          align="center"
+          justify={{ base: 'space-between', md: 'center' }}
+          mb={{ base: 1, md: 0 }}
+        >
           <Text display={{ base: 'inline-block', md: 'none' }} color="greyText">
             Amount
           </Text>
