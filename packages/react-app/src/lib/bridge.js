@@ -156,22 +156,25 @@ export const fetchTokenLimits = async (token, walletProvider) => {
 };
 
 export const relayTokens = async (ethersProvider, token, receiver, amount) => {
-  const abi = [
-    'function relayTokens(address, uint256)',
-    'function transferAndCall(address, uint256, bytes)',
-  ];
   const signer = ethersProvider.getSigner();
   const { mode, mediator, address } = token;
-  const mediatorContract = new Contract(mediator, abi, signer);
-  const tokenContract = new Contract(address, abi, ethersProvider.getSigner());
   switch (mode) {
-    case 'erc677':
-      return tokenContract.transferAndCall(mediator, amount, '0x');
-    case 'dedicated-erc20':
+    case 'erc677': {
+      const abi = ['function transferAndCall(address, uint256, bytes)'];
+      const tokenContract = new Contract(address, abi, signer);
+      return tokenContract.transferAndCall(mediator, amount, receiver);
+    }
+    case 'dedicated-erc20': {
+      const abi = ['function relayTokens(address, uint256)'];
+      const mediatorContract = new Contract(mediator, abi, signer);
       return mediatorContract.relayTokens(receiver, amount);
+    }
     case 'erc20':
-    default:
-      return mediatorContract.relayTokens(token.address, amount);
+    default: {
+      const abi = ['function relayTokens(address, address, uint256)'];
+      const mediatorContract = new Contract(mediator, abi, signer);
+      return mediatorContract.relayTokens(token.address, receiver, amount);
+    }
   }
 };
 

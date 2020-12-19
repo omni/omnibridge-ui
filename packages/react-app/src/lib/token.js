@@ -12,13 +12,29 @@ import { getEthersProvider } from './providers';
 export const fetchAllowance = (
   { mediator, address },
   account,
-  walletProvider,
+  ethersProvider,
 ) => {
-  if (!account) return BigNumber.from(0);
+  if (
+    !account ||
+    !address ||
+    address === ADDRESS_ZERO ||
+    !mediator ||
+    mediator === ADDRESS_ZERO ||
+    !ethersProvider
+  ) {
+    // eslint-disable-next-line no-console
+    console.log({
+      allowanceError: 'Returning allowance as 0',
+      account,
+      mediator,
+      token: address,
+    });
+    return BigNumber.from(0);
+  }
 
-  const abi = ['function allowance(address, address) view returns (uint256)'];
-  const tokenContract = new Contract(address, abi, walletProvider);
   try {
+    const abi = ['function allowance(address, address) view returns (uint256)'];
+    const tokenContract = new Contract(address, abi, ethersProvider);
     return tokenContract.allowance(account, mediator);
   } catch (error) {
     // eslint-disable-next-line
@@ -97,17 +113,21 @@ export const fetchTokenBalance = async (token, account) => {
 
 export const fetchTokenBalanceWithProvider = async (
   ethersProvider,
-  token,
+  { address },
   account,
 ) => {
-  if (!account || !token || token.address === ADDRESS_ZERO || !ethersProvider) {
+  if (!account || !address || address === ADDRESS_ZERO || !ethersProvider) {
     // eslint-disable-next-line no-console
-    console.log({ balanceError: 'Returning balance as 0', account, token });
+    console.log({
+      balanceError: 'Returning balance as 0',
+      account,
+      token: address,
+    });
     return BigNumber.from(0);
   }
-  const abi = ['function balanceOf(address) view returns (uint256)'];
-  const tokenContract = new Contract(token.address, abi, ethersProvider);
   try {
+    const abi = ['function balanceOf(address) view returns (uint256)'];
+    const tokenContract = new Contract(address, abi, ethersProvider);
     return tokenContract.balanceOf(account);
   } catch (error) {
     // eslint-disable-next-line
