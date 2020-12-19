@@ -11,8 +11,6 @@ const historyQuery = gql`
   query getHistory($user: String!, $first: Int!, $skip: Int!) {
     requests: userRequests(
       where: { user_contains: $user }
-      orderBy: txHash
-      orderDirection: desc
       first: $first
       skip: $skip
     ) {
@@ -25,18 +23,11 @@ const historyQuery = gql`
       decimals
       symbol
       message {
-        txHash
         msgData
         signatures
       }
     }
-    executions(
-      where: { user_contains: $user }
-      first: $first
-      skip: $skip
-      orderBy: txHash
-      orderDirection: desc
-    ) {
+    executions(where: { user_contains: $user }, first: $first, skip: $skip) {
       txHash
       messageId
     }

@@ -22,35 +22,28 @@ export const TransferButton = () => {
   const [message, setMessage] = useState();
   const onClick = () => {
     setMessage();
-    if (
-      ethersProvider &&
-      !networkMismatch &&
-      window.BigInt(amount) >= window.BigInt(tokenLimits.minPerTx) &&
-      window.BigInt(amount) < window.BigInt(tokenLimits.maxPerTx) &&
-      window.BigInt(balance) >= window.BigInt(amount)
-    ) {
-      return onOpen();
-    }
     if (!ethersProvider) {
       setMessage('Please connect wallet');
     } else if (networkMismatch) {
       setMessage(`Please switch wallet to ${network.name}`);
-    } else if (window.BigInt(amount) < window.BigInt(tokenLimits.minPerTx)) {
+    } else if (amount.lt(tokenLimits.minPerTx)) {
       setMessage(
         `Please specify amount more than ${formatValue(
           tokenLimits.minPerTx,
           token.decimals,
         )}`,
       );
-    } else if (window.BigInt(amount) >= window.BigInt(tokenLimits.maxPerTx)) {
+    } else if (amount.gte(tokenLimits.maxPerTx)) {
       setMessage(
         `Please specify amount less than ${formatValue(
           tokenLimits.maxPerTx,
           token.decimals,
         )}`,
       );
-    } else if (window.BigInt(balance) < window.BigInt(amount)) {
+    } else if (balance.lt(amount)) {
       setMessage('Not enough balance');
+    } else {
+      setMessage();
     }
     return onOpen();
   };

@@ -13,8 +13,8 @@ import React, { useContext, useEffect, useState } from 'react';
 import LoadingImage from '../assets/loading.svg';
 import { BridgeContext } from '../contexts/BridgeContext';
 import { Web3Context } from '../contexts/Web3Context';
-import { getMessageCallStatus, getMessageFromTxHash } from '../lib/amb';
-import { getMonitorUrl, isxDaiChain } from '../lib/helpers';
+import { getMessageFromTxHash, getMessageStatus } from '../lib/amb';
+import { getBridgeNetwork, getMonitorUrl, isxDaiChain } from '../lib/helpers';
 import { NeedsConfirmationModal } from './NeedsConfirmationModal';
 import { ProgressRing } from './ProgressRing';
 
@@ -27,9 +27,10 @@ const getTransactionString = hash => {
 };
 
 export const LoadingModal = ({ loadingProps }) => {
-  const [receipt, setReceipt] = useState();
   const { ethersProvider, account, providerChainId } = useContext(Web3Context);
   const {
+    receipt,
+    setReceipt,
     loading,
     setLoading,
     fromToken,
@@ -57,18 +58,22 @@ export const LoadingModal = ({ loadingProps }) => {
     const getReceipt = async () => {
       try {
         const txReceipt = await ethersProvider.getTransactionReceipt(txHash);
-        setReceipt(txReceipt);
+        if (txReceipt) {
+          setReceipt(txReceipt);
+        }
 
-        if (txReceipt && txReceipt.confirmations >= totalConfirms) {
+        if (isxDai) {
           setLoadingText('Collecting Signatures');
+        } else {
+          setLoadingText('Waiting for Execution');
         }
 
         if (txReceipt && (!message || (isxDai && !message.signatures))) {
           message = await getMessageFromTxHash(chainId, txHash);
         }
 
-        if (message) {
-          if (isxDai && message.signatures) {
+        if (isxDai) {
+          if (message && message.signatures) {
             setNeedsConfirmation(true);
             unsubscribe();
             setReceipt();
@@ -76,18 +81,18 @@ export const LoadingModal = ({ loadingProps }) => {
             setLoadingText();
             return;
           }
-          if (!isxDai) {
-            setLoadingText('Waiting for Execution');
-            status = await getMessageCallStatus(chainId, message);
+        } else if (message) {
+          status = await getMessageStatus(
+            getBridgeNetwork(chainId),
+            message.msgId,
+          );
+          if (status) {
+            unsubscribe();
+            setReceipt();
+            setLoading(false);
+            setLoadingText();
+            return;
           }
-        }
-
-        if (status) {
-          unsubscribe();
-          setReceipt();
-          setLoading(false);
-          setLoadingText();
-          return;
         }
 
         if (
@@ -121,6 +126,7 @@ export const LoadingModal = ({ loadingProps }) => {
     fromToken,
     account,
     setLoading,
+    setReceipt,
   ]);
 
   useEffect(() => {

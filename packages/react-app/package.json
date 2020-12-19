@@ -33,6 +33,7 @@
     "eslint-plugin-flowtype": "^4.6.0",
     "ethers": "^5.0.8",
     "fast-memoize": "^2.5.2",
+    "focus-visible": "^5.2.0",
     "framer-motion": "^2.9.5",
     "graphql": "^15.3.0",
     "graphql-request": "^3.0.0",

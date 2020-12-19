@@ -17,25 +17,23 @@ export const UnlockButton = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [message, setMessage] = useState();
   const onClick = () => {
-    setMessage();
-    if (
-      ethersProvider &&
-      !networkMismatch &&
-      window.BigInt(amount) > 0 &&
-      window.BigInt(balance) >= window.BigInt(amount)
-    ) {
-      return approve();
-    }
     if (!ethersProvider) {
       setMessage('Please connect wallet');
-    } else if (networkMismatch) {
-      setMessage(`Please switch wallet to ${network.name}`);
-    } else if (window.BigInt(amount) <= 0) {
-      setMessage('Please specify amount');
-    } else if (window.BigInt(balance) < window.BigInt(amount)) {
-      setMessage('Not enough balance');
+      return onOpen();
     }
-    return onOpen();
+    if (networkMismatch) {
+      setMessage(`Please switch wallet to ${network.name}`);
+      return onOpen();
+    }
+    if (amount.lte(0)) {
+      setMessage('Please specify amount');
+      return onOpen();
+    }
+    if (balance.lt(amount)) {
+      setMessage('Not enough balance');
+      return onOpen();
+    }
+    return approve();
   };
   return (
     <Flex

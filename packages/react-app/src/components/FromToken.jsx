@@ -8,21 +8,26 @@ import {
   useBreakpointValue,
   useDisclosure,
 } from '@chakra-ui/react';
+import { BigNumber } from 'ethers';
 import React, { useContext, useEffect, useState } from 'react';
 
 import DropDown from '../assets/drop-down.svg';
 import { BridgeContext } from '../contexts/BridgeContext';
 import { Web3Context } from '../contexts/Web3Context';
 import { formatValue, parseValue } from '../lib/helpers';
-import { fetchTokenBalance } from '../lib/token';
+import { fetchTokenBalanceWithProvider } from '../lib/token';
 import { ErrorModal } from './ErrorModal';
 import { Logo } from './Logo';
 import { SelectTokenModal } from './SelectTokenModal';
 
 export const FromToken = () => {
-  const { ethersProvider, network, networkMismatch, account } = useContext(
-    Web3Context,
-  );
+  const {
+    ethersProvider,
+    network,
+    networkMismatch,
+    account,
+    providerChainId,
+  } = useContext(Web3Context);
   const {
     receipt,
     fromToken: token,
@@ -49,16 +54,24 @@ export const FromToken = () => {
   const [balanceLoading, setBalanceLoading] = useState(false);
 
   useEffect(() => {
-    if (token && account) {
+    if (token && account && providerChainId === token.chainId) {
       setBalanceLoading(true);
-      fetchTokenBalance(token, account).then(b => {
+      fetchTokenBalanceWithProvider(ethersProvider, token, account).then(b => {
         setBalance(b);
         setBalanceLoading(false);
       });
     } else {
-      setBalance();
+      setBalance(BigNumber.from(0));
     }
-  }, [receipt, token, account, setBalance, setBalanceLoading]);
+  }, [
+    receipt,
+    token,
+    account,
+    setBalance,
+    setBalanceLoading,
+    ethersProvider,
+    providerChainId,
+  ]);
 
   return (
     <Flex
@@ -134,7 +147,7 @@ export const FromToken = () => {
                     ? {}
                     : { position: 'absolute', bottom: '4px', right: 0 })}
                 >
-                  {`Balance: ${formatValue(balance || 0, token.decimals)}`}
+                  {`Balance: ${formatValue(balance, token.decimals)}`}
                 </Text>
               )}
             </Flex>

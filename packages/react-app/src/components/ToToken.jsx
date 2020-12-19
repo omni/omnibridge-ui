@@ -1,4 +1,5 @@
 import { Flex, Spinner, Text, useBreakpointValue } from '@chakra-ui/react';
+import { BigNumber } from 'ethers';
 import React, { useContext, useEffect, useState } from 'react';
 
 import { BridgeContext } from '../contexts/BridgeContext';
@@ -29,7 +30,7 @@ export const ToToken = () => {
         setBalanceLoading(false);
       });
     } else {
-      setBalance();
+      setBalance(BigNumber.from(0));
     }
   }, [receipt, token, account, setBalance, setBalanceLoading]);
 
@@ -103,7 +104,7 @@ export const ToToken = () => {
                     ? {}
                     : { position: 'absolute', bottom: '4px', right: 0 })}
                 >
-                  {`Balance: ${formatValue(balance || 0, token.decimals)}`}
+                  {`Balance: ${formatValue(balance, token.decimals)}`}
                 </Text>
               )}
             </Flex>

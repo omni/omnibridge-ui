@@ -1,4 +1,5 @@
-import React, { useCallback, useContext, useState } from 'react';
+import { BigNumber } from 'ethers';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 
 import { useFeeType } from '../hooks/useFeeType';
 import { useRewardAddress } from '../hooks/useRewardAddress';
@@ -29,6 +30,7 @@ import { Web3Context } from './Web3Context';
 export const BridgeContext = React.createContext({});
 
 export const BridgeProvider = ({ children }) => {
+  const [receipt, setReceipt] = useState();
   const { ethersProvider, account, providerChainId } = useContext(Web3Context);
   const [fromToken, setFromToken] = useState();
   const [toToken, setToToken] = useState();
@@ -41,12 +43,26 @@ export const BridgeProvider = ({ children }) => {
   const [totalConfirms, setTotalConfirms] = useState(0);
   const [tokenList, setTokenList] = useState([]);
   const [amountInput, setAmountInput] = useState('');
-  const [fromBalance, setFromBalance] = useState();
-  const [toBalance, setToBalance] = useState();
+  const [fromBalance, setFromBalance] = useState(BigNumber.from(0));
+  const [toBalance, setToBalance] = useState(BigNumber.from(0));
   const [tokenLimits, setTokenLimits] = useState();
 
   const isRewardAddress = useRewardAddress();
   const { homeToForeignFeeType, foreignToHomeFeeType } = useFeeType();
+  const [fromAllowance, setAllowance] = useState(BigNumber.from(0));
+
+  useEffect(() => {
+    if (fromToken && providerChainId === fromToken.chainId) {
+      fetchAllowance(fromToken, account, ethersProvider).then(setAllowance);
+    }
+  }, [ethersProvider, account, fromToken, providerChainId]);
+
+  useEffect(() => {
+    setAllowed(
+      (fromToken && fromToken.mode === 'erc677') ||
+        fromAllowance.gte(fromAmount),
+    );
+  }, [fromAmount, fromAllowance, fromToken]);
 
   const setAmount = useCallback(
     amount => {
@@ -60,19 +76,10 @@ export const BridgeProvider = ({ children }) => {
           setToAmountLoading(false);
         },
       );
-      if (fromToken.mode === 'erc677') {
-        setAllowed(true);
-      } else {
-        fetchAllowance(fromToken, account, ethersProvider).then(gotAllowance =>
-          setAllowed(window.BigInt(gotAllowance) >= window.BigInt(amount)),
-        );
-      }
     },
     [
-      account,
       fromToken,
       toToken,
-      ethersProvider,
       isRewardAddress,
       homeToForeignFeeType,
       foreignToHomeFeeType,
@@ -184,10 +191,10 @@ export const BridgeProvider = ({ children }) => {
           { balance: balanceA },
           { balance: balanceB },
         ) {
-          return parseInt(
-            window.BigInt(balanceB) - window.BigInt(balanceA),
-            10,
-          );
+          if (balanceB.sub(balanceA).gt(0)) {
+            return 1;
+          }
+          return -1;
         });
         setTokenList(sortedTokenList);
       } catch (error) {
@@ -226,6 +233,8 @@ export const BridgeProvider = ({ children }) => {
         toBalance,
         setToBalance,
         tokenLimits,
+        receipt,
+        setReceipt,
       }}
     >
       {children}

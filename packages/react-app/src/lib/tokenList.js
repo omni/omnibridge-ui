@@ -31,10 +31,10 @@ export const fetchDefaultTokens = async chainId => {
       }
     }
   }
-  // eslint-disable-next-line
-  console.log({
-    defaultTokensError: `DefaultTokenList not found for chainId ${chainId}`,
-  });
+  // eslint-disable-next-line no-console
+  // console.log({
+  //   defaultTokensError: `DefaultTokenList not found for chainId ${chainId}`,
+  // });
   return [];
 };
 

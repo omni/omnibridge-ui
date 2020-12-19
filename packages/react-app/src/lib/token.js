@@ -1,4 +1,4 @@
-import { Contract } from 'ethers';
+import { BigNumber, Contract } from 'ethers';
 
 import { ADDRESS_ZERO } from './constants';
 import { getMediatorAddress } from './helpers';
@@ -14,7 +14,7 @@ export const fetchAllowance = (
   account,
   walletProvider,
 ) => {
-  if (!account) return 0;
+  if (!account) return BigNumber.from(0);
 
   const abi = ['function allowance(address, address) view returns (uint256)'];
   const tokenContract = new Contract(address, abi, walletProvider);
@@ -23,8 +23,8 @@ export const fetchAllowance = (
   } catch (error) {
     // eslint-disable-next-line
     console.log({ tokenError: error });
-    return 0;
   }
+  return BigNumber.from(0);
 };
 
 export const getMode = async (
@@ -91,21 +91,8 @@ export const approveToken = async (ethersProvider, token, amount) => {
 };
 
 export const fetchTokenBalance = async (token, account) => {
-  if (!account || !token || token.address === ADDRESS_ZERO) {
-    // eslint-disable-next-line
-    console.log({ balanceError: 'Returning balance as 0', account, token });
-    return 0;
-  }
   const ethersProvider = getEthersProvider(token.chainId);
-  const abi = ['function balanceOf(address) view returns (uint256)'];
-  const tokenContract = new Contract(token.address, abi, ethersProvider);
-  try {
-    return tokenContract.balanceOf(account);
-  } catch (error) {
-    // eslint-disable-next-line
-    console.log({ tokenError: error });
-  }
-  return 0;
+  return fetchTokenBalanceWithProvider(ethersProvider, token, account);
 };
 
 export const fetchTokenBalanceWithProvider = async (
@@ -114,18 +101,17 @@ export const fetchTokenBalanceWithProvider = async (
   account,
 ) => {
   if (!account || !token || token.address === ADDRESS_ZERO || !ethersProvider) {
-    // eslint-disable-next-line
+    // eslint-disable-next-line no-console
     console.log({ balanceError: 'Returning balance as 0', account, token });
-    return 0;
+    return BigNumber.from(0);
   }
   const abi = ['function balanceOf(address) view returns (uint256)'];
   const tokenContract = new Contract(token.address, abi, ethersProvider);
   try {
-    const balance = await tokenContract.balanceOf(account);
-    return balance;
+    return tokenContract.balanceOf(account);
   } catch (error) {
     // eslint-disable-next-line
     console.log({ tokenError: error });
   }
-  return 0;
+  return BigNumber.from(0);
 };
