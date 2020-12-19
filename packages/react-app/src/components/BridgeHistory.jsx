@@ -8,7 +8,7 @@ import { HistoryPagination } from './HistoryPagination';
 import { LoadingModal } from './LoadingModal';
 import { NoHistory } from './NoHistory';
 
-const TOTAL_PER_PAGE = 10;
+const TOTAL_PER_PAGE = 20;
 
 export const BridgeHistory = ({ page }) => {
   const [onlyUnReceived, setOnlyUnReceived] = useState(false);
@@ -37,9 +37,15 @@ export const BridgeHistory = ({ page }) => {
   }
 
   return (
-    <Flex maxW="75rem" direction="column" mt={8} mx={8} w="calc(100% - 4rem)">
-      <Flex justify="space-between" align="center">
-        <Text fontSize="xl" fontWeight="bold" mb={4}>
+    <Flex
+      maxW="75rem"
+      direction="column"
+      mt={8}
+      px={{ base: 4, sm: 8 }}
+      w="100%"
+    >
+      <Flex justify="space-between" align="center" mb={4} >
+        <Text fontSize="xl" fontWeight="bold">
           History
         </Text>
         <Checkbox
@@ -47,27 +53,33 @@ export const BridgeHistory = ({ page }) => {
           onChange={e => setOnlyUnReceived(e.target.checked)}
           borderColor="grey"
           borderRadius="4px"
+          size="lg"
+          variant="solid"
         >
-          Show only unreceived
+          <Text fontSize="sm">Show only unreceived</Text>
         </Checkbox>
       </Flex>
 
       {displayHistory.length > 0 ? (
         <>
           <Grid
-            // templateColumns={{ base: '2fr 2fr', md: '2fr 3fr' }}
-            templateColumns="1fr 1.25fr 1fr 1fr 1.25fr 0.5fr"
+            templateColumns={{
+              base: '1fr',
+              md: '0.5fr 1.75fr 1fr 1fr 1.25fr 0.5fr',
+              lg: '1fr 1.25fr 1fr 1fr 1.25fr 0.5fr',
+            }}
             color="grey"
             fontSize="sm"
             px={4}
             mb={4}
+            display={{ base: 'none', md: 'grid' }}
           >
             <Text>Date</Text>
             <Text>Direction</Text>
-            <Text>Sending Tx</Text>
-            <Text>Receiving Tx</Text>
-            <Text>Amount</Text>
-            <Text>Status</Text>
+            <Text textAlign="center">Sending Tx</Text>
+            <Text textAlign="center">Receiving Tx</Text>
+            <Text textAlign="center">Amount</Text>
+            <Text textAlign="right">Status</Text>
           </Grid>
           {displayHistory.map(item => (
             <HistoryItem key={item.sendingTx} data={item} />

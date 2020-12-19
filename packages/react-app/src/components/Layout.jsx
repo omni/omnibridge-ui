@@ -7,9 +7,16 @@ import { Footer } from './Footer';
 import { Header } from './Header';
 import { ConnectWeb3 } from './ConnectWeb3';
 import { Web3Context } from '../contexts/Web3Context';
+import { CONFIG } from '../config';
+import { getBridgeNetwork } from '../lib/helpers';
 
 export const Layout = ({ children }) => {
-  const { account } = useContext(Web3Context);
+  const { account, providerChainId } = useContext(Web3Context);
+  const valid =
+    !!account &&
+    [CONFIG.network, getBridgeNetwork(CONFIG.network)].indexOf(
+      providerChainId,
+    ) >= 0;
   return (
     <Flex
       p={0}
@@ -49,7 +56,7 @@ export const Layout = ({ children }) => {
         h="100%"
         position="relative"
       >
-        {account ? children : <ConnectWeb3 />}
+        {valid ? children : <ConnectWeb3 />}
       </Flex>
       <Footer />
     </Flex>

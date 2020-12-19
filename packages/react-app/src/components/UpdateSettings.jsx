@@ -84,7 +84,7 @@ export const UpdateSettings = () => {
                   mb={4}
                   colorScheme="blue"
                   isChecked={infiniteUnlock}
-                  onChange={() => setInfiniteUnlock(u => !u)}
+                  onChange={(e) => setInfiniteUnlock(e.target.checked)}
                 />
                 <Text mb={2}>Custom Mainnet RPC URL</Text>
                 <InputGroup mb={4} borderColor="#DAE3F0">
@@ -121,6 +121,7 @@ export const UpdateSettings = () => {
                   background="background"
                   _hover={{ background: '#bfd3f2' }}
                   color="#687D9D"
+                  ref={initialRef}
                 >
                   Back
                 </Button>
@@ -129,7 +130,6 @@ export const UpdateSettings = () => {
                   onClick={onSave}
                   colorScheme="blue"
                   mt={{ base: 2, md: 0 }}
-                  ref={initialRef}
                 >
                   Save
                 </Button>

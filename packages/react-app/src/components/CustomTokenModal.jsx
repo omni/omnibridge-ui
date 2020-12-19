@@ -24,13 +24,13 @@ import { fetchTokenDetails } from '../lib/token';
 
 export const CustomTokenModal = ({ isOpen, onClose, onBack }) => {
   const { setToken } = useContext(BridgeContext);
-  const { network } = useContext(Web3Context);
+  const { providerChainId } = useContext(Web3Context);
   const [customToken, setCustomToken] = useState({
     address: '',
     name: '',
     symbol: '',
     decimals: 0,
-    chainId: network.value,
+    chainId: providerChainId,
     logo: '',
   });
 
@@ -68,7 +68,7 @@ export const CustomTokenModal = ({ isOpen, onClose, onBack }) => {
       setAddressInput(e.target.value);
       if (utils.isAddress(e.target.value)) {
         const tokenAddress = e.target.value;
-        fetchTokenDetails({ chainId: network.value, address: tokenAddress })
+        fetchTokenDetails({ chainId: providerChainId, address: tokenAddress })
           .then(tokenDetails => {
             setAddressInvalid(false);
             setCustomToken({

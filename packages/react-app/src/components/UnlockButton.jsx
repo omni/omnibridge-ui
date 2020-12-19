@@ -57,7 +57,7 @@ export const UnlockButton = () => {
         if (!allowed) onClick();
       }}
       borderRadius="0.25rem"
-      w={{ base: '13rem', lg: 'auto' }}
+      w={{ base: '10rem', sm: '12rem', lg: 'auto' }}
     >
       {isOpen && (
         <ErrorModal message={message} isOpen={isOpen} onClose={onClose} />

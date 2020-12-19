@@ -88,7 +88,7 @@ export const WalletSelector = props => {
                 {providerNetwork ? (
                   <Text>Connected to {getNetworkName(providerChainId)}</Text>
                 ) : (
-                  <Text> Unsupported Network </Text>
+                  <Text> Incorrect Network </Text>
                 )}
                 <Button colorScheme="blue" onClick={disconnect}>
                   <Text> Disconnect </Text>

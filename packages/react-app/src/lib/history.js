@@ -16,6 +16,7 @@ const historyQuery = gql`
       first: $first
       skip: $skip
     ) {
+      user
       txHash
       messageId
       timestamp
@@ -51,6 +52,7 @@ const requestsQuery = gql`
       first: $first
       skip: $skip
     ) {
+      user
       txHash
       messageId
       timestamp
@@ -68,7 +70,7 @@ const requestsQuery = gql`
 `;
 
 const executionsQuery = gql`
-  query getRequests($user: String!, $first: Int!, $skip: Int!) {
+  query getExecutions($user: String!, $first: Int!, $skip: Int!) {
     executions(
       where: { user_contains: $user }
       first: $first
@@ -161,6 +163,7 @@ function combineRequestsWithExecutions(requests, executions, chainId) {
   return requests.map(req => {
     const execution = executions.find(exec => exec.messageId === req.messageId);
     return {
+      user: req.user,
       chainId,
       timestamp: req.timestamp,
       sendingTx: req.txHash,
@@ -184,6 +187,10 @@ export function useUserHistory() {
     if (!account || !chainId) return () => undefined;
     const bridgeChainId = getBridgeNetwork(chainId);
     async function update() {
+      if (transfers && transfers.length > 0 && transfers[0].user.toLowerCase() !== account.toLowerCase()) {
+          setTransfers();
+          setLoading(true);
+      }
       const [
         { requests: homeRequests, executions: homeExecutions },
         { requests: foreignRequests, executions: foreignExecutions },

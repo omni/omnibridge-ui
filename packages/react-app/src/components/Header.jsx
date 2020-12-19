@@ -7,11 +7,18 @@ import Logo from '../assets/logo.svg';
 import { HistoryIcon } from '../icons/HistoryIcon';
 import { UpdateSettings } from './UpdateSettings';
 import { WalletSelector } from './WalletSelector';
+import { getBridgeNetwork } from '../lib/helpers';
+import { CONFIG } from '../config';
 
 export const Header = () => {
-  const { account } = useContext(Web3Context);
+  const { account, providerChainId } = useContext(Web3Context);
   const [isOpen, setOpen] = useState(false);
   const toggleOpen = () => setOpen(open => !open);
+  const valid =
+    !!account &&
+    [CONFIG.network, getBridgeNetwork(CONFIG.network)].indexOf(
+      providerChainId,
+    ) >= 0;
 
   return (
     <Flex
@@ -20,8 +27,8 @@ export const Header = () => {
       align={{ base: 'stretch', md: 'center' }}
       maxW="75rem"
       minH={20}
-      mx={8}
-      w="calc(100% - 4rem)"
+      px={{ base: 4, sm: 8 }}
+      w="100%"
       background={isOpen ? { base: 'white', md: 'transparent' } : 'transparent'}
       direction={{ base: 'column', md: 'row' }}
       mb={isOpen ? { base: 4, md: 0 } : 0}
@@ -44,6 +51,7 @@ export const Header = () => {
           _hover={{ color: 'blue.600' }}
           onClick={toggleOpen}
           minW="auto"
+          p="2"
         >
           {!isOpen && (
             <svg fill="currentColor" width="1.5rem" viewBox="0 0 20 20">
@@ -73,7 +81,7 @@ export const Header = () => {
         align={{ base: 'flex-start', md: 'center' }}
         pb={{ base: 4, md: 0 }}
       >
-        {account && (
+        {valid && (
           <>
             <Link to="/history">
               <Flex

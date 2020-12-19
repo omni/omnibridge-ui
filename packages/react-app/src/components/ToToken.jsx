@@ -63,7 +63,7 @@ export const ToToken = () => {
         >
           <Flex
             justify="space-between"
-            align={{ base: 'stretch', sm: 'flex-start' }}
+            align={{ base: 'stretch', sm: 'center', lg: 'flex-start' }}
             mb={2}
             direction={{ base: 'column', sm: 'row' }}
           >
@@ -91,6 +91,7 @@ export const ToToken = () => {
               align="center"
               h="100%"
               position="relative"
+              ml={{ base: undefined, sm: 2, md: undefined }}
             >
               {balanceLoading ? (
                 <Spinner size="sm" color="grey" />

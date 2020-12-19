@@ -29,6 +29,7 @@ export const Web3Provider = ({ children }) => {
   const [ethersProvider, setEthersProvider] = useState();
   const [account, setAccount] = useState();
   const [networkMismatch, setNetworkMismatch] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const setWeb3Provider = async (prov, updateAccount = false) => {
     if (prov) {
@@ -50,9 +51,10 @@ export const Web3Provider = ({ children }) => {
 
   const connectWeb3 = useCallback(async () => {
     try {
+      setLoading(true);
       const modalProvider = await web3Modal.connect();
 
-      setWeb3Provider(modalProvider, true);
+      await setWeb3Provider(modalProvider, true);
 
       // Subscribe to accounts change
       modalProvider.on('accountsChanged', accounts => {
@@ -69,6 +71,7 @@ export const Web3Provider = ({ children }) => {
       // eslint-disable-next-line
       console.log({ web3ModalError: error });
     }
+    setLoading(false);
   }, []);
 
   useEffect(() => {
@@ -95,6 +98,8 @@ export const Web3Provider = ({ children }) => {
         // eslint-disable-next-line
         console.error({ web3ModalError: error });
       });
+    } else {
+        setLoading(false);
     }
   }, [connectWeb3]);
 
@@ -103,6 +108,7 @@ export const Web3Provider = ({ children }) => {
       value={{
         ethersProvider,
         connectWeb3,
+        loading,
         disconnect,
         providerChainId,
         network: chosenNetwork,

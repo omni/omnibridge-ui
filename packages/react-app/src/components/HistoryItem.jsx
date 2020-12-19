@@ -37,12 +37,13 @@ const Tag = ({ bg, txt }) => (
     bg={bg}
     borderRadius="6px"
     px="0.75rem"
-    height="2rem"
-    fontSize="sm"
+    height="1.5rem"
+    fontSize="xs"
     color="white"
     fontWeight="600"
+    w="auto"
   >
-    {txt}
+    <Text>{txt}</Text>
   </Flex>
 );
 
@@ -50,7 +51,7 @@ const networkTags = {
   100: <Tag bg="#4DA9A6" txt="xDai" />,
   1: <Tag bg="#5A74DA" txt="Ethereum" />,
   42: <Tag bg="#5A74DA" txt="Kovan" />,
-  77: <Tag bg="#4DA9A6" txt="Sokol" />,
+  77: <Tag bg="#4DA9A6" txt="POA Sokol" />,
 };
 
 const getNetworkTag = chainId => networkTags[chainId];
@@ -120,6 +121,7 @@ export const HistoryItem = ({
       background="white"
       boxShadow="0px 1rem 2rem rgba(204, 218, 238, 0.8)"
       borderRadius="1rem"
+      fontSize="sm"
       p={4}
       mb={4}
     >
@@ -133,48 +135,78 @@ export const HistoryItem = ({
         />
       )}
       <Grid
-        // templateColumns={{ base: '2fr 2fr', md: '2fr 3fr' }}
-        templateColumns="1fr 1.25fr 1fr 1fr 1.25fr 0.5fr"
+        templateColumns={{
+          base: '1fr',
+          md: '0.5fr 1.75fr 1fr 1fr 1.25fr 0.5fr',
+          lg: '1fr 1.25fr 1fr 1fr 1.25fr 0.5fr',
+        }}
         w="100%"
       >
-        <Text my="auto">{timestampString}</Text>
-        <Flex align="center">
-          {getNetworkTag(chainId)}
-          <Image src={RightArrowImage} mx="0.5rem" />
-          {getNetworkTag(bridgeChainId)}
+        <Flex align="center" justify="space-between" mb={{ base: 1, md: 0 }}>
+          <Text display={{ base: 'inline-block', md: 'none' }} color="greyText">
+            Date
+          </Text>
+          <Text my="auto">{timestampString}</Text>
         </Flex>
-        <Link
-          color="blue.500"
-          href={getMonitorUrl(chainId, sendingTx)}
-          rel="noreferrer noopener"
-          target="_blank"
-          my="auto"
-        >
-          {shortenHash(sendingTx)}
-        </Link>
-        {receiving ? (
+        <Flex align="center" justify="space-between" mb={{ base: 1, md: 0 }}>
+          <Text display={{ base: 'inline-block', md: 'none' }} color="greyText">
+            Direction
+          </Text>
+          <Flex align="center">
+            {getNetworkTag(chainId)}
+            <Image src={RightArrowImage} mx="0.5rem" />
+            {getNetworkTag(bridgeChainId)}
+          </Flex>
+        </Flex>
+        <Flex align="center" justify="space-between" mb={{ base: 1, md: 0 }}>
+          <Text display={{ base: 'inline-block', md: 'none' }} color="greyText">
+            Sending Tx
+          </Text>
           <Link
             color="blue.500"
-            href={`${getExplorerUrl(bridgeChainId)}/tx/${receiving}`}
+            href={getMonitorUrl(chainId, sendingTx)}
             rel="noreferrer noopener"
             target="_blank"
             my="auto"
+            textAlign="center"
           >
-            {shortenHash(receiving)}
+            {shortenHash(sendingTx)}
           </Link>
-        ) : (
-          <Text />
-        )}
-        <Text my="auto">
-          {formatUnits(BigNumber.from(amount), decimals)} {symbol}
-        </Text>
+        </Flex>
+        <Flex align="center" justify="space-between" mb={{ base: 1, md: 0 }}>
+          <Text display={{ base: 'inline-block', md: 'none' }} color="greyText">
+            Receiving Tx
+          </Text>
+          {receiving ? (
+            <Link
+              color="blue.500"
+              href={`${getExplorerUrl(bridgeChainId)}/tx/${receiving}`}
+              rel="noreferrer noopener"
+              target="_blank"
+              my="auto"
+              textAlign="center"
+            >
+              {shortenHash(receiving)}
+            </Link>
+          ) : (
+            <Text />
+          )}
+        </Flex>
+        <Flex align="center" justify="space-between" mb={{ base: 1, md: 0 }}>
+          <Text display={{ base: 'inline-block', md: 'none' }} color="greyText">
+            Amount
+          </Text>
+          <Text my="auto" textAlign="center">
+            {formatUnits(BigNumber.from(amount), decimals)} {symbol}
+          </Text>
+        </Flex>
         {receiving ? (
-          <Flex align="center">
+          <Flex align="center" justify={{ base: 'center', md: 'flex-end' }}>
             <Image src={BlueTickImage} mr="0.5rem" />
             <Text color="blue.500">Claimed</Text>
           </Flex>
         ) : (
-          <Flex align="center">
+          <Flex align="center" justify={{ base: 'center', md: 'flex-end' }}>
             <Button
               size="sm"
               colorScheme="blue"

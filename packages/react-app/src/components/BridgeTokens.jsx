@@ -20,7 +20,7 @@ export const BridgeTokens = () => {
 
   return (
     <Flex
-      w="calc(100% - 4rem)"
+      w={{ base: undefined, lg: 'calc(100% - 4rem)' }}
       maxW="75rem"
       background="white"
       boxShadow="0px 1rem 2rem rgba(204, 218, 238, 0.8)"
@@ -28,7 +28,7 @@ export const BridgeTokens = () => {
       direction="column"
       align="center"
       p={{ base: 4, md: 8 }}
-      mx={8}
+      mx={{ base: 4, sm: 8 }}
       my="auto"
     >
       <LoadingModal />

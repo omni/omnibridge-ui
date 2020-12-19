@@ -35,18 +35,17 @@ export const HistoryPagination = ({ numPages, currentPage }) => {
       py={{ base: 4, sm: 8 }}
       mb={4}
       align="center"
-      justify={{ base: 'center', sm: 'flex-end' }}
+      justify={{ base: 'center', lg: 'flex-end' }}
+      fontSize="sm"
     >
       <HStack spacing={4}>
-        {currentPage > 1 && (
-          <LeftIcon
-            boxSize={8}
-            color="grey"
-            _hover={{ color: 'blue.500' }}
-            onClick={() => onClick(currentPage - 1)}
-            cursor="pointer"
-          />
-        )}
+        <LeftIcon
+          boxSize={6}
+          color="grey"
+          _hover={{ color: 'blue.500' }}
+          onClick={() => onClick(currentPage - 1)}
+          cursor={currentPage > 1 ? 'pointer' : 'not-allowed'}
+        />
         {displayPages.map(
           page =>
             page >= 1 &&
@@ -57,20 +56,19 @@ export const HistoryPagination = ({ numPages, currentPage }) => {
                 _hover={{ background: 'blue.500' }}
                 color="white"
                 onClick={() => onClick(page)}
+                size="sm"
               >
                 {page}
               </Button>
             ),
         )}
-        {currentPage < numPages && (
-          <RightIcon
-            boxSize={8}
-            color="grey"
-            _hover={{ color: 'blue.500' }}
-            onClick={() => onClick(currentPage + 1)}
-            cursor="pointer"
-          />
-        )}
+        <RightIcon
+          boxSize={6}
+          color="grey"
+          _hover={{ color: 'blue.500' }}
+          onClick={() => onClick(currentPage + 1)}
+          cursor={currentPage < numPages ? 'pointer' : 'not-allowed'}
+        />
       </HStack>
     </Flex>
   );
