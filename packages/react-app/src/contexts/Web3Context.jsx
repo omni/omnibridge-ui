@@ -99,7 +99,7 @@ export const Web3Provider = ({ children }) => {
         console.error({ web3ModalError: error });
       });
     } else {
-        setLoading(false);
+      setLoading(false);
     }
   }, [connectWeb3]);
 

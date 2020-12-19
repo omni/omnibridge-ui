@@ -1,14 +1,14 @@
 import { Button, Flex, Image, Stack, Text } from '@chakra-ui/react';
-import React, { useState, useContext } from 'react';
-import { Web3Context } from '../contexts/Web3Context';
+import React, { useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import Logo from '../assets/logo.svg';
+import { CONFIG } from '../config';
+import { Web3Context } from '../contexts/Web3Context';
 import { HistoryIcon } from '../icons/HistoryIcon';
+import { getBridgeNetwork } from '../lib/helpers';
 import { UpdateSettings } from './UpdateSettings';
 import { WalletSelector } from './WalletSelector';
-import { getBridgeNetwork } from '../lib/helpers';
-import { CONFIG } from '../config';
 
 export const Header = () => {
   const { account, providerChainId } = useContext(Web3Context);

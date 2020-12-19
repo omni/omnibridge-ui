@@ -187,10 +187,6 @@ export function useUserHistory() {
     if (!account || !chainId) return () => undefined;
     const bridgeChainId = getBridgeNetwork(chainId);
     async function update() {
-      if (transfers && transfers.length > 0 && transfers[0].user.toLowerCase() !== account.toLowerCase()) {
-          setTransfers();
-          setLoading(true);
-      }
       const [
         { requests: homeRequests, executions: homeExecutions },
         { requests: foreignRequests, executions: foreignExecutions },
@@ -214,6 +210,7 @@ export function useUserHistory() {
       setTransfers(allTransfers);
       setLoading(false);
     }
+    setTransfers();
     setLoading(true);
     update();
     const interval = 10000; // 10 seconds

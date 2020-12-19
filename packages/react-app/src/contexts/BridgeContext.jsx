@@ -109,13 +109,11 @@ export const BridgeProvider = ({ children }) => {
 
   const setDefaultToken = useCallback(
     chainId => {
-      console.log("here");
       if (fromToken && toToken && toToken.chainId === chainId) {
         const token = { ...toToken };
         setToToken(fromToken);
         setFromToken(token);
       } else if (!fromToken || fromToken.chainId !== chainId) {
-        console.log("default", chainId, {fromToken, toToken});
         setToken(getDefaultToken(chainId));
       }
     },

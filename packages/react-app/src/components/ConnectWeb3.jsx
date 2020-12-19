@@ -1,9 +1,10 @@
-import { Flex, Text, Button } from '@chakra-ui/react';
+import { Button, Flex, Text } from '@chakra-ui/react';
 import React, { useContext } from 'react';
-import { Web3Context } from '../contexts/Web3Context';
-import { getNetworkName, getBridgeNetwork } from '../lib/helpers';
+
 import { CONFIG } from '../config';
-import {WalletFilledIcon} from '../icons/WalletFilledIcon';
+import { Web3Context } from '../contexts/Web3Context';
+import { WalletFilledIcon } from '../icons/WalletFilledIcon';
+import { getBridgeNetwork, getNetworkName } from '../lib/helpers';
 
 export const ConnectWeb3 = () => {
   const { connectWeb3, loading, account, disconnect } = useContext(Web3Context);
@@ -31,7 +32,7 @@ export const ConnectWeb3 = () => {
         color="white"
         mb={4}
       >
-          <WalletFilledIcon boxSize="1.75rem"/>
+        <WalletFilledIcon boxSize="1.75rem" />
       </Flex>
       <Text fontSize="xl" fontWeight="bold" mb={4}>
         {account ? 'Incorrect Network' : 'Connect Wallet'}

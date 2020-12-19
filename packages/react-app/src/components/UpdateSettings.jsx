@@ -84,7 +84,7 @@ export const UpdateSettings = () => {
                   mb={4}
                   colorScheme="blue"
                   isChecked={infiniteUnlock}
-                  onChange={(e) => setInfiniteUnlock(e.target.checked)}
+                  onChange={e => setInfiniteUnlock(e.target.checked)}
                 />
                 <Text mb={2}>Custom Mainnet RPC URL</Text>
                 <InputGroup mb={4} borderColor="#DAE3F0">
