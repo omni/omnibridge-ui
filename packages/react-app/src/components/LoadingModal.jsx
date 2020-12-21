@@ -204,6 +204,7 @@ export const LoadingModal = ({ loadingProps }) => {
                     flex={1}
                     direction="column"
                     align={{ base: 'stretch', md: 'center' }}
+                    justify="center"
                   >
                     <Text width="100%">
                       {`${loadingText || 'Waiting for Block Confirmations'}...`}

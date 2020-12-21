@@ -20,15 +20,18 @@ import ErrorImage from '../assets/error.svg';
 import InfoImage from '../assets/info.svg';
 import ClaimTokensImage from '../assets/multiple-claim.svg';
 import { CONFIG } from '../config';
+import { BridgeContext } from '../contexts/BridgeContext';
 import { Web3Context } from '../contexts/Web3Context';
 import { executeSignatures, getMessageStatus } from '../lib/amb';
 import { POLLING_INTERVAL } from '../lib/constants';
 import { getBridgeNetwork, getNetworkName, isxDaiChain } from '../lib/helpers';
 import { useXDaiTransfers } from '../lib/history';
+import { LoadingModal } from './LoadingModal';
 
 export const ClaimTokensModal = () => {
-  const { transfers } = useXDaiTransfers();
+  const { transfers, loading } = useXDaiTransfers();
   const { ethersProvider, providerChainId } = useContext(Web3Context);
+  const { setReceipt } = useContext(BridgeContext);
   const [claiming, setClaiming] = useState(false);
   const [needsClaim, setNeedsClaim] = useState([]);
   const [isOpen, setOpen] = useState(false);
@@ -79,6 +82,7 @@ export const ClaimTokensModal = () => {
       // eslint-disable-next-line no-console
       console.log({ executeError });
     }
+    setReceipt('');
     setClaiming(false);
     onClose();
   };
@@ -120,6 +124,7 @@ export const ClaimTokensModal = () => {
     return unsubscribe;
   }, [isxDai, providerChainId, message]);
 
+  if (loading) return <LoadingModal loadingProps />;
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered>
       <ModalOverlay background="modalBG">
@@ -232,7 +237,13 @@ export const ClaimTokensModal = () => {
                   Claim
                 </Button>
               ) : (
-                <Link to="/history" display="flex">
+                <Link
+                  to="/history"
+                  display="flex"
+                  onClick={() => {
+                    window.sessionStorage.setItem('claimTokens', 0);
+                  }}
+                >
                   <Button
                     px={12}
                     colorScheme="blue"

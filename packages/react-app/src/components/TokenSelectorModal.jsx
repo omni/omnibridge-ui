@@ -181,7 +181,7 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
             </InputGroup>
             {loading && (
               <Flex w="100%" align="center" justify="center">
-                <Spinner colorScheme="blue" />
+                <Spinner color="blue.500" />
               </Flex>
             )}
             {!loading &&

@@ -10,11 +10,13 @@ import {
 import { getEthersProvider } from './providers';
 
 export const fetchAllowance = async (
-  { mediator, address },
+  { mediator, address, chainId },
   account,
   ethersProvider,
 ) => {
+  const network = await ethersProvider.getNetwork();
   if (
+    network.chainId !== chainId ||
     !account ||
     !address ||
     address === ADDRESS_ZERO ||
@@ -22,13 +24,6 @@ export const fetchAllowance = async (
     mediator === ADDRESS_ZERO ||
     !ethersProvider
   ) {
-    // eslint-disable-next-line no-console
-    console.log({
-      allowanceError: 'Returning allowance as 0',
-      account,
-      mediator,
-      token: address,
-    });
     return BigNumber.from(0);
   }
 
@@ -39,7 +34,7 @@ export const fetchAllowance = async (
     return allowance;
   } catch (error) {
     // eslint-disable-next-line
-    console.log({ tokenError: error });
+    console.log({ allowanceError: error });
   }
   return BigNumber.from(0);
 };
@@ -113,25 +108,27 @@ export const fetchTokenBalance = async (token, account) => {
 
 export const fetchTokenBalanceWithProvider = async (
   ethersProvider,
-  { address },
+  { address, chainId },
   account,
 ) => {
-  if (!account || !address || address === ADDRESS_ZERO || !ethersProvider) {
-    // eslint-disable-next-line no-console
-    console.log({
-      balanceError: 'Returning balance as 0',
-      account,
-      token: address,
-    });
+  const network = await ethersProvider.getNetwork();
+  if (
+    !account ||
+    !address ||
+    address === ADDRESS_ZERO ||
+    !ethersProvider ||
+    network.chainId !== chainId
+  ) {
     return BigNumber.from(0);
   }
   try {
     const abi = ['function balanceOf(address) view returns (uint256)'];
     const tokenContract = new Contract(address, abi, ethersProvider);
-    return tokenContract.balanceOf(account);
+    const balance = await tokenContract.balanceOf(account);
+    return balance;
   } catch (error) {
     // eslint-disable-next-line
-    console.log({ tokenError: error });
+    console.log({ balanceError: error });
   }
   return BigNumber.from(0);
 };
