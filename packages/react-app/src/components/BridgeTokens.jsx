@@ -3,6 +3,7 @@ import React, { useContext } from 'react';
 
 import { BridgeContext } from '../contexts/BridgeContext';
 import { Web3Context } from '../contexts/Web3Context';
+// import { AdvancedMenu } from './AdvancedMenu';
 import { ClaimTokensModal } from './ClaimTokensModal';
 import { DaiWarning, isERC20DaiAddress } from './DaiWarning';
 import { FromToken } from './FromToken';
@@ -95,6 +96,7 @@ export const BridgeTokens = () => {
             )}
             <ToToken />
           </Grid>
+          {/* <AdvancedMenu /> */}
           <SystemFeedback />
         </>
       )}

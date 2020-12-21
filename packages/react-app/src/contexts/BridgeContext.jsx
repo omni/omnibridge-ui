@@ -26,6 +26,7 @@ export const BridgeProvider = ({ children }) => {
   const { ethersProvider, account, providerChainId } = useContext(Web3Context);
 
   const [receipt, setReceipt] = useState();
+  const [receiver, setReceiver] = useState();
   const [fromToken, setFromToken] = useState();
   const [toToken, setToToken] = useState();
   const [fromAmount, setFromAmount] = useState(0);
@@ -131,26 +132,23 @@ export const BridgeProvider = ({ children }) => {
     setLoading(false);
   }, [fromAmount, fromToken, ethersProvider]);
 
-  const transfer = useCallback(
-    async receiver => {
-      setLoading(true);
-      try {
-        const [tx, numConfirms] = await transferTokens(
-          ethersProvider,
-          fromToken,
-          receiver || account,
-          fromAmount,
-        );
-        setTotalConfirms(numConfirms);
-        setTxHash(tx.hash);
-      } catch (error) {
-        setLoading(false);
-        // eslint-disable-next-line no-console
-        console.log({ transferError: error });
-      }
-    },
-    [fromToken, account, ethersProvider, fromAmount],
-  );
+  const transfer = useCallback(async () => {
+    setLoading(true);
+    try {
+      const [tx, numConfirms] = await transferTokens(
+        ethersProvider,
+        fromToken,
+        receiver || account,
+        fromAmount,
+      );
+      setTotalConfirms(numConfirms);
+      setTxHash(tx.hash);
+    } catch (error) {
+      setLoading(false);
+      // eslint-disable-next-line no-console
+      console.log({ transferError: error });
+    }
+  }, [fromToken, account, receiver, ethersProvider, fromAmount]);
 
   const setDefaultToken = useCallback(
     chainId => {
@@ -205,6 +203,8 @@ export const BridgeProvider = ({ children }) => {
         receipt,
         setReceipt,
         setUpdateFromAllowance,
+        receiver,
+        setReceiver,
       }}
     >
       {children}

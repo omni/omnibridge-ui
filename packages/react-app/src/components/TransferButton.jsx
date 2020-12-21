@@ -1,4 +1,5 @@
 import { Flex, Image, Text, useDisclosure } from '@chakra-ui/react';
+import { utils } from 'ethers';
 import React, { useContext, useState } from 'react';
 
 import TransferIcon from '../assets/transfer.svg';
@@ -11,6 +12,7 @@ import { ErrorModal } from './ErrorModal';
 export const TransferButton = () => {
   const { ethersProvider } = useContext(Web3Context);
   const {
+    receiver,
     fromAmount: amount,
     fromToken: token,
     fromBalance: balance,
@@ -40,6 +42,8 @@ export const TransferButton = () => {
       );
     } else if (balance.lt(amount)) {
       setMessage('Not enough balance');
+    } else if (receiver && !utils.isAddress(receiver)) {
+      setMessage(`Please specify a valid recipient address`);
     } else {
       setMessage();
     }

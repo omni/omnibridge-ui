@@ -29,16 +29,14 @@ export const SystemFeedback = () => {
           <Text>System Feedback</Text>
         </Flex>
       </PopoverTrigger>
-      <PopoverContent
-        boxShadow="0 0.5rem 1rem #CADAEF"
-        border="none"
-        minW="20rem"
-        w="auto"
-        maxW="30rem"
-        // _focus={{ border: 'none', outline: 'none' }}
-      >
+      <PopoverContent border="none" minW="20rem" w="auto" maxW="30rem" p="0">
         {token && tokenLimits && (
-          <PopoverBody width="100%" align="center" fontSize="sm">
+          <PopoverBody
+            width="100%"
+            align="center"
+            fontSize="sm"
+            boxShadow="0 0.5rem 1rem #CADAEF"
+          >
             <Flex align="center" justify="space-between">
               <Text color="grey"> Daily Limit </Text>
               <Text fontWeight="bold" ml={4}>
