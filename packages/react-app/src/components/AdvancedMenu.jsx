@@ -50,7 +50,7 @@ export const AdvancedMenu = () => {
           align="center"
           justify="center"
           p={1}
-          color="blue.500"
+          color="blue.400"
         >
           <AdvancedImage width="1.25rem" />
           <Text ml={2}>Advanced</Text>
