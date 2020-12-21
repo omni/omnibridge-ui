@@ -9,13 +9,18 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import { BigNumber, utils } from 'ethers';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 import BlueTickImage from '../assets/blue-tick.svg';
 import RightArrowImage from '../assets/right-arrow.svg';
 import { CONFIG } from '../config';
 import { Web3Context } from '../contexts/Web3Context';
-import { executeSignatures } from '../lib/amb';
+import {
+  executeSignatures,
+  getMessageFromTxHash,
+  getMessageStatus,
+} from '../lib/amb';
+import { POLLING_INTERVAL } from '../lib/constants';
 import {
   getBridgeNetwork,
   getExplorerUrl,
@@ -61,16 +66,17 @@ export const HistoryItem = ({
     chainId,
     timestamp,
     sendingTx,
-    receivingTx,
+    receivingTx: inputReceivingTx,
     amount,
     decimals,
     symbol,
-    message,
+    message: inputMessage,
   },
 }) => {
   const { providerChainId, ethersProvider } = useContext(Web3Context);
   const bridgeChainId = getBridgeNetwork(chainId);
-  const [receiving, setReceiving] = useState(receivingTx);
+  const [receivingTx, setReceiving] = useState(inputReceivingTx);
+  const [message, setMessage] = useState(inputMessage);
 
   const timestampString = useBreakpointValue({
     base: new Date(parseInt(timestamp, 10) * 1000).toLocaleTimeString([], {
@@ -114,6 +120,58 @@ export const HistoryItem = ({
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const subscriptions = [];
+    const unsubscribe = () => {
+      subscriptions.forEach(s => {
+        clearTimeout(s);
+      });
+    };
+
+    if (receivingTx || inputReceivingTx || !message || !message.msgId)
+      return unsubscribe;
+    let execution = null;
+    let request = null;
+    const { msgId } = message;
+
+    const getStatus = async () => {
+      try {
+        [execution, request] = await Promise.all([
+          !receivingTx ? getMessageStatus(bridgeChainId, msgId) : null,
+          !message.signatures ? getMessageFromTxHash(chainId, sendingTx) : null,
+        ]);
+        if (execution) {
+          setReceiving(execution.txHash);
+        }
+        if (request) {
+          setMessage(request);
+        }
+
+        if (!(receivingTx && message)) {
+          const timeoutId = setTimeout(() => getStatus(), POLLING_INTERVAL);
+          subscriptions.push(timeoutId);
+        }
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.log({ messageError: error });
+      }
+    };
+    // unsubscribe from previous polls
+    unsubscribe();
+
+    getStatus();
+    // unsubscribe when unmount component
+    return unsubscribe;
+  }, [
+    chainId,
+    receivingTx,
+    inputReceivingTx,
+    bridgeChainId,
+    providerChainId,
+    message,
+    sendingTx,
+  ]);
 
   return (
     <Flex
@@ -185,16 +243,16 @@ export const HistoryItem = ({
           <Text display={{ base: 'inline-block', md: 'none' }} color="greyText">
             Receiving Tx
           </Text>
-          {receiving ? (
+          {receivingTx ? (
             <Link
               color="blue.500"
-              href={`${getExplorerUrl(bridgeChainId)}/tx/${receiving}`}
+              href={`${getExplorerUrl(bridgeChainId)}/tx/${receivingTx}`}
               rel="noreferrer noopener"
               target="_blank"
               my="auto"
               textAlign="center"
             >
-              {shortenHash(receiving)}
+              {shortenHash(receivingTx)}
             </Link>
           ) : (
             <Text />
@@ -212,7 +270,7 @@ export const HistoryItem = ({
             {formatUnits(BigNumber.from(amount), decimals)} {symbol}
           </Text>
         </Flex>
-        {receiving ? (
+        {receivingTx ? (
           <Flex align="center" justify={{ base: 'center', md: 'flex-end' }}>
             <Image src={BlueTickImage} mr="0.5rem" />
             <Text color="blue.500">Claimed</Text>

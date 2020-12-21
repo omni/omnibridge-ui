@@ -42,7 +42,8 @@ export const ToToken = () => {
       position="relative"
       borderRadius="0.25rem"
       background={{ base: '#EEF4FD', lg: 'transparent' }}
-      minH={8}
+      minH={smallScreen ? '5rem' : 8}
+      minW={smallScreen ? '15rem' : undefined}
     >
       {!smallScreen && (
         <svg width="100%" viewBox="0 0 381 94" fill="none">

@@ -26,12 +26,18 @@ export const UpdateSettings = () => {
   const [mainnetRPC, setMainnetRPC] = useState(localMainnetRPC || '');
   const localXDaiRPC = window.localStorage.getItem('xdai-rpc-url');
   const [xdaiRPC, setXDaiRPC] = useState(localXDaiRPC || '');
-  const [infiniteUnlock, setInfiniteUnlock] = useState(
-    window.localStorage.getItem('infinite-unlock') === 'true',
-  );
+  const localInfiniteUnlock =
+    window.localStorage.getItem('infinite-unlock') === 'true';
+  const [infiniteUnlock, setInfiniteUnlock] = useState(localInfiniteUnlock);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
+  const isChanged =
+    localMainnetRPC !== mainnetRPC ||
+    localXDaiRPC !== xdaiRPC ||
+    localInfiniteUnlock !== infiniteUnlock;
+
   const onSave = () => {
+    if (!isChanged) return;
     window.localStorage.setItem('mainnet-rpc-url', mainnetRPC);
     window.localStorage.setItem('xdai-rpc-url', xdaiRPC);
     window.localStorage.setItem('infinite-unlock', infiniteUnlock.toString());
@@ -130,6 +136,7 @@ export const UpdateSettings = () => {
                   onClick={onSave}
                   colorScheme="blue"
                   mt={{ base: 2, md: 0 }}
+                  isDisabled={!isChanged}
                 >
                   Save
                 </Button>

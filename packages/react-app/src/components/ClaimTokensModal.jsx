@@ -21,7 +21,8 @@ import InfoImage from '../assets/info.svg';
 import ClaimTokensImage from '../assets/multiple-claim.svg';
 import { CONFIG } from '../config';
 import { Web3Context } from '../contexts/Web3Context';
-import { executeSignatures } from '../lib/amb';
+import { executeSignatures, getMessageStatus } from '../lib/amb';
+import { POLLING_INTERVAL } from '../lib/constants';
 import { getBridgeNetwork, getNetworkName, isxDaiChain } from '../lib/helpers';
 import { useXDaiTransfers } from '../lib/history';
 
@@ -34,9 +35,9 @@ export const ClaimTokensModal = () => {
   const [transfer, setTransfer] = useState();
   const isxDai = isxDaiChain(providerChainId);
   const { message, symbol, receivingTx } = transfer || {};
+  const [executed, setExecuted] = useState(!!receivingTx);
 
   const onClose = () => {
-    setTransfer();
     setOpen(false);
   };
 
@@ -48,10 +49,8 @@ export const ClaimTokensModal = () => {
     if (transfers) {
       const filteredTransfers = transfers.filter(t => !t.receivingTx);
       setNeedsClaim(filteredTransfers);
-      if (!transfer && filteredTransfers.length === 1) {
+      if (filteredTransfers.length === 1) {
         setTransfer(filteredTransfers[0]);
-      } else if (transfer) {
-        setTransfer(transfers.find(t => t.sendingTx === transfer.sendingTx));
       }
       if (
         !isxDai &&
@@ -63,7 +62,6 @@ export const ClaimTokensModal = () => {
     }
   }, [transfers, transfer, isxDai]);
 
-  const executed = !!receivingTx;
   const claimable =
     !isxDai &&
     !claiming &&
@@ -84,6 +82,43 @@ export const ClaimTokensModal = () => {
     setClaiming(false);
     onClose();
   };
+
+  useEffect(() => {
+    const subscriptions = [];
+    const unsubscribe = () => {
+      subscriptions.forEach(s => {
+        clearTimeout(s);
+      });
+    };
+
+    if (!message || !message.messageId || isxDai) return unsubscribe;
+    let status = false;
+
+    const getStatus = async () => {
+      try {
+        status = await getMessageStatus(providerChainId, message.messageId);
+        if (status) {
+          window.sessionStorage.setItem('claimTokens', 0);
+          setExecuted(true);
+          return;
+        }
+
+        if (!status) {
+          const timeoutId = setTimeout(() => getStatus(), POLLING_INTERVAL);
+          subscriptions.push(timeoutId);
+        }
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.log({ receiptError: error });
+      }
+    };
+    // unsubscribe from previous polls
+    unsubscribe();
+
+    getStatus();
+    // unsubscribe when unmount component
+    return unsubscribe;
+  }, [isxDai, providerChainId, message]);
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered>
@@ -133,11 +168,9 @@ export const ClaimTokensModal = () => {
                   </Flex>
                   <Flex align="center" fontSize="12px" p={4}>
                     <Text>
-                      The claim process may take a variable period of time on{' '}
-                      {getNetworkName(getBridgeNetwork(CONFIG.network))}{' '}
-                      depending on network congestion. Your {symbol} balance
-                      will increase to reflect the completed transfer after the
-                      claim is processed
+                      {`The claim process may take a variable period of time on ${getNetworkName(
+                        getBridgeNetwork(CONFIG.network),
+                      )} depending on network congestion. Your ${symbol} balance will increase to reflect the completed transfer after the claim is processed`}
                     </Text>
                   </Flex>
                 </Flex>

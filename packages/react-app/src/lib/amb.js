@@ -73,6 +73,7 @@ export const getMessageFromTxHash = async (chainId, txHash) => {
 const executionsQuery = gql`
   query getExecution($messageId: String!) {
     executions(where: { messageId_contains: $messageId }, first: 1) {
+      txHash
       id
     }
   }

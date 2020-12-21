@@ -13,6 +13,15 @@ import { getOverriddenToToken, isOverridden } from './overrides';
 import { getEthersProvider } from './providers';
 import { fetchTokenDetails } from './token';
 
+const getToName = (fromName, fromxDai) => {
+  if (fromxDai) {
+    if (fromName.includes('xDai')) return fromName.slice(0, -8);
+    return `${fromName} on Mainnet`;
+  }
+  if (fromName.includes('Mainnet')) return fromName.slice(0, -11);
+  return `${fromName} on xDai`;
+};
+
 export const fetchToTokenDetails = async ({
   name: fromName,
   chainId: fromChainId,
@@ -59,7 +68,7 @@ export const fetchToTokenDetails = async ({
     };
   }
   const toAddress = await fromMediatorContract.nativeTokenAddress(fromAddress);
-  const toName = isxDai ? fromName.slice(0, -8) : fromName.slice(0, -11);
+  const toName = getToName(fromName, isxDai);
   return {
     name: toName,
     chainId: toChainId,

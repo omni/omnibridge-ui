@@ -14,11 +14,10 @@ import LoadingImage from '../assets/loading.svg';
 import { BridgeContext } from '../contexts/BridgeContext';
 import { Web3Context } from '../contexts/Web3Context';
 import { getMessageFromTxHash, getMessageStatus } from '../lib/amb';
+import { POLLING_INTERVAL } from '../lib/constants';
 import { getBridgeNetwork, getMonitorUrl, isxDaiChain } from '../lib/helpers';
 import { NeedsConfirmationModal } from './NeedsConfirmationModal';
 import { ProgressRing } from './ProgressRing';
-
-const POLLING_INTERVAL = 1000;
 
 const getTransactionString = hash => {
   if (!hash) return 'here';
@@ -48,9 +47,9 @@ export const LoadingModal = ({ loadingProps }) => {
       });
     };
 
-    if (!txHash || !ethersProvider) return unsubscribe;
+    if (!txHash || !ethersProvider || !loading) return unsubscribe;
 
-    const { chainId } = fromToken;
+    const chainId = providerChainId;
     let message = null;
     let status = false;
     const isxDai = isxDaiChain(chainId);
@@ -119,6 +118,8 @@ export const LoadingModal = ({ loadingProps }) => {
     // unsubscribe when unmount component
     return unsubscribe;
   }, [
+    loading,
+    providerChainId,
     txHash,
     totalConfirms,
     ethersProvider,

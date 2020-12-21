@@ -21,13 +21,7 @@ import { Logo } from './Logo';
 import { SelectTokenModal } from './SelectTokenModal';
 
 export const FromToken = () => {
-  const {
-    ethersProvider,
-    network,
-    networkMismatch,
-    account,
-    providerChainId,
-  } = useContext(Web3Context);
+  const { ethersProvider, account, providerChainId } = useContext(Web3Context);
   const {
     receipt,
     fromToken: token,
@@ -43,8 +37,6 @@ export const FromToken = () => {
   const onClick = () => {
     if (!ethersProvider) {
       setMessage('Please connect wallet');
-    } else if (networkMismatch) {
-      setMessage(`Please switch wallet to ${network.name}`);
     } else {
       setMessage();
     }
@@ -81,7 +73,8 @@ export const FromToken = () => {
       position="relative"
       borderRadius="0.25rem"
       border={{ base: '1px solid #DAE3F0', lg: 'none' }}
-      minH={8}
+      minH={smallScreen ? '5rem' : 8}
+      minW={smallScreen ? '15rem' : undefined}
     >
       {message && (
         <ErrorModal message={message} isOpen={isOpen} onClose={onClose} />

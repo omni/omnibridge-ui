@@ -3,11 +3,9 @@ import React, { useContext, useState } from 'react';
 
 import UnlockIcon from '../assets/unlock.svg';
 import { BridgeContext } from '../contexts/BridgeContext';
-import { Web3Context } from '../contexts/Web3Context';
 import { ErrorModal } from './ErrorModal';
 
 export const UnlockButton = () => {
-  const { network, networkMismatch, ethersProvider } = useContext(Web3Context);
   const {
     fromAmount: amount,
     fromBalance: balance,
@@ -17,14 +15,6 @@ export const UnlockButton = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [message, setMessage] = useState();
   const onClick = () => {
-    if (!ethersProvider) {
-      setMessage('Please connect wallet');
-      return onOpen();
-    }
-    if (networkMismatch) {
-      setMessage(`Please switch wallet to ${network.name}`);
-      return onOpen();
-    }
     if (amount.lte(0)) {
       setMessage('Please specify amount');
       return onOpen();

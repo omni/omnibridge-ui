@@ -9,7 +9,7 @@ import {
 } from './overrides';
 import { getEthersProvider } from './providers';
 
-export const fetchAllowance = (
+export const fetchAllowance = async (
   { mediator, address },
   account,
   ethersProvider,
@@ -35,7 +35,8 @@ export const fetchAllowance = (
   try {
     const abi = ['function allowance(address, address) view returns (uint256)'];
     const tokenContract = new Contract(address, abi, ethersProvider);
-    return tokenContract.allowance(account, mediator);
+    const allowance = await tokenContract.allowance(account, mediator);
+    return allowance;
   } catch (error) {
     // eslint-disable-next-line
     console.log({ tokenError: error });
@@ -94,15 +95,14 @@ export const fetchTokenDetails = async token => {
   return details;
 };
 
-export const approveToken = async (ethersProvider, token, amount) => {
+export const approveToken = async (
+  ethersProvider,
+  { address, mediator },
+  amount,
+) => {
   const abi = ['function approve(address, uint256)'];
-  const tokenContract = new Contract(
-    token.address,
-    abi,
-    ethersProvider.getSigner(),
-  );
-  const mediatorAddress = getMediatorAddress(token.address, token.chainId);
-  const tx = await tokenContract.approve(mediatorAddress, amount);
+  const tokenContract = new Contract(address, abi, ethersProvider.getSigner());
+  const tx = await tokenContract.approve(mediator, amount);
   return tx.wait();
 };
 

@@ -9,7 +9,7 @@ import { ConfirmTransferModal } from './ConfirmTransferModal';
 import { ErrorModal } from './ErrorModal';
 
 export const TransferButton = () => {
-  const { network, networkMismatch, ethersProvider } = useContext(Web3Context);
+  const { ethersProvider } = useContext(Web3Context);
   const {
     fromAmount: amount,
     fromToken: token,
@@ -24,8 +24,6 @@ export const TransferButton = () => {
     setMessage();
     if (!ethersProvider) {
       setMessage('Please connect wallet');
-    } else if (networkMismatch) {
-      setMessage(`Please switch wallet to ${network.name}`);
     } else if (amount.lt(tokenLimits.minPerTx)) {
       setMessage(
         `Please specify amount more than ${formatValue(

@@ -9,29 +9,23 @@ import {
   fetchToToken,
   transferTokens,
 } from '../lib/bridge';
-import { LARGEST_UINT256 } from '../lib/constants';
+import { ADDRESS_ZERO, LARGEST_UINT256 } from '../lib/constants';
 import {
   defaultDailyLimit,
   defaultMaxPerTx,
   defaultMinPerTx,
   getDefaultToken,
   isxDaiChain,
-  uniqueTokens,
 } from '../lib/helpers';
-import {
-  approveToken,
-  fetchAllowance,
-  fetchTokenBalanceWithProvider,
-  fetchTokenDetails,
-} from '../lib/token';
-import { fetchTokenList } from '../lib/tokenList';
+import { approveToken, fetchAllowance, fetchTokenDetails } from '../lib/token';
 import { Web3Context } from './Web3Context';
 
 export const BridgeContext = React.createContext({});
 
 export const BridgeProvider = ({ children }) => {
-  const [receipt, setReceipt] = useState();
   const { ethersProvider, account, providerChainId } = useContext(Web3Context);
+
+  const [receipt, setReceipt] = useState();
   const [fromToken, setFromToken] = useState();
   const [toToken, setToToken] = useState();
   const [fromAmount, setFromAmount] = useState(0);
@@ -41,7 +35,6 @@ export const BridgeProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [txHash, setTxHash] = useState();
   const [totalConfirms, setTotalConfirms] = useState(0);
-  const [tokenList, setTokenList] = useState([]);
   const [amountInput, setAmountInput] = useState('');
   const [fromBalance, setFromBalance] = useState(BigNumber.from(0));
   const [toBalance, setToBalance] = useState(BigNumber.from(0));
@@ -50,12 +43,19 @@ export const BridgeProvider = ({ children }) => {
   const isRewardAddress = useRewardAddress();
   const { homeToForeignFeeType, foreignToHomeFeeType } = useFeeType();
   const [fromAllowance, setAllowance] = useState(BigNumber.from(0));
+  const [updateFromAllowance, setUpdateFromAllowance] = useState(false);
 
   useEffect(() => {
     if (fromToken && providerChainId === fromToken.chainId) {
       fetchAllowance(fromToken, account, ethersProvider).then(setAllowance);
     }
-  }, [ethersProvider, account, fromToken, providerChainId]);
+  }, [
+    ethersProvider,
+    account,
+    fromToken,
+    providerChainId,
+    updateFromAllowance,
+  ]);
 
   useEffect(() => {
     setAllowed(
@@ -68,8 +68,8 @@ export const BridgeProvider = ({ children }) => {
     amount => {
       setFromAmount(amount);
       setToAmountLoading(true);
-      const isxDai = isxDaiChain(toToken.chainId);
-      const feeType = isxDai ? foreignToHomeFeeType : homeToForeignFeeType;
+      const isxDai = isxDaiChain(providerChainId);
+      const feeType = !isxDai ? foreignToHomeFeeType : homeToForeignFeeType;
       fetchToAmount(isRewardAddress, feeType, fromToken, toToken, amount).then(
         gotToAmount => {
           setToAmount(gotToAmount);
@@ -80,6 +80,7 @@ export const BridgeProvider = ({ children }) => {
     [
       fromToken,
       toToken,
+      providerChainId,
       isRewardAddress,
       homeToForeignFeeType,
       foreignToHomeFeeType,
@@ -114,9 +115,51 @@ export const BridgeProvider = ({ children }) => {
     [ethersProvider, providerChainId],
   );
 
+  const approve = useCallback(async () => {
+    setLoading(true);
+    try {
+      const approvalAmount =
+        window.localStorage.getItem('infinite-unlock') === 'true'
+          ? LARGEST_UINT256
+          : fromAmount;
+      await approveToken(ethersProvider, fromToken, approvalAmount);
+      setAllowance(approvalAmount);
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.log({ approveError: error });
+    }
+    setLoading(false);
+  }, [fromAmount, fromToken, ethersProvider]);
+
+  const transfer = useCallback(
+    async receiver => {
+      setLoading(true);
+      try {
+        const [tx, numConfirms] = await transferTokens(
+          ethersProvider,
+          fromToken,
+          receiver || account,
+          fromAmount,
+        );
+        setTotalConfirms(numConfirms);
+        setTxHash(tx.hash);
+      } catch (error) {
+        setLoading(false);
+        // eslint-disable-next-line no-console
+        console.log({ transferError: error });
+      }
+    },
+    [fromToken, account, ethersProvider, fromAmount],
+  );
+
   const setDefaultToken = useCallback(
     chainId => {
-      if (fromToken && toToken && toToken.chainId === chainId) {
+      if (
+        fromToken &&
+        toToken &&
+        toToken.chainId === chainId &&
+        toToken.address !== ADDRESS_ZERO
+      ) {
         const token = { ...toToken };
         setToToken(fromToken);
         setFromToken(token);
@@ -127,84 +170,12 @@ export const BridgeProvider = ({ children }) => {
     [setToken, fromToken, toToken],
   );
 
-  const approve = useCallback(async () => {
-    setLoading(true);
-    try {
-      const approvalAmount =
-        window.localStorage.getItem('infinite-unlock') === 'true'
-          ? LARGEST_UINT256
-          : fromAmount;
-      await approveToken(ethersProvider, fromToken, approvalAmount);
-      setAllowed(true);
-    } catch (error) {
-      // eslint-disable-next-line no-console
-      console.log({ approveError: error });
-    }
-    setLoading(false);
-  }, [fromAmount, fromToken, ethersProvider]);
-
-  const transfer = useCallback(async () => {
-    setLoading(true);
-    try {
-      const [tx, numConfirms] = await transferTokens(
-        ethersProvider,
-        fromToken,
-        account,
-        fromAmount,
-      );
-      setTotalConfirms(numConfirms);
-      setTxHash(tx.hash);
-    } catch (error) {
-      setLoading(false);
-      // eslint-disable-next-line no-console
-      console.log({ transferError: error });
-    }
-  }, [fromToken, account, ethersProvider, fromAmount]);
-
-  const setDefaultTokenList = useCallback(
-    async (chainId, customTokens) => {
-      if (!account || !ethersProvider) return;
-
-      const networkMismatch =
-        chainId !== (await ethersProvider.getNetwork()).chainId;
-      if (networkMismatch) return;
-
-      setLoading(true);
-      try {
-        const baseTokenList = await fetchTokenList(chainId);
-        const customTokenList = uniqueTokens(
-          baseTokenList.concat(
-            customTokens.filter(token => token.chainId === chainId),
-          ),
-        );
-        const tokenListWithBalance = await Promise.all(
-          customTokenList.map(async token => ({
-            ...token,
-            balance: await fetchTokenBalanceWithProvider(
-              ethersProvider,
-              token,
-              account,
-            ),
-          })),
-        );
-        const sortedTokenList = tokenListWithBalance.sort(function checkBalance(
-          { balance: balanceA },
-          { balance: balanceB },
-        ) {
-          if (balanceB.sub(balanceA).gt(0)) {
-            return 1;
-          }
-          return -1;
-        });
-        setTokenList(sortedTokenList);
-      } catch (error) {
-        // eslint-disable-next-line
-        console.log({ fetchTokensError: error });
-      }
-      setLoading(false);
-    },
-    [account, ethersProvider],
-  );
+  useEffect(() => {
+    setAmountInput('');
+    setAmount(BigNumber.from(0));
+    setDefaultToken(providerChainId);
+    setReceipt();
+  }, [providerChainId, setAmount, setDefaultToken]);
 
   return (
     <BridgeContext.Provider
@@ -224,8 +195,6 @@ export const BridgeProvider = ({ children }) => {
         setLoading,
         txHash,
         totalConfirms,
-        tokenList,
-        setDefaultTokenList,
         amountInput,
         setAmountInput,
         fromBalance,
@@ -235,6 +204,7 @@ export const BridgeProvider = ({ children }) => {
         tokenLimits,
         receipt,
         setReceipt,
+        setUpdateFromAllowance,
       }}
     >
       {children}

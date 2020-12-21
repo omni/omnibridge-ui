@@ -150,3 +150,5 @@ export const defaultTokensUrl = {
   42: '',
   77: '',
 };
+
+export const POLLING_INTERVAL = 1000;

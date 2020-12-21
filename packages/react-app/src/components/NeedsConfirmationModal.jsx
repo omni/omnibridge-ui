@@ -22,7 +22,7 @@ export const NeedsConfirmationModal = () => {
   const { fromToken, toToken } = useContext(BridgeContext);
   const isxDai = fromToken !== undefined && isxDaiChain(fromToken.chainId);
   const toUnit =
-    toToken !== undefined && toToken.symbol + (isxDai ? 'on Mainnet' : '');
+    toToken !== undefined && toToken.symbol + (isxDai ? ' on Mainnet' : '');
 
   const [isOpen, setOpen] = useState(true);
   const onClose = () => setOpen(false);

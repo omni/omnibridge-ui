@@ -12,23 +12,78 @@ import {
   ModalContent,
   ModalHeader,
   ModalOverlay,
+  Spinner,
   Text,
   useBreakpointValue,
 } from '@chakra-ui/react';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 
 import SearchIcon from '../assets/search.svg';
 import { BridgeContext } from '../contexts/BridgeContext';
 import { Web3Context } from '../contexts/Web3Context';
 import { PlusIcon } from '../icons/PlusIcon';
-import { formatValue } from '../lib/helpers';
+import { formatValue, uniqueTokens } from '../lib/helpers';
+import { fetchTokenBalanceWithProvider } from '../lib/token';
+import { fetchTokenList } from '../lib/tokenList';
 import { Logo } from './Logo';
 
 export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
-  const { network } = useContext(Web3Context);
-  const { setToken, tokenList, setDefaultTokenList } = useContext(
-    BridgeContext,
+  const { account, ethersProvider, providerChainId } = useContext(Web3Context);
+  const { setToken, receipt } = useContext(BridgeContext);
+  const [tokenList, setTokenList] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const setDefaultTokenList = useCallback(
+    async (chainId, customTokens) => {
+      if (!account || !ethersProvider) return;
+
+      const networkMismatch =
+        chainId !== (await ethersProvider.getNetwork()).chainId;
+      if (networkMismatch) return;
+
+      setLoading(true);
+      try {
+        const baseTokenList = await fetchTokenList(chainId);
+        const customTokenList = uniqueTokens(
+          baseTokenList.concat(
+            customTokens.filter(token => token.chainId === chainId),
+          ),
+        );
+        const tokenListWithBalance = await Promise.all(
+          customTokenList.map(async token => ({
+            ...token,
+            balance: await fetchTokenBalanceWithProvider(
+              ethersProvider,
+              token,
+              account,
+            ),
+          })),
+        );
+        const sortedTokenList = tokenListWithBalance.sort(function checkBalance(
+          { balance: balanceA },
+          { balance: balanceB },
+        ) {
+          if (balanceB.sub(balanceA).gt(0)) {
+            return 1;
+          }
+          return -1;
+        });
+        setTokenList(sortedTokenList);
+      } catch (error) {
+        // eslint-disable-next-line
+        console.log({ fetchTokensError: error });
+      }
+      setLoading(false);
+    },
+    [account, ethersProvider],
   );
+
   const [filteredTokenList, setFilteredTokenList] = useState([]);
 
   const onClick = token => {
@@ -64,8 +119,8 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
     } else {
       localTokenList = JSON.parse(localTokenList);
     }
-    setDefaultTokenList(network.value, localTokenList);
-  }, [network, setDefaultTokenList]);
+    setDefaultTokenList(providerChainId, localTokenList);
+  }, [providerChainId, setDefaultTokenList, receipt]);
 
   const smallScreen = useBreakpointValue({ sm: false, base: true });
 
@@ -116,7 +171,6 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
             <InputGroup mb={4} borderColor="#DAE3F0">
               <Input
                 placeholder="Search ..."
-                size="sm"
                 onChange={onChange}
                 _placeholder={{ color: 'grey' }}
                 ref={initialRef}
@@ -125,40 +179,46 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
                 <Image src={SearchIcon} />
               </InputRightElement>
             </InputGroup>
-            {filteredTokenList.map(token => (
-              <Button
-                variant="outline"
-                size="lg"
-                width="100%"
-                borderColor="#DAE3F0"
-                key={token.address}
-                onClick={() => onClick(token)}
-                mb={2}
-                px={4}
-              >
-                <Flex align="center" width="100%" justify="space-between">
-                  <Flex align="center">
-                    <Flex
-                      justify="center"
-                      align="center"
-                      background="white"
-                      border="1px solid #DAE3F0"
-                      boxSize={8}
-                      overflow="hidden"
-                      borderRadius="50%"
-                    >
-                      <Logo uri={token.logoURI} />
+            {loading && (
+              <Flex w="100%" align="center" justify="center">
+                <Spinner colorScheme="blue" />
+              </Flex>
+            )}
+            {!loading &&
+              filteredTokenList.map(token => (
+                <Button
+                  variant="outline"
+                  size="lg"
+                  width="100%"
+                  borderColor="#DAE3F0"
+                  key={token.address}
+                  onClick={() => onClick(token)}
+                  mb={2}
+                  px={4}
+                >
+                  <Flex align="center" width="100%" justify="space-between">
+                    <Flex align="center">
+                      <Flex
+                        justify="center"
+                        align="center"
+                        background="white"
+                        border="1px solid #DAE3F0"
+                        boxSize={8}
+                        overflow="hidden"
+                        borderRadius="50%"
+                      >
+                        <Logo uri={token.logoURI} />
+                      </Flex>
+                      <Text fontSize="lg" fontWeight="bold" mx={2}>
+                        {token.symbol}
+                      </Text>
                     </Flex>
-                    <Text fontSize="lg" fontWeight="bold" mx={2}>
-                      {token.symbol}
+                    <Text color="grey" fontWeight="normal">
+                      {formatValue(token.balance, token.decimals)}
                     </Text>
                   </Flex>
-                  <Text color="grey" fontWeight="normal">
-                    {formatValue(token.balance, token.decimals)}
-                  </Text>
-                </Flex>
-              </Button>
-            ))}
+                </Button>
+              ))}
           </ModalBody>
         </ModalContent>
       </ModalOverlay>

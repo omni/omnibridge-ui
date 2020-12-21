@@ -1,4 +1,11 @@
-import { Button, Flex, Image, Stack, Text } from '@chakra-ui/react';
+import {
+  Button,
+  Flex,
+  Image,
+  Stack,
+  Text,
+  useBreakpointValue,
+} from '@chakra-ui/react';
 import React, { useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -19,11 +26,14 @@ export const Header = () => {
     [CONFIG.network, getBridgeNetwork(CONFIG.network)].indexOf(
       providerChainId,
     ) >= 0;
+  const isSmallScreen = useBreakpointValue({ base: true, md: false });
 
   return (
     <Flex
       justify="space-between"
-      position="relative"
+      position={{ base: isOpen ? 'fixed' : 'relative', md: 'relative' }}
+      top={isOpen ? 0 : undefined}
+      left={isOpen ? 0 : undefined}
       align={{ base: 'stretch', md: 'center' }}
       maxW="75rem"
       minH={20}
@@ -35,6 +45,8 @@ export const Header = () => {
       boxShadow={
         isOpen ? { base: '0 0.5rem 1rem #CADAEF', md: 'none' } : 'none'
       }
+      h={isOpen && isSmallScreen ? '100%' : undefined}
+      zIndex={isOpen ? 5 : undefined}
     >
       <Flex justify="space-between" h={20} align="center">
         <Link to="/">
@@ -45,7 +57,6 @@ export const Header = () => {
         </Link>
         <Button
           variant="link"
-          // _focus={{ outline: 'none', border: 'none' }}
           display={{ base: 'block', md: 'none' }}
           color="blue.500"
           _hover={{ color: 'blue.600' }}
@@ -78,8 +89,9 @@ export const Header = () => {
         spacing={6}
         display={{ base: isOpen ? 'flex' : 'none', md: 'flex' }}
         w={{ base: '100%', md: 'auto' }}
-        align={{ base: 'flex-start', md: 'center' }}
-        pb={{ base: 4, md: 0 }}
+        h={{ base: '100%', md: 'auto' }}
+        align="center"
+        justify="center"
       >
         {valid && (
           <>
@@ -97,7 +109,6 @@ export const Header = () => {
             </Link>
             <UpdateSettings />
             <WalletSelector />
-            {/* <NetworkSelector /> */}
           </>
         )}
       </Stack>

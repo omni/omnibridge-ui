@@ -25,10 +25,8 @@ const web3Modal = new Web3Modal({
 
 export const Web3Provider = ({ children }) => {
   const [providerChainId, setProviderChainId] = useState();
-  const [chosenNetwork, setChosenNetwork] = useState(networkOptions[0]);
   const [ethersProvider, setEthersProvider] = useState();
   const [account, setAccount] = useState();
-  const [networkMismatch, setNetworkMismatch] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const setWeb3Provider = async (prov, updateAccount = false) => {
@@ -39,8 +37,8 @@ export const Web3Provider = ({ children }) => {
       );
 
       setEthersProvider(provider);
-      const network = await provider.getNetwork();
-      setProviderChainId(network.chainId);
+      const providerNetwork = await provider.getNetwork();
+      setProviderChainId(providerNetwork.chainId);
       if (updateAccount) {
         const signer = provider.getSigner();
         const gotAccount = await signer.getAddress();
@@ -74,14 +72,6 @@ export const Web3Provider = ({ children }) => {
     setLoading(false);
   }, []);
 
-  useEffect(() => {
-    if (chosenNetwork && providerChainId === chosenNetwork.value) {
-      setNetworkMismatch(false);
-    } else {
-      setNetworkMismatch(true);
-    }
-  }, [chosenNetwork, providerChainId]);
-
   const disconnect = useCallback(async () => {
     web3Modal.clearCachedProvider();
     setAccount();
@@ -102,6 +92,7 @@ export const Web3Provider = ({ children }) => {
       setLoading(false);
     }
   }, [connectWeb3]);
+  const network = networkOptions.find(n => n.value === providerChainId);
 
   return (
     <Web3Context.Provider
@@ -111,10 +102,8 @@ export const Web3Provider = ({ children }) => {
         loading,
         disconnect,
         providerChainId,
-        network: chosenNetwork,
-        setNetwork: setChosenNetwork,
         account,
-        networkMismatch,
+        network,
       }}
     >
       {children}
