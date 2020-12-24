@@ -1,6 +1,7 @@
 import { Contract, utils } from 'ethers';
 import { gql, request } from 'graphql-request';
 
+import { getGasPrice } from './gasPrice';
 import { getAMBAddress, getGraphEndpoint } from './helpers';
 
 export const fetchConfirmations = async (chainId, walletProvider) => {
@@ -45,7 +46,10 @@ export const executeSignatures = async (ethersProvider, chainId, message) => {
   );
   const address = getAMBAddress(chainId);
   const ambContract = new Contract(address, abi, ethersProvider.getSigner());
-  const tx = await ambContract.executeSignatures(message.msgData, signatures);
+  const gasPrice = getGasPrice(chainId);
+  const tx = await ambContract.executeSignatures(message.msgData, signatures, {
+    gasPrice,
+  });
   await tx.wait();
   return tx.hash;
 };

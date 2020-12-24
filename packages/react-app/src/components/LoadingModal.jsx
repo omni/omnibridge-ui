@@ -158,7 +158,7 @@ export const LoadingModal = ({ loadingProps }) => {
           {receipt && totalConfirms > 0 && (
             <ModalContent
               boxShadow="0px 1rem 2rem #617492"
-              borderRadius="full"
+              borderRadius={{ base: '1rem', md: 'full' }}
               mx={{ base: 12, lg: 0 }}
               maxW={{ base: '20rem', md: '25rem' }}
             >
@@ -203,8 +203,9 @@ export const LoadingModal = ({ loadingProps }) => {
                   <Flex
                     flex={1}
                     direction="column"
-                    align={{ base: 'stretch', md: 'center' }}
+                    align="center"
                     justify="center"
+                    mt={{ base: 2, md: 0 }}
                   >
                     <Text width="100%">
                       {`${loadingText || 'Waiting for Block Confirmations'}...`}

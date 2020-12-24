@@ -39,19 +39,8 @@ export const isxDaiChain = chainId => {
   }
 };
 
-export const getDefaultToken = chainId => {
-  switch (chainId) {
-    case 1:
-      return defaultTokens[1];
-    case 42:
-      return defaultTokens[42];
-    case 77:
-      return defaultTokens[77];
-    case 100:
-    default:
-      return defaultTokens[100];
-  }
-};
+export const getDefaultToken = chainId =>
+  defaultTokens[chainId] || defaultTokens[100];
 
 export const getMediatorAddressWithOverride = (tokenAddress, chainId) => {
   if (isOverridden(tokenAddress)) {
@@ -60,105 +49,19 @@ export const getMediatorAddressWithOverride = (tokenAddress, chainId) => {
   return getMediatorAddress(chainId);
 };
 
-export const getMediatorAddress = chainId => {
-  switch (chainId) {
-    case 1:
-      return mediators[1];
-    case 42:
-      return mediators[42];
-    case 77:
-      return mediators[77];
-    case 100:
-    default:
-      return mediators[100];
-  }
-};
-
-export const getNetworkName = chainId => {
-  switch (chainId) {
-    case 1:
-      return networkNames[1];
-    case 42:
-      return networkNames[42];
-    case 77:
-      return networkNames[77];
-    case 100:
-    default:
-      return networkNames[100];
-  }
-};
-
-export const getAMBAddress = chainId => {
-  switch (chainId) {
-    case 1:
-      return ambs[1];
-    case 42:
-      return ambs[42];
-    case 77:
-      return ambs[77];
-    case 100:
-    default:
-      return ambs[100];
-  }
-};
-
-export const getGraphEndpoint = chainId => {
-  switch (chainId) {
-    case 1:
-      return graphEndpoints[1];
-    case 42:
-      return graphEndpoints[42];
-    case 77:
-      return graphEndpoints[77];
-    case 100:
-    default:
-      return graphEndpoints[100];
-  }
-};
-
-export const getRPCUrl = chainId => {
-  switch (chainId) {
-    case 1:
-      return chainUrls[1].rpc;
-    case 42:
-      return chainUrls[42].rpc;
-    case 77:
-      return chainUrls[77].rpc;
-    case 100:
-    default:
-      return chainUrls[100].rpc;
-  }
-};
-
-export const getExplorerUrl = chainId => {
-  switch (chainId) {
-    case 1:
-      return chainUrls[1].explorer;
-    case 42:
-      return chainUrls[42].explorer;
-    case 77:
-      return chainUrls[77].explorer;
-    case 100:
-    default:
-      return chainUrls[100].explorer;
-  }
-};
-
-export const getMonitorUrl = (chainId, hash) => {
-  const url = 'https://alm-xdai.herokuapp.com/';
-  const testUrl = 'https://alm-test-amb.herokuapp.com/';
-  switch (chainId) {
-    case 1:
-      return `${url}1/${hash}`;
-    case 42:
-      return `${testUrl}42/${hash}`;
-    case 77:
-      return `${testUrl}77/${hash}`;
-    case 100:
-    default:
-      return `${url}100/${hash}`;
-  }
-};
+export const getMediatorAddress = chainId =>
+  mediators[chainId] || mediators[100];
+export const getNetworkName = chainId => networkNames[chainId] || 'Unknown';
+export const getAMBAddress = chainId => ambs[chainId] || ambs[100];
+export const getGraphEndpoint = chainId =>
+  graphEndpoints[chainId] || graphEndpoints[100];
+export const getRPCUrl = chainId => (chainUrls[chainId] || chainUrls[100]).rpc;
+export const getExplorerUrl = chainId =>
+  (chainUrls[chainId] || chainUrls[100]).explorer;
+export const getTokenListUrl = chainId =>
+  defaultTokensUrl[chainId] || defaultTokensUrl[100];
+export const getMonitorUrl = (chainId, hash) =>
+  `${(chainUrls[chainId] || chainUrls[100]).monitor}/${chainId}/${hash}`;
 
 export const uniqueTokens = list => {
   const seen = {};
@@ -173,20 +76,6 @@ export const uniqueTokens = list => {
       : (seen[lowerCaseAddress] = true);
     return isDuplicate;
   });
-};
-
-export const getTokenListUrl = chainId => {
-  switch (chainId) {
-    case 1:
-      return defaultTokensUrl[1];
-    case 42:
-      return defaultTokensUrl[42];
-    case 77:
-      return defaultTokensUrl[77];
-    default:
-    case 100:
-      return defaultTokensUrl[100];
-  }
 };
 
 export const formatValue = (num, dec) => {

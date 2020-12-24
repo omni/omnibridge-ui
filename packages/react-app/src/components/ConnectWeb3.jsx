@@ -35,11 +35,11 @@ export const ConnectWeb3 = () => {
         <WalletFilledIcon boxSize="1.75rem" />
       </Flex>
       <Text fontSize="xl" fontWeight="bold" mb={4}>
-        {account ? 'Incorrect Network' : 'Connect Wallet'}
+        {account ? `Switch to a supported network` : 'Connect Wallet'}
       </Text>
       <Text color="greyText" mb={4} textAlign="center">
         {account
-          ? `Please connect your wallet to ${getNetworkName(
+          ? `To access OmniBridge, please switch to ${getNetworkName(
               CONFIG.network,
             )} or ${getNetworkName(getBridgeNetwork(CONFIG.network))}`
           : 'To get started, connect your wallet'}

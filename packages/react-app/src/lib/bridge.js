@@ -1,6 +1,7 @@
 import { BigNumber, Contract } from 'ethers';
 
 import { fetchConfirmations } from './amb';
+import { getGasPrice } from './gasPrice';
 import {
   defaultDailyLimit,
   defaultMaxPerTx,
@@ -166,23 +167,28 @@ export const fetchTokenLimits = async (token, walletProvider) => {
 
 export const relayTokens = async (ethersProvider, token, receiver, amount) => {
   const signer = ethersProvider.getSigner();
-  const { mode, mediator, address } = token;
+  const { chainId, mode, mediator, address } = token;
+  const gasPrice = getGasPrice(chainId);
   switch (mode) {
     case 'erc677': {
       const abi = ['function transferAndCall(address, uint256, bytes)'];
       const tokenContract = new Contract(address, abi, signer);
-      return tokenContract.transferAndCall(mediator, amount, receiver);
+      return tokenContract.transferAndCall(mediator, amount, receiver, {
+        gasPrice,
+      });
     }
     case 'dedicated-erc20': {
       const abi = ['function relayTokens(address, uint256)'];
       const mediatorContract = new Contract(mediator, abi, signer);
-      return mediatorContract.relayTokens(receiver, amount);
+      return mediatorContract.relayTokens(receiver, amount, { gasPrice });
     }
     case 'erc20':
     default: {
       const abi = ['function relayTokens(address, address, uint256)'];
       const mediatorContract = new Contract(mediator, abi, signer);
-      return mediatorContract.relayTokens(token.address, receiver, amount);
+      return mediatorContract.relayTokens(token.address, receiver, amount, {
+        gasPrice,
+      });
     }
   }
 };

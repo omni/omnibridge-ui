@@ -1,6 +1,6 @@
-# xDAI omnibridge
+# Omnibridge
 
-The [multi-token extension](https://docs.tokenbridge.net/eth-xdai-amb-bridge/multi-token-extension) for the Arbitrary Message Bridge between Ethereum and the xDai chain is the simplest way to transfer ANY ERC20/ERC677/ERC827 token to the xDai chain.
+The OmniBridge [multi-token extension](https://docs.tokenbridge.net/eth-xdai-amb-bridge/multi-token-extension) for the Arbitrary Message Bridge between Ethereum and the xDai chain is the simplest way to transfer ANY ERC20/ERC677/ERC827 token to the xDai chain.
 
 ## Project Structure
 
@@ -14,7 +14,8 @@ xdai-omnibridge
 ├── .firebaserc
 ├── .github
 │   └── workflows
-│       └── main.yml
+│       ├── sokol.yml
+│       └── xdai.yml
 ├── .gitignore
 ├── .prettierrc.json
 ├── README.md
@@ -41,23 +42,39 @@ xdai-omnibridge
 │   │       ├── App.jsx
 │   │       ├── Routes.jsx
 │   │       ├── assets
+│   │       │   ├── advanced.svg
+│   │       │   ├── alert.svg
+│   │       │   ├── blue-tick.svg
+│   │       │   ├── change-network.png
+│   │       │   ├── claim.svg
 │   │       │   ├── close.svg
 │   │       │   ├── confirm-transfer.svg
+│   │       │   ├── custom-token.svg
 │   │       │   ├── details.svg
 │   │       │   ├── down-triangle.svg
 │   │       │   ├── drop-down.svg
+│   │       │   ├── error.svg
 │   │       │   ├── eth-logo.png
+│   │       │   ├── eth.png
+│   │       │   ├── info.svg
 │   │       │   ├── loading.svg
 │   │       │   ├── logo.svg
+│   │       │   ├── multiple-claim.svg
+│   │       │   ├── no-history.svg
+│   │       │   ├── right-arrow.svg
 │   │       │   ├── search.svg
+│   │       │   ├── settings.svg
 │   │       │   ├── transfer.svg
 │   │       │   ├── unlock.svg
 │   │       │   ├── up-triangle.svg
 │   │       │   └── xdai-logo.png
 │   │       ├── components
+│   │       │   ├── AdvancedMenu.jsx
 │   │       │   ├── BridgeHistory.jsx
 │   │       │   ├── BridgeTokens.jsx
+│   │       │   ├── ClaimTokensModal.jsx
 │   │       │   ├── ConfirmTransferModal.jsx
+│   │       │   ├── ConnectWeb3.jsx
 │   │       │   ├── CustomTokenModal.jsx
 │   │       │   ├── DaiWarning.jsx
 │   │       │   ├── ErrorBoundary.jsx
@@ -70,7 +87,9 @@ xdai-omnibridge
 │   │       │   ├── Layout.jsx
 │   │       │   ├── LoadingModal.jsx
 │   │       │   ├── Logo.jsx
+│   │       │   ├── NeedsConfirmationModal.jsx
 │   │       │   ├── NetworkSelector.jsx
+│   │       │   ├── NoHistory.jsx
 │   │       │   ├── ProgressRing.jsx
 │   │       │   ├── SelectTokenModal.jsx
 │   │       │   ├── SystemFeedback.jsx
@@ -78,11 +97,15 @@ xdai-omnibridge
 │   │       │   ├── TokenSelectorModal.jsx
 │   │       │   ├── TransferButton.jsx
 │   │       │   ├── UnlockButton.jsx
+│   │       │   ├── UpdateSettings.jsx
 │   │       │   └── WalletSelector.jsx
 │   │       ├── config.js
 │   │       ├── contexts
 │   │       │   ├── BridgeContext.jsx
 │   │       │   └── Web3Context.jsx
+│   │       ├── hooks
+│   │       │   ├── useFeeType.js
+│   │       │   └── useRewardAddress.js
 │   │       ├── icons
 │   │       │   ├── DownArrowIcon.jsx
 │   │       │   ├── ErrorIcon.jsx
@@ -94,8 +117,10 @@ xdai-omnibridge
 │   │       │   ├── PlusIcon.jsx
 │   │       │   ├── RaidGuildIcon.jsx
 │   │       │   ├── RightIcon.jsx
+│   │       │   ├── SettingsIcon.jsx
 │   │       │   ├── TelegramIcon.jsx
 │   │       │   ├── TwitterIcon.jsx
+│   │       │   ├── WalletFilledIcon.jsx
 │   │       │   ├── WalletIcon.jsx
 │   │       │   └── XDaiIcon.jsx
 │   │       ├── index.jsx

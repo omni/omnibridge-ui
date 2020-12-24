@@ -5,9 +5,23 @@ import { CONFIG } from '../config';
 import { NetworkIcon } from '../icons/NetworkIcon';
 
 export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000';
+
 export const LARGEST_UINT256 = BigNumber.from(
   '115792089237316195423570985008687907853269984665640564039457584007913129639935',
 );
+
+export const networkNames = {
+  1: 'ETH Mainnet',
+  3: 'Ropsten',
+  4: 'Rinkeby',
+  30: 'RSK Mainnet',
+  31: 'RSK Testnet',
+  42: 'Kovan Testnet',
+  61: 'Ethereum Classic',
+  77: 'Sokol Testnet',
+  99: 'POA Network',
+  100: 'xDai Chain',
+};
 
 export const networkOptions =
   CONFIG.network === 77
@@ -16,17 +30,17 @@ export const networkOptions =
         {
           value: 77,
           key: 0,
-          bridge: { chainId: 42, name: 'Kovan Testnet' },
+          bridge: { chainId: 42, name: networkNames[42] },
           label: 'Sokol',
-          name: 'Sokol Testnet',
+          name: networkNames[77],
           icon: <NetworkIcon />,
         },
         {
           value: 42,
           key: 1,
-          bridge: { chainId: 77, name: 'Sokol Testnet' },
+          bridge: { chainId: 77, name: networkNames[77] },
           label: 'Kovan',
-          name: 'Kovan Testnet',
+          name: networkNames[42],
           icon: <NetworkIcon />,
         },
       ]
@@ -35,52 +49,64 @@ export const networkOptions =
         {
           value: 100,
           key: 0,
-          bridge: { chainId: 1, name: 'ETH Mainnet' },
+          bridge: { chainId: 1, name: networkNames[1] },
           label: 'xDai',
-          name: 'xDai Chain',
+          name: networkNames[100],
           icon: <NetworkIcon />,
         },
         {
           value: 1,
           key: 1,
-          bridge: { chainId: 100, name: 'xDai Chain' },
+          bridge: { chainId: 100, name: networkNames[100] },
           label: 'Mainnet',
-          name: 'ETH Mainnet',
+          name: networkNames[1],
           icon: <NetworkIcon />,
         },
       ];
 
-export const networkNames = {
-  100: 'xDai Chain',
-  1: 'ETH Mainnet',
-  77: 'Sokol Testnet',
-  42: 'Kovan Testnet',
-};
-
 export const chainUrls = {
   100: {
-    rpc: 'https://xdai.poanetwork.dev',
-    explorer: 'https://blockscout.com/poa/xdai',
+    rpc: process.env.REACT_APP_HOME_RPC_URL || 'https://xdai.poanetwork.dev',
+    explorer:
+      process.env.REACT_APP_HOME_EXPLORER || 'https://blockscout.com/poa/xdai',
+    monitor:
+      process.env.REACT_APP_AMB_LIVE_MONITOR ||
+      'https://alm-xdai.herokuapp.com',
     chainId: 100,
-    name: 'xDai Chain',
+    name: networkNames[100],
   },
   1: {
-    rpc: `https://mainnet.infura.io/v3/${CONFIG.infuraId}`,
-    explorer: 'https://etherscan.io',
+    rpc:
+      process.env.REACT_APP_FOREIGN_RPC_URL ||
+      `https://mainnet.infura.io/v3/${CONFIG.infuraId}`,
+    explorer: process.env.REACT_APP_FOREIGN_EXPLORER || 'https://etherscan.io',
+    monitor:
+      process.env.REACT_APP_AMB_LIVE_MONITOR ||
+      'https://alm-xdai.herokuapp.com',
     chainId: 1,
-    name: 'ETH Mainnet',
+    name: networkNames[1],
   },
   77: {
-    rpc: 'https://sokol.poa.network',
-    explorer: 'https://blockscout.com/poa/sokol',
+    rpc: process.env.REACT_APP_HOME_RPC_URL || 'https://sokol.poa.network',
+    explorer:
+      process.env.REACT_APP_HOME_EXPLORER || 'https://blockscout.com/poa/sokol',
+    monitor:
+      process.env.REACT_APP_AMB_LIVE_MONITOR ||
+      'https://alm-test-amb.herokuapp.com',
     chainId: 77,
-    name: 'Sokol Testnet',
+    name: networkNames[77],
   },
   42: {
-    rpc: `https://kovan.infura.io/v3/${CONFIG.infuraId}`,
-    explorer: 'https://kovan.etherscan.io',
+    rpc:
+      process.env.REACT_APP_FOREIGN_RPC_URL ||
+      `https://kovan.infura.io/v3/${CONFIG.infuraId}`,
+    explorer:
+      process.env.REACT_APP_FOREIGN_EXPLORER || 'https://kovan.etherscan.io',
+    monitor:
+      process.env.REACT_APP_AMB_LIVE_MONITOR ||
+      'https://alm-test-amb.herokuapp.com',
     chainId: 42,
-    name: 'Kovan Testnet',
+    name: networkNames[42],
   },
 };
 
@@ -131,10 +157,18 @@ export const graphEndpoints = {
 };
 
 export const mediators = {
-  42: '0xA960d095470f7509955d5402e36d9DB984B5C8E2',
-  77: '0x40CdfF886715A4012fAD0219D15C98bB149AeF0e',
-  1: '0x88ad09518695c6c3712AC10a214bE5109a655671',
-  100: '0xf6A78083ca3e2a662D6dd1703c939c8aCE2e268d',
+  42:
+    process.env.REACT_APP_FOREIGN_BRIDGE_ADDRESS ||
+    '0xA960d095470f7509955d5402e36d9DB984B5C8E2',
+  77:
+    process.env.REACT_APP_HOME_BRIDGE_ADDRESS ||
+    '0x40CdfF886715A4012fAD0219D15C98bB149AeF0e',
+  1:
+    process.env.REACT_APP_FOREIGN_BRIDGE_ADDRESS ||
+    '0x88ad09518695c6c3712AC10a214bE5109a655671',
+  100:
+    process.env.REACT_APP_HOME_BRIDGE_ADDRESS ||
+    '0xf6A78083ca3e2a662D6dd1703c939c8aCE2e268d',
 };
 
 export const ambs = {

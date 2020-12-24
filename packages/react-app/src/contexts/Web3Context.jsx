@@ -6,8 +6,26 @@ import Web3Modal from 'web3modal';
 
 import { CONFIG } from '../config';
 import { networkOptions } from '../lib/constants';
+import { getNetworkName } from '../lib/helpers';
 
 export const Web3Context = React.createContext({});
+
+const updateTitle = chainId => {
+  const networkName = getNetworkName(chainId);
+  const defaultTitle = 'OmniBridge';
+  if (!process.env.REACT_APP_TITLE) {
+    document.title = defaultTitle;
+  } else {
+    const titleReplaceString = '%c';
+    const appTitle = process.env.REACT_APP_TITLE || defaultTitle;
+
+    if (appTitle.indexOf(titleReplaceString) !== -1) {
+      document.title = appTitle.replace(titleReplaceString, networkName);
+    } else {
+      document.title = appTitle;
+    }
+  }
+};
 
 const providerOptions = {
   walletconnect: {
@@ -46,6 +64,12 @@ export const Web3Provider = ({ children }) => {
       }
     }
   };
+
+  useEffect(() => {
+    if (providerChainId) {
+      updateTitle(providerChainId);
+    }
+  }, [providerChainId]);
 
   const connectWeb3 = useCallback(async () => {
     try {

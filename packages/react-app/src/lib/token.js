@@ -1,6 +1,7 @@
 import { BigNumber, Contract } from 'ethers';
 
 import { ADDRESS_ZERO } from './constants';
+import { getGasPrice } from './gasPrice';
 import { getMediatorAddress } from './helpers';
 import {
   getOverriddenMediator,
@@ -92,12 +93,13 @@ export const fetchTokenDetails = async token => {
 
 export const approveToken = async (
   ethersProvider,
-  { address, mediator },
+  { chainId, address, mediator },
   amount,
 ) => {
   const abi = ['function approve(address, uint256)'];
+  const gasPrice = getGasPrice(chainId);
   const tokenContract = new Contract(address, abi, ethersProvider.getSigner());
-  const tx = await tokenContract.approve(mediator, amount);
+  const tx = await tokenContract.approve(mediator, amount, { gasPrice });
   return tx.wait();
 };
 
