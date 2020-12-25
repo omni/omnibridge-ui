@@ -32,7 +32,7 @@ export const fetchDefaultTokens = async chainId => {
     }
   }
   // eslint-disable-next-line no-console
-  // console.log({
+  // console.error({
   //   defaultTokensError: `DefaultTokenList not found for chainId ${chainId}`,
   // });
   return [];

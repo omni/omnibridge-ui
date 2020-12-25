@@ -12,11 +12,7 @@ import React, { useContext } from 'react';
 
 import { Web3Context } from '../contexts/Web3Context';
 import { WalletIcon } from '../icons/WalletIcon';
-
-const getAccountString = account => {
-  const len = account.length;
-  return `${account.substr(0, 6)}...${account.substr(len - 4, len - 1)}`;
-};
+import { getAccountString } from '../lib/helpers';
 
 export const WalletSelector = props => {
   const { disconnect, account, network } = useContext(Web3Context);

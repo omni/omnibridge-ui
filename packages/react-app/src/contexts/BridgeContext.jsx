@@ -25,8 +25,7 @@ export const BridgeContext = React.createContext({});
 export const BridgeProvider = ({ children }) => {
   const { ethersProvider, account, providerChainId } = useContext(Web3Context);
 
-  const [receipt, setReceipt] = useState();
-  const [receiver, setReceiver] = useState();
+  const [receiver, setReceiver] = useState('');
   const [fromToken, setFromToken] = useState();
   const [toToken, setToToken] = useState();
   const [fromAmount, setFromAmount] = useState(0);
@@ -35,12 +34,12 @@ export const BridgeProvider = ({ children }) => {
   const [allowed, setAllowed] = useState(true);
   const [loading, setLoading] = useState(false);
   const [txHash, setTxHash] = useState();
-  const [totalConfirms, setTotalConfirms] = useState(0);
   const [amountInput, setAmountInput] = useState('');
   const [fromBalance, setFromBalance] = useState(BigNumber.from(0));
   const [toBalance, setToBalance] = useState(BigNumber.from(0));
   const [tokenLimits, setTokenLimits] = useState();
 
+  const [totalConfirms, setTotalConfirms] = useState(0);
   const isRewardAddress = useRewardAddress();
   const { homeToForeignFeeType, foreignToHomeFeeType } = useFeeType();
   const [fromAllowance, setAllowance] = useState(BigNumber.from(0));
@@ -127,7 +126,7 @@ export const BridgeProvider = ({ children }) => {
       setAllowance(approvalAmount);
     } catch (error) {
       // eslint-disable-next-line no-console
-      console.log({ approveError: error });
+      console.error({ approveError: error });
     }
     setLoading(false);
   }, [fromAmount, fromToken, ethersProvider]);
@@ -146,7 +145,7 @@ export const BridgeProvider = ({ children }) => {
     } catch (error) {
       setLoading(false);
       // eslint-disable-next-line no-console
-      console.log({ transferError: error });
+      console.error({ transferError: error });
     }
   }, [fromToken, account, receiver, ethersProvider, fromAmount]);
 
@@ -171,8 +170,8 @@ export const BridgeProvider = ({ children }) => {
   useEffect(() => {
     setAmountInput('');
     setAmount(BigNumber.from(0));
+    setTxHash();
     setDefaultToken(providerChainId);
-    setReceipt();
   }, [providerChainId, setAmount, setDefaultToken]);
 
   return (
@@ -192,6 +191,7 @@ export const BridgeProvider = ({ children }) => {
         loading,
         setLoading,
         txHash,
+        setTxHash,
         totalConfirms,
         amountInput,
         setAmountInput,
@@ -200,8 +200,6 @@ export const BridgeProvider = ({ children }) => {
         toBalance,
         setToBalance,
         tokenLimits,
-        receipt,
-        setReceipt,
         setUpdateFromAllowance,
         receiver,
         setReceiver,

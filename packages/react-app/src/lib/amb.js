@@ -37,7 +37,12 @@ export function packSignatures(array) {
   return `0x${msgLength}${v}${r}${s}`;
 }
 
-export const executeSignatures = async (ethersProvider, chainId, message) => {
+export const executeSignatures = async (
+  ethersProvider,
+  chainId,
+  message,
+  wait = true,
+) => {
   const abi = [
     'function executeSignatures(bytes messageData, bytes signatures) external',
   ];
@@ -45,16 +50,28 @@ export const executeSignatures = async (ethersProvider, chainId, message) => {
     message.signatures.map(s => signatureToVRS(s)),
   );
   const address = getAMBAddress(chainId);
-  const ambContract = new Contract(address, abi, ethersProvider.getSigner());
-  const gasPrice = getGasPrice(chainId);
-  const tx = await ambContract.executeSignatures(message.msgData, signatures, {
-    gasPrice,
-  });
-  await tx.wait();
-  return tx.hash;
+  try {
+    const ambContract = new Contract(address, abi, ethersProvider.getSigner());
+    const gasPrice = getGasPrice(chainId);
+    const tx = await ambContract.executeSignatures(
+      message.msgData,
+      signatures,
+      {
+        gasPrice,
+      },
+    );
+    if (wait) {
+      await tx.wait();
+    }
+    return tx;
+  } catch (executeError) {
+    // eslint-disable-next-line no-console
+    console.error({ executeError });
+  }
+  return null;
 };
 
-const messagesQuery = gql`
+const messagesTXQuery = gql`
   query getMessage($txHash: String!) {
     messages(where: { txHash_contains: $txHash }, first: 1) {
       msgId
@@ -65,12 +82,32 @@ const messagesQuery = gql`
 `;
 
 export const getMessageFromTxHash = async (chainId, txHash) => {
-  const data = await request(getGraphEndpoint(chainId), messagesQuery, {
+  const data = await request(getGraphEndpoint(chainId), messagesTXQuery, {
     txHash,
   });
 
   return data && data.messages && data.messages.length > 0
     ? data.messages[0]
+    : null;
+};
+
+const messagesIDQuery = gql`
+  query getMessage($msgId: String!) {
+    messages(where: { msgId_contains: $msgId }, first: 1) {
+      msgId
+      msgData
+      signatures
+    }
+  }
+`;
+
+export const getMessageFromMessageID = async (chainId, msgId) => {
+  const data = await request(getGraphEndpoint(chainId), messagesIDQuery, {
+    msgId,
+  });
+
+  return data && data.messages && data.messages.length > 0
+    ? { ...data.messages[0], messageId: msgId }
     : null;
 };
 

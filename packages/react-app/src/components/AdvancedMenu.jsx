@@ -9,7 +9,7 @@ export const AdvancedMenu = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { receiver, setReceiver } = useContext(BridgeContext);
   const close = () => {
-    setReceiver();
+    setReceiver('');
     onClose();
   };
 

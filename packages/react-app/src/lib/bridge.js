@@ -108,8 +108,8 @@ export const fetchToAmount = async (
     );
     return fromAmount.sub(fee);
   } catch (error) {
-    // eslint-disable-next-line
-    console.log({ amountError: error });
+    // eslint-disable-next-line no-console
+    console.error({ amountError: error });
     return fromAmount;
   }
 };
@@ -155,8 +155,8 @@ export const fetchTokenLimits = async (token, walletProvider) => {
       ]);
     }
   } catch (error) {
-    // eslint-disable-next-line
-    console.log({ tokenError: error });
+    // eslint-disable-next-line no-console
+    console.error({ tokenError: error });
   }
   return {
     minPerTx,

@@ -2,6 +2,7 @@ import { gql, request } from 'graphql-request';
 import { useContext, useEffect, useState } from 'react';
 
 import { CONFIG } from '../config';
+import { BridgeContext } from '../contexts/BridgeContext';
 import { Web3Context } from '../contexts/Web3Context';
 import { getBridgeNetwork, getGraphEndpoint } from './helpers';
 
@@ -164,6 +165,7 @@ export function useUserHistory() {
 
 export function useXDaiTransfers() {
   const { account, providerChainId } = useContext(Web3Context);
+  const { txHash } = useContext(BridgeContext);
   const [transfers, setTransfers] = useState();
   const [loading, setLoading] = useState(true);
   const chainId = CONFIG.network;
@@ -173,6 +175,7 @@ export function useXDaiTransfers() {
     const bridgeChainId = getBridgeNetwork(chainId);
     async function update() {
       setLoading(true);
+      setTransfers();
       const { requests } = await getRequests(account, chainId);
       const { executions } = await getExecutions(bridgeChainId, requests);
       const xDaiTransfers = combineRequestsWithExecutions(
@@ -184,7 +187,7 @@ export function useXDaiTransfers() {
       setLoading(false);
     }
     update();
-  }, [chainId, account, providerChainId]);
+  }, [chainId, account, providerChainId, txHash]);
 
   return { transfers, loading };
 }

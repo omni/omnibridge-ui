@@ -15,15 +15,14 @@ import DropDown from '../assets/drop-down.svg';
 import { BridgeContext } from '../contexts/BridgeContext';
 import { Web3Context } from '../contexts/Web3Context';
 import { formatValue, parseValue } from '../lib/helpers';
-import { fetchTokenBalanceWithProvider } from '../lib/token';
-import { ErrorModal } from './ErrorModal';
+import { fetchTokenBalance } from '../lib/token';
 import { Logo } from './Logo';
 import { SelectTokenModal } from './SelectTokenModal';
 
 export const FromToken = () => {
-  const { ethersProvider, account, providerChainId } = useContext(Web3Context);
+  const { account } = useContext(Web3Context);
   const {
-    receipt,
+    txHash,
     fromToken: token,
     fromBalance: balance,
     setFromBalance: setBalance,
@@ -33,37 +32,20 @@ export const FromToken = () => {
   } = useContext(BridgeContext);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [message, setMessage] = useState();
-  const onClick = () => {
-    if (!ethersProvider) {
-      setMessage('Please connect wallet');
-    } else {
-      setMessage();
-    }
-    onOpen();
-  };
   const smallScreen = useBreakpointValue({ base: true, lg: false });
   const [balanceLoading, setBalanceLoading] = useState(false);
 
   useEffect(() => {
-    if (token && account && providerChainId === token.chainId) {
+    if (token && account) {
       setBalanceLoading(true);
-      fetchTokenBalanceWithProvider(ethersProvider, token, account).then(b => {
+      fetchTokenBalance(token, account).then(b => {
         setBalance(b);
         setBalanceLoading(false);
       });
     } else {
       setBalance(BigNumber.from(0));
     }
-  }, [
-    receipt,
-    token,
-    account,
-    setBalance,
-    setBalanceLoading,
-    ethersProvider,
-    providerChainId,
-  ]);
+  }, [txHash, token, account, setBalance, setBalanceLoading]);
 
   return (
     <Flex
@@ -76,10 +58,7 @@ export const FromToken = () => {
       minH={smallScreen ? '5rem' : 8}
       minW={smallScreen ? '15rem' : undefined}
     >
-      {message && (
-        <ErrorModal message={message} isOpen={isOpen} onClose={onClose} />
-      )}
-      {!message && <SelectTokenModal onClose={onClose} isOpen={isOpen} />}
+      <SelectTokenModal onClose={onClose} isOpen={isOpen} />
       {!smallScreen && (
         <svg width="100%" viewBox="0 0 381 94" fill="none">
           <path
@@ -105,7 +84,7 @@ export const FromToken = () => {
             mb={2}
             direction={{ base: 'column', sm: 'row' }}
           >
-            <Flex align="center" cursor="pointer" onClick={onClick}>
+            <Flex align="center" cursor="pointer" onClick={onOpen}>
               <Flex
                 justify="center"
                 align="center"

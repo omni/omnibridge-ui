@@ -124,3 +124,8 @@ export const uriToHttp = uri => {
       return [];
   }
 };
+
+export const getAccountString = account => {
+  const len = account.length;
+  return `${account.substr(0, 6)}...${account.substr(len - 4, len - 1)}`;
+};

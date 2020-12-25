@@ -1,4 +1,4 @@
-import ethers from 'ethers';
+import { ethers } from 'ethers';
 import memoize from 'fast-memoize';
 
 import { getRPCUrl, isxDaiChain } from './helpers';

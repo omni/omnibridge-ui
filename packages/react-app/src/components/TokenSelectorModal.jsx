@@ -35,7 +35,7 @@ import { Logo } from './Logo';
 
 export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
   const { account, ethersProvider, providerChainId } = useContext(Web3Context);
-  const { setToken, receipt } = useContext(BridgeContext);
+  const { setToken, txHash } = useContext(BridgeContext);
   const [tokenList, setTokenList] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -77,7 +77,7 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
         setTokenList(sortedTokenList);
       } catch (error) {
         // eslint-disable-next-line
-        console.log({ fetchTokensError: error });
+        console.error({ fetchTokensError: error });
       }
       setLoading(false);
     },
@@ -120,7 +120,7 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
       localTokenList = JSON.parse(localTokenList);
     }
     setDefaultTokenList(providerChainId, localTokenList);
-  }, [providerChainId, setDefaultTokenList, receipt]);
+  }, [providerChainId, setDefaultTokenList, txHash]);
 
   const smallScreen = useBreakpointValue({ sm: false, base: true });
 

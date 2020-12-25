@@ -34,8 +34,8 @@ export const fetchAllowance = async (
     const allowance = await tokenContract.allowance(account, mediator);
     return allowance;
   } catch (error) {
-    // eslint-disable-next-line
-    console.log({ allowanceError: error });
+    // eslint-disable-next-line no-console
+    console.error({ allowanceError: error });
   }
   return BigNumber.from(0);
 };
@@ -129,8 +129,8 @@ export const fetchTokenBalanceWithProvider = async (
     const balance = await tokenContract.balanceOf(account);
     return balance;
   } catch (error) {
-    // eslint-disable-next-line
-    console.log({ balanceError: error });
+    // eslint-disable-next-line no-console
+    console.error({ balanceError: error });
   }
   return BigNumber.from(0);
 };

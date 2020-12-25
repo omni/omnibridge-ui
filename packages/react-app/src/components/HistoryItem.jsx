@@ -5,7 +5,6 @@ import {
   Image,
   Link,
   Text,
-  useBreakpointValue,
   useDisclosure,
 } from '@chakra-ui/react';
 import { BigNumber, utils } from 'ethers';
@@ -78,22 +77,14 @@ export const HistoryItem = ({
   const [receivingTx, setReceiving] = useState(inputReceivingTx);
   const [message, setMessage] = useState(inputMessage);
 
-  const timestampString = useBreakpointValue({
-    base: new Date(parseInt(timestamp, 10) * 1000).toLocaleTimeString([], {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    }),
-    // lg: new Date(parseInt(timestamp, 10) * 1000).toLocaleTimeString([], {
-    //   weekday: 'long',
-    //   year: 'numeric',
-    //   month: 'long',
-    //   day: 'numeric',
-    //   hour: '2-digit',
-    //   minute: '2-digit',
-    // }),
+  const timestampString = new Date(
+    parseInt(timestamp, 10) * 1000,
+  ).toLocaleTimeString([], {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
   });
 
   const { onOpen, isOpen, onClose } = useDisclosure();
@@ -112,10 +103,10 @@ export const HistoryItem = ({
           providerChainId,
           message,
         );
-        setReceiving(tx);
+        setReceiving(tx.hash);
       } catch (executeError) {
         // eslint-disable-next-line no-console
-        console.log({ executeError });
+        console.error({ executeError });
       }
       setLoading(false);
     }
@@ -154,7 +145,7 @@ export const HistoryItem = ({
         }
       } catch (error) {
         // eslint-disable-next-line no-console
-        console.log({ messageError: error });
+        console.error({ messageError: error });
       }
     };
     // unsubscribe from previous polls

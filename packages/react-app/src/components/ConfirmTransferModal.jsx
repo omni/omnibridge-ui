@@ -19,13 +19,18 @@ import React, { useContext, useEffect, useState } from 'react';
 import AlertImage from '../assets/alert.svg';
 import TransferImage from '../assets/confirm-transfer.svg';
 import { BridgeContext } from '../contexts/BridgeContext';
-import { formatValue, isxDaiChain } from '../lib/helpers';
+import { formatValue, getAccountString, isxDaiChain } from '../lib/helpers';
 import { DaiWarning, isERC20DaiAddress } from './DaiWarning';
 
 export const ConfirmTransferModal = ({ isOpen, onClose }) => {
-  const { fromToken, toToken, fromAmount, toAmount, transfer } = useContext(
-    BridgeContext,
-  );
+  const {
+    receiver,
+    fromToken,
+    toToken,
+    fromAmount,
+    toAmount,
+    transfer,
+  } = useContext(BridgeContext);
   const [fee, setFee] = useState(0);
   useEffect(() => {
     setFee(
@@ -138,7 +143,13 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
             <Box w="100%" fontSize="sm" color={isxDai ? 'black' : 'grey'}>
               <Text as="span">{`Please confirm that you would like to send `}</Text>
               <Text as="b">{`${fromAmt} ${fromUnit}`}</Text>
-              <Text as="span">{` and receive `}</Text>
+              {receiver ? (
+                <Text as="span">{` and ${getAccountString(
+                  receiver,
+                )} will receive `}</Text>
+              ) : (
+                <Text as="span">{` and receive `}</Text>
+              )}
               <Text as="b">{`${toAmt} ${toUnit}`}</Text>
             </Box>
             {isxDai && (

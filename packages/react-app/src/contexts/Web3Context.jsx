@@ -1,5 +1,5 @@
 import WalletConnectProvider from '@walletconnect/web3-provider';
-import ethers from 'ethers';
+import { ethers } from 'ethers';
 import React, { useCallback, useEffect, useState } from 'react';
 import Web3 from 'web3';
 import Web3Modal from 'web3modal';
@@ -48,20 +48,25 @@ export const Web3Provider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   const setWeb3Provider = async (prov, updateAccount = false) => {
-    if (prov) {
-      const web3Provider = new Web3(prov);
-      const provider = new ethers.providers.Web3Provider(
-        web3Provider.currentProvider,
-      );
+    try {
+      if (prov) {
+        const web3Provider = new Web3(prov);
+        const provider = new ethers.providers.Web3Provider(
+          web3Provider.currentProvider,
+        );
 
-      setEthersProvider(provider);
-      const providerNetwork = await provider.getNetwork();
-      setProviderChainId(providerNetwork.chainId);
-      if (updateAccount) {
-        const signer = provider.getSigner();
-        const gotAccount = await signer.getAddress();
-        setAccount(gotAccount);
+        setEthersProvider(provider);
+        const providerNetwork = await provider.getNetwork();
+        setProviderChainId(providerNetwork.chainId);
+        if (updateAccount) {
+          const signer = provider.getSigner();
+          const gotAccount = await signer.getAddress();
+          setAccount(gotAccount);
+        }
       }
+    } catch (error) {
+      // eslint-disable-next-line
+      console.error({ web3ModalError: error });
     }
   };
 
@@ -91,7 +96,7 @@ export const Web3Provider = ({ children }) => {
       });
     } catch (error) {
       // eslint-disable-next-line
-      console.log({ web3ModalError: error });
+      console.error({ web3ModalError: error });
     }
     setLoading(false);
   }, []);

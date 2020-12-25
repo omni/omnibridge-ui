@@ -4,10 +4,10 @@ import React, { useContext } from 'react';
 import { BridgeContext } from '../contexts/BridgeContext';
 import { Web3Context } from '../contexts/Web3Context';
 import { AdvancedMenu } from './AdvancedMenu';
+import { BridgeLoadingModal } from './BridgeLoadingModal';
 import { ClaimTokensModal } from './ClaimTokensModal';
 import { DaiWarning, isERC20DaiAddress } from './DaiWarning';
 import { FromToken } from './FromToken';
-import { LoadingModal } from './LoadingModal';
 import { SystemFeedback } from './SystemFeedback';
 import { ToToken } from './ToToken';
 import { TransferButton } from './TransferButton';
@@ -32,7 +32,7 @@ export const BridgeTokens = () => {
       mx={{ base: 4, sm: 8 }}
       my="auto"
     >
-      <LoadingModal />
+      <BridgeLoadingModal />
       <ClaimTokensModal />
       {network && (
         <>

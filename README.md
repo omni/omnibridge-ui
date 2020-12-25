@@ -23,7 +23,6 @@ xdai-omnibridge
 ├── package.json
 ├── packages
 │   ├── react-app
-│   │   ├── README.md
 │   │   ├── package.json
 │   │   ├── public
 │   │   │   ├── android-chrome-192x192.png
@@ -128,6 +127,7 @@ xdai-omnibridge
 │   │       │   ├── amb.js
 │   │       │   ├── bridge.js
 │   │       │   ├── constants.jsx
+│   │       │   ├── gasPrice.js
 │   │       │   ├── helpers.js
 │   │       │   ├── history.js
 │   │       │   ├── overrides.js
@@ -140,7 +140,6 @@ xdai-omnibridge
 │   │       │   └── Home.jsx
 │   │       └── theme.js
 │   └── subgraph
-│       ├── README.md
 │       ├── config
 │       │   ├── kovan.json
 │       │   ├── mainnet.json

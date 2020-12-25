@@ -20,25 +20,28 @@ import ErrorImage from '../assets/error.svg';
 import InfoImage from '../assets/info.svg';
 import ClaimTokensImage from '../assets/multiple-claim.svg';
 import { CONFIG } from '../config';
-import { BridgeContext } from '../contexts/BridgeContext';
 import { Web3Context } from '../contexts/Web3Context';
-import { executeSignatures, getMessageStatus } from '../lib/amb';
+import {
+  executeSignatures,
+  getMessageFromMessageID,
+  getMessageStatus,
+} from '../lib/amb';
 import { POLLING_INTERVAL } from '../lib/constants';
 import { getBridgeNetwork, getNetworkName, isxDaiChain } from '../lib/helpers';
 import { useXDaiTransfers } from '../lib/history';
 import { LoadingModal } from './LoadingModal';
 
 export const ClaimTokensModal = () => {
-  const { transfers, loading } = useXDaiTransfers();
   const { ethersProvider, providerChainId } = useContext(Web3Context);
-  const { setReceipt } = useContext(BridgeContext);
+  const { transfers, loading } = useXDaiTransfers();
   const [claiming, setClaiming] = useState(false);
   const [needsClaim, setNeedsClaim] = useState([]);
   const [isOpen, setOpen] = useState(false);
   const [transfer, setTransfer] = useState();
   const isxDai = isxDaiChain(providerChainId);
   const { message, symbol, receivingTx } = transfer || {};
-  const [executed, setExecuted] = useState(!!receivingTx);
+  const [executed, setExecuted] = useState(false);
+  const [txHash, setTxHash] = useState(false);
 
   const onClose = () => {
     setOpen(false);
@@ -63,7 +66,7 @@ export const ClaimTokensModal = () => {
         window.sessionStorage.setItem('claimTokens', filteredTransfers.length);
       }
     }
-  }, [transfers, transfer, isxDai]);
+  }, [transfers, isxDai]);
 
   const claimable =
     !isxDai &&
@@ -77,12 +80,19 @@ export const ClaimTokensModal = () => {
     if (!claimable) return;
     setClaiming(true);
     try {
-      await executeSignatures(ethersProvider, providerChainId, message);
+      const tx = await executeSignatures(
+        ethersProvider,
+        providerChainId,
+        message,
+        false,
+      );
+      setTxHash(tx.hash);
+      await tx.wait();
+      setTxHash();
     } catch (executeError) {
       // eslint-disable-next-line no-console
-      console.log({ executeError });
+      console.error({ executeError });
     }
-    setReceipt('');
     setClaiming(false);
     onClose();
   };
@@ -100,8 +110,23 @@ export const ClaimTokensModal = () => {
 
     const getStatus = async () => {
       try {
+        if (!message.signatures) {
+          unsubscribe();
+          getMessageFromMessageID(
+            getBridgeNetwork(providerChainId),
+            message.messageId,
+          ).then(msg =>
+            setTransfer(t => ({
+              ...t,
+              message: msg,
+            })),
+          );
+          return;
+        }
+
         status = await getMessageStatus(providerChainId, message.messageId);
         if (status) {
+          unsubscribe();
           window.sessionStorage.setItem('claimTokens', 0);
           setExecuted(true);
           return;
@@ -113,7 +138,7 @@ export const ClaimTokensModal = () => {
         }
       } catch (error) {
         // eslint-disable-next-line no-console
-        console.log({ receiptError: error });
+        console.error({ statusError: error });
       }
     };
     // unsubscribe from previous polls
@@ -124,7 +149,17 @@ export const ClaimTokensModal = () => {
     return unsubscribe;
   }, [isxDai, providerChainId, message]);
 
-  if (loading) return <LoadingModal loadingProps />;
+  useEffect(() => {
+    setExecuted(!!receivingTx);
+  }, [receivingTx]);
+
+  if (loading || claiming)
+    return (
+      <LoadingModal
+        loadingText={txHash ? 'Waiting for Execution' : ''}
+        txHash={txHash}
+      />
+    );
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered>
       <ModalOverlay background="modalBG">

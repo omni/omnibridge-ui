@@ -130,22 +130,20 @@ export const defaultTokens = {
     mode: 'erc20',
   },
   77: {
-    name: 'FaucetToken on xDai',
-    address: '0x1b457c787792d17bea8d41885ada00e764712cdd',
-    // 0xF69BA830398B031382Df776b19C312CF468A01c8
-    symbol: 'FAU',
-    decimals: 18,
+    address: '0x408ec1bb883da0ea0fb3c955ea6befcd05aa7c3a',
     chainId: 77,
+    decimals: 18,
     mode: 'erc677',
+    name: 'STAKE on xDai',
+    symbol: 'STAKE',
   },
   42: {
-    name: 'FaucetToken',
-    address: '0xfab46e002bbf0b4509813474841e0716e6730136',
-    // 0xD089cAFDE5Ffad1190dF379b12933e661905c72d
-    symbol: 'FAU',
-    decimals: 18,
+    address: '0xFD2df5dCe4c89B007A43CF88d8161dAf1A17C7AB',
     chainId: 42,
+    decimals: 18,
     mode: 'erc20',
+    name: 'STAKE',
+    symbol: 'STAKE',
   },
 };
 
