@@ -129,7 +129,10 @@ export const uriToHttp = uri => {
 
 export const getAccountString = account => {
   const len = account.length;
-  return `${account.substr(0, 6)}...${account.substr(len - 4, len - 1)}`;
+  return `${account.substr(0, 6)}...${account.substr(
+    len - 4,
+    len - 1,
+  )}`.toUpperCase();
 };
 
 export const logError = error => {
