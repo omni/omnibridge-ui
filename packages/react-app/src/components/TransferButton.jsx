@@ -33,7 +33,7 @@ export const TransferButton = () => {
           token.decimals,
         )}`,
       );
-    } else if (amount.gte(tokenLimits.maxPerTx)) {
+    } else if (amount.gt(tokenLimits.maxPerTx)) {
       setMessage(
         `Please specify amount less than ${formatValue(
           tokenLimits.maxPerTx,
