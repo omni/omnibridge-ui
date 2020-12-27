@@ -28,7 +28,7 @@ import SearchIcon from '../assets/search.svg';
 import { BridgeContext } from '../contexts/BridgeContext';
 import { Web3Context } from '../contexts/Web3Context';
 import { PlusIcon } from '../icons/PlusIcon';
-import { formatValue, uniqueTokens } from '../lib/helpers';
+import { formatValue, logError, uniqueTokens } from '../lib/helpers';
 import { fetchTokenBalanceWithProvider } from '../lib/token';
 import { fetchTokenList } from '../lib/tokenList';
 import { Logo } from './Logo';
@@ -41,15 +41,13 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
 
   const setDefaultTokenList = useCallback(
     async (chainId, customTokens) => {
-      if (!account || !ethersProvider) return;
-
-      const networkMismatch =
-        chainId !== (await ethersProvider.getNetwork()).chainId;
-      if (networkMismatch) return;
+      if (!account || !ethersProvider || chainId !== providerChainId) return;
 
       setLoading(true);
       try {
-        const baseTokenList = await fetchTokenList(chainId);
+        const baseTokenList = await fetchTokenList(
+          chainId,
+        ).catch(contractError => logError({ contractError }));
         const customTokenList = uniqueTokens(
           baseTokenList.concat(
             customTokens.filter(token => token.chainId === chainId),
@@ -62,9 +60,9 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
               ethersProvider,
               token,
               account,
-            ),
+            ).catch(contractError => logError({ contractError })),
           })),
-        );
+        ).catch(contractError => logError({ contractError }));
         const sortedTokenList = tokenListWithBalance.sort(function checkBalance(
           { balance: balanceA },
           { balance: balanceB },
@@ -75,13 +73,12 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
           return -1;
         });
         setTokenList(sortedTokenList);
-      } catch (error) {
-        // eslint-disable-next-line
-        console.error({ fetchTokensError: error });
+      } catch (fetchTokensError) {
+        logError({ fetchTokensError });
       }
       setLoading(false);
     },
-    [account, ethersProvider],
+    [account, ethersProvider, providerChainId],
   );
 
   const [filteredTokenList, setFilteredTokenList] = useState([]);

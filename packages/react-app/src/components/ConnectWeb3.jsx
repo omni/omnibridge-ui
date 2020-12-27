@@ -1,9 +1,9 @@
 import { Button, Flex, Text } from '@chakra-ui/react';
 import React, { useContext } from 'react';
 
-import { CONFIG } from '../config';
 import { Web3Context } from '../contexts/Web3Context';
 import { WalletFilledIcon } from '../icons/WalletFilledIcon';
+import { HOME_NETWORK } from '../lib/constants';
 import { getBridgeNetwork, getNetworkName } from '../lib/helpers';
 
 export const ConnectWeb3 = () => {
@@ -40,8 +40,8 @@ export const ConnectWeb3 = () => {
       <Text color="greyText" mb={4} textAlign="center">
         {account
           ? `To access OmniBridge, please switch to ${getNetworkName(
-              CONFIG.network,
-            )} or ${getNetworkName(getBridgeNetwork(CONFIG.network))}`
+              HOME_NETWORK,
+            )} or ${getNetworkName(getBridgeNetwork(HOME_NETWORK))}`
           : 'To get started, connect your wallet'}
       </Text>
       {account ? (

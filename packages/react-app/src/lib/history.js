@@ -1,10 +1,10 @@
 import { gql, request } from 'graphql-request';
 import { useContext, useEffect, useState } from 'react';
 
-import { CONFIG } from '../config';
 import { BridgeContext } from '../contexts/BridgeContext';
 import { Web3Context } from '../contexts/Web3Context';
-import { getBridgeNetwork, getGraphEndpoint } from './helpers';
+import { HOME_NETWORK } from './constants';
+import { getBridgeNetwork, getGraphEndpoint, isxDaiChain } from './helpers';
 
 const pageSize = 1000;
 
@@ -119,7 +119,7 @@ export function useUserHistory() {
   const { account } = useContext(Web3Context);
   const [transfers, setTransfers] = useState();
   const [loading, setLoading] = useState(true);
-  const chainId = CONFIG.network;
+  const chainId = HOME_NETWORK;
 
   useEffect(() => {
     if (!account || !chainId) return;
@@ -167,11 +167,11 @@ export function useXDaiTransfers() {
   const { account, providerChainId } = useContext(Web3Context);
   const { txHash } = useContext(BridgeContext);
   const [transfers, setTransfers] = useState();
-  const [loading, setLoading] = useState(true);
-  const chainId = CONFIG.network;
+  const [loading, setLoading] = useState(false);
+  const chainId = HOME_NETWORK;
 
   useEffect(() => {
-    if (!account || !chainId) return;
+    if (!account || !chainId || isxDaiChain(providerChainId)) return;
     const bridgeChainId = getBridgeNetwork(chainId);
     async function update() {
       setLoading(true);
@@ -182,12 +182,15 @@ export function useXDaiTransfers() {
         requests,
         executions,
         chainId,
-      ).sort((a, b) => b.timestamp - a.timestamp);
+      )
+        .sort((a, b) => b.timestamp - a.timestamp)
+        .filter(t => !t.receivingTx);
       setTransfers(xDaiTransfers);
       setLoading(false);
     }
     update();
   }, [chainId, account, providerChainId, txHash]);
 
+  console.log({ transfers, loading });
   return { transfers, loading };
 }

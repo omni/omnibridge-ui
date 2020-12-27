@@ -4,9 +4,8 @@ import React, { useCallback, useEffect, useState } from 'react';
 import Web3 from 'web3';
 import Web3Modal from 'web3modal';
 
-import { CONFIG } from '../config';
-import { networkOptions } from '../lib/constants';
-import { getNetworkName } from '../lib/helpers';
+import { INFURA_ID,networkOptions } from '../lib/constants';
+import { getNetworkName, logError } from '../lib/helpers';
 
 export const Web3Context = React.createContext({});
 
@@ -31,7 +30,7 @@ const providerOptions = {
   walletconnect: {
     package: WalletConnectProvider,
     options: {
-      infuraId: CONFIG.infuraId,
+      infuraId: INFURA_ID,
     },
   },
 };
@@ -42,12 +41,12 @@ const web3Modal = new Web3Modal({
 });
 
 export const Web3Provider = ({ children }) => {
-  const [providerChainId, setProviderChainId] = useState();
-  const [ethersProvider, setEthersProvider] = useState();
+  const [web3State, setWeb3State] = useState({});
+  const { providerChainId, ethersProvider } = web3State;
   const [account, setAccount] = useState();
   const [loading, setLoading] = useState(true);
 
-  const setWeb3Provider = async (prov, updateAccount = false) => {
+  const setWeb3Provider = useCallback(async (prov, updateAccount = false) => {
     try {
       if (prov) {
         const web3Provider = new Web3(prov);
@@ -55,20 +54,25 @@ export const Web3Provider = ({ children }) => {
           web3Provider.currentProvider,
         );
 
-        setEthersProvider(provider);
-        const providerNetwork = await provider.getNetwork();
-        setProviderChainId(providerNetwork.chainId);
+        const providerNetwork = await provider
+          .getNetwork()
+          .catch(web3ModalError => logError({ web3ModalError }));
+        setWeb3State({
+          ethersProvider: provider,
+          providerChainId: providerNetwork.chainId,
+        });
         if (updateAccount) {
           const signer = provider.getSigner();
-          const gotAccount = await signer.getAddress();
+          const gotAccount = await signer
+            .getAddress()
+            .catch(web3ModalError => logError({ web3ModalError }));
           setAccount(gotAccount);
         }
       }
     } catch (error) {
-      // eslint-disable-next-line
-      console.error({ web3ModalError: error });
+      logError({ web3ModalError: error });
     }
-  };
+  }, []);
 
   useEffect(() => {
     if (providerChainId) {
@@ -79,7 +83,9 @@ export const Web3Provider = ({ children }) => {
   const connectWeb3 = useCallback(async () => {
     try {
       setLoading(true);
-      const modalProvider = await web3Modal.connect();
+      const modalProvider = await web3Modal
+        .connect()
+        .catch(web3ModalError => logError({ web3ModalError }));
 
       await setWeb3Provider(modalProvider, true);
 
@@ -95,17 +101,15 @@ export const Web3Provider = ({ children }) => {
         setWeb3Provider(modalProvider);
       });
     } catch (error) {
-      // eslint-disable-next-line
-      console.error({ web3ModalError: error });
+      logError({ web3ModalError: error });
     }
     setLoading(false);
-  }, []);
+  }, [setWeb3Provider]);
 
   const disconnect = useCallback(async () => {
     web3Modal.clearCachedProvider();
     setAccount();
-    setEthersProvider();
-    setProviderChainId();
+    setWeb3State({});
   }, []);
 
   useEffect(() => {
@@ -114,8 +118,7 @@ export const Web3Provider = ({ children }) => {
     }
     if (web3Modal.cachedProvider) {
       connectWeb3().catch(error => {
-        // eslint-disable-next-line
-        console.error({ web3ModalError: error });
+        logError({ web3ModalError: error });
       });
     } else {
       setLoading(false);

@@ -2,7 +2,7 @@ import { Contract, utils } from 'ethers';
 import { gql, request } from 'graphql-request';
 
 import { getGasPrice } from './gasPrice';
-import { getAMBAddress, getGraphEndpoint } from './helpers';
+import { getAMBAddress, getGraphEndpoint, logError } from './helpers';
 
 export const fetchConfirmations = async (chainId, walletProvider) => {
   const abi = ['function requiredBlockConfirmations() view returns (uint256)'];
@@ -53,20 +53,17 @@ export const executeSignatures = async (
   try {
     const ambContract = new Contract(address, abi, ethersProvider.getSigner());
     const gasPrice = getGasPrice(chainId);
-    const tx = await ambContract.executeSignatures(
-      message.msgData,
-      signatures,
-      {
+    const tx = await ambContract
+      .executeSignatures(message.msgData, signatures, {
         gasPrice,
-      },
-    );
+      })
+      .catch(contractError => logError({ contractError }));
     if (wait) {
-      await tx.wait();
+      await tx.wait().catch(contractError => logError({ contractError }));
     }
     return tx;
   } catch (executeError) {
-    // eslint-disable-next-line no-console
-    console.error({ executeError });
+    logError({ executeError });
   }
   return null;
 };

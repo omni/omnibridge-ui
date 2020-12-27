@@ -3,6 +3,8 @@ import React, { useContext } from 'react';
 
 import { BridgeContext } from '../contexts/BridgeContext';
 import { Web3Context } from '../contexts/Web3Context';
+import { HOME_NETWORK } from '../lib/constants';
+import { getBridgeNetwork } from '../lib/helpers';
 import { AdvancedMenu } from './AdvancedMenu';
 import { BridgeLoadingModal } from './BridgeLoadingModal';
 import { ClaimTokensModal } from './ClaimTokensModal';
@@ -33,7 +35,9 @@ export const BridgeTokens = () => {
       my="auto"
     >
       <BridgeLoadingModal />
-      <ClaimTokensModal />
+      {network && network.value === getBridgeNetwork(HOME_NETWORK) ? (
+        <ClaimTokensModal />
+      ) : null}
       {network && (
         <>
           {!smallScreen && (

@@ -3,8 +3,8 @@ import React, { useContext } from 'react';
 
 import DownTriangle from '../assets/down-triangle.svg';
 import UpTriangle from '../assets/up-triangle.svg';
-import { CONFIG } from '../config';
 import { Web3Context } from '../contexts/Web3Context';
+import { HOME_NETWORK } from '../lib/constants';
 import { getBridgeNetwork } from '../lib/helpers';
 import { ConnectWeb3 } from './ConnectWeb3';
 import { Footer } from './Footer';
@@ -14,9 +14,8 @@ export const Layout = ({ children }) => {
   const { account, providerChainId } = useContext(Web3Context);
   const valid =
     !!account &&
-    [CONFIG.network, getBridgeNetwork(CONFIG.network)].indexOf(
-      providerChainId,
-    ) >= 0;
+    [HOME_NETWORK, getBridgeNetwork(HOME_NETWORK)].indexOf(providerChainId) >=
+      0;
   return (
     <Flex
       p={0}

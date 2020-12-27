@@ -12,20 +12,20 @@ import React, { useContext, useEffect, useState } from 'react';
 
 import BlueTickImage from '../assets/blue-tick.svg';
 import RightArrowImage from '../assets/right-arrow.svg';
-import { CONFIG } from '../config';
 import { Web3Context } from '../contexts/Web3Context';
 import {
   executeSignatures,
   getMessageFromTxHash,
   getMessageStatus,
 } from '../lib/amb';
-import { POLLING_INTERVAL } from '../lib/constants';
+import { HOME_NETWORK , POLLING_INTERVAL } from '../lib/constants';
 import {
   getBridgeNetwork,
   getExplorerUrl,
   getMonitorUrl,
   getNetworkName,
   isxDaiChain,
+  logError,
 } from '../lib/helpers';
 import { ErrorModal } from './ErrorModal';
 
@@ -102,11 +102,10 @@ export const HistoryItem = ({
           ethersProvider,
           providerChainId,
           message,
-        );
+        ).catch(contractError => logError({ contractError }));
         setReceiving(tx.hash);
       } catch (executeError) {
-        // eslint-disable-next-line no-console
-        console.error({ executeError });
+        logError({ executeError });
       }
       setLoading(false);
     }
@@ -143,9 +142,8 @@ export const HistoryItem = ({
           const timeoutId = setTimeout(() => getStatus(), POLLING_INTERVAL);
           subscriptions.push(timeoutId);
         }
-      } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error({ messageError: error });
+      } catch (messageError) {
+        logError({ messageError });
       }
     };
     // unsubscribe from previous polls
@@ -177,7 +175,7 @@ export const HistoryItem = ({
       {isxDai && (
         <ErrorModal
           message={`Please switch wallet to ${getNetworkName(
-            getBridgeNetwork(CONFIG.network),
+            getBridgeNetwork(HOME_NETWORK),
           )}`}
           isOpen={isOpen}
           onClose={onClose}

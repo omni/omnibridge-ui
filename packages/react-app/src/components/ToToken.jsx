@@ -4,7 +4,7 @@ import React, { useContext, useEffect, useState } from 'react';
 
 import { BridgeContext } from '../contexts/BridgeContext';
 import { Web3Context } from '../contexts/Web3Context';
-import { formatValue } from '../lib/helpers';
+import { formatValue, logError } from '../lib/helpers';
 import { fetchTokenBalance } from '../lib/token';
 import { Logo } from './Logo';
 
@@ -25,10 +25,12 @@ export const ToToken = () => {
   useEffect(() => {
     if (token && account) {
       setBalanceLoading(true);
-      fetchTokenBalance(token, account).then(b => {
-        setBalance(b);
-        setBalanceLoading(false);
-      });
+      fetchTokenBalance(token, account)
+        .then(b => {
+          setBalance(b);
+          setBalanceLoading(false);
+        })
+        .catch(contractError => logError({ contractError }));
     } else {
       setBalance(BigNumber.from(0));
     }

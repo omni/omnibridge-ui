@@ -14,8 +14,8 @@ import React, { useContext, useState } from 'react';
 
 import ChangeNetworkImage from '../assets/change-network.png';
 import InfoImage from '../assets/info.svg';
-import { CONFIG } from '../config';
 import { BridgeContext } from '../contexts/BridgeContext';
+import { HOME_NETWORK } from '../lib/constants';
 import { getBridgeNetwork, getNetworkName, isxDaiChain } from '../lib/helpers';
 
 export const NeedsConfirmationModal = ({ setNeedsConfirmation }) => {
@@ -55,7 +55,7 @@ export const NeedsConfirmationModal = ({ setNeedsConfirmation }) => {
               <Box w="100%" fontSize="sm" color="black">
                 <Text as="span">{`Please switch the network in your wallet to `}</Text>
                 <Text as="b">{`${getNetworkName(
-                  getBridgeNetwork(CONFIG.network),
+                  getBridgeNetwork(HOME_NETWORK),
                 )}`}</Text>
               </Box>
               <Flex
@@ -80,7 +80,7 @@ export const NeedsConfirmationModal = ({ setNeedsConfirmation }) => {
                   <Text>
                     After you switch networks, you will complete a second
                     transaction on{' '}
-                    {getNetworkName(getBridgeNetwork(CONFIG.network))} to claim
+                    {getNetworkName(getBridgeNetwork(HOME_NETWORK))} to claim
                     your {toUnit} tokens.
                   </Text>
                 </Flex>

@@ -2,7 +2,7 @@ import { BigNumber, Contract } from 'ethers';
 
 import { ADDRESS_ZERO } from './constants';
 import { getGasPrice } from './gasPrice';
-import { getMediatorAddress } from './helpers';
+import { getMediatorAddress, logError } from './helpers';
 import {
   getOverriddenMediator,
   getOverriddenMode,
@@ -11,13 +11,11 @@ import {
 import { getEthersProvider } from './providers';
 
 export const fetchAllowance = async (
-  { mediator, address, chainId },
+  { mediator, address },
   account,
   ethersProvider,
 ) => {
-  const network = await ethersProvider.getNetwork();
   if (
-    network.chainId !== chainId ||
     !account ||
     !address ||
     address === ADDRESS_ZERO ||
@@ -31,11 +29,12 @@ export const fetchAllowance = async (
   try {
     const abi = ['function allowance(address, address) view returns (uint256)'];
     const tokenContract = new Contract(address, abi, ethersProvider);
-    const allowance = await tokenContract.allowance(account, mediator);
+    const allowance = await tokenContract
+      .allowance(account, mediator)
+      .catch(contractError => logError({ contractError }));
     return allowance;
-  } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error({ allowanceError: error });
+  } catch (allowanceError) {
+    logError({ allowanceError });
   }
   return BigNumber.from(0);
 };
@@ -51,9 +50,9 @@ export const getMode = async (
   }
   const abi = ['function nativeTokenAddress(address) view returns (address)'];
   const mediatorContract = new Contract(mediatorAddress, abi, ethersProvider);
-  const nativeTokenAddress = await mediatorContract.nativeTokenAddress(
-    token.address,
-  );
+  const nativeTokenAddress = await mediatorContract
+    .nativeTokenAddress(token.address)
+    .catch(contractError => logError({ contractError }));
   if (nativeTokenAddress === ADDRESS_ZERO) return 'erc20';
   return 'erc677';
 };
@@ -77,7 +76,7 @@ export const fetchTokenDetails = async token => {
     tokenContract.symbol(),
     tokenContract.decimals(),
     getMode(ethersProvider, isOverriddenToken, mediatorAddress, token),
-  ]);
+  ]).catch(contractError => logError({ contractError }));
 
   const details = {
     address: token.address,
@@ -99,38 +98,38 @@ export const approveToken = async (
   const abi = ['function approve(address, uint256)'];
   const gasPrice = getGasPrice(chainId);
   const tokenContract = new Contract(address, abi, ethersProvider.getSigner());
-  const tx = await tokenContract.approve(mediator, amount, { gasPrice });
-  return tx.wait();
+  const tx = await tokenContract
+    .approve(mediator, amount, { gasPrice })
+    .catch(contractError => logError({ contractError }));
+  return tx.wait().catch(contractError => logError({ contractError }));
 };
 
 export const fetchTokenBalance = async (token, account) => {
   const ethersProvider = getEthersProvider(token.chainId);
-  return fetchTokenBalanceWithProvider(ethersProvider, token, account);
+  return fetchTokenBalanceWithProvider(
+    ethersProvider,
+    token,
+    account,
+  ).catch(contractError => logError({ contractError }));
 };
 
 export const fetchTokenBalanceWithProvider = async (
   ethersProvider,
-  { address, chainId },
+  { address },
   account,
 ) => {
-  const network = await ethersProvider.getNetwork();
-  if (
-    !account ||
-    !address ||
-    address === ADDRESS_ZERO ||
-    !ethersProvider ||
-    network.chainId !== chainId
-  ) {
+  if (!account || !address || address === ADDRESS_ZERO || !ethersProvider) {
     return BigNumber.from(0);
   }
   try {
     const abi = ['function balanceOf(address) view returns (uint256)'];
     const tokenContract = new Contract(address, abi, ethersProvider);
-    const balance = await tokenContract.balanceOf(account);
+    const balance = await tokenContract
+      .balanceOf(account)
+      .catch(contractError => logError({ contractError }));
     return balance;
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error({ balanceError: error });
+    logError({ balanceError: error });
   }
   return BigNumber.from(0);
 };

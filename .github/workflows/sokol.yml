@@ -33,7 +33,7 @@ jobs:
         env:
           CI: true
           REACT_APP_INFURA_ID: ${{ secrets.PERSONAL_INFURA_ID }}
-          REACT_APP_NETWORK: sokol
+          REACT_APP_HOME_NETWORK: sokol
 
       - name: Deploy to Firebase
         uses: w9jds/firebase-action@master

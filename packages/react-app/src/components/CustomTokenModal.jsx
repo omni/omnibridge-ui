@@ -19,7 +19,7 @@ import React, { useContext, useRef, useState } from 'react';
 import CustomTokenImage from '../assets/custom-token.svg';
 import { BridgeContext } from '../contexts/BridgeContext';
 import { Web3Context } from '../contexts/Web3Context';
-import { uniqueTokens } from '../lib/helpers';
+import { logError,uniqueTokens } from '../lib/helpers';
 import { fetchTokenDetails } from '../lib/token';
 
 export const CustomTokenModal = ({ isOpen, onClose, onBack }) => {
@@ -76,7 +76,10 @@ export const CustomTokenModal = ({ isOpen, onClose, onBack }) => {
               ...tokenDetails,
             });
           })
-          .catch(() => setAddressInvalid(true));
+          .catch(contractError => {
+            logError({ contractError });
+            setAddressInvalid(true);
+          });
       } else {
         setAddressInvalid(true);
       }

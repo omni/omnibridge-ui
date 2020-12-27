@@ -33,7 +33,7 @@ jobs:
         env:
           CI: true
           REACT_APP_INFURA_ID: ${{ secrets.INFURA_ID }}
-          REACT_APP_NETWORK: xdai
+          REACT_APP_HOME_NETWORK: xdai
 
       - name: Deploy to Firebase
         uses: w9jds/firebase-action@master

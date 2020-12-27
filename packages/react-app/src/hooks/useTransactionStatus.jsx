@@ -4,7 +4,7 @@ import { BridgeContext } from '../contexts/BridgeContext';
 import { Web3Context } from '../contexts/Web3Context';
 import { getMessageFromTxHash, getMessageStatus } from '../lib/amb';
 import { POLLING_INTERVAL } from '../lib/constants';
-import { getBridgeNetwork, isxDaiChain } from '../lib/helpers';
+import { getBridgeNetwork, isxDaiChain, logError } from '../lib/helpers';
 
 export const useTransactionStatus = input => {
   const { ethersProvider, account, providerChainId } = useContext(Web3Context);
@@ -45,7 +45,9 @@ export const useTransactionStatus = input => {
 
     const getReceipt = async () => {
       try {
-        const txReceipt = await ethersProvider.getTransactionReceipt(txHash);
+        const txReceipt = await ethersProvider
+          .getTransactionReceipt(txHash)
+          .catch(contractError => logError({ contractError }));
         if (txReceipt) {
           setReceipt(txReceipt);
           if (isxDai) {
@@ -86,11 +88,10 @@ export const useTransactionStatus = input => {
           const timeoutId = setTimeout(() => getReceipt(), POLLING_INTERVAL);
           subscriptions.push(timeoutId);
         }
-      } catch (error) {
+      } catch (receiptError) {
         completeReceipt();
         unsubscribe();
-        // eslint-disable-next-line no-console
-        console.error({ receiptError: error });
+        logError({ receiptError });
       }
     };
 

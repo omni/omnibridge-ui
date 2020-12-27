@@ -1,4 +1,4 @@
-import { BigNumber, utils } from 'ethers';
+import { utils } from 'ethers';
 
 import { isxDaiChain } from './helpers';
 
@@ -59,12 +59,12 @@ const gasPriceFromSupplier = async (fetchFn, options = {}) => {
 };
 
 const {
-  REACT_APP_HOME_GAS_PRICE_FALLBACK,
+  REACT_APP_HOME_GAS_PRICE_FALLBACK_GWEI,
   REACT_APP_HOME_GAS_PRICE_SUPPLIER_URL,
   REACT_APP_HOME_GAS_PRICE_SPEED_TYPE,
   REACT_APP_HOME_GAS_PRICE_UPDATE_INTERVAL,
   REACT_APP_HOME_GAS_PRICE_FACTOR,
-  REACT_APP_FOREIGN_GAS_PRICE_FALLBACK,
+  REACT_APP_FOREIGN_GAS_PRICE_FALLBACK_GWEI,
   REACT_APP_FOREIGN_GAS_PRICE_SUPPLIER_URL,
   REACT_APP_FOREIGN_GAS_PRICE_SPEED_TYPE,
   REACT_APP_FOREIGN_GAS_PRICE_UPDATE_INTERVAL,
@@ -87,7 +87,10 @@ class GasPriceStore {
 
   constructor(isxDai) {
     if (isxDai) {
-      this.gasPrice = BigNumber.from(REACT_APP_HOME_GAS_PRICE_FALLBACK || 0);
+      this.gasPrice = utils.parseUnits(
+        REACT_APP_HOME_GAS_PRICE_FALLBACK_GWEI || '0',
+        'gwei',
+      );
       this.gasPriceSupplierUrl = REACT_APP_HOME_GAS_PRICE_SUPPLIER_URL;
       this.speedType = REACT_APP_HOME_GAS_PRICE_SPEED_TYPE;
       this.updateInterval =
@@ -96,7 +99,10 @@ class GasPriceStore {
       this.factor =
         Number(REACT_APP_HOME_GAS_PRICE_FACTOR) || DEFAULT_GAS_PRICE_FACTOR;
     } else {
-      this.gasPrice = BigNumber.from(REACT_APP_FOREIGN_GAS_PRICE_FALLBACK || 0);
+      this.gasPrice = utils.parseUnits(
+        REACT_APP_FOREIGN_GAS_PRICE_FALLBACK_GWEI || '0',
+        'gwei',
+      );
       this.gasPriceSupplierUrl = REACT_APP_FOREIGN_GAS_PRICE_SUPPLIER_URL;
       this.speedType = REACT_APP_FOREIGN_GAS_PRICE_SPEED_TYPE;
       this.updateInterval =

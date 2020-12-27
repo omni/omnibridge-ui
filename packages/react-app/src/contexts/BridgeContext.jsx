@@ -16,6 +16,7 @@ import {
   defaultMinPerTx,
   getDefaultToken,
   isxDaiChain,
+  logError,
 } from '../lib/helpers';
 import { approveToken, fetchAllowance, fetchTokenDetails } from '../lib/token';
 import { Web3Context } from './Web3Context';
@@ -47,7 +48,9 @@ export const BridgeProvider = ({ children }) => {
 
   useEffect(() => {
     if (fromToken && providerChainId === fromToken.chainId) {
-      fetchAllowance(fromToken, account, ethersProvider).then(setAllowance);
+      fetchAllowance(fromToken, account, ethersProvider)
+        .then(setAllowance)
+        .catch(contractError => logError({ contractError }));
     }
   }, [
     ethersProvider,
@@ -70,12 +73,12 @@ export const BridgeProvider = ({ children }) => {
       setToAmountLoading(true);
       const isxDai = isxDaiChain(providerChainId);
       const feeType = !isxDai ? foreignToHomeFeeType : homeToForeignFeeType;
-      fetchToAmount(isRewardAddress, feeType, fromToken, toToken, amount).then(
-        gotToAmount => {
+      fetchToAmount(isRewardAddress, feeType, fromToken, toToken, amount)
+        .then(gotToAmount => {
           setToAmount(gotToAmount);
           setToAmountLoading(false);
-        },
-      );
+        })
+        .catch(contractError => logError({ contractError }));
     },
     [
       fromToken,
@@ -97,7 +100,7 @@ export const BridgeProvider = ({ children }) => {
       const [token, gotToToken] = await Promise.all([
         fetchTokenDetails(tokenWithoutMode),
         fetchToToken(tokenWithoutMode),
-      ]);
+      ]).catch(contractError => logError({ contractError }));
       setFromToken(token);
       setTokenLimits({
         minPerTx: defaultMinPerTx(isxDaiChain(token.chainId), token.decimals),
@@ -105,9 +108,11 @@ export const BridgeProvider = ({ children }) => {
         dailyLimit: defaultDailyLimit(token.decimals),
       });
       if (token.chainId === providerChainId) {
-        fetchTokenLimits(token, ethersProvider).then(limits => {
-          setTokenLimits(limits);
-        });
+        fetchTokenLimits(token, ethersProvider)
+          .then(limits => {
+            setTokenLimits(limits);
+          })
+          .catch(contractError => logError({ contractError }));
       }
       setToToken(gotToToken);
       setLoading(false);
@@ -122,11 +127,14 @@ export const BridgeProvider = ({ children }) => {
         window.localStorage.getItem('infinite-unlock') === 'true'
           ? LARGEST_UINT256
           : fromAmount;
-      await approveToken(ethersProvider, fromToken, approvalAmount);
+      await approveToken(
+        ethersProvider,
+        fromToken,
+        approvalAmount,
+      ).catch(contractError => logError({ contractError }));
       setAllowance(approvalAmount);
     } catch (error) {
-      // eslint-disable-next-line no-console
-      console.error({ approveError: error });
+      logError({ approveError: error });
     }
     setLoading(false);
   }, [fromAmount, fromToken, ethersProvider]);
@@ -139,13 +147,12 @@ export const BridgeProvider = ({ children }) => {
         fromToken,
         receiver || account,
         fromAmount,
-      );
+      ).catch(contractError => logError({ contractError }));
       setTotalConfirms(numConfirms);
       setTxHash(tx.hash);
-    } catch (error) {
+    } catch (transferError) {
       setLoading(false);
-      // eslint-disable-next-line no-console
-      console.error({ transferError: error });
+      logError({ transferError });
     }
   }, [fromToken, account, receiver, ethersProvider, fromAmount]);
 

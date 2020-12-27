@@ -129,3 +129,10 @@ export const getAccountString = account => {
   const len = account.length;
   return `${account.substr(0, 6)}...${account.substr(len - 4, len - 1)}`;
 };
+
+export const logError = error => {
+  if (process.env.REACT_APP_DEBUG_LOGS === 'true') {
+    // eslint-disable-next-line no-console
+    console.error(error);
+  }
+};

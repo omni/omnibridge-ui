@@ -19,15 +19,19 @@ import ClaimTokenImage from '../assets/claim.svg';
 import ErrorImage from '../assets/error.svg';
 import InfoImage from '../assets/info.svg';
 import ClaimTokensImage from '../assets/multiple-claim.svg';
-import { CONFIG } from '../config';
 import { Web3Context } from '../contexts/Web3Context';
 import {
   executeSignatures,
   getMessageFromMessageID,
   getMessageStatus,
 } from '../lib/amb';
-import { POLLING_INTERVAL } from '../lib/constants';
-import { getBridgeNetwork, getNetworkName, isxDaiChain } from '../lib/helpers';
+import { HOME_NETWORK , POLLING_INTERVAL } from '../lib/constants';
+import {
+  getBridgeNetwork,
+  getNetworkName,
+  isxDaiChain,
+  logError,
+} from '../lib/helpers';
 import { useXDaiTransfers } from '../lib/history';
 import { LoadingModal } from './LoadingModal';
 
@@ -39,7 +43,7 @@ export const ClaimTokensModal = () => {
   const [isOpen, setOpen] = useState(false);
   const [transfer, setTransfer] = useState();
   const isxDai = isxDaiChain(providerChainId);
-  const { message, symbol, receivingTx } = transfer || {};
+  const { message: msg, symbol, receivingTx } = transfer || {};
   const [executed, setExecuted] = useState(false);
   const [txHash, setTxHash] = useState(false);
 
@@ -69,12 +73,7 @@ export const ClaimTokensModal = () => {
   }, [transfers, isxDai]);
 
   const claimable =
-    !isxDai &&
-    !claiming &&
-    message &&
-    message.msgData &&
-    message.signatures &&
-    !executed;
+    !isxDai && !claiming && msg && msg.msgData && msg.signatures && !executed;
 
   const claimTokens = async () => {
     if (!claimable) return;
@@ -83,15 +82,14 @@ export const ClaimTokensModal = () => {
       const tx = await executeSignatures(
         ethersProvider,
         providerChainId,
-        message,
+        msg,
         false,
-      );
+      ).catch(contractError => logError({ contractError }));
       setTxHash(tx.hash);
       await tx.wait();
       setTxHash();
     } catch (executeError) {
-      // eslint-disable-next-line no-console
-      console.error({ executeError });
+      logError({ executeError });
     }
     setClaiming(false);
     onClose();
@@ -105,26 +103,26 @@ export const ClaimTokensModal = () => {
       });
     };
 
-    if (!message || !message.messageId || isxDai) return unsubscribe;
+    if (!msg || !msg.messageId || isxDai) return unsubscribe;
     let status = false;
 
     const getStatus = async () => {
       try {
-        if (!message.signatures) {
+        if (!msg.signatures) {
           unsubscribe();
           getMessageFromMessageID(
             getBridgeNetwork(providerChainId),
-            message.messageId,
-          ).then(msg =>
+            msg.messageId,
+          ).then(message =>
             setTransfer(t => ({
               ...t,
-              message: msg,
+              message,
             })),
           );
           return;
         }
 
-        status = await getMessageStatus(providerChainId, message.messageId);
+        status = await getMessageStatus(providerChainId, msg.messageId);
         if (status) {
           unsubscribe();
           window.sessionStorage.setItem('claimTokens', 0);
@@ -136,9 +134,8 @@ export const ClaimTokensModal = () => {
           const timeoutId = setTimeout(() => getStatus(), POLLING_INTERVAL);
           subscriptions.push(timeoutId);
         }
-      } catch (error) {
-        // eslint-disable-next-line no-console
-        console.error({ statusError: error });
+      } catch (statusError) {
+        logError({ statusError });
       }
     };
     // unsubscribe from previous polls
@@ -147,7 +144,7 @@ export const ClaimTokensModal = () => {
     getStatus();
     // unsubscribe when unmount component
     return unsubscribe;
-  }, [isxDai, providerChainId, message]);
+  }, [isxDai, providerChainId, msg]);
 
   useEffect(() => {
     setExecuted(!!receivingTx);
@@ -172,7 +169,7 @@ export const ClaimTokensModal = () => {
           <ModalHeader p={6}>
             <Text>Claim Your Tokens</Text>
             <Image
-              src={message ? ClaimTokenImage : ClaimTokensImage}
+              src={msg ? ClaimTokenImage : ClaimTokensImage}
               w="100%"
               mt={4}
             />
@@ -185,7 +182,7 @@ export const ClaimTokensModal = () => {
             p={2}
           />
           <ModalBody px={6} py={0}>
-            {message ? (
+            {msg ? (
               <Flex align="center" direction="column">
                 <Flex
                   mt={4}
@@ -209,7 +206,7 @@ export const ClaimTokensModal = () => {
                   <Flex align="center" fontSize="12px" p={4}>
                     <Text>
                       {`The claim process may take a variable period of time on ${getNetworkName(
-                        getBridgeNetwork(CONFIG.network),
+                        getBridgeNetwork(HOME_NETWORK),
                       )} depending on network congestion. Your ${symbol} balance will increase to reflect the completed transfer after the claim is processed`}
                     </Text>
                   </Flex>
@@ -260,7 +257,7 @@ export const ClaimTokensModal = () => {
               >
                 Cancel
               </Button>
-              {message ? (
+              {msg ? (
                 <Button
                   px={12}
                   onClick={claimTokens}

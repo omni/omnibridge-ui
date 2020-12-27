@@ -10,9 +10,9 @@ import React, { useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import Logo from '../assets/logo.svg';
-import { CONFIG } from '../config';
 import { Web3Context } from '../contexts/Web3Context';
 import { HistoryIcon } from '../icons/HistoryIcon';
+import { HOME_NETWORK } from '../lib/constants';
 import { getBridgeNetwork } from '../lib/helpers';
 import { UpdateSettings } from './UpdateSettings';
 import { WalletSelector } from './WalletSelector';
@@ -23,9 +23,8 @@ export const Header = () => {
   const toggleOpen = () => setOpen(open => !open);
   const valid =
     !!account &&
-    [CONFIG.network, getBridgeNetwork(CONFIG.network)].indexOf(
-      providerChainId,
-    ) >= 0;
+    [HOME_NETWORK, getBridgeNetwork(HOME_NETWORK)].indexOf(providerChainId) >=
+      0;
   const isSmallScreen = useBreakpointValue({ base: true, md: false });
 
   return (

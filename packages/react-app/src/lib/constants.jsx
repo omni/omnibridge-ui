@@ -1,7 +1,6 @@
 import { BigNumber } from 'ethers';
 import React from 'react';
 
-import { CONFIG } from '../config';
 import { NetworkIcon } from '../icons/NetworkIcon';
 
 export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000';
@@ -9,6 +8,14 @@ export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000';
 export const LARGEST_UINT256 = BigNumber.from(
   '115792089237316195423570985008687907853269984665640564039457584007913129639935',
 );
+
+export const POLLING_INTERVAL =
+  process.env.REACT_APP_UI_STATUS_UPDATE_INTERVAL || 1000;
+
+export const HOME_NETWORK =
+  process.env.REACT_APP_HOME_NETWORK === 'xdai' ? 100 : 77;
+
+export const INFURA_ID = process.env.REACT_APP_INFURA_ID;
 
 export const networkNames = {
   1: 'ETH Mainnet',
@@ -24,27 +31,8 @@ export const networkNames = {
 };
 
 export const networkOptions =
-  CONFIG.network === 77
+  HOME_NETWORK === 100
     ? [
-        // sokol
-        {
-          value: 77,
-          key: 0,
-          bridge: { chainId: 42, name: networkNames[42] },
-          label: 'Sokol',
-          name: networkNames[77],
-          icon: <NetworkIcon />,
-        },
-        {
-          value: 42,
-          key: 1,
-          bridge: { chainId: 77, name: networkNames[77] },
-          label: 'Kovan',
-          name: networkNames[42],
-          icon: <NetworkIcon />,
-        },
-      ]
-    : [
         // xdai
         {
           value: 100,
@@ -62,15 +50,35 @@ export const networkOptions =
           name: networkNames[1],
           icon: <NetworkIcon />,
         },
+      ]
+    : [
+        // sokol
+        {
+          value: 77,
+          key: 0,
+          bridge: { chainId: 42, name: networkNames[42] },
+          label: 'Sokol',
+          name: networkNames[77],
+          icon: <NetworkIcon />,
+        },
+        {
+          value: 42,
+          key: 1,
+          bridge: { chainId: 77, name: networkNames[77] },
+          label: 'Kovan',
+          name: networkNames[42],
+          icon: <NetworkIcon />,
+        },
       ];
 
 export const chainUrls = {
   100: {
     rpc: process.env.REACT_APP_HOME_RPC_URL || 'https://xdai.poanetwork.dev',
     explorer:
-      process.env.REACT_APP_HOME_EXPLORER || 'https://blockscout.com/poa/xdai',
+      process.env.REACT_APP_HOME_EXPLORER_PREFIX ||
+      'https://blockscout.com/poa/xdai',
     monitor:
-      process.env.REACT_APP_AMB_LIVE_MONITOR ||
+      process.env.REACT_APP_AMB_LIVE_MONITOR_PREFIX ||
       'https://alm-xdai.herokuapp.com',
     chainId: 100,
     name: networkNames[100],
@@ -78,10 +86,12 @@ export const chainUrls = {
   1: {
     rpc:
       process.env.REACT_APP_FOREIGN_RPC_URL ||
-      `https://mainnet.infura.io/v3/${CONFIG.infuraId}`,
-    explorer: process.env.REACT_APP_FOREIGN_EXPLORER || 'https://etherscan.io',
+      `https://mainnet.infura.io/v3/${INFURA_ID}`,
+    explorer:
+      process.env.REACT_APP_FOREIGN_EXPLORER_PREFIX ||
+      'https://blockscout.com/eth/mainnet',
     monitor:
-      process.env.REACT_APP_AMB_LIVE_MONITOR ||
+      process.env.REACT_APP_AMB_LIVE_MONITOR_PREFIX ||
       'https://alm-xdai.herokuapp.com',
     chainId: 1,
     name: networkNames[1],
@@ -89,9 +99,10 @@ export const chainUrls = {
   77: {
     rpc: process.env.REACT_APP_HOME_RPC_URL || 'https://sokol.poa.network',
     explorer:
-      process.env.REACT_APP_HOME_EXPLORER || 'https://blockscout.com/poa/sokol',
+      process.env.REACT_APP_HOME_EXPLORER_PREFIX ||
+      'https://blockscout.com/poa/sokol',
     monitor:
-      process.env.REACT_APP_AMB_LIVE_MONITOR ||
+      process.env.REACT_APP_AMB_LIVE_MONITOR_PREFIX ||
       'https://alm-test-amb.herokuapp.com',
     chainId: 77,
     name: networkNames[77],
@@ -99,11 +110,12 @@ export const chainUrls = {
   42: {
     rpc:
       process.env.REACT_APP_FOREIGN_RPC_URL ||
-      `https://kovan.infura.io/v3/${CONFIG.infuraId}`,
+      `https://kovan.infura.io/v3/${INFURA_ID}`,
     explorer:
-      process.env.REACT_APP_FOREIGN_EXPLORER || 'https://kovan.etherscan.io',
+      process.env.REACT_APP_FOREIGN_EXPLORER_PREFIX ||
+      'https://blockscout.com/eth/kovan',
     monitor:
-      process.env.REACT_APP_AMB_LIVE_MONITOR ||
+      process.env.REACT_APP_AMB_LIVE_MONITOR_PREFIX ||
       'https://alm-test-amb.herokuapp.com',
     chainId: 42,
     name: networkNames[42],
@@ -156,24 +168,32 @@ export const graphEndpoints = {
 
 export const mediators = {
   42:
-    process.env.REACT_APP_FOREIGN_BRIDGE_ADDRESS ||
+    process.env.REACT_APP_FOREIGN_MEDIATOR_ADDRESS ||
     '0xA960d095470f7509955d5402e36d9DB984B5C8E2',
   77:
-    process.env.REACT_APP_HOME_BRIDGE_ADDRESS ||
+    process.env.REACT_APP_HOME_MEDIATOR_ADDRESS ||
     '0x40CdfF886715A4012fAD0219D15C98bB149AeF0e',
   1:
-    process.env.REACT_APP_FOREIGN_BRIDGE_ADDRESS ||
+    process.env.REACT_APP_FOREIGN_MEDIATOR_ADDRESS ||
     '0x88ad09518695c6c3712AC10a214bE5109a655671',
   100:
-    process.env.REACT_APP_HOME_BRIDGE_ADDRESS ||
+    process.env.REACT_APP_HOME_MEDIATOR_ADDRESS ||
     '0xf6A78083ca3e2a662D6dd1703c939c8aCE2e268d',
 };
 
 export const ambs = {
-  42: '0xFe446bEF1DbF7AFE24E81e05BC8B271C1BA9a560',
-  77: '0xFe446bEF1DbF7AFE24E81e05BC8B271C1BA9a560',
-  1: '0x4C36d2919e407f0Cc2Ee3c993ccF8ac26d9CE64e',
-  100: '0x75Df5AF045d91108662D8080fD1FEFAd6aA0bb59',
+  42:
+    process.env.REACT_APP_HOME_AMB_ADDRESS ||
+    '0xFe446bEF1DbF7AFE24E81e05BC8B271C1BA9a560',
+  77:
+    process.env.REACT_APP_FOREIGN_AMB_ADDRESS ||
+    '0xFe446bEF1DbF7AFE24E81e05BC8B271C1BA9a560',
+  1:
+    process.env.REACT_APP_HOME_AMB_ADDRESS ||
+    '0x4C36d2919e407f0Cc2Ee3c993ccF8ac26d9CE64e',
+  100:
+    process.env.REACT_APP_FOREIGN_AMB_ADDRESS ||
+    '0x75Df5AF045d91108662D8080fD1FEFAd6aA0bb59',
 };
 
 export const defaultTokensUrl = {
@@ -182,5 +202,3 @@ export const defaultTokensUrl = {
   42: '',
   77: '',
 };
-
-export const POLLING_INTERVAL = 1000;

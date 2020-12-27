@@ -9,6 +9,7 @@ import {
   getBridgeNetwork,
   getMediatorAddress,
   isxDaiChain,
+  logError,
 } from './helpers';
 import { getOverriddenToToken, isOverridden } from './overrides';
 import { getEthersProvider } from './providers';
@@ -47,9 +48,9 @@ export const fetchToTokenDetails = async ({
     abi,
     fromEthersProvider,
   );
-  const isNativeToken = await fromMediatorContract.isRegisteredAsNativeToken(
-    fromAddress,
-  );
+  const isNativeToken = await fromMediatorContract
+    .isRegisteredAsNativeToken(fromAddress)
+    .catch(contractError => logError({ contractError }));
 
   if (isNativeToken) {
     const toMediatorContract = new Contract(
@@ -58,7 +59,9 @@ export const fetchToTokenDetails = async ({
       toEthersProvider,
     );
 
-    const toAddress = await toMediatorContract.bridgedTokenAddress(fromAddress);
+    const toAddress = await toMediatorContract
+      .bridgedTokenAddress(fromAddress)
+      .catch(contractError => logError({ contractError }));
     const toName = isxDai ? `${fromName} on Mainnet` : `${fromName} on xDai`;
     return {
       name: toName,
@@ -68,7 +71,9 @@ export const fetchToTokenDetails = async ({
       mediator: toMediatorAddress,
     };
   }
-  const toAddress = await fromMediatorContract.nativeTokenAddress(fromAddress);
+  const toAddress = await fromMediatorContract
+    .nativeTokenAddress(fromAddress)
+    .catch(contractError => logError({ contractError }));
   const toName = getToName(fromName, isxDai);
   return {
     name: toName,
@@ -101,21 +106,20 @@ export const fetchToAmount = async (
   const mediatorContract = new Contract(mediatorAddress, abi, ethersProvider);
 
   try {
-    const fee = await mediatorContract.calculateFee(
-      feeType,
-      tokenAddress,
-      fromAmount,
-    );
+    const fee = await mediatorContract
+      .calculateFee(feeType, tokenAddress, fromAmount)
+      .catch(contractError => logError({ contractError }));
     return fromAmount.sub(fee);
-  } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error({ amountError: error });
+  } catch (amountError) {
+    logError({ amountError });
     return fromAmount;
   }
 };
 
 export const fetchToToken = async fromToken => {
-  const toToken = await fetchToTokenDetails(fromToken);
+  const toToken = await fetchToTokenDetails(
+    fromToken,
+  ).catch(tokenDetailsError => logError({ tokenDetailsError }));
 
   return {
     symbol: fromToken.symbol,
@@ -146,17 +150,18 @@ export const fetchTokenLimits = async (token, walletProvider) => {
   try {
     const isRegistered =
       isOverriddenToken ||
-      (await mediatorContract.isTokenRegistered(token.address));
+      (await mediatorContract
+        .isTokenRegistered(token.address)
+        .catch(contractError => logError({ contractError })));
     if (isRegistered) {
       [minPerTx, maxPerTx, dailyLimit] = await Promise.all([
         mediatorContract.minPerTx(token.address),
         mediatorContract.maxPerTx(token.address),
         mediatorContract.dailyLimit(token.address),
-      ]);
+      ]).catch(contractError => logError({ contractError }));
     }
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error({ tokenError: error });
+    logError({ tokenError: error });
   }
   return {
     minPerTx,
@@ -201,7 +206,10 @@ export const transferTokens = async (
 ) => {
   const confirmsPromise = fetchConfirmations(token.chainId, ethersProvider);
   const txPromise = relayTokens(ethersProvider, token, receiver, amount);
-  const [tx, confirms] = await Promise.all([txPromise, confirmsPromise]);
+  const [tx, confirms] = await Promise.all([
+    txPromise,
+    confirmsPromise,
+  ]).catch(contractError => logError({ contractError }));
 
   return [tx, parseInt(confirms, 10)];
 };
