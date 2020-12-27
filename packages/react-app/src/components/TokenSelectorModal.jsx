@@ -45,9 +45,7 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
 
       setLoading(true);
       try {
-        const baseTokenList = await fetchTokenList(
-          chainId,
-        ).catch(contractError => logError({ contractError }));
+        const baseTokenList = await fetchTokenList(chainId);
         const customTokenList = uniqueTokens(
           baseTokenList.concat(
             customTokens.filter(token => token.chainId === chainId),
@@ -60,9 +58,9 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
               ethersProvider,
               token,
               account,
-            ).catch(contractError => logError({ contractError })),
+            ),
           })),
-        ).catch(contractError => logError({ contractError }));
+        );
         const sortedTokenList = tokenListWithBalance.sort(function checkBalance(
           { balance: balanceA },
           { balance: balanceB },

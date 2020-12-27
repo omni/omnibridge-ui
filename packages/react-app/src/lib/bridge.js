@@ -1,6 +1,5 @@
 import { BigNumber, Contract } from 'ethers';
 
-import { fetchConfirmations } from './amb';
 import { getGasPrice } from './gasPrice';
 import {
   defaultDailyLimit,
@@ -48,9 +47,9 @@ export const fetchToTokenDetails = async ({
     abi,
     fromEthersProvider,
   );
-  const isNativeToken = await fromMediatorContract
-    .isRegisteredAsNativeToken(fromAddress)
-    .catch(contractError => logError({ contractError }));
+  const isNativeToken = await fromMediatorContract.isRegisteredAsNativeToken(
+    fromAddress,
+  );
 
   if (isNativeToken) {
     const toMediatorContract = new Contract(
@@ -59,9 +58,8 @@ export const fetchToTokenDetails = async ({
       toEthersProvider,
     );
 
-    const toAddress = await toMediatorContract
-      .bridgedTokenAddress(fromAddress)
-      .catch(contractError => logError({ contractError }));
+    const toAddress = await toMediatorContract.bridgedTokenAddress(fromAddress);
+
     const toName = isxDai ? `${fromName} on Mainnet` : `${fromName} on xDai`;
     return {
       name: toName,
@@ -71,9 +69,8 @@ export const fetchToTokenDetails = async ({
       mediator: toMediatorAddress,
     };
   }
-  const toAddress = await fromMediatorContract
-    .nativeTokenAddress(fromAddress)
-    .catch(contractError => logError({ contractError }));
+  const toAddress = await fromMediatorContract.nativeTokenAddress(fromAddress);
+
   const toName = getToName(fromName, isxDai);
   return {
     name: toName,
@@ -106,9 +103,11 @@ export const fetchToAmount = async (
   const mediatorContract = new Contract(mediatorAddress, abi, ethersProvider);
 
   try {
-    const fee = await mediatorContract
-      .calculateFee(feeType, tokenAddress, fromAmount)
-      .catch(contractError => logError({ contractError }));
+    const fee = await mediatorContract.calculateFee(
+      feeType,
+      tokenAddress,
+      fromAmount,
+    );
     return fromAmount.sub(fee);
   } catch (amountError) {
     logError({ amountError });
@@ -150,15 +149,14 @@ export const fetchTokenLimits = async (token, walletProvider) => {
   try {
     const isRegistered =
       isOverriddenToken ||
-      (await mediatorContract
-        .isTokenRegistered(token.address)
-        .catch(contractError => logError({ contractError })));
+      (await mediatorContract.isTokenRegistered(token.address));
+
     if (isRegistered) {
       [minPerTx, maxPerTx, dailyLimit] = await Promise.all([
         mediatorContract.minPerTx(token.address),
         mediatorContract.maxPerTx(token.address),
         mediatorContract.dailyLimit(token.address),
-      ]).catch(contractError => logError({ contractError }));
+      ]);
     }
   } catch (error) {
     logError({ tokenError: error });
@@ -204,12 +202,5 @@ export const transferTokens = async (
   receiver,
   amount,
 ) => {
-  const confirmsPromise = fetchConfirmations(token.chainId, ethersProvider);
-  const txPromise = relayTokens(ethersProvider, token, receiver, amount);
-  const [tx, confirms] = await Promise.all([
-    txPromise,
-    confirmsPromise,
-  ]).catch(contractError => logError({ contractError }));
-
-  return [tx, parseInt(confirms, 10)];
+  return relayTokens(ethersProvider, token, receiver, amount);
 };

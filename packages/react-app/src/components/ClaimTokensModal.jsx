@@ -25,27 +25,26 @@ import {
   getMessageFromMessageID,
   getMessageStatus,
 } from '../lib/amb';
-import { HOME_NETWORK , POLLING_INTERVAL } from '../lib/constants';
+import { HOME_NETWORK, POLLING_INTERVAL } from '../lib/constants';
 import {
   getBridgeNetwork,
   getNetworkName,
   isxDaiChain,
   logError,
 } from '../lib/helpers';
-import { useXDaiTransfers } from '../lib/history';
+import { useClaimableTransfers } from '../lib/history';
 import { LoadingModal } from './LoadingModal';
 
 export const ClaimTokensModal = () => {
   const { ethersProvider, providerChainId } = useContext(Web3Context);
-  const { transfers, loading } = useXDaiTransfers();
+  const { transfers, loading } = useClaimableTransfers();
   const [claiming, setClaiming] = useState(false);
   const [needsClaim, setNeedsClaim] = useState([]);
   const [isOpen, setOpen] = useState(false);
   const [transfer, setTransfer] = useState();
   const isxDai = isxDaiChain(providerChainId);
-  const { message: msg, symbol, receivingTx } = transfer || {};
+  const { message: msg, symbol, receivingTx, sendingTx } = transfer || {};
   const [executed, setExecuted] = useState(false);
-  const [txHash, setTxHash] = useState(false);
 
   const onClose = () => {
     setOpen(false);
@@ -57,17 +56,13 @@ export const ClaimTokensModal = () => {
       10,
     );
     if (transfers) {
-      const filteredTransfers = transfers.filter(t => !t.receivingTx);
-      setNeedsClaim(filteredTransfers);
-      if (filteredTransfers.length === 1) {
-        setTransfer(filteredTransfers[0]);
+      setNeedsClaim(transfers);
+      if (transfers.length === 1) {
+        setTransfer(transfers[0]);
       }
-      if (
-        !isxDai &&
-        (isNaN(claimTokens) || claimTokens < filteredTransfers.length)
-      ) {
-        setOpen(filteredTransfers.length > 0);
-        window.sessionStorage.setItem('claimTokens', filteredTransfers.length);
+      if (!isxDai && (isNaN(claimTokens) || claimTokens < transfers.length)) {
+        setOpen(transfers.length > 0);
+        window.sessionStorage.setItem('claimTokens', transfers.length);
       }
     }
   }, [transfers, isxDai]);
@@ -79,20 +74,11 @@ export const ClaimTokensModal = () => {
     if (!claimable) return;
     setClaiming(true);
     try {
-      const tx = await executeSignatures(
-        ethersProvider,
-        providerChainId,
-        msg,
-        false,
-      ).catch(contractError => logError({ contractError }));
-      setTxHash(tx.hash);
-      await tx.wait();
-      setTxHash();
+      executeSignatures(ethersProvider, providerChainId, msg);
     } catch (executeError) {
+      setClaiming(false);
       logError({ executeError });
     }
-    setClaiming(false);
-    onClose();
   };
 
   useEffect(() => {
@@ -126,6 +112,8 @@ export const ClaimTokensModal = () => {
         if (status) {
           unsubscribe();
           window.sessionStorage.setItem('claimTokens', 0);
+          setClaiming(false);
+          onClose();
           setExecuted(true);
           return;
         }
@@ -153,8 +141,8 @@ export const ClaimTokensModal = () => {
   if (loading || claiming)
     return (
       <LoadingModal
-        loadingText={txHash ? 'Waiting for Execution' : ''}
-        txHash={txHash}
+        loadingText={claiming ? 'Waiting for Execution' : ''}
+        txHash={sendingTx}
       />
     );
   return (

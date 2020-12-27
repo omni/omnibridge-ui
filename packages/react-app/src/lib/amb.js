@@ -4,11 +4,14 @@ import { gql, request } from 'graphql-request';
 import { getGasPrice } from './gasPrice';
 import { getAMBAddress, getGraphEndpoint, logError } from './helpers';
 
-export const fetchConfirmations = async (chainId, walletProvider) => {
+export const fetchConfirmations = async (chainId, ethersProvider) => {
   const abi = ['function requiredBlockConfirmations() view returns (uint256)'];
   const address = getAMBAddress(chainId);
-  const ambContract = new Contract(address, abi, walletProvider);
-  return ambContract.requiredBlockConfirmations();
+  const ambContract = new Contract(address, abi, ethersProvider);
+  const requiredConfirmations = await ambContract
+    .requiredBlockConfirmations()
+    .catch(contractError => logError({ contractError }));
+  return parseInt(requiredConfirmations, 10);
 };
 
 export function strip0x(input) {
@@ -37,12 +40,7 @@ export function packSignatures(array) {
   return `0x${msgLength}${v}${r}${s}`;
 }
 
-export const executeSignatures = async (
-  ethersProvider,
-  chainId,
-  message,
-  wait = true,
-) => {
+export const executeSignatures = async (ethersProvider, chainId, message) => {
   const abi = [
     'function executeSignatures(bytes messageData, bytes signatures) external',
   ];
@@ -58,9 +56,6 @@ export const executeSignatures = async (
         gasPrice,
       })
       .catch(contractError => logError({ contractError }));
-    if (wait) {
-      await tx.wait().catch(contractError => logError({ contractError }));
-    }
     return tx;
   } catch (executeError) {
     logError({ executeError });

@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import Web3 from 'web3';
 import Web3Modal from 'web3modal';
 
-import { INFURA_ID,networkOptions } from '../lib/constants';
+import { INFURA_ID, networkOptions } from '../lib/constants';
 import { getNetworkName, logError } from '../lib/helpers';
 
 export const Web3Context = React.createContext({});
@@ -54,18 +54,14 @@ export const Web3Provider = ({ children }) => {
           web3Provider.currentProvider,
         );
 
-        const providerNetwork = await provider
-          .getNetwork()
-          .catch(web3ModalError => logError({ web3ModalError }));
+        const providerNetwork = await provider.getNetwork();
         setWeb3State({
           ethersProvider: provider,
           providerChainId: providerNetwork.chainId,
         });
         if (updateAccount) {
           const signer = provider.getSigner();
-          const gotAccount = await signer
-            .getAddress()
-            .catch(web3ModalError => logError({ web3ModalError }));
+          const gotAccount = await signer.getAddress();
           setAccount(gotAccount);
         }
       }
@@ -83,9 +79,7 @@ export const Web3Provider = ({ children }) => {
   const connectWeb3 = useCallback(async () => {
     try {
       setLoading(true);
-      const modalProvider = await web3Modal
-        .connect()
-        .catch(web3ModalError => logError({ web3ModalError }));
+      const modalProvider = await web3Modal.connect();
 
       await setWeb3Provider(modalProvider, true);
 
@@ -117,9 +111,7 @@ export const Web3Provider = ({ children }) => {
       window.ethereum.autoRefreshOnNetworkChange = false;
     }
     if (web3Modal.cachedProvider) {
-      connectWeb3().catch(error => {
-        logError({ web3ModalError: error });
-      });
+      connectWeb3();
     } else {
       setLoading(false);
     }

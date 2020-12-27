@@ -29,10 +29,7 @@ export const fetchAllowance = async (
   try {
     const abi = ['function allowance(address, address) view returns (uint256)'];
     const tokenContract = new Contract(address, abi, ethersProvider);
-    const allowance = await tokenContract
-      .allowance(account, mediator)
-      .catch(contractError => logError({ contractError }));
-    return allowance;
+    return tokenContract.allowance(account, mediator);
   } catch (allowanceError) {
     logError({ allowanceError });
   }
@@ -50,9 +47,9 @@ export const getMode = async (
   }
   const abi = ['function nativeTokenAddress(address) view returns (address)'];
   const mediatorContract = new Contract(mediatorAddress, abi, ethersProvider);
-  const nativeTokenAddress = await mediatorContract
-    .nativeTokenAddress(token.address)
-    .catch(contractError => logError({ contractError }));
+  const nativeTokenAddress = await mediatorContract.nativeTokenAddress(
+    token.address,
+  );
   if (nativeTokenAddress === ADDRESS_ZERO) return 'erc20';
   return 'erc677';
 };
@@ -76,7 +73,7 @@ export const fetchTokenDetails = async token => {
     tokenContract.symbol(),
     tokenContract.decimals(),
     getMode(ethersProvider, isOverriddenToken, mediatorAddress, token),
-  ]).catch(contractError => logError({ contractError }));
+  ]);
 
   const details = {
     address: token.address,
@@ -98,19 +95,13 @@ export const approveToken = async (
   const abi = ['function approve(address, uint256)'];
   const gasPrice = getGasPrice(chainId);
   const tokenContract = new Contract(address, abi, ethersProvider.getSigner());
-  const tx = await tokenContract
-    .approve(mediator, amount, { gasPrice })
-    .catch(contractError => logError({ contractError }));
-  return tx.wait().catch(contractError => logError({ contractError }));
+  const tx = await tokenContract.approve(mediator, amount, { gasPrice });
+  return tx.wait();
 };
 
 export const fetchTokenBalance = async (token, account) => {
   const ethersProvider = getEthersProvider(token.chainId);
-  return fetchTokenBalanceWithProvider(
-    ethersProvider,
-    token,
-    account,
-  ).catch(contractError => logError({ contractError }));
+  return fetchTokenBalanceWithProvider(ethersProvider, token, account);
 };
 
 export const fetchTokenBalanceWithProvider = async (
@@ -124,9 +115,7 @@ export const fetchTokenBalanceWithProvider = async (
   try {
     const abi = ['function balanceOf(address) view returns (uint256)'];
     const tokenContract = new Contract(address, abi, ethersProvider);
-    const balance = await tokenContract
-      .balanceOf(account)
-      .catch(contractError => logError({ contractError }));
+    const balance = await tokenContract.balanceOf(account);
     return balance;
   } catch (error) {
     logError({ balanceError: error });

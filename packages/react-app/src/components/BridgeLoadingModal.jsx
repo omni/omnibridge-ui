@@ -10,6 +10,7 @@ import {
 } from '@chakra-ui/react';
 import React, { useContext } from 'react';
 
+import BlueTickImage from '../assets/blue-tick.svg';
 import LoadingImage from '../assets/loading.svg';
 import { BridgeContext } from '../contexts/BridgeContext';
 import { useTransactionStatus } from '../hooks/useTransactionStatus';
@@ -67,11 +68,13 @@ export const BridgeLoadingModal = () => {
                     mr={4}
                     position="relative"
                   >
-                    <Text>{`${
-                      confirmations < totalConfirms
-                        ? confirmations
-                        : totalConfirms
-                    }/${totalConfirms}`}</Text>
+                    {confirmations < totalConfirms ? (
+                      <Text>
+                        {confirmations}/{totalConfirms}
+                      </Text>
+                    ) : (
+                      <Image src={BlueTickImage} />
+                    )}
                     <Flex
                       position="absolute"
                       justify="center"

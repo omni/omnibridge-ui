@@ -163,7 +163,7 @@ export function useUserHistory() {
   return { transfers, loading };
 }
 
-export function useXDaiTransfers() {
+export function useClaimableTransfers() {
   const { account, providerChainId } = useContext(Web3Context);
   const { txHash } = useContext(BridgeContext);
   const [transfers, setTransfers] = useState();
@@ -191,6 +191,5 @@ export function useXDaiTransfers() {
     update();
   }, [chainId, account, providerChainId, txHash]);
 
-  console.log({ transfers, loading });
   return { transfers, loading };
 }

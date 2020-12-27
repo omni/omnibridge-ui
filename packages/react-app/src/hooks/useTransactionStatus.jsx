@@ -6,16 +6,15 @@ import { getMessageFromTxHash, getMessageStatus } from '../lib/amb';
 import { POLLING_INTERVAL } from '../lib/constants';
 import { getBridgeNetwork, isxDaiChain, logError } from '../lib/helpers';
 
-export const useTransactionStatus = input => {
-  const { ethersProvider, account, providerChainId } = useContext(Web3Context);
+export const useTransactionStatus = () => {
+  const { ethersProvider, providerChainId } = useContext(Web3Context);
   const {
     loading,
     setLoading,
-    fromToken,
     txHash,
     setTxHash,
-    setToken,
     setUpdateFromAllowance,
+    totalConfirms,
   } = useContext(BridgeContext);
   const [needsConfirmation, setNeedsConfirmation] = useState(false);
   const [loadingText, setLoadingText] = useState('');
@@ -36,24 +35,29 @@ export const useTransactionStatus = input => {
       });
     };
 
-    if (!txHash || !ethersProvider || !loading || input) return unsubscribe;
+    if (!txHash || !ethersProvider || !loading) return unsubscribe;
 
     const chainId = providerChainId;
     let message = null;
     let status = false;
     const isxDai = isxDaiChain(chainId);
+    setLoadingText('Waiting for Block Confirmations');
 
     const getReceipt = async () => {
       try {
         const txReceipt = await ethersProvider
           .getTransactionReceipt(txHash)
-          .catch(contractError => logError({ contractError }));
+          .catch(txReceiptError => {
+            logError({ txReceiptError });
+            unsubscribe();
+            
+          });
         if (txReceipt) {
           setReceipt(txReceipt);
-          if (isxDai) {
-            setLoadingText('Collecting Signatures');
-          } else if (txReceipt) {
-            setLoadingText('Waiting for Execution');
+          if (txReceipt.confirmations >= totalConfirms) {
+            setLoadingText(
+              isxDai ? 'Collecting Signatures' : 'Waiting for Execution',
+            );
           }
 
           if (txReceipt && (!message || (isxDai && !message.signatures))) {
@@ -88,10 +92,10 @@ export const useTransactionStatus = input => {
           const timeoutId = setTimeout(() => getReceipt(), POLLING_INTERVAL);
           subscriptions.push(timeoutId);
         }
-      } catch (receiptError) {
+      } catch (txStatusError) {
         completeReceipt();
         unsubscribe();
-        logError({ receiptError });
+        logError({ txStatusError });
       }
     };
 
@@ -106,13 +110,9 @@ export const useTransactionStatus = input => {
     providerChainId,
     txHash,
     ethersProvider,
-    setToken,
-    fromToken,
-    account,
-    setLoading,
-    setReceipt,
+    totalConfirms,
     completeReceipt,
-    input,
+    setReceipt,
   ]);
 
   useEffect(() => {

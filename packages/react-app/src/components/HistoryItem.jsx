@@ -18,7 +18,7 @@ import {
   getMessageFromTxHash,
   getMessageStatus,
 } from '../lib/amb';
-import { HOME_NETWORK , POLLING_INTERVAL } from '../lib/constants';
+import { HOME_NETWORK, POLLING_INTERVAL } from '../lib/constants';
 import {
   getBridgeNetwork,
   getExplorerUrl,
@@ -96,18 +96,13 @@ export const HistoryItem = ({
     if (isxDai) {
       onOpen();
     } else {
-      setLoading(true);
       try {
-        const tx = await executeSignatures(
-          ethersProvider,
-          providerChainId,
-          message,
-        ).catch(contractError => logError({ contractError }));
-        setReceiving(tx.hash);
+        setLoading(true);
+        executeSignatures(ethersProvider, providerChainId, message);
       } catch (executeError) {
+        setLoading(false);
         logError({ executeError });
       }
-      setLoading(false);
     }
   };
 
@@ -133,6 +128,7 @@ export const HistoryItem = ({
         ]);
         if (execution) {
           setReceiving(execution.txHash);
+          setLoading(false);
         }
         if (request) {
           setMessage(request);

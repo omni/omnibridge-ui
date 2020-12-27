@@ -43,7 +43,11 @@ export const FromToken = () => {
           setBalance(b);
           setBalanceLoading(false);
         })
-        .catch(contractError => logError({ contractError }));
+        .catch(contractError => {
+          logError({ contractError });
+          setBalance(BigNumber.from(0));
+          setBalanceLoading(false);
+        });
     } else {
       setBalance(BigNumber.from(0));
     }

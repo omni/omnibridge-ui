@@ -3,6 +3,7 @@ import React, { useCallback, useContext, useEffect, useState } from 'react';
 
 import { useFeeType } from '../hooks/useFeeType';
 import { useRewardAddress } from '../hooks/useRewardAddress';
+import { useTotalConfirms } from '../hooks/useTotalConfirms';
 import {
   fetchToAmount,
   fetchTokenLimits,
@@ -40,7 +41,7 @@ export const BridgeProvider = ({ children }) => {
   const [toBalance, setToBalance] = useState(BigNumber.from(0));
   const [tokenLimits, setTokenLimits] = useState();
 
-  const [totalConfirms, setTotalConfirms] = useState(0);
+  const totalConfirms = useTotalConfirms();
   const isRewardAddress = useRewardAddress();
   const { homeToForeignFeeType, foreignToHomeFeeType } = useFeeType();
   const [fromAllowance, setAllowance] = useState(BigNumber.from(0));
@@ -48,9 +49,7 @@ export const BridgeProvider = ({ children }) => {
 
   useEffect(() => {
     if (fromToken && providerChainId === fromToken.chainId) {
-      fetchAllowance(fromToken, account, ethersProvider)
-        .then(setAllowance)
-        .catch(contractError => logError({ contractError }));
+      fetchAllowance(fromToken, account, ethersProvider).then(setAllowance);
     }
   }, [
     ethersProvider,
@@ -73,12 +72,12 @@ export const BridgeProvider = ({ children }) => {
       setToAmountLoading(true);
       const isxDai = isxDaiChain(providerChainId);
       const feeType = !isxDai ? foreignToHomeFeeType : homeToForeignFeeType;
-      fetchToAmount(isRewardAddress, feeType, fromToken, toToken, amount)
-        .then(gotToAmount => {
+      fetchToAmount(isRewardAddress, feeType, fromToken, toToken, amount).then(
+        gotToAmount => {
           setToAmount(gotToAmount);
           setToAmountLoading(false);
-        })
-        .catch(contractError => logError({ contractError }));
+        },
+      );
     },
     [
       fromToken,
@@ -100,7 +99,7 @@ export const BridgeProvider = ({ children }) => {
       const [token, gotToToken] = await Promise.all([
         fetchTokenDetails(tokenWithoutMode),
         fetchToToken(tokenWithoutMode),
-      ]).catch(contractError => logError({ contractError }));
+      ]);
       setFromToken(token);
       setTokenLimits({
         minPerTx: defaultMinPerTx(isxDaiChain(token.chainId), token.decimals),
@@ -108,11 +107,9 @@ export const BridgeProvider = ({ children }) => {
         dailyLimit: defaultDailyLimit(token.decimals),
       });
       if (token.chainId === providerChainId) {
-        fetchTokenLimits(token, ethersProvider)
-          .then(limits => {
-            setTokenLimits(limits);
-          })
-          .catch(contractError => logError({ contractError }));
+        fetchTokenLimits(token, ethersProvider).then(limits => {
+          setTokenLimits(limits);
+        });
       }
       setToToken(gotToToken);
       setLoading(false);
@@ -127,11 +124,7 @@ export const BridgeProvider = ({ children }) => {
         window.localStorage.getItem('infinite-unlock') === 'true'
           ? LARGEST_UINT256
           : fromAmount;
-      await approveToken(
-        ethersProvider,
-        fromToken,
-        approvalAmount,
-      ).catch(contractError => logError({ contractError }));
+      await approveToken(ethersProvider, fromToken, approvalAmount);
       setAllowance(approvalAmount);
     } catch (error) {
       logError({ approveError: error });
@@ -142,13 +135,12 @@ export const BridgeProvider = ({ children }) => {
   const transfer = useCallback(async () => {
     setLoading(true);
     try {
-      const [tx, numConfirms] = await transferTokens(
+      const tx = await transferTokens(
         ethersProvider,
         fromToken,
         receiver || account,
         fromAmount,
-      ).catch(contractError => logError({ contractError }));
-      setTotalConfirms(numConfirms);
+      );
       setTxHash(tx.hash);
     } catch (transferError) {
       setLoading(false);

@@ -10,6 +10,7 @@ import {
 } from '@chakra-ui/react';
 import React, { useContext } from 'react';
 
+import BlueTickImage from '../assets/blue-tick.svg';
 import LoadingImage from '../assets/loading.svg';
 import { Web3Context } from '../contexts/Web3Context';
 import { getMonitorUrl } from '../lib/helpers';
@@ -49,7 +50,7 @@ export const LoadingModal = ({ loadingText, txHash }) => {
                     mr={4}
                     position="relative"
                   >
-                    <Text />
+                    <Image src={BlueTickImage} />
                     <Flex
                       position="absolute"
                       justify="center"
