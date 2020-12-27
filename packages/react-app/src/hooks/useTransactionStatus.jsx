@@ -7,7 +7,7 @@ import { POLLING_INTERVAL } from '../lib/constants';
 import { getBridgeNetwork, isxDaiChain, logError } from '../lib/helpers';
 
 export const useTransactionStatus = () => {
-  const { account, ethersProvider, providerChainId } = useContext(Web3Context);
+  const { ethersProvider, providerChainId } = useContext(Web3Context);
   const {
     loading,
     setLoading,
@@ -17,19 +17,15 @@ export const useTransactionStatus = () => {
     totalConfirms,
   } = useContext(BridgeContext);
   const [needsConfirmation, setNeedsConfirmation] = useState(false);
-  const [loadingText, setLoadingText] = useState('');
+  const [loadingText, setLoadingText] = useState();
   const [receipt, setReceipt] = useState();
   const completeReceipt = useCallback(() => {
+    setTxHash();
     setUpdateFromAllowance(a => !a);
     setLoadingText();
     setReceipt();
-    setTxHash();
     setLoading(false);
   }, [setLoading, setUpdateFromAllowance, setTxHash]);
-
-  useEffect(() => {
-    completeReceipt();
-  }, [account, providerChainId, completeReceipt]);
 
   useEffect(() => {
     const subscriptions = [];
@@ -39,7 +35,11 @@ export const useTransactionStatus = () => {
       });
     };
 
-    if (!txHash || !ethersProvider || !loading) return unsubscribe;
+    if (!txHash || !ethersProvider || !loading) {
+      setReceipt();
+      setLoadingText();
+      return unsubscribe;
+    }
 
     const chainId = providerChainId;
     let message = null;

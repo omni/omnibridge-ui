@@ -1,4 +1,4 @@
-import { Flex, Image, Text, useToast } from '@chakra-ui/react';
+import { Flex, Image, Spinner, Text, useToast } from '@chakra-ui/react';
 import React, { useContext } from 'react';
 
 import UnlockIcon from '../assets/unlock.svg';
@@ -10,6 +10,7 @@ export const UnlockButton = () => {
     fromBalance: balance,
     allowed,
     approve,
+    unlockLoading,
   } = useContext(BridgeContext);
   const toast = useToast();
   const showError = msg => {
@@ -34,7 +35,7 @@ export const UnlockButton = () => {
     return true;
   };
   const onClick = () => {
-    if (!allowed && valid()) approve();
+    if (!unlockLoading && !allowed && valid()) approve();
   };
   return (
     <Flex
@@ -69,10 +70,16 @@ export const UnlockButton = () => {
         justify="center"
         align="center"
       >
-        <Text color="white" fontWeight="bold">
-          {allowed ? 'Unlocked' : 'Unlock'}
-        </Text>
-        <Image src={UnlockIcon} ml={2} />
+        {unlockLoading ? (
+          <Spinner color="white" size="sm" />
+        ) : (
+          <>
+            <Text color="white" fontWeight="bold">
+              {allowed ? 'Unlocked' : 'Unlock'}
+            </Text>
+            <Image src={UnlockIcon} ml={2} />
+          </>
+        )}
       </Flex>
     </Flex>
   );

@@ -98,8 +98,9 @@ export const BridgeProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
+  const [unlockLoading, setUnlockLoading] = useState(false);
   const approve = useCallback(async () => {
-    setLoading(true);
+    setUnlockLoading(true);
     try {
       const approvalAmount =
         window.localStorage.getItem('infinite-unlock') === 'true'
@@ -110,7 +111,7 @@ export const BridgeProvider = ({ children }) => {
     } catch (error) {
       logError({ approveError: error });
     }
-    setLoading(false);
+    setUnlockLoading(false);
   }, [fromAmount, fromToken, ethersProvider]);
 
   const transfer = useCallback(async () => {
@@ -151,6 +152,7 @@ export const BridgeProvider = ({ children }) => {
     setAmountInput('');
     setAmount(BigNumber.from(0));
     setTxHash();
+    setLoading(false);
     setDefaultToken(providerChainId);
   }, [providerChainId, setAmount, setDefaultToken]);
 
@@ -167,7 +169,6 @@ export const BridgeProvider = ({ children }) => {
 
   useEffect(() => {
     setUpdateBalance(t => !t);
-    if (!txHash) setLoading(false);
   }, [txHash]);
 
   return (
@@ -202,6 +203,7 @@ export const BridgeProvider = ({ children }) => {
         setReceiver,
         updateBalance,
         setUpdateBalance,
+        unlockLoading,
       }}
     >
       {children}

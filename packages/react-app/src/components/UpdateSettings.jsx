@@ -20,7 +20,7 @@ import React, { useRef, useState } from 'react';
 import SettingsImage from '../assets/settings.svg';
 import { SettingsIcon } from '../icons/SettingsIcon';
 
-export const UpdateSettings = () => {
+export const UpdateSettings = ({ close }) => {
   const initialRef = useRef();
   const localMainnetRPC = window.localStorage.getItem('mainnet-rpc-url');
   const [mainnetRPC, setMainnetRPC] = useState(localMainnetRPC || '');
@@ -53,7 +53,10 @@ export const UpdateSettings = () => {
         color="grey"
         transition="0.25s"
         _hover={{ color: 'blue.500' }}
-        onClick={onOpen}
+        onClick={() => {
+          close();
+          onOpen();
+        }}
       >
         <SettingsIcon mr={2} />
         <Text color="black"> Settings</Text>

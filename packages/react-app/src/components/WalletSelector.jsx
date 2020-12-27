@@ -18,12 +18,12 @@ import {
   getNetworkName,
 } from '../lib/helpers';
 
-export const WalletSelector = props => {
+export const WalletSelector = ({ close }) => {
   const { disconnect, account, providerChainId } = useContext(Web3Context);
 
   const placement = useBreakpointValue({ base: 'bottom', md: 'bottom-end' });
   return (
-    <Flex {...props}>
+    <Flex>
       <Popover placement={placement}>
         <PopoverTrigger>
           <Button colorScheme="blue">
@@ -61,7 +61,13 @@ export const WalletSelector = props => {
               <Text mb={{ base: 4, md: undefined }}>
                 Connected to {getNetworkName(providerChainId)}
               </Text>
-              <Button colorScheme="blue" onClick={disconnect}>
+              <Button
+                colorScheme="blue"
+                onClick={() => {
+                  disconnect();
+                  close();
+                }}
+              >
                 <Text> Disconnect </Text>
               </Button>
             </Flex>

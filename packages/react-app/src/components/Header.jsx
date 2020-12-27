@@ -101,13 +101,14 @@ export const Header = () => {
                 color="grey"
                 transition="0.25s"
                 _hover={{ color: 'blue.500' }}
+                onClick={() => setOpen(false)}
               >
                 <HistoryIcon mr={2} />
                 <Text color="black"> History</Text>
               </Flex>
             </Link>
-            <UpdateSettings />
-            <WalletSelector />
+            <UpdateSettings close={() => setOpen(false)} />
+            <WalletSelector close={() => setOpen(false)} />
           </>
         )}
       </Stack>
