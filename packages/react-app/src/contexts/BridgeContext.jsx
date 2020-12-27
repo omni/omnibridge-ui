@@ -11,14 +11,7 @@ import {
   transferTokens,
 } from '../lib/bridge';
 import { ADDRESS_ZERO, LARGEST_UINT256 } from '../lib/constants';
-import {
-  defaultDailyLimit,
-  defaultMaxPerTx,
-  defaultMinPerTx,
-  getDefaultToken,
-  isxDaiChain,
-  logError,
-} from '../lib/helpers';
+import { getDefaultToken, isxDaiChain, logError } from '../lib/helpers';
 import { approveToken, fetchAllowance, fetchTokenDetails } from '../lib/token';
 import { Web3Context } from './Web3Context';
 
@@ -89,33 +82,20 @@ export const BridgeProvider = ({ children }) => {
     ],
   );
 
-  const setToken = useCallback(
-    async tokenWithoutMode => {
-      setLoading(true);
-      setAmountInput('');
-      setFromAmount(0);
-      setAllowed(true);
-      setToAmount(0);
-      const [token, gotToToken] = await Promise.all([
-        fetchTokenDetails(tokenWithoutMode),
-        fetchToToken(tokenWithoutMode),
-      ]);
-      setFromToken(token);
-      setTokenLimits({
-        minPerTx: defaultMinPerTx(isxDaiChain(token.chainId), token.decimals),
-        maxPerTx: defaultMaxPerTx(token.decimals),
-        dailyLimit: defaultDailyLimit(token.decimals),
-      });
-      if (token.chainId === providerChainId) {
-        fetchTokenLimits(token, ethersProvider).then(limits => {
-          setTokenLimits(limits);
-        });
-      }
-      setToToken(gotToToken);
-      setLoading(false);
-    },
-    [ethersProvider, providerChainId],
-  );
+  const setToken = useCallback(async tokenWithoutMode => {
+    setLoading(true);
+    setAmountInput('');
+    setFromAmount(0);
+    setAllowed(true);
+    setToAmount(0);
+    const [token, gotToToken] = await Promise.all([
+      fetchTokenDetails(tokenWithoutMode),
+      fetchToToken(tokenWithoutMode),
+    ]);
+    setFromToken(token);
+    setToToken(gotToToken);
+    setLoading(false);
+  }, []);
 
   const approve = useCallback(async () => {
     setLoading(true);
@@ -173,6 +153,17 @@ export const BridgeProvider = ({ children }) => {
     setDefaultToken(providerChainId);
   }, [providerChainId, setAmount, setDefaultToken]);
 
+  const updateTokenLimits = useCallback(async () => {
+    if (fromToken && fromToken.chainId === providerChainId) {
+      const limits = await fetchTokenLimits(fromToken, ethersProvider);
+      setTokenLimits(limits);
+    }
+  }, [fromToken, providerChainId, ethersProvider]);
+
+  useEffect(() => {
+    updateTokenLimits();
+  }, [updateTokenLimits]);
+
   return (
     <BridgeContext.Provider
       value={{
@@ -199,6 +190,7 @@ export const BridgeProvider = ({ children }) => {
         toBalance,
         setToBalance,
         tokenLimits,
+        updateTokenLimits,
         setUpdateFromAllowance,
         receiver,
         setReceiver,

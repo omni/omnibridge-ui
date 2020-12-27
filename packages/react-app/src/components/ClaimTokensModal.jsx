@@ -64,6 +64,8 @@ export const ClaimTokensModal = () => {
         setOpen(transfers.length > 0);
         window.sessionStorage.setItem('claimTokens', transfers.length);
       }
+    } else {
+      onClose();
     }
   }, [transfers, isxDai]);
 

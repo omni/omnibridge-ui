@@ -5,17 +5,29 @@ import {
   PopoverBody,
   PopoverContent,
   PopoverTrigger,
+  Spinner,
   Text,
 } from '@chakra-ui/react';
 import { utils } from 'ethers';
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 
 import Details from '../assets/details.svg';
 import { BridgeContext } from '../contexts/BridgeContext';
 import { formatValue } from '../lib/helpers';
 
 export const SystemFeedback = () => {
-  const { fromToken: token, tokenLimits } = useContext(BridgeContext);
+  const { fromToken: token, tokenLimits, updateTokenLimits } = useContext(
+    BridgeContext,
+  );
+
+  const [loading, setLoading] = useState(false);
+
+  const update = async () => {
+    setLoading(true);
+    await updateTokenLimits();
+    setLoading(false);
+  };
+
   return (
     <Popover>
       <PopoverTrigger>
@@ -24,6 +36,7 @@ export const SystemFeedback = () => {
           color="blue.400"
           cursor="pointer"
           pb={{ base: 2, md: 0 }}
+          onClick={update}
         >
           <Image src={Details} mr={2} />
           <Text>System Feedback</Text>
@@ -39,27 +52,39 @@ export const SystemFeedback = () => {
           >
             <Flex align="center" justify="space-between">
               <Text color="grey"> Daily Limit </Text>
-              <Text fontWeight="bold" ml={4}>
-                {`${utils.commify(
-                  formatValue(tokenLimits.dailyLimit, token.decimals),
-                )} ${token.symbol}`}
-              </Text>
+              {loading ? (
+                <Spinner size="sm" />
+              ) : (
+                <Text fontWeight="bold" ml={4}>
+                  {`${utils.commify(
+                    formatValue(tokenLimits.dailyLimit, token.decimals),
+                  )} ${token.symbol}`}
+                </Text>
+              )}
             </Flex>
             <Flex align="center" justify="space-between">
               <Text color="grey"> Maximum per transaction </Text>
-              <Text fontWeight="bold" ml={4}>
-                {`${utils.commify(
-                  formatValue(tokenLimits.maxPerTx, token.decimals),
-                )} ${token.symbol}`}
-              </Text>
+              {loading ? (
+                <Spinner size="sm" />
+              ) : (
+                <Text fontWeight="bold" ml={4}>
+                  {`${utils.commify(
+                    formatValue(tokenLimits.maxPerTx, token.decimals),
+                  )} ${token.symbol}`}
+                </Text>
+              )}
             </Flex>
             <Flex align="center" justify="space-between">
               <Text color="grey"> Minimum per transaction </Text>
-              <Text fontWeight="bold" ml={4}>
-                {`${utils.commify(
-                  formatValue(tokenLimits.minPerTx, token.decimals),
-                )} ${token.symbol}`}
-              </Text>
+              {loading ? (
+                <Spinner size="sm" />
+              ) : (
+                <Text fontWeight="bold" ml={4}>
+                  {`${utils.commify(
+                    formatValue(tokenLimits.minPerTx, token.decimals),
+                  )} ${token.symbol}`}
+                </Text>
+              )}
             </Flex>
           </PopoverBody>
         )}
