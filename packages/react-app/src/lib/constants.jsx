@@ -1,7 +1,4 @@
 import { BigNumber } from 'ethers';
-import React from 'react';
-
-import { NetworkIcon } from '../icons/NetworkIcon';
 
 export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000';
 
@@ -19,57 +16,17 @@ export const INFURA_ID = process.env.REACT_APP_INFURA_ID;
 
 export const networkNames = {
   1: 'ETH Mainnet',
-  3: 'Ropsten',
-  4: 'Rinkeby',
-  30: 'RSK Mainnet',
-  31: 'RSK Testnet',
   42: 'Kovan Testnet',
-  61: 'Ethereum Classic',
   77: 'Sokol Testnet',
-  99: 'POA Network',
   100: 'xDai Chain',
 };
 
-export const networkOptions =
-  HOME_NETWORK === 100
-    ? [
-        // xdai
-        {
-          value: 100,
-          key: 0,
-          bridge: { chainId: 1, name: networkNames[1] },
-          label: 'xDai',
-          name: networkNames[100],
-          icon: <NetworkIcon />,
-        },
-        {
-          value: 1,
-          key: 1,
-          bridge: { chainId: 100, name: networkNames[100] },
-          label: 'Mainnet',
-          name: networkNames[1],
-          icon: <NetworkIcon />,
-        },
-      ]
-    : [
-        // sokol
-        {
-          value: 77,
-          key: 0,
-          bridge: { chainId: 42, name: networkNames[42] },
-          label: 'Sokol',
-          name: networkNames[77],
-          icon: <NetworkIcon />,
-        },
-        {
-          value: 42,
-          key: 1,
-          bridge: { chainId: 77, name: networkNames[77] },
-          label: 'Kovan',
-          name: networkNames[42],
-          icon: <NetworkIcon />,
-        },
-      ];
+export const networkLabels = {
+  1: 'Mainnet',
+  42: 'Kovan',
+  77: 'Sokol',
+  100: 'xDai',
+};
 
 export const chainUrls = {
   100: {

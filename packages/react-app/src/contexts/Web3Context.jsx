@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import Web3 from 'web3';
 import Web3Modal from 'web3modal';
 
-import { INFURA_ID, networkOptions } from '../lib/constants';
+import { INFURA_ID } from '../lib/constants';
 import { getNetworkName, logError } from '../lib/helpers';
 
 export const Web3Context = React.createContext({});
@@ -116,7 +116,6 @@ export const Web3Provider = ({ children }) => {
       setLoading(false);
     }
   }, [connectWeb3]);
-  const network = networkOptions.find(n => n.value === providerChainId);
 
   return (
     <Web3Context.Provider
@@ -127,7 +126,6 @@ export const Web3Provider = ({ children }) => {
         disconnect,
         providerChainId,
         account,
-        network,
       }}
     >
       {children}

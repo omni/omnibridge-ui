@@ -4,7 +4,7 @@ import React, { useContext } from 'react';
 import { BridgeContext } from '../contexts/BridgeContext';
 import { Web3Context } from '../contexts/Web3Context';
 import { HOME_NETWORK } from '../lib/constants';
-import { getBridgeNetwork } from '../lib/helpers';
+import { getBridgeNetwork, getNetworkName } from '../lib/helpers';
 import { AdvancedMenu } from './AdvancedMenu';
 import { BridgeLoadingModal } from './BridgeLoadingModal';
 import { ClaimTokensModal } from './ClaimTokensModal';
@@ -16,10 +16,11 @@ import { TransferButton } from './TransferButton';
 import { UnlockButton } from './UnlockButton';
 
 export const BridgeTokens = () => {
-  const { network } = useContext(Web3Context);
+  const { providerChainId: chainId } = useContext(Web3Context);
   const { fromToken } = useContext(BridgeContext);
   const isERC20Dai = isERC20DaiAddress(fromToken);
   const smallScreen = useBreakpointValue({ base: true, lg: false });
+  const bridgeChainId = getBridgeNetwork(chainId);
 
   return (
     <Flex
@@ -35,75 +36,69 @@ export const BridgeTokens = () => {
       my="auto"
     >
       <BridgeLoadingModal />
-      {network && network.value === getBridgeNetwork(HOME_NETWORK) ? (
-        <ClaimTokensModal />
-      ) : null}
-      {network && (
-        <>
-          {!smallScreen && (
-            <Flex w="100%" justify="space-between">
-              <Flex align="flex-start" direction="column">
-                <Text color="greyText" fontSize="sm">
-                  From
-                </Text>
-                <Text fontWeight="bold" fontSize="lg">
-                  {network.name}
-                </Text>
-              </Flex>
-              {isERC20Dai && <DaiWarning />}
-              <Flex align="flex-end" direction="column">
-                <Text color="greyText" fontSize="sm">
-                  To
-                </Text>
-                <Text fontWeight="bold" fontSize="lg" textAlign="right">
-                  {network.bridge.name}
-                </Text>
-              </Flex>
-            </Flex>
-          )}
-          <Grid
-            templateColumns={{ base: 'initial', lg: '2fr 1fr 2fr' }}
-            width="100%"
-            my={4}
-          >
-            {smallScreen && isERC20Dai && <DaiWarning />}
-            {smallScreen && (
-              <Flex align="flex-start" direction="column" m={2}>
-                <Text color="greyText" fontSize="sm">
-                  From
-                </Text>
-                <Text fontWeight="bold" fontSize="lg">
-                  {network.name}
-                </Text>
-              </Flex>
-            )}
-            <FromToken />
-            <Flex
-              direction="column"
-              px={{ base: 2, lg: 4 }}
-              my={{ base: 2, lg: 0 }}
-              align="center"
-              w="100%"
-            >
-              <UnlockButton />
-              <TransferButton />
-            </Flex>
-            {smallScreen && (
-              <Flex align="flex-end" direction="column" m={2}>
-                <Text color="greyText" fontSize="sm">
-                  To
-                </Text>
-                <Text fontWeight="bold" fontSize="lg" textAlign="right">
-                  {network.bridge.name}
-                </Text>
-              </Flex>
-            )}
-            <ToToken />
-          </Grid>
-          <AdvancedMenu />
-          <SystemFeedback />
-        </>
+      {bridgeChainId === HOME_NETWORK ? <ClaimTokensModal /> : null}
+      {!smallScreen && (
+        <Flex w="100%" justify="space-between">
+          <Flex align="flex-start" direction="column">
+            <Text color="greyText" fontSize="sm">
+              From
+            </Text>
+            <Text fontWeight="bold" fontSize="lg">
+              {getNetworkName(chainId)}
+            </Text>
+          </Flex>
+          {isERC20Dai && <DaiWarning />}
+          <Flex align="flex-end" direction="column">
+            <Text color="greyText" fontSize="sm">
+              To
+            </Text>
+            <Text fontWeight="bold" fontSize="lg" textAlign="right">
+              {getNetworkName(bridgeChainId)}
+            </Text>
+          </Flex>
+        </Flex>
       )}
+      <Grid
+        templateColumns={{ base: 'initial', lg: '2fr 1fr 2fr' }}
+        width="100%"
+        my={4}
+      >
+        {smallScreen && isERC20Dai && <DaiWarning />}
+        {smallScreen && (
+          <Flex align="flex-start" direction="column" m={2}>
+            <Text color="greyText" fontSize="sm">
+              From
+            </Text>
+            <Text fontWeight="bold" fontSize="lg">
+              {getNetworkName(chainId)}
+            </Text>
+          </Flex>
+        )}
+        <FromToken />
+        <Flex
+          direction="column"
+          px={{ base: 2, lg: 4 }}
+          my={{ base: 2, lg: 0 }}
+          align="center"
+          w="100%"
+        >
+          <UnlockButton />
+          <TransferButton />
+        </Flex>
+        {smallScreen && (
+          <Flex align="flex-end" direction="column" m={2}>
+            <Text color="greyText" fontSize="sm">
+              To
+            </Text>
+            <Text fontWeight="bold" fontSize="lg" textAlign="right">
+              {getNetworkName(bridgeChainId)}
+            </Text>
+          </Flex>
+        )}
+        <ToToken />
+      </Grid>
+      <AdvancedMenu />
+      <SystemFeedback />
     </Flex>
   );
 };

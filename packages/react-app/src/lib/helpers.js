@@ -7,6 +7,7 @@ import {
   defaultTokensUrl,
   graphEndpoints,
   mediators,
+  networkLabels,
   networkNames,
 } from './constants';
 import { getOverriddenMediator, isOverridden } from './overrides';
@@ -52,6 +53,7 @@ export const getMediatorAddressWithOverride = (tokenAddress, chainId) => {
 export const getMediatorAddress = chainId =>
   mediators[chainId] || mediators[100];
 export const getNetworkName = chainId => networkNames[chainId] || 'Unknown';
+export const getNetworkLabel = chainId => networkLabels[chainId] || 'Unknown';
 export const getAMBAddress = chainId => ambs[chainId] || ambs[100];
 export const getGraphEndpoint = chainId =>
   graphEndpoints[chainId] || graphEndpoints[100];

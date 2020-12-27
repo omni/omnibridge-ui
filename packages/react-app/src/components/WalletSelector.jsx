@@ -12,10 +12,14 @@ import React, { useContext } from 'react';
 
 import { Web3Context } from '../contexts/Web3Context';
 import { WalletIcon } from '../icons/WalletIcon';
-import { getAccountString } from '../lib/helpers';
+import {
+  getAccountString,
+  getNetworkLabel,
+  getNetworkName,
+} from '../lib/helpers';
 
 export const WalletSelector = props => {
-  const { disconnect, account, network } = useContext(Web3Context);
+  const { disconnect, account, providerChainId } = useContext(Web3Context);
 
   const placement = useBreakpointValue({ base: 'bottom', md: 'bottom-end' });
   return (
@@ -37,7 +41,7 @@ export const WalletSelector = props => {
               fontWeight="600"
               ml={4}
             >
-              {network.label}
+              {getNetworkLabel(providerChainId)}
             </Flex>
           </Button>
         </PopoverTrigger>
@@ -55,7 +59,7 @@ export const WalletSelector = props => {
               fontWeight="bold"
             >
               <Text mb={{ base: 4, md: undefined }}>
-                Connected to {network.name}
+                Connected to {getNetworkName(providerChainId)}
               </Text>
               <Button colorScheme="blue" onClick={disconnect}>
                 <Text> Disconnect </Text>
