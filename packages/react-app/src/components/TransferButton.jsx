@@ -1,13 +1,12 @@
-import { Flex, Image, Text, useDisclosure } from '@chakra-ui/react';
+import { Flex, Image, Text, useDisclosure, useToast } from '@chakra-ui/react';
 import { utils } from 'ethers';
-import React, { useContext, useState } from 'react';
+import React, { useContext } from 'react';
 
 import TransferIcon from '../assets/transfer.svg';
 import { BridgeContext } from '../contexts/BridgeContext';
 import { Web3Context } from '../contexts/Web3Context';
 import { formatValue, isxDaiChain } from '../lib/helpers';
 import { ConfirmTransferModal } from './ConfirmTransferModal';
-import { ErrorModal } from './ErrorModal';
 
 export const TransferButton = () => {
   const { ethersProvider } = useContext(Web3Context);
@@ -21,33 +20,47 @@ export const TransferButton = () => {
   } = useContext(BridgeContext);
   const isxDai = token && token.chainId && isxDaiChain(token.chainId);
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [message, setMessage] = useState();
-  const onClick = () => {
-    setMessage();
+  const toast = useToast();
+  const showError = msg => {
+    if (msg) {
+      toast({
+        title: 'Error',
+        description: msg,
+        status: 'error',
+        isClosable: 'true',
+      });
+    }
+  };
+  const valid = () => {
     if (!ethersProvider) {
-      setMessage('Please connect wallet');
+      showError('Please connect wallet');
     } else if (amount.lt(tokenLimits.minPerTx)) {
-      setMessage(
+      showError(
         `Please specify amount more than ${formatValue(
           tokenLimits.minPerTx,
           token.decimals,
         )}`,
       );
     } else if (amount.gt(tokenLimits.maxPerTx)) {
-      setMessage(
+      showError(
         `Please specify amount less than ${formatValue(
           tokenLimits.maxPerTx,
           token.decimals,
         )}`,
       );
     } else if (balance.lt(amount)) {
-      setMessage('Not enough balance');
+      showError('Not enough balance');
     } else if (receiver && !utils.isAddress(receiver)) {
-      setMessage(`Please specify a valid recipient address`);
+      showError(`Please specify a valid recipient address`);
     } else {
-      setMessage();
+      return true;
     }
-    return onOpen();
+    return false;
+  };
+  const onClick = () => {
+    if (allowed && valid()) {
+      onOpen();
+    }
   };
   return (
     <Flex
@@ -66,18 +79,11 @@ export const TransferButton = () => {
       transition="0.25s"
       position="relative"
       opacity={!allowed ? 0.4 : 1}
-      onClick={() => {
-        if (allowed) onClick();
-      }}
+      onClick={onClick}
       borderRadius="0.25rem"
       w={{ base: '10rem', sm: '12rem', lg: 'auto' }}
     >
-      {isOpen && message && (
-        <ErrorModal message={message} isOpen={isOpen} onClose={onClose} />
-      )}
-      {isOpen && !message && (
-        <ConfirmTransferModal isOpen={isOpen} onClose={onClose} />
-      )}
+      <ConfirmTransferModal isOpen={isOpen} onClose={onClose} />
       <svg width="100%" viewBox="0 0 156 42" fill="none">
         <path
           d="M16.914 2.28A4 4 0 0120.526 0h114.948a4 4 0 013.612 2.28l16.19 34c1.264 2.655-.671 5.72-3.611 5.72H4.335C1.395 42-.54 38.935.724 36.28l16.19-34z"

@@ -5,7 +5,7 @@ import {
   Image,
   Link,
   Text,
-  useDisclosure,
+  useToast,
 } from '@chakra-ui/react';
 import { BigNumber, utils } from 'ethers';
 import React, { useContext, useEffect, useState } from 'react';
@@ -27,7 +27,6 @@ import {
   isxDaiChain,
   logError,
 } from '../lib/helpers';
-import { ErrorModal } from './ErrorModal';
 
 const { formatUnits } = utils;
 
@@ -87,14 +86,30 @@ export const HistoryItem = ({
     minute: '2-digit',
   });
 
-  const { onOpen, isOpen, onClose } = useDisclosure();
+  const toast = useToast();
+  const showError = msg => {
+    if (msg) {
+      toast({
+        title: 'Error',
+        description: msg,
+        status: 'error',
+        isClosable: 'true',
+      });
+    }
+  };
   const claimable = message && message.msgData && message.signatures;
   const isxDai = isxDaiChain(providerChainId);
   const [loading, setLoading] = useState(false);
   const claimTokens = async () => {
-    if (loading || !claimable) return;
-    if (isxDai) {
-      onOpen();
+    if (loading) return;
+    if (!claimable) {
+      showError('Still Collecting Signatures...');
+    } else if (isxDai) {
+      showError(
+        `Please switch wallet to ${getNetworkName(
+          getBridgeNetwork(HOME_NETWORK),
+        )}`,
+      );
     } else {
       try {
         setLoading(true);
@@ -114,8 +129,7 @@ export const HistoryItem = ({
       });
     };
 
-    if (receivingTx || inputReceivingTx || !message || !message.msgId)
-      return unsubscribe;
+    if (receivingTx || !message || !message.msgId) return unsubscribe;
     let execution = null;
     let request = null;
     const { msgId } = message;
@@ -148,15 +162,7 @@ export const HistoryItem = ({
     getStatus();
     // unsubscribe when unmount component
     return unsubscribe;
-  }, [
-    chainId,
-    receivingTx,
-    inputReceivingTx,
-    bridgeChainId,
-    providerChainId,
-    message,
-    sendingTx,
-  ]);
+  }, [chainId, receivingTx, bridgeChainId, message, sendingTx]);
 
   return (
     <Flex
@@ -168,15 +174,6 @@ export const HistoryItem = ({
       p={4}
       mb={4}
     >
-      {isxDai && (
-        <ErrorModal
-          message={`Please switch wallet to ${getNetworkName(
-            getBridgeNetwork(HOME_NETWORK),
-          )}`}
-          isOpen={isOpen}
-          onClose={onClose}
-        />
-      )}
       <Grid
         templateColumns={{
           base: '1fr',

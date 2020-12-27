@@ -22,7 +22,7 @@ import { SelectTokenModal } from './SelectTokenModal';
 export const FromToken = () => {
   const { account } = useContext(Web3Context);
   const {
-    txHash,
+    updateBalance,
     fromToken: token,
     fromBalance: balance,
     setFromBalance: setBalance,
@@ -51,7 +51,7 @@ export const FromToken = () => {
     } else {
       setBalance(BigNumber.from(0));
     }
-  }, [txHash, token, account, setBalance, setBalanceLoading]);
+  }, [updateBalance, token, account, setBalance, setBalanceLoading]);
 
   return (
     <Flex

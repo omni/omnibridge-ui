@@ -37,6 +37,9 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
       ((Number(fromAmount) - Number(toAmount)) * 100) / Number(fromAmount),
     );
   }, [fromAmount, toAmount]);
+  const smallScreen = useBreakpointValue({ base: true, md: false });
+
+  if (!fromToken || !toToken) return null;
   const isxDai = isxDaiChain(fromToken.chainId);
   const isBridgedToken = fromToken.name.endsWith(isxDai ? 'xDai' : 'Mainnet');
   const fromAmt = formatValue(fromAmount, fromToken.decimals);
@@ -53,7 +56,6 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
     transfer();
     onClose();
   };
-  const smallScreen = useBreakpointValue({ base: true, md: false });
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered>

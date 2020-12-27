@@ -39,6 +39,7 @@ export const BridgeProvider = ({ children }) => {
   const { homeToForeignFeeType, foreignToHomeFeeType } = useFeeType();
   const [fromAllowance, setAllowance] = useState(BigNumber.from(0));
   const [updateFromAllowance, setUpdateFromAllowance] = useState(false);
+  const [updateBalance, setUpdateBalance] = useState(false);
 
   useEffect(() => {
     if (fromToken && providerChainId === fromToken.chainId) {
@@ -164,6 +165,11 @@ export const BridgeProvider = ({ children }) => {
     updateTokenLimits();
   }, [updateTokenLimits]);
 
+  useEffect(() => {
+    setUpdateBalance(t => !t);
+    if (!txHash) setLoading(false);
+  }, [txHash]);
+
   return (
     <BridgeContext.Provider
       value={{
@@ -194,6 +200,8 @@ export const BridgeProvider = ({ children }) => {
         setUpdateFromAllowance,
         receiver,
         setReceiver,
+        updateBalance,
+        setUpdateBalance,
       }}
     >
       {children}

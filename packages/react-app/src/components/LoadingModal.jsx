@@ -23,7 +23,7 @@ const getTransactionString = hash => {
   return `${hash.substr(0, 6)}...${hash.substr(len - 4, len - 1)}`;
 };
 
-export const LoadingModal = ({ loadingText, txHash }) => {
+export const LoadingModal = ({ loadingText, txHash, chainId }) => {
   const { providerChainId } = useContext(Web3Context);
   const { loading } = useContext(BridgeContext);
   return (
@@ -83,7 +83,7 @@ export const LoadingModal = ({ loadingText, txHash }) => {
                     <Text width="100%" color="grey">
                       {'Monitor at ALM '}
                       <Link
-                        href={getMonitorUrl(providerChainId, txHash)}
+                        href={getMonitorUrl(chainId || providerChainId, txHash)}
                         rel="noreferrer noopener"
                         target="_blank"
                         color="blue.500"

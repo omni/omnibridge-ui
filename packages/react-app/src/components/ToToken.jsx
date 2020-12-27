@@ -11,7 +11,7 @@ import { Logo } from './Logo';
 export const ToToken = () => {
   const { account } = useContext(Web3Context);
   const {
-    txHash,
+    updateBalance,
     toToken: token,
     toAmount: amount,
     toAmountLoading: loading,
@@ -38,7 +38,7 @@ export const ToToken = () => {
     } else {
       setBalance(BigNumber.from(0));
     }
-  }, [txHash, token, account, setBalance, setBalanceLoading]);
+  }, [updateBalance, token, account, setBalance, setBalanceLoading]);
 
   return (
     <Flex

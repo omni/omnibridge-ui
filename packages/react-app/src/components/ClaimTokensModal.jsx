@@ -11,6 +11,7 @@ import {
   ModalHeader,
   ModalOverlay,
   Text,
+  useToast,
 } from '@chakra-ui/react';
 import React, { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
@@ -19,6 +20,7 @@ import ClaimTokenImage from '../assets/claim.svg';
 import ErrorImage from '../assets/error.svg';
 import InfoImage from '../assets/info.svg';
 import ClaimTokensImage from '../assets/multiple-claim.svg';
+import { BridgeContext } from '../contexts/BridgeContext';
 import { Web3Context } from '../contexts/Web3Context';
 import {
   executeSignatures,
@@ -37,6 +39,7 @@ import { LoadingModal } from './LoadingModal';
 
 export const ClaimTokensModal = () => {
   const { ethersProvider, providerChainId } = useContext(Web3Context);
+  const { setUpdateBalance } = useContext(BridgeContext);
   const { transfers, loading } = useClaimableTransfers();
   const [claiming, setClaiming] = useState(false);
   const [needsClaim, setNeedsClaim] = useState([]);
@@ -72,14 +75,33 @@ export const ClaimTokensModal = () => {
   const claimable =
     !isxDai && !claiming && msg && msg.msgData && msg.signatures && !executed;
 
-  const claimTokens = async () => {
-    if (!claimable) return;
-    setClaiming(true);
-    try {
-      executeSignatures(ethersProvider, providerChainId, msg);
-    } catch (executeError) {
-      setClaiming(false);
-      logError({ executeError });
+  const toast = useToast();
+  const showError = errorMsg => {
+    if (errorMsg) {
+      toast({
+        title: 'Error',
+        description: errorMsg,
+        status: 'error',
+        isClosable: 'true',
+      });
+    }
+  };
+  const [txHash, setTxHash] = useState();
+  const onClick = async () => {
+    if (executed) {
+      showError('Message already executed');
+    } else if (!msg || !msg.msgData || !msg.signatures) {
+      showError('Still Collecting Signatures...');
+    } else if (claimable) {
+      try {
+        setClaiming(true);
+        await executeSignatures(ethersProvider, providerChainId, msg);
+        setTxHash(sendingTx);
+      } catch (executeError) {
+        setClaiming(false);
+        setTxHash();
+        logError({ executeError });
+      }
     }
   };
 
@@ -114,8 +136,12 @@ export const ClaimTokensModal = () => {
         if (status) {
           unsubscribe();
           window.sessionStorage.setItem('claimTokens', 0);
-          setClaiming(false);
-          onClose();
+          if (claiming) {
+            onClose();
+            setClaiming(false);
+          }
+          setTxHash();
+          setUpdateBalance(t => !t);
           setExecuted(true);
           return;
         }
@@ -134,7 +160,7 @@ export const ClaimTokensModal = () => {
     getStatus();
     // unsubscribe when unmount component
     return unsubscribe;
-  }, [isxDai, providerChainId, msg]);
+  }, [isxDai, providerChainId, msg, claiming, setUpdateBalance]);
 
   useEffect(() => {
     setExecuted(!!receivingTx);
@@ -143,8 +169,9 @@ export const ClaimTokensModal = () => {
   if (loading || claiming)
     return (
       <LoadingModal
-        loadingText={claiming ? 'Waiting for Execution' : ''}
-        txHash={sendingTx}
+        loadingText={txHash ? 'Waiting for Execution' : ''}
+        chainId={HOME_NETWORK}
+        txHash={txHash}
       />
     );
   return (
@@ -250,7 +277,7 @@ export const ClaimTokensModal = () => {
               {msg ? (
                 <Button
                   px={12}
-                  onClick={claimTokens}
+                  onClick={onClick}
                   colorScheme="blue"
                   mt={{ base: 2, md: 0 }}
                   isDisabled={!claimable}

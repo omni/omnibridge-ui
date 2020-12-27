@@ -35,7 +35,7 @@ import { Logo } from './Logo';
 
 export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
   const { account, ethersProvider, providerChainId } = useContext(Web3Context);
-  const { setToken, txHash } = useContext(BridgeContext);
+  const { setToken, updateBalance } = useContext(BridgeContext);
   const [tokenList, setTokenList] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -115,7 +115,7 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
       localTokenList = JSON.parse(localTokenList);
     }
     setDefaultTokenList(providerChainId, localTokenList);
-  }, [providerChainId, setDefaultTokenList, txHash]);
+  }, [providerChainId, setDefaultTokenList, updateBalance]);
 
   const smallScreen = useBreakpointValue({ sm: false, base: true });
 

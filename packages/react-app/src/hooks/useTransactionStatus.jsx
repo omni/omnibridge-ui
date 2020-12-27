@@ -45,13 +45,7 @@ export const useTransactionStatus = () => {
 
     const getReceipt = async () => {
       try {
-        const txReceipt = await ethersProvider
-          .getTransactionReceipt(txHash)
-          .catch(txReceiptError => {
-            logError({ txReceiptError });
-            unsubscribe();
-            
-          });
+        const txReceipt = await ethersProvider.getTransactionReceipt(txHash);
         if (txReceipt) {
           setReceipt(txReceipt);
           if (txReceipt.confirmations >= totalConfirms) {
