@@ -7,7 +7,7 @@ import { POLLING_INTERVAL } from '../lib/constants';
 import { getBridgeNetwork, isxDaiChain, logError } from '../lib/helpers';
 
 export const useTransactionStatus = () => {
-  const { ethersProvider, providerChainId } = useContext(Web3Context);
+  const { account, ethersProvider, providerChainId } = useContext(Web3Context);
   const {
     loading,
     setLoading,
@@ -26,6 +26,10 @@ export const useTransactionStatus = () => {
     setTxHash();
     setLoading(false);
   }, [setLoading, setUpdateFromAllowance, setTxHash]);
+
+  useEffect(() => {
+    completeReceipt();
+  }, [account, providerChainId, completeReceipt]);
 
   useEffect(() => {
     const subscriptions = [];

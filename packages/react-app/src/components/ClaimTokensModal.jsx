@@ -280,7 +280,6 @@ export const ClaimTokensModal = () => {
                   onClick={onClick}
                   colorScheme="blue"
                   mt={{ base: 2, md: 0 }}
-                  isDisabled={!claimable}
                   isLoading={claiming}
                 >
                   Claim

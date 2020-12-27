@@ -102,14 +102,14 @@ export const HistoryItem = ({
   const [loading, setLoading] = useState(false);
   const claimTokens = async () => {
     if (loading) return;
-    if (!claimable) {
-      showError('Still Collecting Signatures...');
-    } else if (isxDai) {
+    if (isxDai) {
       showError(
         `Please switch wallet to ${getNetworkName(
           getBridgeNetwork(HOME_NETWORK),
         )}`,
       );
+    } else if (!claimable) {
+      showError('Still Collecting Signatures...');
     } else {
       try {
         setLoading(true);
@@ -263,7 +263,6 @@ export const HistoryItem = ({
               size="sm"
               colorScheme="blue"
               onClick={claimTokens}
-              isDisabled={!claimable}
               isLoading={loading}
             >
               Claim

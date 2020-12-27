@@ -146,9 +146,11 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
               <Text as="span">{`Please confirm that you would like to send `}</Text>
               <Text as="b">{`${fromAmt} ${fromUnit}`}</Text>
               {receiver ? (
-                <Text as="span">{` and ${getAccountString(
-                  receiver,
-                )} will receive `}</Text>
+                <>
+                  <Text as="span">{` and `}</Text>
+                  <Text as="b">{getAccountString(receiver)}</Text>
+                  <Text as="span">{` will receive `}</Text>
+                </>
               ) : (
                 <Text as="span">{` and receive `}</Text>
               )}
