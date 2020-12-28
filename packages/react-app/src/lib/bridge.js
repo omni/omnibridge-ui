@@ -146,13 +146,13 @@ export const fetchTokenLimits = async (
         'function totalExecutedPerDay(address, uint256) view returns (uint256)',
       ];
 
-  const mediatorContract = new Contract(token.mediator, abi, ethersProvider);
-  const toMediatorContract = new Contract(
-    toToken.mediator,
-    abi,
-    getEthersProvider(toToken.chainId),
-  );
   try {
+    const mediatorContract = new Contract(token.mediator, abi, ethersProvider);
+    const toMediatorContract = new Contract(
+      toToken.mediator,
+      abi,
+      getEthersProvider(toToken.chainId),
+    );
     const [
       minPerTx,
       executionMaxPerTx,
@@ -161,13 +161,13 @@ export const fetchTokenLimits = async (
     ] = isOverriddenToken
       ? await Promise.all([
           mediatorContract.minPerTx(),
-          mediatorContract.executionMaxPerTx(),
+          toMediatorContract.executionMaxPerTx(),
           mediatorContract.executionDailyLimit(),
           toMediatorContract.totalExecutedPerDay(currentDay),
         ])
       : await Promise.all([
           mediatorContract.minPerTx(token.address),
-          mediatorContract.executionMaxPerTx(token.address),
+          toMediatorContract.executionMaxPerTx(toToken.address),
           mediatorContract.executionDailyLimit(token.address),
           toMediatorContract.totalExecutedPerDay(toToken.address, currentDay),
         ]);
@@ -178,7 +178,11 @@ export const fetchTokenLimits = async (
     };
   } catch (error) {
     logError({ tokenError: error });
-    return {};
+    return {
+      minPerTx: BigNumber.from(0),
+      maxPerTx: BigNumber.from(0),
+      dailyLimit: BigNumber.from(0),
+    };
   }
 };
 
