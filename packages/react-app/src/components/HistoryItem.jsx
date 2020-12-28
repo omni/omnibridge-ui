@@ -27,6 +27,7 @@ import {
   isxDaiChain,
   logError,
 } from '../lib/helpers';
+import { TxLink } from './TxLink';
 
 const { formatUnits } = utils;
 
@@ -100,6 +101,7 @@ export const HistoryItem = ({
   const claimable = message && message.msgData && message.signatures;
   const isxDai = isxDaiChain(providerChainId);
   const [loading, setLoading] = useState(false);
+  const [txHash, setTxHash] = useState();
   const claimTokens = async () => {
     if (loading) return;
     if (isxDai) {
@@ -113,7 +115,12 @@ export const HistoryItem = ({
     } else {
       try {
         setLoading(true);
-        executeSignatures(ethersProvider, providerChainId, message);
+        const tx = await executeSignatures(
+          ethersProvider,
+          providerChainId,
+          message,
+        );
+        setTxHash(tx.hash);
       } catch (executeError) {
         setLoading(false);
         logError({ executeError });
@@ -143,6 +150,7 @@ export const HistoryItem = ({
         if (execution) {
           setReceiving(execution.txHash);
           setLoading(false);
+          setTxHash();
         }
         if (request) {
           setMessage(request);
@@ -259,14 +267,20 @@ export const HistoryItem = ({
           </Flex>
         ) : (
           <Flex align="center" justify={{ base: 'center', md: 'flex-end' }}>
-            <Button
-              size="sm"
-              colorScheme="blue"
-              onClick={claimTokens}
-              isLoading={loading}
+            <TxLink
+              chainId={providerChainId}
+              hash={loading ? txHash : undefined}
             >
-              Claim
-            </Button>
+              <Button
+                w="100%"
+                size="sm"
+                colorScheme="blue"
+                onClick={claimTokens}
+                isLoading={loading}
+              >
+                Claim
+              </Button>
+            </TxLink>
           </Flex>
         )}
       </Grid>

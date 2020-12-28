@@ -91,18 +91,6 @@ export const parseValue = (num, dec) => {
   return utils.parseUnits(num, dec);
 };
 
-// ETH/ERC20 Default Limits
-export const defaultMinPerTx = (isxDai, decimals) => {
-  let minPerTx = BigNumber.from(10).pow(isxDai ? decimals : decimals - 3);
-  if (minPerTx.lt(1)) {
-    minPerTx = BigNumber.from(1);
-  }
-  return minPerTx;
-};
-export const defaultMaxPerTx = decimals => BigNumber.from(10).pow(decimals + 9);
-export const defaultDailyLimit = decimals =>
-  BigNumber.from(10).pow(decimals + 18);
-
 export const uriToHttp = uri => {
   const protocol = uri.split(':')[0].toLowerCase();
   const hash = uri.match(/^ipfs:(\/\/)?(.*)$/i)?.[2];

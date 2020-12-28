@@ -1,6 +1,7 @@
 import { BigNumber } from 'ethers';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 
+import { useCurrentDay } from '../hooks/useCurrentDay';
 import { useFeeType } from '../hooks/useFeeType';
 import { useRewardAddress } from '../hooks/useRewardAddress';
 import { useTotalConfirms } from '../hooks/useTotalConfirms';
@@ -36,6 +37,7 @@ export const BridgeProvider = ({ children }) => {
 
   const totalConfirms = useTotalConfirms();
   const isRewardAddress = useRewardAddress();
+  const currentDay = useCurrentDay();
   const { homeToForeignFeeType, foreignToHomeFeeType } = useFeeType();
   const [fromAllowance, setAllowance] = useState(BigNumber.from(0));
   const [updateFromAllowance, setUpdateFromAllowance] = useState(false);
@@ -99,6 +101,8 @@ export const BridgeProvider = ({ children }) => {
   }, []);
 
   const [unlockLoading, setUnlockLoading] = useState(false);
+
+  const [approvalTxHash, setApprovalTxHash] = useState();
   const approve = useCallback(async () => {
     setUnlockLoading(true);
     try {
@@ -106,11 +110,14 @@ export const BridgeProvider = ({ children }) => {
         window.localStorage.getItem('infinite-unlock') === 'true'
           ? LARGEST_UINT256
           : fromAmount;
-      await approveToken(ethersProvider, fromToken, approvalAmount);
+      const tx = await approveToken(ethersProvider, fromToken, approvalAmount);
+      setApprovalTxHash(tx.hash);
+      await tx.wait();
       setAllowance(approvalAmount);
     } catch (error) {
       logError({ approveError: error });
     }
+    setApprovalTxHash();
     setUnlockLoading(false);
   }, [fromAmount, fromToken, ethersProvider]);
 
@@ -157,11 +164,21 @@ export const BridgeProvider = ({ children }) => {
   }, [providerChainId, setAmount, setDefaultToken]);
 
   const updateTokenLimits = useCallback(async () => {
-    if (fromToken && fromToken.chainId === providerChainId) {
-      const limits = await fetchTokenLimits(fromToken, ethersProvider);
+    if (
+      providerChainId &&
+      fromToken &&
+      fromToken.chainId === providerChainId &&
+      ethersProvider &&
+      currentDay
+    ) {
+      const limits = await fetchTokenLimits(
+        ethersProvider,
+        fromToken,
+        currentDay,
+      );
       setTokenLimits(limits);
     }
-  }, [fromToken, providerChainId, ethersProvider]);
+  }, [fromToken, currentDay, providerChainId, ethersProvider]);
 
   useEffect(() => {
     updateTokenLimits();
@@ -204,6 +221,8 @@ export const BridgeProvider = ({ children }) => {
         updateBalance,
         setUpdateBalance,
         unlockLoading,
+
+        approvalTxHash,
       }}
     >
       {children}

@@ -95,8 +95,7 @@ export const approveToken = async (
   const abi = ['function approve(address, uint256)'];
   const gasPrice = getGasPrice(chainId);
   const tokenContract = new Contract(address, abi, ethersProvider.getSigner());
-  const tx = await tokenContract.approve(mediator, amount, { gasPrice });
-  return tx.wait();
+  return tokenContract.approve(mediator, amount, { gasPrice });
 };
 
 export const fetchTokenBalance = async (token, account) => {

@@ -3,14 +3,18 @@ import React, { useContext } from 'react';
 
 import UnlockIcon from '../assets/unlock.svg';
 import { BridgeContext } from '../contexts/BridgeContext';
+import { Web3Context } from '../contexts/Web3Context';
+import { TxLink } from './TxLink';
 
 export const UnlockButton = () => {
+  const { providerChainId } = useContext(Web3Context);
   const {
     fromAmount: amount,
     fromBalance: balance,
     allowed,
     approve,
     unlockLoading,
+    approvalTxHash,
   } = useContext(BridgeContext);
   const toast = useToast();
   const showError = msg => {
@@ -71,7 +75,9 @@ export const UnlockButton = () => {
         align="center"
       >
         {unlockLoading ? (
-          <Spinner color="white" size="sm" />
+          <TxLink chainId={providerChainId} hash={approvalTxHash}>
+            <Spinner color="white" size="sm" />
+          </TxLink>
         ) : (
           <>
             <Text color="white" fontWeight="bold">

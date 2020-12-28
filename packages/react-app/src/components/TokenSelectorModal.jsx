@@ -35,14 +35,12 @@ import { Logo } from './Logo';
 
 export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
   const { account, ethersProvider, providerChainId } = useContext(Web3Context);
-  const { setToken, updateBalance } = useContext(BridgeContext);
+  const { setToken } = useContext(BridgeContext);
   const [tokenList, setTokenList] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const setDefaultTokenList = useCallback(
     async (chainId, customTokens) => {
-      if (!account || !ethersProvider || chainId !== providerChainId) return;
-
       setLoading(true);
       try {
         const baseTokenList = await fetchTokenList(chainId);
@@ -76,7 +74,7 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
       }
       setLoading(false);
     },
-    [account, ethersProvider, providerChainId],
+    [account, ethersProvider],
   );
 
   const [filteredTokenList, setFilteredTokenList] = useState([]);
@@ -114,8 +112,12 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
     } else {
       localTokenList = JSON.parse(localTokenList);
     }
-    setDefaultTokenList(providerChainId, localTokenList);
-  }, [providerChainId, setDefaultTokenList, updateBalance]);
+
+    if (!isOpen) return;
+    if (providerChainId) {
+      setDefaultTokenList(providerChainId, localTokenList);
+    }
+  }, [isOpen, providerChainId, setDefaultTokenList]);
 
   const smallScreen = useBreakpointValue({ sm: false, base: true });
 

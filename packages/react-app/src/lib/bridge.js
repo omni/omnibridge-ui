@@ -2,9 +2,6 @@ import { BigNumber, Contract } from 'ethers';
 
 import { getGasPrice } from './gasPrice';
 import {
-  defaultDailyLimit,
-  defaultMaxPerTx,
-  defaultMinPerTx,
   getBridgeNetwork,
   getMediatorAddress,
   isxDaiChain,
@@ -128,44 +125,51 @@ export const fetchToToken = async fromToken => {
   };
 };
 
-export const fetchTokenLimits = async (token, walletProvider) => {
+export const fetchTokenLimits = async (ethersProvider, token, currentDay) => {
   const isOverriddenToken = isOverridden(token.address);
-  const mediatorAbi = [
-    'function isTokenRegistered(address) view returns (bool)',
-    'function minPerTx(address) view returns (uint256)',
-    'function maxPerTx(address) view returns (uint256)',
-    'function dailyLimit(address) view returns (uint256)',
-  ];
+  const abi = isOverriddenToken
+    ? [
+        'function minPerTx() view returns (uint256)',
+        'function executionMaxPerTx() view returns (uint256)',
+        'function executionDailyLimit() view returns (uint256)',
+        'function totalExecutedPerDay(uint256) view returns (uint256)',
+      ]
+    : [
+        'function minPerTx(address) view returns (uint256)',
+        'function executionMaxPerTx(address) view returns (uint256)',
+        'function executionDailyLimit(address) view returns (uint256)',
+        'function totalExecutedPerDay(address, uint256) view returns (uint256)',
+      ];
 
-  const mediatorContract = new Contract(
-    token.mediator,
-    mediatorAbi,
-    walletProvider,
-  );
-  const isxDai = isxDaiChain(token.chainId);
-  let minPerTx = defaultMinPerTx(isxDai, token.decimals);
-  let maxPerTx = defaultMaxPerTx(token.decimals);
-  let dailyLimit = defaultDailyLimit(token.decimals);
+  const mediatorContract = new Contract(token.mediator, abi, ethersProvider);
   try {
-    const isRegistered =
-      isOverriddenToken ||
-      (await mediatorContract.isTokenRegistered(token.address));
-
-    if (isRegistered) {
-      [minPerTx, maxPerTx, dailyLimit] = await Promise.all([
-        mediatorContract.minPerTx(token.address),
-        mediatorContract.maxPerTx(token.address),
-        mediatorContract.dailyLimit(token.address),
-      ]);
-    }
+    const [
+      minPerTx,
+      executionMaxPerTx,
+      executionDailyLimit,
+      totalExecutedPerDay,
+    ] = isOverriddenToken
+      ? await Promise.all([
+          mediatorContract.minPerTx(),
+          mediatorContract.executionMaxPerTx(),
+          mediatorContract.executionDailyLimit(),
+          mediatorContract.totalExecutedPerDay(currentDay),
+        ])
+      : await Promise.all([
+          mediatorContract.minPerTx(token.address),
+          mediatorContract.executionMaxPerTx(token.address),
+          mediatorContract.executionDailyLimit(token.address),
+          mediatorContract.totalExecutedPerDay(token.address, currentDay),
+        ]);
+    return {
+      minPerTx,
+      maxPerTx: executionMaxPerTx,
+      dailyLimit: executionDailyLimit.sub(totalExecutedPerDay),
+    };
   } catch (error) {
     logError({ tokenError: error });
+    return {};
   }
-  return {
-    minPerTx,
-    maxPerTx,
-    dailyLimit,
-  };
 };
 
 export const relayTokens = async (ethersProvider, token, receiver, amount) => {
