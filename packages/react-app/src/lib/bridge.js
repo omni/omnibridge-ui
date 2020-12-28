@@ -125,7 +125,12 @@ export const fetchToToken = async fromToken => {
   };
 };
 
-export const fetchTokenLimits = async (ethersProvider, token, currentDay) => {
+export const fetchTokenLimits = async (
+  ethersProvider,
+  token,
+  toToken,
+  currentDay,
+) => {
   const isOverriddenToken = isOverridden(token.address);
   const abi = isOverriddenToken
     ? [
@@ -142,6 +147,11 @@ export const fetchTokenLimits = async (ethersProvider, token, currentDay) => {
       ];
 
   const mediatorContract = new Contract(token.mediator, abi, ethersProvider);
+  const toMediatorContract = new Contract(
+    toToken.mediator,
+    abi,
+    getEthersProvider(toToken.chainId),
+  );
   try {
     const [
       minPerTx,
@@ -153,13 +163,13 @@ export const fetchTokenLimits = async (ethersProvider, token, currentDay) => {
           mediatorContract.minPerTx(),
           mediatorContract.executionMaxPerTx(),
           mediatorContract.executionDailyLimit(),
-          mediatorContract.totalExecutedPerDay(currentDay),
+          toMediatorContract.totalExecutedPerDay(currentDay),
         ])
       : await Promise.all([
           mediatorContract.minPerTx(token.address),
           mediatorContract.executionMaxPerTx(token.address),
           mediatorContract.executionDailyLimit(token.address),
-          mediatorContract.totalExecutedPerDay(token.address, currentDay),
+          toMediatorContract.totalExecutedPerDay(toToken.address, currentDay),
         ]);
     return {
       minPerTx,

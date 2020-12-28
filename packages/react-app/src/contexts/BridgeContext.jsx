@@ -12,7 +12,12 @@ import {
   transferTokens,
 } from '../lib/bridge';
 import { ADDRESS_ZERO, LARGEST_UINT256 } from '../lib/constants';
-import { getDefaultToken, isxDaiChain, logError } from '../lib/helpers';
+import {
+  getBridgeNetwork,
+  getDefaultToken,
+  isxDaiChain,
+  logError,
+} from '../lib/helpers';
 import { approveToken, fetchAllowance, fetchTokenDetails } from '../lib/token';
 import { Web3Context } from './Web3Context';
 
@@ -95,8 +100,8 @@ export const BridgeProvider = ({ children }) => {
       fetchTokenDetails(tokenWithoutMode),
       fetchToToken(tokenWithoutMode),
     ]);
-    setFromToken(token);
     setToToken(gotToToken);
+    setFromToken(token);
     setLoading(false);
   }, []);
 
@@ -168,17 +173,20 @@ export const BridgeProvider = ({ children }) => {
       providerChainId &&
       fromToken &&
       fromToken.chainId === providerChainId &&
+      toToken &&
+      toToken.chainId === getBridgeNetwork(providerChainId) &&
       ethersProvider &&
       currentDay
     ) {
       const limits = await fetchTokenLimits(
         ethersProvider,
         fromToken,
+        toToken,
         currentDay,
       );
       setTokenLimits(limits);
     }
-  }, [fromToken, currentDay, providerChainId, ethersProvider]);
+  }, [fromToken, toToken, currentDay, providerChainId, ethersProvider]);
 
   useEffect(() => {
     updateTokenLimits();
