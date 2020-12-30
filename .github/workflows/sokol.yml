@@ -37,6 +37,8 @@ jobs:
           REACT_APP_HOME_GAS_PRICE_FALLBACK_GWEI: 5
           REACT_APP_FOREIGN_GAS_PRICE_FALLBACK_GWEI: 5
           REACT_APP_DEBUG_LOGS: true
+          REACT_APP_TITLE: OmniBridge - %c
+          REACT_APP_DESCRIPTION: The OmniBridge multi-token extension for the Arbitrary Message Bridge between Ethereum and the xDai chain is the simplest way to transfer ANY ERC20/ERC677/ERC827 token to the xDai chain.
 
       - name: Deploy to Firebase
         uses: w9jds/firebase-action@master
