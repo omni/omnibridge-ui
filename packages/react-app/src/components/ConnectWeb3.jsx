@@ -5,6 +5,7 @@ import { Web3Context } from '../contexts/Web3Context';
 import { WalletFilledIcon } from '../icons/WalletFilledIcon';
 import { HOME_NETWORK } from '../lib/constants';
 import { getBridgeNetwork, getNetworkName } from '../lib/helpers';
+import { TermsOfServiceModal } from './TermsOfServiceModal';
 
 export const ConnectWeb3 = () => {
   const { connectWeb3, loading, account, disconnect } = useContext(Web3Context);
@@ -53,6 +54,7 @@ export const ConnectWeb3 = () => {
           Connect
         </Button>
       )}
+      <TermsOfServiceModal />
     </Flex>
   );
 };
