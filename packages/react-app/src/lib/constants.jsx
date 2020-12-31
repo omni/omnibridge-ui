@@ -49,7 +49,8 @@ export const networkNames = {
 
 export const chainUrls = {
   100: {
-    rpc: 'https://xdai.poanetwork.dev',
+    // rpc: 'https://xdai.poanetwork.dev',
+    rpc: 'https://rpc.xdaichain.com/',
     explorer: 'https://blockscout.com/poa/xdai',
     chainId: 100,
     name: 'xDai Chain',
