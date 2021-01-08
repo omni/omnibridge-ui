@@ -13,7 +13,6 @@ import React, { useContext, useState } from 'react';
 
 import Details from '../assets/details.svg';
 import { BridgeContext } from '../contexts/BridgeContext';
-import { formatValue } from '../lib/helpers';
 
 export const SystemFeedback = () => {
   const { fromToken: token, tokenLimits, updateTokenLimits } = useContext(
@@ -57,7 +56,7 @@ export const SystemFeedback = () => {
               ) : (
                 <Text fontWeight="bold" ml={4}>
                   {`${utils.commify(
-                    formatValue(tokenLimits.dailyLimit, token.decimals),
+                    utils.formatUnits(tokenLimits.dailyLimit, token.decimals),
                   )} ${token.symbol}`}
                 </Text>
               )}
@@ -69,7 +68,7 @@ export const SystemFeedback = () => {
               ) : (
                 <Text fontWeight="bold" ml={4}>
                   {`${utils.commify(
-                    formatValue(tokenLimits.maxPerTx, token.decimals),
+                    utils.formatUnits(tokenLimits.maxPerTx, token.decimals),
                   )} ${token.symbol}`}
                 </Text>
               )}
@@ -81,7 +80,7 @@ export const SystemFeedback = () => {
               ) : (
                 <Text fontWeight="bold" ml={4}>
                   {`${utils.commify(
-                    formatValue(tokenLimits.minPerTx, token.decimals),
+                    utils.formatUnits(tokenLimits.minPerTx, token.decimals),
                   )} ${token.symbol}`}
                 </Text>
               )}

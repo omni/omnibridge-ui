@@ -1,5 +1,5 @@
 import { Flex, Spinner, Text, useBreakpointValue } from '@chakra-ui/react';
-import { BigNumber } from 'ethers';
+import { BigNumber, utils } from 'ethers';
 import React, { useContext, useEffect, useState } from 'react';
 
 import { BridgeContext } from '../contexts/BridgeContext';
@@ -136,7 +136,7 @@ export const ToToken = () => {
               <Spinner color="black" size="sm" />
             ) : (
               <Text fontWeight="bold" fontSize="2xl">
-                {formatValue(amount, token.decimals)}
+                {utils.formatUnits(amount, token.decimals)}
               </Text>
             )}
           </Flex>

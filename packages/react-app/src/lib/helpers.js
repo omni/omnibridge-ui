@@ -81,7 +81,8 @@ export const uniqueTokens = list => {
 };
 
 export const formatValue = (num, dec) => {
-  return utils.formatUnits(num, dec);
+  const str = utils.formatUnits(num, dec);
+  return Number(str).toLocaleString('en', { maximumFractionDigits: 4 });
 };
 
 export const parseValue = (num, dec) => {

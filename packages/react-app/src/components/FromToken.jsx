@@ -8,7 +8,7 @@ import {
   useBreakpointValue,
   useDisclosure,
 } from '@chakra-ui/react';
-import { BigNumber } from 'ethers';
+import { BigNumber, utils } from 'ethers';
 import React, { useContext, useEffect, useState } from 'react';
 
 import DropDown from '../assets/drop-down.svg';
@@ -167,7 +167,7 @@ export const FromToken = () => {
               fontWeight="normal"
               _hover={{ bg: 'blue.100' }}
               onClick={() => {
-                setInput(formatValue(balance, token.decimals));
+                setInput(utils.formatUnits(balance, token.decimals));
                 setAmount(balance);
               }}
             >
