@@ -243,7 +243,7 @@ export const ClaimTokensModal = () => {
                       <Image src={ErrorImage} />
                     </Flex>
                     <Flex align="center" fontSize="12px" p={4}>
-                      <Text>The withdrawal request was already executed</Text>
+                      <Text>The transfer request was already executed</Text>
                     </Flex>
                   </Flex>
                 )}

@@ -98,7 +98,7 @@ export const TransferButton = () => {
         align="center"
       >
         <Text color="white" fontWeight="bold">
-          {isxDai ? 'Request' : 'Transfer'}
+          Transfer
         </Text>
         <Image src={TransferIcon} ml={2} />
       </Flex>
