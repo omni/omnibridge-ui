@@ -168,10 +168,10 @@ export function useClaimableTransfers() {
   const { txHash } = useContext(BridgeContext);
   const [transfers, setTransfers] = useState();
   const [loading, setLoading] = useState(false);
-  const chainId = HOME_NETWORK;
 
   useEffect(() => {
-    if (!account || !chainId || isxDaiChain(providerChainId)) return;
+    if (!account || !providerChainId || isxDaiChain(providerChainId)) return;
+    const chainId = HOME_NETWORK;
     const bridgeChainId = getBridgeNetwork(chainId);
     async function update() {
       setLoading(true);
@@ -189,7 +189,7 @@ export function useClaimableTransfers() {
       setLoading(false);
     }
     update();
-  }, [chainId, account, providerChainId, txHash]);
+  }, [account, providerChainId, txHash]);
 
   return { transfers, loading };
 }
