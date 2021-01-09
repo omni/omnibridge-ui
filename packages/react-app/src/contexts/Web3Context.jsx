@@ -85,13 +85,11 @@ export const Web3Provider = ({ children }) => {
 
       // Subscribe to accounts change
       modalProvider.on('accountsChanged', accounts => {
-        window.sessionStorage.setItem('claimTokens', 0);
         setAccount(accounts[0]);
       });
 
       // Subscribe to chainId change
       modalProvider.on('chainChanged', _chainId => {
-        window.sessionStorage.setItem('claimTokens', 0);
         setWeb3Provider(modalProvider);
       });
     } catch (error) {

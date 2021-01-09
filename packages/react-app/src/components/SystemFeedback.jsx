@@ -8,11 +8,11 @@ import {
   Spinner,
   Text,
 } from '@chakra-ui/react';
-import { utils } from 'ethers';
 import React, { useContext, useState } from 'react';
 
 import Details from '../assets/details.svg';
 import { BridgeContext } from '../contexts/BridgeContext';
+import { formatValue } from '../lib/helpers';
 
 export const SystemFeedback = () => {
   const { fromToken: token, tokenLimits, updateTokenLimits } = useContext(
@@ -55,9 +55,9 @@ export const SystemFeedback = () => {
                 <Spinner size="sm" />
               ) : (
                 <Text fontWeight="bold" ml={4}>
-                  {`${utils.commify(
-                    utils.formatUnits(tokenLimits.dailyLimit, token.decimals),
-                  )} ${token.symbol}`}
+                  {`${formatValue(tokenLimits.dailyLimit, token.decimals)} ${
+                    token.symbol
+                  }`}
                 </Text>
               )}
             </Flex>
@@ -67,9 +67,9 @@ export const SystemFeedback = () => {
                 <Spinner size="sm" />
               ) : (
                 <Text fontWeight="bold" ml={4}>
-                  {`${utils.commify(
-                    utils.formatUnits(tokenLimits.maxPerTx, token.decimals),
-                  )} ${token.symbol}`}
+                  {`${formatValue(tokenLimits.maxPerTx, token.decimals)} ${
+                    token.symbol
+                  }`}
                 </Text>
               )}
             </Flex>
@@ -79,9 +79,9 @@ export const SystemFeedback = () => {
                 <Spinner size="sm" />
               ) : (
                 <Text fontWeight="bold" ml={4}>
-                  {`${utils.commify(
-                    utils.formatUnits(tokenLimits.minPerTx, token.decimals),
-                  )} ${token.symbol}`}
+                  {`${formatValue(tokenLimits.minPerTx, token.decimals)} ${
+                    token.symbol
+                  }`}
                 </Text>
               )}
             </Flex>

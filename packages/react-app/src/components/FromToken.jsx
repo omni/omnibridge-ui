@@ -149,7 +149,7 @@ export const FromToken = () => {
               variant="unstyled"
               type="number"
               value={input}
-              placeholder="0.000"
+              placeholder="0.0"
               textAlign="left"
               fontWeight="bold"
               onChange={e => {

@@ -38,7 +38,7 @@ import { useClaimableTransfers } from '../lib/history';
 import { LoadingModal } from './LoadingModal';
 
 export const ClaimTokensModal = () => {
-  const { ethersProvider, providerChainId } = useContext(Web3Context);
+  const { account, ethersProvider, providerChainId } = useContext(Web3Context);
   const { setUpdateBalance } = useContext(BridgeContext);
   const { transfers, loading } = useClaimableTransfers();
   const [claiming, setClaiming] = useState(false);
@@ -47,28 +47,31 @@ export const ClaimTokensModal = () => {
   const [transfer, setTransfer] = useState();
   const isxDai = isxDaiChain(providerChainId);
   const { message: msg, symbol, receivingTx, sendingTx } = transfer || {};
-  const [executed, setExecuted] = useState(false);
+  const executed = !!receivingTx;
 
   const onClose = () => {
     setOpen(false);
+    window.localStorage.setItem('dont-show-claims', 'true');
   };
 
   useEffect(() => {
-    const claimTokens = parseInt(
-      window.sessionStorage.getItem('claimTokens'),
-      10,
-    );
+    window.localStorage.setItem('dont-show-claims', 'false');
+  }, [account, providerChainId]);
+
+  useEffect(() => {
+    const dontShowClaims =
+      window.localStorage.getItem('dont-show-claims') === 'true';
     if (transfers) {
       setNeedsClaim(transfers);
       if (transfers.length === 1) {
         setTransfer(transfers[0]);
       }
-      if (!isxDai && (isNaN(claimTokens) || claimTokens < transfers.length)) {
+      if (!isxDai && !dontShowClaims) {
         setOpen(transfers.length > 0);
-        window.sessionStorage.setItem('claimTokens', transfers.length);
       }
     } else {
-      onClose();
+      setTransfer();
+      setOpen(false);
     }
   }, [transfers, isxDai]);
 
@@ -135,14 +138,16 @@ export const ClaimTokensModal = () => {
         status = await getMessageStatus(providerChainId, msg.messageId);
         if (status) {
           unsubscribe();
-          window.sessionStorage.setItem('claimTokens', 0);
           if (claiming) {
             onClose();
             setClaiming(false);
           }
           setTxHash();
           setUpdateBalance(t => !t);
-          setExecuted(true);
+          setTransfer(_init => ({
+            ..._init,
+            receivingTx: status.txHash,
+          }));
           return;
         }
 
@@ -162,9 +167,7 @@ export const ClaimTokensModal = () => {
     return unsubscribe;
   }, [isxDai, providerChainId, msg, claiming, setUpdateBalance]);
 
-  useEffect(() => {
-    setExecuted(!!receivingTx);
-  }, [receivingTx]);
+  if (isxDai) return null;
 
   if (loading || claiming)
     return (
@@ -289,7 +292,7 @@ export const ClaimTokensModal = () => {
                   to="/history"
                   display="flex"
                   onClick={() => {
-                    window.sessionStorage.setItem('claimTokens', 0);
+                    window.localStorage.setItem('dont-show-claims', 'false');
                   }}
                 >
                   <Button
