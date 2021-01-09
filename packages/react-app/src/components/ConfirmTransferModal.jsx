@@ -13,6 +13,7 @@ import {
   ModalOverlay,
   Text,
   useBreakpointValue,
+  useToast,
 } from '@chakra-ui/react';
 import React, { useContext, useEffect, useState } from 'react';
 
@@ -38,7 +39,7 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
     );
   }, [fromAmount, toAmount]);
   const smallScreen = useBreakpointValue({ base: true, md: false });
-
+  const toast = useToast();
   if (!fromToken || !toToken) return null;
   const isxDai = isxDaiChain(fromToken.chainId);
   const isBridgedToken = fromToken.name.endsWith(isxDai ? 'xDai' : 'Mainnet');
@@ -52,8 +53,22 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
     : toToken.symbol;
   const isERC20Dai = isERC20DaiAddress(fromToken);
 
+  const showError = msg => {
+    if (msg) {
+      toast({
+        title: 'Error',
+        description: msg,
+        status: 'error',
+        isClosable: 'true',
+      });
+    }
+  };
   const onClick = () => {
-    transfer();
+    transfer().catch(() => {
+      showError(
+        'Impossible to perform the operation. Reload the application and try again.',
+      );
+    });
     onClose();
   };
 

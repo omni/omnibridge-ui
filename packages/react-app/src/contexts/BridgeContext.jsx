@@ -139,6 +139,7 @@ export const BridgeProvider = ({ children }) => {
     } catch (transferError) {
       setLoading(false);
       logError({ transferError });
+      throw transferError;
     }
   }, [fromToken, account, receiver, ethersProvider, fromAmount]);
 
