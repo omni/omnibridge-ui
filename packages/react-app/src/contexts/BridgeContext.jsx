@@ -164,7 +164,7 @@ export const BridgeProvider = ({ children }) => {
   useEffect(() => {
     setAmountInput('');
     setAmount(BigNumber.from(0));
-    setTxHash();
+    setUpdateBalance(t => !t);
     setLoading(false);
     setDefaultToken(providerChainId);
   }, [providerChainId, setAmount, setDefaultToken]);

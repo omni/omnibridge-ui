@@ -4,7 +4,7 @@ import { useContext, useEffect, useState } from 'react';
 import { BridgeContext } from '../contexts/BridgeContext';
 import { Web3Context } from '../contexts/Web3Context';
 import { HOME_NETWORK } from './constants';
-import { getBridgeNetwork, getGraphEndpoint, isxDaiChain } from './helpers';
+import { getBridgeNetwork, getGraphEndpoint } from './helpers';
 
 const pageSize = 1000;
 
@@ -170,7 +170,7 @@ export function useClaimableTransfers() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    if (!account || !providerChainId || isxDaiChain(providerChainId)) return;
+    if (!account || !providerChainId) return;
     const chainId = HOME_NETWORK;
     const bridgeChainId = getBridgeNetwork(chainId);
     async function update() {

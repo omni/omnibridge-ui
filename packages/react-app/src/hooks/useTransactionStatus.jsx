@@ -27,6 +27,13 @@ export const useTransactionStatus = () => {
     setLoading(false);
   }, [setLoading, setUpdateFromAllowance, setTxHash]);
 
+  const incompleteReceipt = useCallback(() => {
+    setUpdateFromAllowance(a => !a);
+    setLoadingText();
+    setReceipt();
+    setLoading(false);
+  }, [setLoading, setUpdateFromAllowance]);
+
   useEffect(() => {
     const subscriptions = [];
     const unsubscribe = () => {
@@ -65,7 +72,7 @@ export const useTransactionStatus = () => {
           if (isxDai) {
             if (message && message.signatures) {
               setNeedsConfirmation(true);
-              completeReceipt();
+              incompleteReceipt();
               unsubscribe();
               return;
             }
@@ -110,6 +117,7 @@ export const useTransactionStatus = () => {
     ethersProvider,
     totalConfirms,
     completeReceipt,
+    incompleteReceipt,
     setReceipt,
   ]);
 

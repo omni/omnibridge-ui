@@ -8,6 +8,7 @@ import { getBridgeNetwork, getNetworkName } from '../lib/helpers';
 import { AdvancedMenu } from './AdvancedMenu';
 import { BridgeLoadingModal } from './BridgeLoadingModal';
 import { ClaimTokensModal } from './ClaimTokensModal';
+import { ClaimTransferModal } from './ClaimTransferModal';
 import { DaiWarning, isERC20DaiAddress } from './DaiWarning';
 import { FromToken } from './FromToken';
 import { SystemFeedback } from './SystemFeedback';
@@ -17,7 +18,7 @@ import { UnlockButton } from './UnlockButton';
 
 export const BridgeTokens = () => {
   const { providerChainId: chainId } = useContext(Web3Context);
-  const { fromToken } = useContext(BridgeContext);
+  const { fromToken, txHash, loading } = useContext(BridgeContext);
   const isERC20Dai = isERC20DaiAddress(fromToken);
   const smallScreen = useBreakpointValue({ base: true, lg: false });
   const bridgeChainId = getBridgeNetwork(chainId);
@@ -36,7 +37,12 @@ export const BridgeTokens = () => {
       my="auto"
     >
       <BridgeLoadingModal />
-      {bridgeChainId === HOME_NETWORK ? <ClaimTokensModal /> : null}
+      {!!txHash && !loading && chainId === getBridgeNetwork(HOME_NETWORK) ? (
+        <ClaimTransferModal />
+      ) : (
+        <ClaimTokensModal />
+      )}
+
       {!smallScreen && (
         <Flex w="100%" justify="space-between">
           <Flex align="flex-start" direction="column">

@@ -63,12 +63,29 @@ export const executeSignatures = async (ethersProvider, chainId, message) => {
   return null;
 };
 
+// const messagesTXQuery = gql`
+//   query getMessage($txHash: String!) {
+//     messages(where: { txHash_contains: $txHash }, first: 1) {
+//       msgId
+//       msgData
+//       signatures
+//     }
+//   }
+// `;
+
 const messagesTXQuery = gql`
-  query getMessage($txHash: String!) {
-    messages(where: { txHash_contains: $txHash }, first: 1) {
-      msgId
-      msgData
-      signatures
+  query getRequests($txHash: String!) {
+    requests: userRequests(where: { txHash_contains: $txHash }, first: 1) {
+      user
+      amount
+      token
+      decimals
+      symbol
+      message {
+        msgId
+        msgData
+        signatures
+      }
     }
   }
 `;
@@ -78,8 +95,14 @@ export const getMessageFromTxHash = async (chainId, txHash) => {
     txHash,
   });
 
-  return data && data.messages && data.messages.length > 0
-    ? data.messages[0]
+  return data &&
+    data.requests &&
+    data.requests.length > 0 &&
+    data.requests[0].message
+    ? {
+        ...data.requests[0].message,
+        ...data.requests[0],
+      }
     : null;
 };
 
