@@ -64,10 +64,16 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
     }
   };
   const onClick = () => {
-    transfer().catch(() => {
-      showError(
-        'Impossible to perform the operation. Reload the application and try again.',
-      );
+    transfer().catch(error => {
+      if (
+        error &&
+        error.message &&
+        !error.message.includes('User denied transaction signature')
+      ) {
+        showError(
+          'Impossible to perform the operation. Reload the application and try again.',
+        );
+      }
     });
     onClose();
   };

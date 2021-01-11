@@ -48,19 +48,11 @@ export const executeSignatures = async (ethersProvider, chainId, message) => {
     message.signatures.map(s => signatureToVRS(s)),
   );
   const address = getAMBAddress(chainId);
-  try {
-    const ambContract = new Contract(address, abi, ethersProvider.getSigner());
-    const gasPrice = getGasPrice(chainId);
-    const tx = await ambContract
-      .executeSignatures(message.msgData, signatures, {
-        gasPrice,
-      })
-      .catch(contractError => logError({ contractError }));
-    return tx;
-  } catch (executeError) {
-    logError({ executeError });
-  }
-  return null;
+  const ambContract = new Contract(address, abi, ethersProvider.getSigner());
+  const gasPrice = getGasPrice(chainId);
+  return ambContract.executeSignatures(message.msgData, signatures, {
+    gasPrice,
+  });
 };
 
 // const messagesTXQuery = gql`

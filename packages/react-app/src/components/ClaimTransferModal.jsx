@@ -35,6 +35,7 @@ export const ClaimTransferModal = () => {
   const [claiming, setClaiming] = useState(false);
   const [message, setMessage] = useState(false);
   const [executed, setExecuted] = useState(false);
+  const [loadingText, setLoadingText] = useState('');
 
   const onClose = () => {
     setOpen(false);
@@ -74,9 +75,10 @@ export const ClaimTransferModal = () => {
           getBridgeNetwork(HOME_NETWORK),
           message,
         );
+        setLoadingText('Waiting for Execution');
       } catch (executeError) {
         setClaiming(false);
-        setTxHash();
+        setLoadingText('');
         logError({ executeError });
       }
     }
@@ -111,6 +113,7 @@ export const ClaimTransferModal = () => {
             onClose();
             setClaiming(false);
           }
+          setLoadingText('');
           setTxHash();
           setExecuted(true);
           return;
@@ -122,6 +125,7 @@ export const ClaimTransferModal = () => {
         }
       } catch (statusError) {
         setClaiming(false);
+        setLoadingText('');
         setTxHash();
         logError({ statusError });
       }
@@ -137,7 +141,7 @@ export const ClaimTransferModal = () => {
   if (!message || claiming)
     return (
       <LoadingModal
-        loadingText={message ? 'Waiting for Execution' : ''}
+        loadingText={message ? loadingText : ''}
         chainId={HOME_NETWORK}
         txHash={txHash}
       />
