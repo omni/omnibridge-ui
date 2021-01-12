@@ -14,8 +14,8 @@
     "prepare-sokol": "mustache config/sokol.json subgraph.template.yaml > subgraph.yaml",
     "codegen": "graph codegen --output-dir src/types/",
     "build": "graph build",
-    "deploy-mainnet": "graph deploy dan13ram/mainnet-omnibridge --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
-    "deploy-xdai": "graph deploy dan13ram/xdai-omnibridge --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
+    "deploy-mainnet": "graph deploy raid-guild/mainnet-omnibridge --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
+    "deploy-xdai": "graph deploy raid-guild/xdai-omnibridge --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
     "deploy-kovan": "graph deploy dan13ram/kovan-omnibridge --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
     "deploy-sokol": "graph deploy dan13ram/sokol-omnibridge --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/"
   },

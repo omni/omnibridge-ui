@@ -117,8 +117,8 @@ export const defaultTokens = {
 };
 
 export const graphEndpoints = {
-  100: 'https://api.thegraph.com/subgraphs/name/dan13ram/xdai-omnibridge',
-  1: 'https://api.thegraph.com/subgraphs/name/dan13ram/mainnet-omnibridge',
+  100: 'https://api.thegraph.com/subgraphs/name/raid-guild/xdai-omnibridge',
+  1: 'https://api.thegraph.com/subgraphs/name/raid-guild/mainnet-omnibridge',
   77: 'https://api.thegraph.com/subgraphs/name/dan13ram/sokol-omnibridge',
   42: 'https://api.thegraph.com/subgraphs/name/dan13ram/kovan-omnibridge',
 };
