@@ -1,4 +1,4 @@
-name: Build and Deploy xDai
+name: Build and Deploy xDai Staging
 on:
   push:
     branches:
@@ -6,7 +6,7 @@ on:
 
 jobs:
   deploy:
-    name: Build & Deploy xDai
+    name: Build & Deploy xDai Staging
     runs-on: ubuntu-latest
     steps:
       - name: Cancel Previous Runs
@@ -32,7 +32,7 @@ jobs:
         run: yarn react-app:build
         env:
           CI: true
-          REACT_APP_INFURA_ID: ${{ secrets.INFURA_ID }}
+          REACT_APP_INFURA_ID: ${{ secrets.PERSONAL_INFURA_ID }}
           REACT_APP_HOME_NETWORK: xdai
           REACT_APP_DEBUG_LOGS: true
           REACT_APP_TITLE: OmniBridge - %c
