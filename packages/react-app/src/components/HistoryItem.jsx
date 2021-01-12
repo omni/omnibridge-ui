@@ -5,25 +5,29 @@ import {
   Image,
   Link,
   Text,
-  useBreakpointValue,
-  useDisclosure,
+  useToast,
 } from '@chakra-ui/react';
 import { BigNumber, utils } from 'ethers';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 
 import BlueTickImage from '../assets/blue-tick.svg';
 import RightArrowImage from '../assets/right-arrow.svg';
-import { CONFIG } from '../config';
 import { Web3Context } from '../contexts/Web3Context';
-import { executeSignatures } from '../lib/amb';
+import {
+  executeSignatures,
+  getMessageFromTxHash,
+  getMessageStatus,
+} from '../lib/amb';
+import { HOME_NETWORK, POLLING_INTERVAL } from '../lib/constants';
 import {
   getBridgeNetwork,
   getExplorerUrl,
   getMonitorUrl,
   getNetworkName,
   isxDaiChain,
+  logError,
 } from '../lib/helpers';
-import { ErrorModal } from './ErrorModal';
+import { TxLink } from './TxLink';
 
 const { formatUnits } = utils;
 
@@ -37,12 +41,13 @@ const Tag = ({ bg, txt }) => (
     bg={bg}
     borderRadius="6px"
     px="0.75rem"
-    height="2rem"
-    fontSize="sm"
+    height="1.5rem"
+    fontSize="xs"
     color="white"
     fontWeight="600"
+    w="auto"
   >
-    {txt}
+    <Text>{txt}</Text>
   </Flex>
 );
 
@@ -50,7 +55,7 @@ const networkTags = {
   100: <Tag bg="#4DA9A6" txt="xDai" />,
   1: <Tag bg="#5A74DA" txt="Ethereum" />,
   42: <Tag bg="#5A74DA" txt="Kovan" />,
-  77: <Tag bg="#4DA9A6" txt="Sokol" />,
+  77: <Tag bg="#4DA9A6" txt="POA Sokol" />,
 };
 
 const getNetworkTag = chainId => networkTags[chainId];
@@ -60,59 +65,112 @@ export const HistoryItem = ({
     chainId,
     timestamp,
     sendingTx,
-    receivingTx,
+    receivingTx: inputReceivingTx,
     amount,
     decimals,
     symbol,
-    message,
+    message: inputMessage,
   },
 }) => {
   const { providerChainId, ethersProvider } = useContext(Web3Context);
   const bridgeChainId = getBridgeNetwork(chainId);
-  const [receiving, setReceiving] = useState(receivingTx);
+  const [receivingTx, setReceiving] = useState(inputReceivingTx);
+  const [message, setMessage] = useState(inputMessage);
 
-  const timestampString = useBreakpointValue({
-    base: new Date(parseInt(timestamp, 10) * 1000).toLocaleTimeString([], {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    }),
-    // lg: new Date(parseInt(timestamp, 10) * 1000).toLocaleTimeString([], {
-    //   weekday: 'long',
-    //   year: 'numeric',
-    //   month: 'long',
-    //   day: 'numeric',
-    //   hour: '2-digit',
-    //   minute: '2-digit',
-    // }),
+  const timestampString = new Date(
+    parseInt(timestamp, 10) * 1000,
+  ).toLocaleTimeString([], {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
   });
 
-  const { onOpen, isOpen, onClose } = useDisclosure();
+  const toast = useToast();
+  const showError = msg => {
+    if (msg) {
+      toast({
+        title: 'Error',
+        description: msg,
+        status: 'error',
+        isClosable: 'true',
+      });
+    }
+  };
   const claimable = message && message.msgData && message.signatures;
   const isxDai = isxDaiChain(providerChainId);
   const [loading, setLoading] = useState(false);
+  const [txHash, setTxHash] = useState();
   const claimTokens = async () => {
-    if (loading || !claimable) return;
+    if (loading) return;
     if (isxDai) {
-      onOpen();
+      showError(
+        `Please switch wallet to ${getNetworkName(
+          getBridgeNetwork(HOME_NETWORK),
+        )}`,
+      );
+    } else if (!claimable) {
+      showError('Still Collecting Signatures...');
     } else {
-      setLoading(true);
       try {
+        setLoading(true);
         const tx = await executeSignatures(
           ethersProvider,
           providerChainId,
           message,
         );
-        setReceiving(tx);
+        setTxHash(tx.hash);
       } catch (executeError) {
-        // eslint-disable-next-line no-console
-        console.log({ executeError });
+        setLoading(false);
+        logError({ executeError });
       }
-      setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const subscriptions = [];
+    const unsubscribe = () => {
+      subscriptions.forEach(s => {
+        clearTimeout(s);
+      });
+    };
+
+    if (receivingTx || !message || !message.msgId) return unsubscribe;
+    let execution = null;
+    let request = null;
+    const { msgId } = message;
+
+    const getStatus = async () => {
+      try {
+        [execution, request] = await Promise.all([
+          !receivingTx ? getMessageStatus(bridgeChainId, msgId) : null,
+          !message.signatures ? getMessageFromTxHash(chainId, sendingTx) : null,
+        ]);
+        if (execution) {
+          setReceiving(execution.txHash);
+          setLoading(false);
+          setTxHash();
+        }
+        if (request) {
+          setMessage(request);
+        }
+
+        if (!(receivingTx && message)) {
+          const timeoutId = setTimeout(() => getStatus(), POLLING_INTERVAL);
+          subscriptions.push(timeoutId);
+        }
+      } catch (messageError) {
+        logError({ messageError });
+      }
+    };
+    // unsubscribe from previous polls
+    unsubscribe();
+
+    getStatus();
+    // unsubscribe when unmount component
+    return unsubscribe;
+  }, [chainId, receivingTx, bridgeChainId, message, sendingTx]);
 
   return (
     <Flex
@@ -120,70 +178,109 @@ export const HistoryItem = ({
       background="white"
       boxShadow="0px 1rem 2rem rgba(204, 218, 238, 0.8)"
       borderRadius="1rem"
+      fontSize="sm"
       p={4}
       mb={4}
     >
-      {isxDai && (
-        <ErrorModal
-          message={`Please switch wallet to ${getNetworkName(
-            getBridgeNetwork(CONFIG.network),
-          )}`}
-          isOpen={isOpen}
-          onClose={onClose}
-        />
-      )}
       <Grid
-        // templateColumns={{ base: '2fr 2fr', md: '2fr 3fr' }}
-        templateColumns="1fr 1.25fr 1fr 1fr 1.25fr 0.5fr"
+        templateColumns={{
+          base: '1fr',
+          md: '0.5fr 1.75fr 1fr 1fr 1.25fr 0.5fr',
+          lg: '1fr 1.25fr 1fr 1fr 1.25fr 0.5fr',
+        }}
         w="100%"
       >
-        <Text my="auto">{timestampString}</Text>
-        <Flex align="center">
-          {getNetworkTag(chainId)}
-          <Image src={RightArrowImage} mx="0.5rem" />
-          {getNetworkTag(bridgeChainId)}
+        <Flex align="center" justify="space-between" mb={{ base: 1, md: 0 }}>
+          <Text display={{ base: 'inline-block', md: 'none' }} color="greyText">
+            Date
+          </Text>
+          <Text my="auto">{timestampString}</Text>
         </Flex>
-        <Link
-          color="blue.500"
-          href={getMonitorUrl(chainId, sendingTx)}
-          rel="noreferrer noopener"
-          target="_blank"
-          my="auto"
+        <Flex align="center" justify="space-between" mb={{ base: 1, md: 0 }}>
+          <Text display={{ base: 'inline-block', md: 'none' }} color="greyText">
+            Direction
+          </Text>
+          <Flex align="center">
+            {getNetworkTag(chainId)}
+            <Image src={RightArrowImage} mx="0.5rem" />
+            {getNetworkTag(bridgeChainId)}
+          </Flex>
+        </Flex>
+        <Flex
+          align="center"
+          justify={{ base: 'space-between', md: 'center' }}
+          mb={{ base: 1, md: 0 }}
         >
-          {shortenHash(sendingTx)}
-        </Link>
-        {receiving ? (
+          <Text display={{ base: 'inline-block', md: 'none' }} color="greyText">
+            Sending Tx
+          </Text>
           <Link
             color="blue.500"
-            href={`${getExplorerUrl(bridgeChainId)}/tx/${receiving}`}
+            href={getMonitorUrl(chainId, sendingTx)}
             rel="noreferrer noopener"
             target="_blank"
             my="auto"
+            textAlign="center"
           >
-            {shortenHash(receiving)}
+            {shortenHash(sendingTx)}
           </Link>
-        ) : (
-          <Text />
-        )}
-        <Text my="auto">
-          {formatUnits(BigNumber.from(amount), decimals)} {symbol}
-        </Text>
-        {receiving ? (
-          <Flex align="center">
+        </Flex>
+        <Flex
+          align="center"
+          justify={{ base: 'space-between', md: 'center' }}
+          mb={{ base: 1, md: 0 }}
+        >
+          <Text display={{ base: 'inline-block', md: 'none' }} color="greyText">
+            Receiving Tx
+          </Text>
+          {receivingTx ? (
+            <Link
+              color="blue.500"
+              href={`${getExplorerUrl(bridgeChainId)}/tx/${receivingTx}`}
+              rel="noreferrer noopener"
+              target="_blank"
+              my="auto"
+              textAlign="center"
+            >
+              {shortenHash(receivingTx)}
+            </Link>
+          ) : (
+            <Text />
+          )}
+        </Flex>
+        <Flex
+          align="center"
+          justify={{ base: 'space-between', md: 'center' }}
+          mb={{ base: 1, md: 0 }}
+        >
+          <Text display={{ base: 'inline-block', md: 'none' }} color="greyText">
+            Amount
+          </Text>
+          <Text my="auto" textAlign="center">
+            {formatUnits(BigNumber.from(amount), decimals)} {symbol}
+          </Text>
+        </Flex>
+        {receivingTx ? (
+          <Flex align="center" justify={{ base: 'center', md: 'flex-end' }}>
             <Image src={BlueTickImage} mr="0.5rem" />
             <Text color="blue.500">Claimed</Text>
           </Flex>
         ) : (
-          <Flex align="center">
-            <Button
-              size="sm"
-              colorScheme="blue"
-              onClick={claimTokens}
-              isDisabled={!claimable}
-              isLoading={loading}
+          <Flex align="center" justify={{ base: 'center', md: 'flex-end' }}>
+            <TxLink
+              chainId={providerChainId}
+              hash={loading ? txHash : undefined}
             >
-              Claim
-            </Button>
+              <Button
+                w="100%"
+                size="sm"
+                colorScheme="blue"
+                onClick={claimTokens}
+                isLoading={loading}
+              >
+                Claim
+              </Button>
+            </TxLink>
           </Flex>
         )}
       </Grid>

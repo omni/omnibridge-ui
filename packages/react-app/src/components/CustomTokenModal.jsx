@@ -16,21 +16,21 @@ import {
 import { utils } from 'ethers';
 import React, { useContext, useRef, useState } from 'react';
 
-import CustomTokenImage from '../assets/custom-token.png';
+import CustomTokenImage from '../assets/custom-token.svg';
 import { BridgeContext } from '../contexts/BridgeContext';
 import { Web3Context } from '../contexts/Web3Context';
-import { uniqueTokens } from '../lib/helpers';
+import { logError, uniqueTokens } from '../lib/helpers';
 import { fetchTokenDetails } from '../lib/token';
 
 export const CustomTokenModal = ({ isOpen, onClose, onBack }) => {
   const { setToken } = useContext(BridgeContext);
-  const { network } = useContext(Web3Context);
+  const { providerChainId } = useContext(Web3Context);
   const [customToken, setCustomToken] = useState({
     address: '',
     name: '',
     symbol: '',
     decimals: 0,
-    chainId: network.value,
+    chainId: providerChainId,
     logo: '',
   });
 
@@ -68,7 +68,7 @@ export const CustomTokenModal = ({ isOpen, onClose, onBack }) => {
       setAddressInput(e.target.value);
       if (utils.isAddress(e.target.value)) {
         const tokenAddress = e.target.value;
-        fetchTokenDetails({ chainId: network.value, address: tokenAddress })
+        fetchTokenDetails({ chainId: providerChainId, address: tokenAddress })
           .then(tokenDetails => {
             setAddressInvalid(false);
             setCustomToken({
@@ -76,7 +76,10 @@ export const CustomTokenModal = ({ isOpen, onClose, onBack }) => {
               ...tokenDetails,
             });
           })
-          .catch(() => setAddressInvalid(true));
+          .catch(contractError => {
+            logError({ contractError });
+            setAddressInvalid(true);
+          });
       } else {
         setAddressInvalid(true);
       }

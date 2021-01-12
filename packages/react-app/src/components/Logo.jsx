@@ -12,10 +12,10 @@ const BAD_SRCS = {};
  * Renders an image by sequentially trying a list of URIs, and then eventually a fallback triangle alert
  */
 export const Logo = ({ uri, reverseFallback = false }) => {
-  const { network } = useContext(Web3Context);
+  const { providerChainId } = useContext(Web3Context);
   const fallbackCheck = reverseFallback
-    ? !isxDaiChain(network.value)
-    : isxDaiChain(network.value);
+    ? !isxDaiChain(providerChainId)
+    : isxDaiChain(providerChainId);
   const fallbackLogo = fallbackCheck ? xDAILogo : EthLogo;
   const [, refresh] = useState(0);
 

@@ -14,18 +14,22 @@ import React, { useContext, useState } from 'react';
 
 import ChangeNetworkImage from '../assets/change-network.png';
 import InfoImage from '../assets/info.svg';
-import { CONFIG } from '../config';
 import { BridgeContext } from '../contexts/BridgeContext';
+import { HOME_NETWORK } from '../lib/constants';
 import { getBridgeNetwork, getNetworkName, isxDaiChain } from '../lib/helpers';
 
-export const NeedsConfirmationModal = () => {
+export const NeedsConfirmationModal = ({ setNeedsConfirmation }) => {
   const { fromToken, toToken } = useContext(BridgeContext);
   const isxDai = fromToken !== undefined && isxDaiChain(fromToken.chainId);
   const toUnit =
-    toToken !== undefined && toToken.symbol + (isxDai ? 'on Mainnet' : '');
+    toToken !== undefined && toToken.symbol + (isxDai ? ' on Mainnet' : '');
 
   const [isOpen, setOpen] = useState(true);
-  const onClose = () => setOpen(false);
+  const onClose = () => {
+    setNeedsConfirmation(false);
+    setOpen(false);
+  };
+
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered>
       <ModalOverlay background="modalBG">
@@ -51,7 +55,7 @@ export const NeedsConfirmationModal = () => {
               <Box w="100%" fontSize="sm" color="black">
                 <Text as="span">{`Please switch the network in your wallet to `}</Text>
                 <Text as="b">{`${getNetworkName(
-                  getBridgeNetwork(CONFIG.network),
+                  getBridgeNetwork(HOME_NETWORK),
                 )}`}</Text>
               </Box>
               <Flex
@@ -76,7 +80,7 @@ export const NeedsConfirmationModal = () => {
                   <Text>
                     After you switch networks, you will complete a second
                     transaction on{' '}
-                    {getNetworkName(getBridgeNetwork(CONFIG.network))} to claim
+                    {getNetworkName(getBridgeNetwork(HOME_NETWORK))} to claim
                     your {toUnit} tokens.
                   </Text>
                 </Flex>

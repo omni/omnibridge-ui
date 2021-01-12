@@ -1,2 +1,77 @@
-REACT_APP_INFURA_ID=
-REACT_APP_NETWORK=
+######################################################
+# update interval execution status of a message;
+# if unset default => sokol
+######################################################
+REACT_APP_HOME_NETWORK=<sokol/xdai>
+
+######################################################
+# update interval execution status of a message;
+# if unset defaults =>
+# 42  =>  0xA960d095470f7509955d5402e36d9DB984B5C8E2
+# 77  =>  0x40CdfF886715A4012fAD0219D15C98bB149AeF0e
+# 1   =>  0x88ad09518695c6c3712AC10a214bE5109a655671
+# 100 =>  0xf6A78083ca3e2a662D6dd1703c939c8aCE2e268d
+######################################################
+REACT_APP_HOME_BRIDGE_ADDRESS=0x40CdfF886715A4012fAD0219D15C98bB149AeF0e
+REACT_APP_FOREIGN_BRIDGE_ADDRESS=0xA960d095470f7509955d5402e36d9DB984B5C8E2
+
+######################################################
+# if unset defaults =>
+# infuraID  =>  undefined
+# 42  => https://kovan.infura.io/v3/<INSERT_INFURA_ID>
+# 77  => https://sokol.poa.network
+# 1   => https://mainnet.infura.io/v3/<INSERT_INFURA_ID>
+# 100 => https://xdai.poanetwork.dev
+######################################################
+REACT_APP_INFURA_ID=<INSERT_INFURA_ID>
+REACT_APP_HOME_RPC_URL=https://sokol.poa.network
+REACT_APP_FOREIGN_RPC_URL=https://kovan.infura.io/v3/<INSERT_INFURA_ID>
+
+######################################################
+# if unset defaults =>
+# 42  => https://blockscout.com/eth/kovan
+# 77  => https://blockscout.com/poa/sokol
+# 1   => https://blockscout.com/eth/mainnet
+# 100 => https://blockscout.com/poa/xdai
+# alm-test => https://alm-test-amb.herokuapp.com/
+# alm      => https://alm-xdai.herokuapp.com
+######################################################
+REACT_APP_HOME_EXPLORER_PREFIX=https://blockscout.com/poa/sokol
+REACT_APP_FOREIGN_EXPLORER_PREFIX=https://blockscout.com/eth/kovan
+REACT_APP_AMB_LIVE_MONITOR_PREFIX=https://alm-test-amb.herokuapp.com/
+
+######################################################
+# if unset defaults => undefined
+######################################################
+REACT_APP_HOME_GAS_PRICE_SUPPLIER_URL=https://gasprice.poa.network/
+REACT_APP_HOME_GAS_PRICE_SPEED_TYPE=standard
+REACT_APP_HOME_GAS_PRICE_FALLBACK_GWEI=5
+REACT_APP_HOME_GAS_PRICE_UPDATE_INTERVAL=15000
+REACT_APP_HOME_GAS_PRICE_FACTOR=1
+
+######################################################
+# if unset defaults => undefined
+######################################################
+REACT_APP_FOREIGN_GAS_PRICE_SUPPLIER_URL=https://gasprice.poa.network/
+REACT_APP_FOREIGN_GAS_PRICE_SPEED_TYPE=standard
+REACT_APP_FOREIGN_GAS_PRICE_FALLBACK_GWEI=5
+REACT_APP_FOREIGN_GAS_PRICE_UPDATE_INTERVAL=15000
+REACT_APP_FOREIGN_GAS_PRICE_FACTOR=1
+
+######################################################
+# if unset defaults => undefined
+######################################################
+REACT_APP_TITLE=OmniBridge - %c
+REACT_APP_DESCRIPTION=The OmniBridge multi-token extension for the Arbitrary Message Bridge between Ethereum and the xDai chain is the simplest way to transfer ANY ERC20/ERC677/ERC827 token to the xDai chain.
+
+######################################################
+# update interval execution status of a message;
+# if unset default => 1000
+######################################################
+REACT_APP_UI_STATUS_UPDATE_INTERVAL=1000
+
+
+######################################################
+# if unset default => false
+######################################################
+REACT_APP_DEBUG_LOGS=false

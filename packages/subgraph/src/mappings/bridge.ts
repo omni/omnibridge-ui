@@ -11,9 +11,9 @@ import { fetchTokenInfo, overrides } from './helpers';
 export function handleBridgeTransfer(event: TokensBridged): void {
   log.debug('Parsing TokensBridged', []);
   let txHash = event.transaction.hash;
-  let execution = Execution.load(txHash.toHex());
+  let execution = Execution.load(txHash.toHexString());
   if (execution == null) {
-    execution = new Execution(txHash.toHex());
+    execution = new Execution(txHash.toHexString());
   }
   execution.txHash = txHash;
   execution.timestamp = event.block.timestamp;
@@ -22,15 +22,15 @@ export function handleBridgeTransfer(event: TokensBridged): void {
   execution.amount = event.params.value;
   execution.messageId = event.params.messageId;
   execution.save();
-  log.debug('TokensBridged token {}', [execution.token.toHex()]);
+  log.debug('TokensBridged token {}', [execution.token.toHexString()]);
 }
 
 export function handleInitiateTransfer(event: TokensBridgingInitiated): void {
   log.debug('Parsing TokensBridged', []);
   let txHash = event.transaction.hash;
-  let request = UserRequest.load(txHash.toHex());
+  let request = UserRequest.load(txHash.toHexString());
   if (request == null) {
-    request = new UserRequest(txHash.toHex());
+    request = new UserRequest(txHash.toHexString());
   }
   request.txHash = txHash;
   request.timestamp = event.block.timestamp;
@@ -42,7 +42,7 @@ export function handleInitiateTransfer(event: TokensBridgingInitiated): void {
   request.amount = event.params.value;
   request.messageId = event.params.messageId;
   request.save();
-  log.debug('TokensBridgingInitiated token {}', [request.token.toHex()]);
+  log.debug('TokensBridgingInitiated token {}', [request.token.toHexString()]);
 }
 
 export function handleNewToken(event: NewTokenRegistered): void {
@@ -52,13 +52,13 @@ export function handleNewToken(event: NewTokenRegistered): void {
   if (overrides.isSet(homeToken)) {
     let override = overrides.get(homeToken);
     log.info('Overriding homeToken {} with {} for foreignToken {}', [
-      homeToken.toHex(),
-      override.address.toHex(),
-      event.params.foreignToken.toHex(),
+      homeToken.toHexString(),
+      override.address.toHexString(),
+      event.params.foreignToken.toHexString(),
     ]);
     homeToken = override.address;
   }
-  let id = homeToken.toHex();
+  let id = homeToken.toHexString();
   let token = new Token(id);
   token.homeAddress = homeToken;
   token.foreignAddress = event.params.foreignToken;
@@ -92,7 +92,7 @@ export function handleNewToken(event: NewTokenRegistered): void {
 
   token.save();
   log.debug('NewTokenRegistered homeToken {} and foreignToken {}', [
-    token.homeAddress.toHex(),
-    token.foreignAddress.toHex(),
+    token.homeAddress.toHexString(),
+    token.foreignAddress.toHexString(),
   ]);
 }

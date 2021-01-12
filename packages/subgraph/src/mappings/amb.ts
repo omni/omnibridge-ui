@@ -15,9 +15,9 @@ export function handleUserRequestForAffirmation(
 ): void {
   log.debug('Parsing UserRequestForAffirmation', []);
   let txHash = event.transaction.hash;
-  let request = UserRequest.load(txHash.toHex());
+  let request = UserRequest.load(txHash.toHexString());
   if (request == null) {
-    request = new UserRequest(txHash.toHex());
+    request = new UserRequest(txHash.toHexString());
   }
   let message = new Message(
     crypto.keccak256(event.params.encodedData).toHexString(),
@@ -38,9 +38,9 @@ export function handleUserRequestForSignature(
 ): void {
   log.debug('Parsing UserRequestForSignature', []);
   let txHash = event.transaction.hash;
-  let request = UserRequest.load(txHash.toHex());
+  let request = UserRequest.load(txHash.toHexString());
   if (request == null) {
-    request = new UserRequest(txHash.toHex());
+    request = new UserRequest(txHash.toHexString());
   }
   let message = new Message(
     crypto.keccak256(event.params.encodedData).toHexString(),
@@ -59,9 +59,9 @@ export function handleUserRequestForSignature(
 export function handleRelayedMessage(event: RelayedMessage): void {
   log.debug('Parsing RelayedMessage', []);
   let txHash = event.transaction.hash;
-  let execution = Execution.load(txHash.toHex());
+  let execution = Execution.load(txHash.toHexString());
   if (execution == null) {
-    execution = new Execution(txHash.toHex());
+    execution = new Execution(txHash.toHexString());
   }
   execution.txHash = txHash;
   execution.timestamp = event.block.timestamp;
@@ -75,9 +75,9 @@ export function handleRelayedMessage(event: RelayedMessage): void {
 export function handleAffirmationCompleted(event: AffirmationCompleted): void {
   log.debug('Parsing AffirmationCompleted', []);
   let txHash = event.transaction.hash;
-  let execution = Execution.load(txHash.toHex());
+  let execution = Execution.load(txHash.toHexString());
   if (execution == null) {
-    execution = new Execution(txHash.toHex());
+    execution = new Execution(txHash.toHexString());
   }
   execution.txHash = txHash;
   execution.timestamp = event.block.timestamp;

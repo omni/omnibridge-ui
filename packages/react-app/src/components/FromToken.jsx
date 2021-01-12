@@ -8,23 +8,21 @@ import {
   useBreakpointValue,
   useDisclosure,
 } from '@chakra-ui/react';
+import { BigNumber, utils } from 'ethers';
 import React, { useContext, useEffect, useState } from 'react';
 
 import DropDown from '../assets/drop-down.svg';
 import { BridgeContext } from '../contexts/BridgeContext';
 import { Web3Context } from '../contexts/Web3Context';
-import { formatValue, parseValue } from '../lib/helpers';
+import { formatValue, logError, parseValue } from '../lib/helpers';
 import { fetchTokenBalance } from '../lib/token';
-import { ErrorModal } from './ErrorModal';
 import { Logo } from './Logo';
 import { SelectTokenModal } from './SelectTokenModal';
 
 export const FromToken = () => {
-  const { ethersProvider, network, networkMismatch, account } = useContext(
-    Web3Context,
-  );
+  const { account } = useContext(Web3Context);
   const {
-    receipt,
+    updateBalance,
     fromToken: token,
     fromBalance: balance,
     setFromBalance: setBalance,
@@ -34,31 +32,26 @@ export const FromToken = () => {
   } = useContext(BridgeContext);
 
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const [message, setMessage] = useState();
-  const onClick = () => {
-    if (!ethersProvider) {
-      setMessage('Please connect wallet');
-    } else if (networkMismatch) {
-      setMessage(`Please switch wallet to ${network.name}`);
-    } else {
-      setMessage();
-    }
-    onOpen();
-  };
   const smallScreen = useBreakpointValue({ base: true, lg: false });
   const [balanceLoading, setBalanceLoading] = useState(false);
 
   useEffect(() => {
     if (token && account) {
       setBalanceLoading(true);
-      fetchTokenBalance(token, account).then(b => {
-        setBalance(b);
-        setBalanceLoading(false);
-      });
+      fetchTokenBalance(token, account)
+        .then(b => {
+          setBalance(b);
+          setBalanceLoading(false);
+        })
+        .catch(contractError => {
+          logError({ contractError });
+          setBalance(BigNumber.from(0));
+          setBalanceLoading(false);
+        });
     } else {
-      setBalance();
+      setBalance(BigNumber.from(0));
     }
-  }, [receipt, token, account, setBalance, setBalanceLoading]);
+  }, [updateBalance, token, account, setBalance, setBalanceLoading]);
 
   return (
     <Flex
@@ -68,12 +61,10 @@ export const FromToken = () => {
       position="relative"
       borderRadius="0.25rem"
       border={{ base: '1px solid #DAE3F0', lg: 'none' }}
-      minH={8}
+      minH={smallScreen ? '5rem' : 8}
+      minW={smallScreen ? '15rem' : undefined}
     >
-      {message && (
-        <ErrorModal message={message} isOpen={isOpen} onClose={onClose} />
-      )}
-      {!message && <SelectTokenModal onClose={onClose} isOpen={isOpen} />}
+      <SelectTokenModal onClose={onClose} isOpen={isOpen} />
       {!smallScreen && (
         <svg width="100%" viewBox="0 0 381 94" fill="none">
           <path
@@ -95,11 +86,11 @@ export const FromToken = () => {
         >
           <Flex
             justify="space-between"
-            align={{ base: 'stretch', sm: 'flex-start' }}
+            align={{ base: 'stretch', sm: 'center', lg: 'flex-start' }}
             mb={2}
             direction={{ base: 'column', sm: 'row' }}
           >
-            <Flex align="center" cursor="pointer" onClick={onClick}>
+            <Flex align="center" cursor="pointer" onClick={onOpen}>
               <Flex
                 justify="center"
                 align="center"
@@ -122,6 +113,7 @@ export const FromToken = () => {
               align="center"
               h="100%"
               position="relative"
+              ml={{ base: undefined, sm: 2, md: undefined }}
             >
               {balanceLoading ? (
                 <Spinner size="sm" color="grey" />
@@ -133,7 +125,7 @@ export const FromToken = () => {
                     ? {}
                     : { position: 'absolute', bottom: '4px', right: 0 })}
                 >
-                  {`Balance: ${formatValue(balance || 0, token.decimals)}`}
+                  {`Balance: ${formatValue(balance, token.decimals)}`}
                 </Text>
               )}
             </Flex>
@@ -157,7 +149,7 @@ export const FromToken = () => {
               variant="unstyled"
               type="number"
               value={input}
-              placeholder="0.000"
+              placeholder="0.0"
               textAlign="left"
               fontWeight="bold"
               onChange={e => {
@@ -175,7 +167,7 @@ export const FromToken = () => {
               fontWeight="normal"
               _hover={{ bg: 'blue.100' }}
               onClick={() => {
-                setInput(formatValue(balance, token.decimals));
+                setInput(utils.formatUnits(balance, token.decimals));
                 setAmount(balance);
               }}
             >

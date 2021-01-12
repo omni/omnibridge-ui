@@ -1,7 +1,8 @@
-import { Contract } from 'ethers';
+import { BigNumber, Contract } from 'ethers';
 
 import { ADDRESS_ZERO } from './constants';
-import { getMediatorAddress } from './helpers';
+import { getGasPrice } from './gasPrice';
+import { getMediatorAddress, logError } from './helpers';
 import {
   getOverriddenMediator,
   getOverriddenMode,
@@ -9,22 +10,30 @@ import {
 } from './overrides';
 import { getEthersProvider } from './providers';
 
-export const fetchAllowance = (
+export const fetchAllowance = async (
   { mediator, address },
   account,
-  walletProvider,
+  ethersProvider,
 ) => {
-  if (!account) return 0;
-
-  const abi = ['function allowance(address, address) view returns (uint256)'];
-  const tokenContract = new Contract(address, abi, walletProvider);
-  try {
-    return tokenContract.allowance(account, mediator);
-  } catch (error) {
-    // eslint-disable-next-line
-    console.log({ tokenError: error });
-    return 0;
+  if (
+    !account ||
+    !address ||
+    address === ADDRESS_ZERO ||
+    !mediator ||
+    mediator === ADDRESS_ZERO ||
+    !ethersProvider
+  ) {
+    return BigNumber.from(0);
   }
+
+  try {
+    const abi = ['function allowance(address, address) view returns (uint256)'];
+    const tokenContract = new Contract(address, abi, ethersProvider);
+    return tokenContract.allowance(account, mediator);
+  } catch (allowanceError) {
+    logError({ allowanceError });
+  }
+  return BigNumber.from(0);
 };
 
 export const getMode = async (
@@ -78,54 +87,37 @@ export const fetchTokenDetails = async token => {
   return details;
 };
 
-export const approveToken = async (ethersProvider, token, amount) => {
+export const approveToken = async (
+  ethersProvider,
+  { chainId, address, mediator },
+  amount,
+) => {
   const abi = ['function approve(address, uint256)'];
-  const tokenContract = new Contract(
-    token.address,
-    abi,
-    ethersProvider.getSigner(),
-  );
-  const mediatorAddress = getMediatorAddress(token.address, token.chainId);
-  const tx = await tokenContract.approve(mediatorAddress, amount);
-  return tx.wait();
+  const gasPrice = getGasPrice(chainId);
+  const tokenContract = new Contract(address, abi, ethersProvider.getSigner());
+  return tokenContract.approve(mediator, amount, { gasPrice });
 };
 
 export const fetchTokenBalance = async (token, account) => {
-  if (!account || !token || token.address === ADDRESS_ZERO) {
-    // eslint-disable-next-line
-    console.log({ balanceError: 'Returning balance as 0', account, token });
-    return 0;
-  }
   const ethersProvider = getEthersProvider(token.chainId);
-  const abi = ['function balanceOf(address) view returns (uint256)'];
-  const tokenContract = new Contract(token.address, abi, ethersProvider);
-  try {
-    return tokenContract.balanceOf(account);
-  } catch (error) {
-    // eslint-disable-next-line
-    console.log({ tokenError: error });
-  }
-  return 0;
+  return fetchTokenBalanceWithProvider(ethersProvider, token, account);
 };
 
 export const fetchTokenBalanceWithProvider = async (
   ethersProvider,
-  token,
+  { address },
   account,
 ) => {
-  if (!account || !token || token.address === ADDRESS_ZERO || !ethersProvider) {
-    // eslint-disable-next-line
-    console.log({ balanceError: 'Returning balance as 0', account, token });
-    return 0;
+  if (!account || !address || address === ADDRESS_ZERO || !ethersProvider) {
+    return BigNumber.from(0);
   }
-  const abi = ['function balanceOf(address) view returns (uint256)'];
-  const tokenContract = new Contract(token.address, abi, ethersProvider);
   try {
+    const abi = ['function balanceOf(address) view returns (uint256)'];
+    const tokenContract = new Contract(address, abi, ethersProvider);
     const balance = await tokenContract.balanceOf(account);
     return balance;
   } catch (error) {
-    // eslint-disable-next-line
-    console.log({ tokenError: error });
+    logError({ balanceError: error });
   }
-  return 0;
+  return BigNumber.from(0);
 };

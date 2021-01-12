@@ -1,6 +1,8 @@
 import { Flex, Text } from '@chakra-ui/react';
 import React from 'react';
 
+import { logError } from '../lib/helpers';
+
 export class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
@@ -15,8 +17,7 @@ export class ErrorBoundary extends React.Component {
   }
 
   componentDidCatch(error, errorInfo) {
-    // eslint-disable-next-line
-    console.log({ error, errorInfo });
+    logError({ error, errorInfo });
   }
 
   render() {

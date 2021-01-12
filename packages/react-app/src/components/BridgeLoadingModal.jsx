@@ -13,8 +13,9 @@ import React, { useContext } from 'react';
 import BlueTickImage from '../assets/blue-tick.svg';
 import LoadingImage from '../assets/loading.svg';
 import { BridgeContext } from '../contexts/BridgeContext';
-import { Web3Context } from '../contexts/Web3Context';
+import { useTransactionStatus } from '../hooks/useTransactionStatus';
 import { getMonitorUrl } from '../lib/helpers';
+import { NeedsConfirmationModal } from './NeedsConfirmationModal';
 import { ProgressRing } from './ProgressRing';
 
 const getTransactionString = hash => {
@@ -23,12 +24,22 @@ const getTransactionString = hash => {
   return `${hash.substr(0, 6)}...${hash.substr(len - 4, len - 1)}`;
 };
 
-export const LoadingModal = ({ loadingText, txHash, chainId }) => {
-  const { providerChainId } = useContext(Web3Context);
-  const { loading } = useContext(BridgeContext);
-  return (
+export const BridgeLoadingModal = () => {
+  const { loading, fromToken, txHash, totalConfirms } = useContext(
+    BridgeContext,
+  );
+  const {
+    loadingText,
+    needsConfirmation,
+    setNeedsConfirmation,
+    confirmations,
+  } = useTransactionStatus();
+
+  return needsConfirmation ? (
+    <NeedsConfirmationModal setNeedsConfirmation={setNeedsConfirmation} />
+  ) : (
     <Modal
-      isOpen={!loading}
+      isOpen={loading}
       closeOnEsc={false}
       closeOnOverlayClick={false}
       isCentered
@@ -57,7 +68,13 @@ export const LoadingModal = ({ loadingText, txHash, chainId }) => {
                     mr={4}
                     position="relative"
                   >
-                    <Image src={BlueTickImage} />
+                    {confirmations < totalConfirms ? (
+                      <Text>
+                        {confirmations}/{totalConfirms}
+                      </Text>
+                    ) : (
+                      <Image src={BlueTickImage} />
+                    )}
                     <Flex
                       position="absolute"
                       justify="center"
@@ -67,8 +84,12 @@ export const LoadingModal = ({ loadingText, txHash, chainId }) => {
                       <ProgressRing
                         radius={47.5}
                         stroke={5}
-                        progress={1}
-                        totalProgress={1}
+                        progress={
+                          confirmations < totalConfirms
+                            ? confirmations
+                            : totalConfirms
+                        }
+                        totalProgress={totalConfirms}
                       />
                     </Flex>
                   </Flex>
@@ -79,11 +100,13 @@ export const LoadingModal = ({ loadingText, txHash, chainId }) => {
                     justify="center"
                     mt={{ base: 2, md: 0 }}
                   >
-                    <Text width="100%">{`${loadingText}...`}</Text>
+                    <Text width="100%">
+                      {`${loadingText || 'Waiting for Block Confirmations'}...`}
+                    </Text>
                     <Text width="100%" color="grey">
                       {'Monitor at ALM '}
                       <Link
-                        href={getMonitorUrl(chainId || providerChainId, txHash)}
+                        href={getMonitorUrl(fromToken.chainId, txHash)}
                         rel="noreferrer noopener"
                         target="_blank"
                         color="blue.500"

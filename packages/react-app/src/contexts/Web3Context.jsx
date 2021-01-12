@@ -1,19 +1,36 @@
 import WalletConnectProvider from '@walletconnect/web3-provider';
-import ethers from 'ethers';
+import { ethers } from 'ethers';
 import React, { useCallback, useEffect, useState } from 'react';
 import Web3 from 'web3';
 import Web3Modal from 'web3modal';
 
-import { CONFIG } from '../config';
-import { networkOptions } from '../lib/constants';
+import { INFURA_ID } from '../lib/constants';
+import { getNetworkName, logError } from '../lib/helpers';
 
 export const Web3Context = React.createContext({});
+
+const updateTitle = chainId => {
+  const networkName = getNetworkName(chainId);
+  const defaultTitle = 'OmniBridge';
+  if (!process.env.REACT_APP_TITLE) {
+    document.title = defaultTitle;
+  } else {
+    const titleReplaceString = '%c';
+    const appTitle = process.env.REACT_APP_TITLE || defaultTitle;
+
+    if (appTitle.indexOf(titleReplaceString) !== -1) {
+      document.title = appTitle.replace(titleReplaceString, networkName);
+    } else {
+      document.title = appTitle;
+    }
+  }
+};
 
 const providerOptions = {
   walletconnect: {
     package: WalletConnectProvider,
     options: {
-      infuraId: CONFIG.infuraId,
+      infuraId: INFURA_ID,
     },
   },
 };
@@ -24,66 +41,67 @@ const web3Modal = new Web3Modal({
 });
 
 export const Web3Provider = ({ children }) => {
-  const [providerChainId, setProviderChainId] = useState();
-  const [chosenNetwork, setChosenNetwork] = useState(networkOptions[0]);
-  const [ethersProvider, setEthersProvider] = useState();
+  const [web3State, setWeb3State] = useState({});
+  const { providerChainId, ethersProvider } = web3State;
   const [account, setAccount] = useState();
-  const [networkMismatch, setNetworkMismatch] = useState(false);
+  const [loading, setLoading] = useState(true);
 
-  const setWeb3Provider = async (prov, updateAccount = false) => {
-    if (prov) {
-      const web3Provider = new Web3(prov);
-      const provider = new ethers.providers.Web3Provider(
-        web3Provider.currentProvider,
-      );
+  const setWeb3Provider = useCallback(async (prov, updateAccount = false) => {
+    try {
+      if (prov) {
+        const web3Provider = new Web3(prov);
+        const provider = new ethers.providers.Web3Provider(
+          web3Provider.currentProvider,
+        );
 
-      setEthersProvider(provider);
-      const network = await provider.getNetwork();
-      setProviderChainId(network.chainId);
-      if (updateAccount) {
-        const signer = provider.getSigner();
-        const gotAccount = await signer.getAddress();
-        setAccount(gotAccount);
+        const providerNetwork = await provider.getNetwork();
+        setWeb3State({
+          ethersProvider: provider,
+          providerChainId: providerNetwork.chainId,
+        });
+        if (updateAccount) {
+          const signer = provider.getSigner();
+          const gotAccount = await signer.getAddress();
+          setAccount(gotAccount);
+        }
       }
+    } catch (error) {
+      logError({ web3ModalError: error });
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    if (providerChainId) {
+      updateTitle(providerChainId);
+    }
+  }, [providerChainId]);
 
   const connectWeb3 = useCallback(async () => {
     try {
+      setLoading(true);
       const modalProvider = await web3Modal.connect();
 
-      setWeb3Provider(modalProvider, true);
+      await setWeb3Provider(modalProvider, true);
 
       // Subscribe to accounts change
       modalProvider.on('accountsChanged', accounts => {
-        window.sessionStorage.setItem('claimTokens', 0);
         setAccount(accounts[0]);
       });
 
       // Subscribe to chainId change
       modalProvider.on('chainChanged', _chainId => {
-        window.sessionStorage.setItem('claimTokens', 0);
         setWeb3Provider(modalProvider);
       });
     } catch (error) {
-      // eslint-disable-next-line
-      console.log({ web3ModalError: error });
+      logError({ web3ModalError: error });
     }
-  }, []);
-
-  useEffect(() => {
-    if (chosenNetwork && providerChainId === chosenNetwork.value) {
-      setNetworkMismatch(false);
-    } else {
-      setNetworkMismatch(true);
-    }
-  }, [chosenNetwork, providerChainId]);
+    setLoading(false);
+  }, [setWeb3Provider]);
 
   const disconnect = useCallback(async () => {
     web3Modal.clearCachedProvider();
     setAccount();
-    setEthersProvider();
-    setProviderChainId();
+    setWeb3State({});
   }, []);
 
   useEffect(() => {
@@ -91,10 +109,9 @@ export const Web3Provider = ({ children }) => {
       window.ethereum.autoRefreshOnNetworkChange = false;
     }
     if (web3Modal.cachedProvider) {
-      connectWeb3().catch(error => {
-        // eslint-disable-next-line
-        console.error({ web3ModalError: error });
-      });
+      connectWeb3();
+    } else {
+      setLoading(false);
     }
   }, [connectWeb3]);
 
@@ -103,12 +120,10 @@ export const Web3Provider = ({ children }) => {
       value={{
         ethersProvider,
         connectWeb3,
+        loading,
         disconnect,
         providerChainId,
-        network: chosenNetwork,
-        setNetwork: setChosenNetwork,
         account,
-        networkMismatch,
       }}
     >
       {children}
