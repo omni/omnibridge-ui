@@ -1,5 +1,6 @@
 import { BigNumber, Contract } from 'ethers';
 
+import { REVERSE_BRIDGE_ENABLED } from './constants';
 import { getGasPrice } from './gasPrice';
 import {
   getBridgeNetwork,
@@ -12,12 +13,35 @@ import { getEthersProvider } from './providers';
 import { fetchTokenDetails } from './token';
 
 const getToName = (fromName, fromxDai) => {
-  if (fromxDai) {
-    if (fromName.includes('xDai')) return fromName.slice(0, -8);
-    return `${fromName} on Mainnet`;
+  if (REVERSE_BRIDGE_ENABLED) {
+    if (fromxDai) {
+      if (fromName.includes('on xDai')) return fromName.slice(0, -8);
+      return `${fromName} on Mainnet`;
+    }
+    if (fromName.includes('on Mainnet')) return fromName.slice(0, -11);
+    return `${fromName} on xDai`;
   }
-  if (fromName.includes('Mainnet')) return fromName.slice(0, -11);
+  if (fromxDai && fromName.includes('on xDai')) return fromName.slice(0, -8);
   return `${fromName} on xDai`;
+};
+
+export const fetchToTokenAddress = async (
+  isxDai,
+  xDaiChainId,
+  tokenAddress,
+) => {
+  const ethersProvider = getEthersProvider(xDaiChainId);
+  const mediatorAddress = getMediatorAddress(xDaiChainId);
+  const abi = [
+    'function foreignTokenAddress(address) view returns (address)',
+    'function homeTokenAddress(address) view returns (address)',
+  ];
+  const mediatorContract = new Contract(mediatorAddress, abi, ethersProvider);
+
+  if (isxDai) {
+    return mediatorContract.foreignTokenAddress(tokenAddress);
+  }
+  return mediatorContract.homeTokenAddress(tokenAddress);
 };
 
 export const fetchToTokenDetails = async ({
@@ -25,15 +49,33 @@ export const fetchToTokenDetails = async ({
   chainId: fromChainId,
   address: fromAddress,
 }) => {
-  const toChainId = getBridgeNetwork(fromChainId);
-  const isxDai = isxDaiChain(fromChainId);
   if (isOverridden(fromAddress)) {
     return fetchTokenDetails(getOverriddenToToken(fromAddress, fromChainId));
   }
-  const fromEthersProvider = getEthersProvider(fromChainId);
-  const toEthersProvider = getEthersProvider(toChainId);
+
+  const toChainId = getBridgeNetwork(fromChainId);
+  const isxDai = isxDaiChain(fromChainId);
   const fromMediatorAddress = getMediatorAddress(fromChainId);
   const toMediatorAddress = getMediatorAddress(toChainId);
+
+  if (!REVERSE_BRIDGE_ENABLED) {
+    const toAddress = await fetchToTokenAddress(
+      isxDai,
+      isxDai ? fromChainId : toChainId,
+      fromAddress,
+    );
+    const toName = getToName(fromName, isxDai);
+    return {
+      name: toName,
+      chainId: toChainId,
+      address: toAddress,
+      mode: isxDai ? 'erc20' : 'erc677',
+      mediator: toMediatorAddress,
+    };
+  }
+
+  const fromEthersProvider = getEthersProvider(fromChainId);
+  const toEthersProvider = getEthersProvider(toChainId);
   const abi = [
     'function isRegisteredAsNativeToken(address) view returns (bool)',
     'function bridgedTokenAddress(address) view returns (address)',

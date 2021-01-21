@@ -153,6 +153,9 @@ export const ambs = {
     '0x75Df5AF045d91108662D8080fD1FEFAd6aA0bb59',
 };
 
+export const REVERSE_BRIDGE_ENABLED =
+  process.env.REACT_APP_ENABLE_REVERSED_BRIDGE === 'true';
+
 export const defaultTokensUrl = {
   100: 'https://tokens.honeyswap.org',
   1: 'https://tokens.uniswap.org',

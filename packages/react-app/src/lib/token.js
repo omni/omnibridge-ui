@@ -1,8 +1,8 @@
 import { BigNumber, Contract } from 'ethers';
 
-import { ADDRESS_ZERO } from './constants';
+import { ADDRESS_ZERO, REVERSE_BRIDGE_ENABLED } from './constants';
 import { getGasPrice } from './gasPrice';
-import { getMediatorAddress, logError } from './helpers';
+import { getMediatorAddress, isxDaiChain, logError } from './helpers';
 import {
   getOverriddenMediator,
   getOverriddenMode,
@@ -38,12 +38,16 @@ export const fetchAllowance = async (
 
 export const getMode = async (
   ethersProvider,
+  isxDai,
   isOverriddenToken,
   mediatorAddress,
   token,
 ) => {
   if (isOverriddenToken) {
     return getOverriddenMode(token.address, token.chainId);
+  }
+  if (!REVERSE_BRIDGE_ENABLED) {
+    return isxDai ? 'erc677' : 'erc20';
   }
   const abi = ['function nativeTokenAddress(address) view returns (address)'];
   const mediatorContract = new Contract(mediatorAddress, abi, ethersProvider);
@@ -72,7 +76,13 @@ export const fetchTokenDetails = async token => {
     tokenContract.name(),
     tokenContract.symbol(),
     tokenContract.decimals(),
-    getMode(ethersProvider, isOverriddenToken, mediatorAddress, token),
+    getMode(
+      ethersProvider,
+      isxDaiChain(token.chainId),
+      isOverriddenToken,
+      mediatorAddress,
+      token,
+    ),
   ]);
 
   const details = {

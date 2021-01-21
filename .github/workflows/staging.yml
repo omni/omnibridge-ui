@@ -34,6 +34,7 @@ jobs:
           CI: true
           REACT_APP_INFURA_ID: ${{ secrets.PERSONAL_INFURA_ID }}
           REACT_APP_HOME_NETWORK: xdai
+          REACT_APP_ENABLE_REVERSED_BRIDGE: false
           REACT_APP_DEBUG_LOGS: true
           REACT_APP_TITLE: OmniBridge - %c
           REACT_APP_DESCRIPTION: The OmniBridge multi-token extension for the Arbitrary Message Bridge between Ethereum and the xDai chain is the simplest way to transfer ANY ERC20/ERC677/ERC827 token to the xDai chain.
