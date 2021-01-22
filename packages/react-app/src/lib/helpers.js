@@ -51,7 +51,8 @@ export const getMediatorAddressWithOverride = (tokenAddress, chainId) => {
 };
 
 export const getMediatorAddress = chainId =>
-  mediators[chainId] || mediators[100];
+  mediators[chainId].toLowerCase() || mediators[100].toLowerCase();
+
 export const getNetworkName = chainId => networkNames[chainId] || 'Unknown';
 export const getNetworkLabel = chainId => networkLabels[chainId] || 'Unknown';
 export const getAMBAddress = chainId => ambs[chainId] || ambs[100];

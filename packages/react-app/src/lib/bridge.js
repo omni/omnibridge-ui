@@ -135,14 +135,17 @@ export const fetchToAmount = async (
   fromAmount,
 ) => {
   if (fromAmount <= 0 || !fromToken || !toToken) return BigNumber.from(0);
-  if (isRewardAddress || isOverridden(fromToken.address)) {
+  if (isRewardAddress) {
     return fromAmount;
   }
   const isxDai = isxDaiChain(toToken.chainId);
   const xDaiChainId = isxDai ? toToken.chainId : fromToken.chainId;
   const tokenAddress = isxDai ? toToken.address : fromToken.address;
-  const ethersProvider = getEthersProvider(xDaiChainId);
   const mediatorAddress = isxDai ? toToken.mediator : fromToken.mediator;
+  if (mediatorAddress !== getMediatorAddress(xDaiChainId)) {
+    return fromAmount;
+  }
+  const ethersProvider = getEthersProvider(xDaiChainId);
   const abi = [
     'function calculateFee(bytes32, address, uint256) view returns (uint256)',
   ];
@@ -180,8 +183,9 @@ export const fetchTokenLimits = async (
   toToken,
   currentDay,
 ) => {
-  const isDedicatedERC20Token = token.mode === 'dedicated-erc20';
-  const abi = isDedicatedERC20Token
+  const isDedicatedMediatorToken =
+    token.mediator !== getMediatorAddress(token.chainId);
+  const abi = isDedicatedMediatorToken
     ? [
         'function minPerTx() view returns (uint256)',
         'function executionMaxPerTx() view returns (uint256)',
@@ -207,7 +211,7 @@ export const fetchTokenLimits = async (
       executionMaxPerTx,
       executionDailyLimit,
       totalExecutedPerDay,
-    ] = isDedicatedERC20Token
+    ] = isDedicatedMediatorToken
       ? await Promise.all([
           mediatorContract.minPerTx(),
           toMediatorContract.executionMaxPerTx(),
