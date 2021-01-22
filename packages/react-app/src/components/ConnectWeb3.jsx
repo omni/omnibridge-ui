@@ -9,8 +9,6 @@ import { TermsOfServiceModal } from './TermsOfServiceModal';
 
 export const ConnectWeb3 = () => {
   const { connectWeb3, loading, account, disconnect } = useContext(Web3Context);
-  if (loading) return null;
-
   return (
     <Flex
       background="white"
@@ -25,7 +23,7 @@ export const ConnectWeb3 = () => {
       mx={4}
     >
       <Flex
-        bg={account ? 'red.500' : 'blue.500'}
+        bg={account && !loading ? 'red.500' : 'blue.500'}
         borderRadius="50%"
         p="1rem"
         justify="center"
@@ -35,22 +33,35 @@ export const ConnectWeb3 = () => {
       >
         <WalletFilledIcon boxSize="1.75rem" />
       </Flex>
-      <Text fontSize="xl" fontWeight="bold" mb={4}>
-        {account ? `Switch to a supported network` : 'Connect Wallet'}
-      </Text>
-      <Text color="greyText" mb={4} textAlign="center">
-        {account
-          ? `To access OmniBridge, please switch to ${getNetworkName(
-              HOME_NETWORK,
-            )} or ${getNetworkName(getBridgeNetwork(HOME_NETWORK))}`
-          : 'To get started, connect your wallet'}
-      </Text>
-      {account ? (
+      {loading ? (
+        <Text fontSize="xl" fontWeight="bold" mb={4}>
+          Connecting Wallet
+        </Text>
+      ) : (
+        <>
+          <Text fontSize="xl" fontWeight="bold" mb={4}>
+            {account ? `Switch to a supported network` : 'Connect Wallet'}
+          </Text>
+          <Text color="greyText" mb={4} textAlign="center">
+            {account
+              ? `To access OmniBridge, please switch to ${getNetworkName(
+                  HOME_NETWORK,
+                )} or ${getNetworkName(getBridgeNetwork(HOME_NETWORK))}`
+              : 'To get started, connect your wallet'}
+          </Text>
+        </>
+      )}
+      {account && !loading ? (
         <Button onClick={disconnect} colorScheme="blue" px={12}>
           Disconnect
         </Button>
       ) : (
-        <Button onClick={connectWeb3} colorScheme="blue" px={12}>
+        <Button
+          onClick={connectWeb3}
+          colorScheme="blue"
+          px={12}
+          isLoading={loading}
+        >
           Connect
         </Button>
       )}
