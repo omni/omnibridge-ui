@@ -81,4 +81,4 @@ export const getOverriddenMode = (tokenAddress, chainId) =>
   overrides[tokenAddress.toLowerCase()][chainId].mode;
 
 export const getOverriddenMediator = (tokenAddress, chainId) =>
-  overrides[tokenAddress.toLowerCase()][chainId].mediator;
+  overrides[tokenAddress.toLowerCase()][chainId].mediator.toLowerCase();
