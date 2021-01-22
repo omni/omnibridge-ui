@@ -86,6 +86,7 @@ export const fetchTokenDetails = async token => {
   ]);
 
   const details = {
+    ...token,
     address: token.address,
     chainId: token.chainId,
     name,

@@ -11,6 +11,7 @@ import { ClaimTokensModal } from './ClaimTokensModal';
 import { ClaimTransferModal } from './ClaimTransferModal';
 import { DaiWarning, isERC20DaiAddress } from './DaiWarning';
 import { FromToken } from './FromToken';
+import { isNativexDaiAddress, ReverseWarning } from './ReverseWarning';
 import { SystemFeedback } from './SystemFeedback';
 import { ToToken } from './ToToken';
 import { TransferButton } from './TransferButton';
@@ -18,8 +19,9 @@ import { UnlockButton } from './UnlockButton';
 
 export const BridgeTokens = () => {
   const { providerChainId: chainId } = useContext(Web3Context);
-  const { fromToken, txHash, loading } = useContext(BridgeContext);
+  const { fromToken, toToken, txHash, loading } = useContext(BridgeContext);
   const isERC20Dai = isERC20DaiAddress(fromToken);
+  const isNativexDaiToken = isNativexDaiAddress(toToken);
   const smallScreen = useBreakpointValue({ base: true, lg: false });
   const bridgeChainId = getBridgeNetwork(chainId);
 
@@ -54,6 +56,7 @@ export const BridgeTokens = () => {
             </Text>
           </Flex>
           {isERC20Dai && <DaiWarning />}
+          {isNativexDaiToken && <ReverseWarning />}
           <Flex align="flex-end" direction="column">
             <Text color="greyText" fontSize="sm">
               To
@@ -70,6 +73,7 @@ export const BridgeTokens = () => {
         my={4}
       >
         {smallScreen && isERC20Dai && <DaiWarning />}
+        {smallScreen && isNativexDaiToken && <ReverseWarning isSmallScreen />}
         {smallScreen && (
           <Flex align="flex-start" direction="column" m={2}>
             <Text color="greyText" fontSize="sm">
