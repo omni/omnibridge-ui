@@ -15,7 +15,7 @@ xdai-omnibridge
 ├── .github
 │   └── workflows
 │       ├── sokol.yml
-│       └── xdai.yml
+│       └── staging.yml
 ├── .gitignore
 ├── .prettierrc.json
 ├── README.md
@@ -70,14 +70,15 @@ xdai-omnibridge
 │   │       ├── components
 │   │       │   ├── AdvancedMenu.jsx
 │   │       │   ├── BridgeHistory.jsx
+│   │       │   ├── BridgeLoadingModal.jsx
 │   │       │   ├── BridgeTokens.jsx
 │   │       │   ├── ClaimTokensModal.jsx
+│   │       │   ├── ClaimTransferModal.jsx
 │   │       │   ├── ConfirmTransferModal.jsx
 │   │       │   ├── ConnectWeb3.jsx
 │   │       │   ├── CustomTokenModal.jsx
 │   │       │   ├── DaiWarning.jsx
 │   │       │   ├── ErrorBoundary.jsx
-│   │       │   ├── ErrorModal.jsx
 │   │       │   ├── Footer.jsx
 │   │       │   ├── FromToken.jsx
 │   │       │   ├── Header.jsx
@@ -87,24 +88,29 @@ xdai-omnibridge
 │   │       │   ├── LoadingModal.jsx
 │   │       │   ├── Logo.jsx
 │   │       │   ├── NeedsConfirmationModal.jsx
-│   │       │   ├── NetworkSelector.jsx
+│   │       │   ├── NeedsTransactions.jsx
 │   │       │   ├── NoHistory.jsx
 │   │       │   ├── ProgressRing.jsx
+│   │       │   ├── ReverseWarning.jsx
 │   │       │   ├── SelectTokenModal.jsx
 │   │       │   ├── SystemFeedback.jsx
+│   │       │   ├── TermsOfServiceModal.jsx
 │   │       │   ├── ToToken.jsx
 │   │       │   ├── TokenSelectorModal.jsx
 │   │       │   ├── TransferButton.jsx
+│   │       │   ├── TxLink.jsx
 │   │       │   ├── UnlockButton.jsx
 │   │       │   ├── UpdateSettings.jsx
 │   │       │   └── WalletSelector.jsx
-│   │       ├── config.js
 │   │       ├── contexts
 │   │       │   ├── BridgeContext.jsx
 │   │       │   └── Web3Context.jsx
 │   │       ├── hooks
+│   │       │   ├── useCurrentDay.js
 │   │       │   ├── useFeeType.js
-│   │       │   └── useRewardAddress.js
+│   │       │   ├── useRewardAddress.js
+│   │       │   ├── useTotalConfirms.js
+│   │       │   └── useTransactionStatus.js
 │   │       ├── icons
 │   │       │   ├── DownArrowIcon.jsx
 │   │       │   ├── ErrorIcon.jsx
@@ -126,7 +132,8 @@ xdai-omnibridge
 │   │       ├── lib
 │   │       │   ├── amb.js
 │   │       │   ├── bridge.js
-│   │       │   ├── constants.jsx
+│   │       │   ├── constants.js
+│   │       │   ├── ethPrice.js
 │   │       │   ├── gasPrice.js
 │   │       │   ├── helpers.js
 │   │       │   ├── history.js
