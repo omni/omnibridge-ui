@@ -52,11 +52,15 @@ export const fetchToTokenDetails = async ({
   chainId: fromChainId,
   address: fromAddress,
 }) => {
+  const toChainId = getBridgeNetwork(fromChainId);
+
   if (isOverridden(fromAddress)) {
-    return fetchTokenDetails(getOverriddenToToken(fromAddress, fromChainId));
+    return fetchTokenDetails({
+      address: getOverriddenToToken(fromAddress, fromChainId),
+      chainId: toChainId,
+    });
   }
 
-  const toChainId = getBridgeNetwork(fromChainId);
   const isxDai = isxDaiChain(fromChainId);
   const fromMediatorAddress = getMediatorAddress(fromChainId);
   const toMediatorAddress = getMediatorAddress(toChainId);
@@ -176,8 +180,8 @@ export const fetchTokenLimits = async (
   toToken,
   currentDay,
 ) => {
-  const isOverriddenToken = isOverridden(token.address);
-  const abi = isOverriddenToken
+  const isDedicatedERC20Token = token.mode === 'dedicated-erc20';
+  const abi = isDedicatedERC20Token
     ? [
         'function minPerTx() view returns (uint256)',
         'function executionMaxPerTx() view returns (uint256)',
@@ -203,7 +207,7 @@ export const fetchTokenLimits = async (
       executionMaxPerTx,
       executionDailyLimit,
       totalExecutedPerDay,
-    ] = isOverriddenToken
+    ] = isDedicatedERC20Token
       ? await Promise.all([
           mediatorContract.minPerTx(),
           toMediatorContract.executionMaxPerTx(),

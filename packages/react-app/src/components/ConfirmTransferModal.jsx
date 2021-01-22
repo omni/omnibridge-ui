@@ -17,11 +17,11 @@ import {
 } from '@chakra-ui/react';
 import React, { useContext, useEffect, useState } from 'react';
 
-import AlertImage from '../assets/alert.svg';
 import TransferImage from '../assets/confirm-transfer.svg';
 import { BridgeContext } from '../contexts/BridgeContext';
 import { formatValue, getAccountString, isxDaiChain } from '../lib/helpers';
 import { DaiWarning, isERC20DaiAddress } from './DaiWarning';
+import { NeedsTransactions } from './NeedsTransactions';
 
 export const ConfirmTransferModal = ({ isOpen, onClose }) => {
   const {
@@ -177,33 +177,7 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
               )}
               <Text as="b">{`${toAmt} ${toUnit}`}</Text>
             </Box>
-            {isxDai && (
-              <Flex
-                mt={4}
-                w="100%"
-                borderRadius="4px"
-                border="1px solid #DAE3F0"
-              >
-                <Flex
-                  bg="#FFF7EF"
-                  borderLeftRadius="4px"
-                  border="1px solid #FFAA5C"
-                  justify="center"
-                  align="center"
-                  minW="4rem"
-                  flex={1}
-                >
-                  <Image src={AlertImage} />
-                </Flex>
-                <Flex align="center" fontSize="12px" p={4}>
-                  <Text>
-                    The claim process requires 2 transactions, one on xDai chain
-                    and one on ETH Mainnet. You will need some xDai and some ETH
-                    to complete.
-                  </Text>
-                </Flex>
-              </Flex>
-            )}
+            {isxDai && <NeedsTransactions />}
           </ModalBody>
           <ModalFooter p={6}>
             <Flex
