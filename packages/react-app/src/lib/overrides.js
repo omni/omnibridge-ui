@@ -43,6 +43,21 @@ const STAKETokenOverride = {
   },
 };
 
+const STAKETokenOverrideSokol = {
+  77: {
+    mediator: '0x40CdfF886715A4012fAD0219D15C98bB149AeF0e',
+    from: '0x408ec1bb883da0ea0fb3c955ea6befcd05aa7c3a',
+    to: '0xFD2df5dCe4c89B007A43CF88d8161dAf1A17C7AB',
+    mode: 'erc677',
+  },
+  42: {
+    mediator: '0xA960d095470f7509955d5402e36d9DB984B5C8E2',
+    from: '0xFD2df5dCe4c89B007A43CF88d8161dAf1A17C7AB',
+    to: '0x408ec1bb883da0ea0fb3c955ea6befcd05aa7c3a',
+    mode: 'erc677',
+  },
+};
+
 const overrides = {
   ['0x0905Ab807F8FD040255F0cF8fa14756c1D824931'.toLowerCase()]: OWLTokenOverride,
   ['0x1a5f9352af8af974bfc03399e3767df6370d82e4'.toLowerCase()]: OWLTokenOverride,
@@ -50,6 +65,8 @@ const overrides = {
   ['0x514910771af9ca656af840dff83e8264ecf986ca'.toLowerCase()]: LINKTokenOverride,
   ['0x0Ae055097C6d159879521C384F1D2123D1f195e6'.toLowerCase()]: STAKETokenOverride,
   ['0xb7D311E2Eb55F2f68a9440da38e7989210b9A05e'.toLowerCase()]: STAKETokenOverride,
+  ['0xFD2df5dCe4c89B007A43CF88d8161dAf1A17C7AB'.toLowerCase()]: STAKETokenOverrideSokol,
+  ['0x408ec1bb883da0ea0fb3c955ea6befcd05aa7c3a'.toLowerCase()]: STAKETokenOverrideSokol,
 };
 
 export const isOverridden = tokenAddress =>
