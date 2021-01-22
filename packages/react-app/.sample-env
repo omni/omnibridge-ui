@@ -60,6 +60,14 @@ REACT_APP_FOREIGN_GAS_PRICE_UPDATE_INTERVAL=15000
 REACT_APP_FOREIGN_GAS_PRICE_FACTOR=1
 
 ######################################################
+# if unset defaults => 
+# API_URL => https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=USD
+# UPDATE_INTERVAL => 900000
+######################################################
+REACT_APP_ETH_PRICE_API_URL=https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=USD
+REACT_APP_ETH_PRICE_UPDATE_INTERVAL=15000
+
+######################################################
 # if unset defaults => undefined
 ######################################################
 REACT_APP_TITLE=OmniBridge - %c
