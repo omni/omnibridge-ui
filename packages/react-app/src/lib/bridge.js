@@ -21,7 +21,10 @@ const getToName = (fromName, fromxDai) => {
     if (fromName.includes('on Mainnet')) return fromName.slice(0, -11);
     return `${fromName} on xDai`;
   }
-  if (fromxDai && fromName.includes('on xDai')) return fromName.slice(0, -8);
+  if (fromxDai) {
+    if (fromName.includes('on xDai')) return fromName.slice(0, -8);
+    return fromName;
+  }
   return `${fromName} on xDai`;
 };
 
