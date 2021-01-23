@@ -84,7 +84,7 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
         <ModalContent
           boxShadow="0px 1rem 2rem #617492"
           borderRadius="1rem"
-          maxW="33.75rem"
+          maxW="32rem"
           mx={{ base: 12, lg: 0 }}
         >
           <ModalHeader p={6}>
