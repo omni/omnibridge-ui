@@ -1,6 +1,12 @@
 {
   "network": "kovan",
   "startBlock": "20007099",
-  "mediator": "0xa960d095470f7509955d5402e36d9db984b5c8e2",
-  "amb": "0xfe446bef1dbf7afe24e81e05bc8b271c1ba9a560"
+  "omnibridge": "0xa960d095470f7509955d5402e36d9db984b5c8e2",
+  "amb": "0xfe446bef1dbf7afe24e81e05bc8b271c1ba9a560",
+  "bridges": [
+    {
+      "name": "DEMO2712",
+      "address": "0xA68Bd659A9167F3D3C01bA9776A1208dae8F003b"
+    }
+  ]
 }

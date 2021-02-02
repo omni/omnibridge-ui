@@ -5,20 +5,22 @@ schema:
   file: ./schema.graphql
 dataSources:
   - kind: ethereum/contract
-    name: Mediator
+    name: Omnibridge
     # prettier-ignore
     network: {{network}}
     source:
-      abi: Mediator
-      address: '{{mediator}}'
+      abi: Omnibridge
+      address: '{{omnibridge}}'
       # prettier-ignore
       startBlock: {{startBlock}}
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
       abis:
-        - name: Mediator
-          file: ./src/abis/mediator.json
+        - name: Bridge
+          file: ./src/abis/bridge.json
+        - name: Omnibridge
+          file: ./src/abis/omnibridge.json
         - name: Token
           file: ./src/abis/token.json
       entities:
@@ -31,7 +33,7 @@ dataSources:
           handler: handleInitiateTransfer
         - event: NewTokenRegistered(indexed address,indexed address)
           handler: handleNewToken
-      file: ./src/mappings/bridge.ts
+      file: ./src/mappings/omnibridge.ts
       language: wasm/assemblyscript
   - kind: ethereum/contract
     name: AMB
@@ -63,3 +65,36 @@ dataSources:
           handler: handleCollectedSignatures
       file: ./src/mappings/amb.ts
       language: wasm/assemblyscript
+  # prettier-ignore
+  {{#bridges}}
+  - kind: ethereum/contract
+    # prettier-ignore
+    name: {{name}}
+    # prettier-ignore
+    network: {{network}}
+    source:
+      abi: Bridge
+      address: '{{address}}'
+      # prettier-ignore
+      startBlock: {{startBlock}}
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.4
+      abis:
+        - name: Bridge
+          file: ./src/abis/bridge.json
+        - name: Token
+          file: ./src/abis/token.json
+      entities:
+        - BridgeTransfer
+        - Token
+      eventHandlers:
+        - event: TokensBridged(indexed address,uint256,indexed bytes32)
+          handler: handleBridgeTransfer
+        - event: TokensBridgingInitiated(indexed address,uint256,indexed bytes32)
+          handler: handleInitiateTransfer
+      file: ./src/mappings/bridge.ts
+      language: wasm/assemblyscript
+  # prettier-ignore
+  {{/bridges}}
+

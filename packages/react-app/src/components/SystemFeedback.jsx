@@ -50,11 +50,13 @@ export const SystemFeedback = () => {
             boxShadow="0 0.5rem 1rem #CADAEF"
           >
             <Flex align="center" justify="space-between">
-              <Text color="grey"> Daily Limit </Text>
+              <Text color="grey" textAlign="left">
+                Daily Limit
+              </Text>
               {loading ? (
                 <Spinner size="sm" />
               ) : (
-                <Text fontWeight="bold" ml={4}>
+                <Text fontWeight="bold" ml={4} textAlign="right">
                   {`${formatValue(tokenLimits.dailyLimit, token.decimals)} ${
                     token.symbol
                   }`}
@@ -62,11 +64,13 @@ export const SystemFeedback = () => {
               )}
             </Flex>
             <Flex align="center" justify="space-between">
-              <Text color="grey"> Maximum per transaction </Text>
+              <Text color="grey" textAlign="left">
+                Maximum per transaction
+              </Text>
               {loading ? (
                 <Spinner size="sm" />
               ) : (
-                <Text fontWeight="bold" ml={4}>
+                <Text fontWeight="bold" ml={4} textAlign="right">
                   {`${formatValue(tokenLimits.maxPerTx, token.decimals)} ${
                     token.symbol
                   }`}
@@ -74,11 +78,13 @@ export const SystemFeedback = () => {
               )}
             </Flex>
             <Flex align="center" justify="space-between">
-              <Text color="grey"> Minimum per transaction </Text>
+              <Text color="grey" textAlign="left">
+                Minimum per transaction
+              </Text>
               {loading ? (
                 <Spinner size="sm" />
               ) : (
-                <Text fontWeight="bold" ml={4}>
+                <Text fontWeight="bold" ml={4} textAlign="right">
                   {`${formatValue(tokenLimits.minPerTx, token.decimals)} ${
                     token.symbol
                   }`}
