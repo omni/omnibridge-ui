@@ -31,7 +31,7 @@ function getOverrides(): TypedMap<Address, boolean> {
   );
   overrides.set(
     // mainnet MOON
-    Address.fromString('0x1e16aa4Df73d29C029d94CeDa3e3114EC191E25A'),
+    Address.fromString('0xe1cA72ff3434B131765c62Cbcbc26060F7Aba03D'),
     true,
   );
   overrides.set(
@@ -98,7 +98,7 @@ function getMediatedTokens(): TypedMap<Address, Address> {
   mediatedTokens.set(
     // mainnet MOON
     Address.fromString('0xE7228B4EBAD37Ba031a8b63473727f991e262dCd'),
-    Address.fromString('0x1e16aa4Df73d29C029d94CeDa3e3114EC191E25A'),
+    Address.fromString('0xe1cA72ff3434B131765c62Cbcbc26060F7Aba03D'),
   );
   mediatedTokens.set(
     // sokol DEMO2712
