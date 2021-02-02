@@ -177,6 +177,7 @@ export const BridgeProvider = ({ children }) => {
       toToken &&
       toToken.chainId === getBridgeNetwork(providerChainId) &&
       ethersProvider &&
+      fromToken.symbol === toToken.symbol &&
       currentDay
     ) {
       const limits = await fetchTokenLimits(

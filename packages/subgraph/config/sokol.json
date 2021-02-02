@@ -1,6 +1,12 @@
 {
   "network": "poa-sokol",
   "startBlock": "16064799",
-  "mediator": "0x40CdfF886715A4012fAD0219D15C98bB149AeF0e",
-  "amb": "0xFe446bEF1DbF7AFE24E81e05BC8B271C1BA9a560"
+  "omnibridge": "0x40CdfF886715A4012fAD0219D15C98bB149AeF0e",
+  "amb": "0xFe446bEF1DbF7AFE24E81e05BC8B271C1BA9a560",
+  "bridges": [
+    {
+      "name": "DEMO2712",
+      "address": "0x2a5fc52d8A563B2F181c6A527D422e1592C9ecFa"
+    }
+  ]
 }

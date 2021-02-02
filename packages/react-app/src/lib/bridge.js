@@ -230,7 +230,7 @@ export const fetchTokenLimits = async (
       dailyLimit: executionDailyLimit.sub(totalExecutedPerDay),
     };
   } catch (error) {
-    logError({ tokenError: error });
+    logError({ tokenLimitsError: error });
     return {
       minPerTx: BigNumber.from(0),
       maxPerTx: BigNumber.from(0),

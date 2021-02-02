@@ -1,0 +1,22 @@
+[
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": true, "name": "recipient", "type": "address" },
+      { "indexed": false, "name": "value", "type": "uint256" },
+      { "indexed": true, "name": "messageId", "type": "bytes32" }
+    ],
+    "name": "TokensBridged",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": true, "name": "sender", "type": "address" },
+      { "indexed": false, "name": "value", "type": "uint256" },
+      { "indexed": true, "name": "messageId", "type": "bytes32" }
+    ],
+    "name": "TokensBridgingInitiated",
+    "type": "event"
+  }
+]

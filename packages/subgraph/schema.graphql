@@ -41,7 +41,7 @@ type Token @entity {
   homeChainId: Int!
   decimals: Int!
   symbol: String!
-  foreignAddress: Bytes!
-  foreignName: String!
-  foreignChainId: Int!
+  foreignAddress: Bytes
+  foreignName: String
+  foreignChainId: Int
 }

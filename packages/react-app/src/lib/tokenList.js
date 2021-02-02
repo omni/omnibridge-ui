@@ -36,7 +36,7 @@ export const fetchDefaultTokens = async chainId => {
 
 const homeTokensQuery = gql`
   query homeTokens {
-    tokens {
+    tokens(where: { homeAddress_contains: "0x" }) {
       chainId: homeChainId
       address: homeAddress
       name: homeName
@@ -48,7 +48,7 @@ const homeTokensQuery = gql`
 
 const foreignTokensQuery = gql`
   query foreignTokens {
-    tokens {
+    tokens(where: { foreignAddress_contains: "0x" }) {
       chainId: foreignChainId
       address: foreignAddress
       name: foreignName

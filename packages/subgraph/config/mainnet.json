@@ -1,6 +1,16 @@
 {
   "network": "mainnet",
   "startBlock": "10590093",
-  "mediator": "0x88ad09518695c6c3712AC10a214bE5109a655671",
-  "amb": "0x4C36d2919e407f0Cc2Ee3c993ccF8ac26d9CE64e"
+  "omnibridge": "0x88ad09518695c6c3712AC10a214bE5109a655671",
+  "amb": "0x4C36d2919e407f0Cc2Ee3c993ccF8ac26d9CE64e",
+  "bridges": [
+    {
+      "name": "OWL",
+      "address": "0xed7e6720Ac8525Ac1AEee710f08789D02cD87ecB"
+    },
+    {
+      "name": "MOON",
+      "address": "0xE7228B4EBAD37Ba031a8b63473727f991e262dCd"
+    }
+  ]
 }

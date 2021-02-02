@@ -25,6 +25,7 @@ export const ToToken = () => {
   useEffect(() => {
     if (token && account) {
       setBalanceLoading(true);
+      setBalance(BigNumber.from(0));
       fetchTokenBalance(token, account)
         .then(b => {
           setBalance(b);
