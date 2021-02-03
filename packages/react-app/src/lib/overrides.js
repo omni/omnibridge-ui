@@ -122,7 +122,10 @@ const overrides = {
 
 export const isOverridden = tokenAddress =>
   tokenAddress
-    ? Object.keys(overrides).indexOf(tokenAddress.toLowerCase()) !== -1
+    ? Object.prototype.hasOwnProperty.call(
+        overrides,
+        tokenAddress.toLowerCase(),
+      )
     : false;
 
 export const getOverriddenToToken = (tokenAddress, chainId) =>
