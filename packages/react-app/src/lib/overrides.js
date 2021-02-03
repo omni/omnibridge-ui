@@ -88,6 +88,21 @@ const DEMO2712TokenOverrideSokol = {
   },
 };
 
+const HNYTokenOverride = {
+  100: {
+    mediator: '0x0EeAcdb0Dd96588711581C5f3173dD55841b8e91',
+    from: '0x71850b7e9ee3f13ab46d67167341e4bdc905eef9',
+    to: '0xc3589f56b6869824804a5ea29f2c9886af1b0fce',
+    mode: 'erc677',
+  },
+  1: {
+    mediator: '0x81A4833B3A40E7c61eFE9D1a287343797993B1E8',
+    from: '0xc3589f56b6869824804a5ea29f2c9886af1b0fce',
+    to: '0x71850b7e9ee3f13ab46d67167341e4bdc905eef9',
+    mode: 'erc677',
+  },
+};
+
 const overrides = {
   ['0x0905Ab807F8FD040255F0cF8fa14756c1D824931'.toLowerCase()]: OWLTokenOverride,
   ['0x1a5f9352af8af974bfc03399e3767df6370d82e4'.toLowerCase()]: OWLTokenOverride,
@@ -101,6 +116,8 @@ const overrides = {
   ['0x1e16aa4Df73d29C029d94CeDa3e3114EC191E25A'.toLowerCase()]: MOONTokenOverride,
   ['0xd846B096949E15b42ABCaEB82137c5a3495B1Ed4'.toLowerCase()]: DEMO2712TokenOverrideSokol,
   ['0xa4764045851F17AA60B6c8E8b62072Bea9538521'.toLowerCase()]: DEMO2712TokenOverrideSokol,
+  ['0xc3589f56b6869824804a5ea29f2c9886af1b0fce'.toLowerCase()]: HNYTokenOverride,
+  ['0x71850b7e9ee3f13ab46d67167341e4bdc905eef9'.toLowerCase()]: HNYTokenOverride,
 };
 
 export const isOverridden = tokenAddress =>

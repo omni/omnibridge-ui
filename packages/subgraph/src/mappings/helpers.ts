@@ -44,6 +44,16 @@ function getOverrides(): TypedMap<Address, boolean> {
     Address.fromString('0xa4764045851F17AA60B6c8E8b62072Bea9538521'),
     true,
   );
+  overrides.set(
+    // xdai HNY
+    Address.fromString('0x0EeAcdb0Dd96588711581C5f3173dD55841b8e91'),
+    true,
+  );
+  overrides.set(
+    // mainnet HNY
+    Address.fromString('0x81A4833B3A40E7c61eFE9D1a287343797993B1E8'),
+    true,
+  );
   // **** OVERRIDES END ****
 
   return overrides;
@@ -109,6 +119,16 @@ function getMediatedTokens(): TypedMap<Address, Address> {
     // kovan DEMO2712
     Address.fromString('0xA68Bd659A9167F3D3C01bA9776A1208dae8F003b'),
     Address.fromString('0xa4764045851F17AA60B6c8E8b62072Bea9538521'),
+  );
+  mediatedTokens.set(
+    // xdai HNY
+    Address.fromString('0x0EeAcdb0Dd96588711581C5f3173dD55841b8e91'),
+    Address.fromString('0x71850b7E9Ee3f13Ab46d67167341E4bDc905Eef9'),
+  );
+  mediatedTokens.set(
+    // mainnet HNY
+    Address.fromString('0x81A4833B3A40E7c61eFE9D1a287343797993B1E8'),
+    Address.fromString('0xc3589F56B6869824804A5EA29F2c9886Af1B0FcE'),
   );
   // **** OVERRIDES END ****
 
