@@ -37,14 +37,14 @@ export const TransferButton = () => {
   const valid = () => {
     if (!ethersProvider) {
       showError('Please connect wallet');
-    } else if (amount.lt(tokenLimits.minPerTx)) {
+    } else if (tokenLimits && amount.lt(tokenLimits.minPerTx)) {
       showError(
         `Please specify amount more than ${formatValue(
           tokenLimits.minPerTx,
           token.decimals,
         )}`,
       );
-    } else if (amount.gt(tokenLimits.maxPerTx)) {
+    } else if (tokenLimits && amount.gt(tokenLimits.maxPerTx)) {
       showError(
         `Please specify amount less than ${formatValue(
           tokenLimits.maxPerTx,

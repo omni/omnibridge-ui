@@ -1,77 +1,42 @@
 import { utils } from 'ethers';
+import { GasPriceOracle } from 'gas-price-oracle';
 
-import { isxDaiChain } from './helpers';
+import { isxDaiChain, logError } from './helpers';
 
-const gasPriceWithinLimits = (gasPrice, limits) => {
-  if (!limits) {
-    return gasPrice;
-  }
-  if (gasPrice < limits.MIN) {
-    return limits.MIN;
-  }
-  if (gasPrice > limits.MAX) {
-    return limits.MAX;
-  }
-  return gasPrice;
-};
+const gasPriceOracle = new GasPriceOracle();
 
-const normalizeGasPrice = (oracleGasPrice, limits = null) => {
-  let gasPrice = oracleGasPrice;
-  gasPrice = gasPriceWithinLimits(gasPrice, limits);
-  return utils.parseUnits(gasPrice.toFixed(2).toString(), 'gwei');
-};
-
-const gasPriceFromSupplier = async (fetchFn, options = {}) => {
+const gasPriceFromSupplier = async () => {
   try {
-    const response = await fetchFn();
-    const json = await response.json();
-    const oracleGasPrice = json[options.speedType];
-    const oracleFastGasPrice = json.fast;
+    const json = await gasPriceOracle.fetchGasPricesOffChain();
 
-    if (!oracleGasPrice) {
-      options.logger &&
-        options.logger.error &&
-        options.logger.error(
-          `Response from Oracle didn't include gas price for ${options.speedType} type.`,
-        );
+    if (!json) {
+      logError(`Response from Oracle didn't include gas price`);
       return null;
     }
 
-    const normalizedGasPrice = normalizeGasPrice(
-      oracleGasPrice,
-      options.limits,
-    );
-
-    const normalizedFastGasPrice = normalizeGasPrice(
-      oracleFastGasPrice,
-      options.limits,
-    );
-
-    options.logger &&
-      options.logger.debug &&
-      options.logger.debug(
-        { oracleGasPrice, normalizedGasPrice },
-        'Gas price updated using the API',
-      );
-
-    return [normalizedGasPrice, normalizedFastGasPrice];
+    const returnJson = {};
+    for (const speedType in json) {
+      if (Object.prototype.hasOwnProperty.call(json, speedType)) {
+        returnJson[speedType] = utils.parseUnits(
+          json[speedType].toFixed(2),
+          'gwei',
+        );
+      }
+    }
+    return returnJson;
   } catch (e) {
-    options.logger &&
-      options.logger.error &&
-      options.logger.error(`Gas Price API is not available. ${e.message}`);
+    logError(`Gas Price Oracle not available. ${e.message}`);
   }
   return null;
 };
 
 const {
   REACT_APP_GAS_PRICE_FALLBACK_GWEI,
-  REACT_APP_GAS_PRICE_SUPPLIER_URL,
   REACT_APP_GAS_PRICE_SPEED_TYPE,
   REACT_APP_GAS_PRICE_UPDATE_INTERVAL,
 } = process.env;
 
 const DEFAULT_GAS_PRICE_FALLBACK_GWEI = '0';
-const DEFAULT_GAS_PRICE_SUPPLIER_URL = 'https://gasprice.poa.network/';
 const DEFAULT_GAS_PRICE_SPEED_TYPE = 'standard';
 const DEFAULT_GAS_PRICE_UPDATE_INTERVAL = 15000;
 
@@ -79,8 +44,6 @@ class GasPriceStore {
   gasPrice = null;
 
   fastGasPrice = null;
-
-  gasPriceSupplierUrl = null;
 
   speedType = null;
 
@@ -95,8 +58,6 @@ class GasPriceStore {
       REACT_APP_GAS_PRICE_FALLBACK_GWEI || DEFAULT_GAS_PRICE_FALLBACK_GWEI,
       'gwei',
     );
-    this.gasPriceSupplierUrl =
-      REACT_APP_GAS_PRICE_SUPPLIER_URL || DEFAULT_GAS_PRICE_SUPPLIER_URL;
     this.speedType =
       REACT_APP_GAS_PRICE_SPEED_TYPE || DEFAULT_GAS_PRICE_SPEED_TYPE;
     this.updateInterval =
@@ -105,16 +66,10 @@ class GasPriceStore {
   }
 
   async updateGasPrice() {
-    const oracleOptions = {
-      speedType: this.speedType,
-      logger: console,
-    };
-    const fetchFn = () => fetch(this.gasPriceSupplierUrl);
-    if (this.gasPriceSupplierUrl) {
-      [this.gasPrice, this.fastGasPrice] = await gasPriceFromSupplier(
-        fetchFn,
-        oracleOptions,
-      );
+    const gasPrices = await gasPriceFromSupplier();
+    if (gasPrices) {
+      this.gasPrice = gasPrices[this.speedType];
+      this.fastGasPrice = gasPrices.fast;
     }
 
     setTimeout(() => this.updateGasPrice(), this.updateInterval);
