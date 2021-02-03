@@ -19,7 +19,7 @@ import { HOME_NETWORK } from '../lib/constants';
 import { getBridgeNetwork, getNetworkName, isxDaiChain } from '../lib/helpers';
 
 export const NeedsConfirmationModal = ({ setNeedsConfirmation }) => {
-  const { fromToken, toToken } = useContext(BridgeContext);
+  const { fromToken, toToken, setTxHash } = useContext(BridgeContext);
   const isxDai = fromToken !== undefined && isxDaiChain(fromToken.chainId);
   const toUnit =
     toToken !== undefined && toToken.symbol + (isxDai ? ' on Mainnet' : '');
@@ -27,6 +27,7 @@ export const NeedsConfirmationModal = ({ setNeedsConfirmation }) => {
   const [isOpen, setOpen] = useState(true);
   const onClose = () => {
     setNeedsConfirmation(false);
+    setTxHash();
     setOpen(false);
   };
 

@@ -26,7 +26,7 @@
     "react-app:test": "yarn workspace @omnibridge/react-app test",
     "react-app:lint": "yarn workspace @omnibridge/react-app lint",
     "lint": "eslint --ignore-path .gitignore \"./packages/**/*.{ts,tsx,js,jsx}\" --fix",
-    "format": "prettier --ignore-path .gitignore --write \"{*,**/*}.{ts,tsx,js,jsx,json,yml,yaml,md}\""
+    "format": "prettier --ignore-path .gitignore --write \"{*,**/*}.{ts,tsx,js,jsx,json,md}\""
   },
   "husky": {
     "hooks": {

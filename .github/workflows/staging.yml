@@ -38,16 +38,9 @@ jobs:
           REACT_APP_DEBUG_LOGS: true
           REACT_APP_TITLE: OmniBridge - %c
           REACT_APP_DESCRIPTION: 'The OmniBridge multi-token extension for the Arbitrary Message Bridge between Ethereum and the xDai chain is the simplest way to transfer ANY ERC20/ERC677/ERC827 token to the xDai chain.'
-          REACT_APP_HOME_GAS_PRICE_FALLBACK_GWEI: 50
-          REACT_APP_HOME_GAS_PRICE_SUPPLIER_URL: https://gasprice.poa.network/
-          REACT_APP_HOME_GAS_PRICE_SPEED_TYPE: standard
-          REACT_APP_HOME_GAS_PRICE_UPDATE_INTERVAL: 15000
-          REACT_APP_HOME_GAS_PRICE_FACTOR: 1
-          REACT_APP_FOREIGN_GAS_PRICE_FALLBACK_GWEI: 50
-          REACT_APP_FOREIGN_GAS_PRICE_SUPPLIER_URL: https://gasprice.poa.network/
-          REACT_APP_FOREIGN_GAS_PRICE_SPEED_TYPE: standard
-          REACT_APP_FOREIGN_GAS_PRICE_UPDATE_INTERVAL: 15000
-          REACT_APP_FOREIGN_GAS_PRICE_FACTOR: 1
+          REACT_APP_GAS_PRICE_SUPPLIER_URL: https://gasprice.poa.network/
+          REACT_APP_GAS_PRICE_SPEED_TYPE: standard
+          REACT_APP_GAS_PRICE_UPDATE_INTERVAL: 15000
           REACT_APP_ETH_PRICE_API_URL: 'https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=USD'
           REACT_APP_ETH_PRICE_UPDATE_INTERVAL: 15000
 
