@@ -44,20 +44,10 @@ REACT_APP_AMB_LIVE_MONITOR_PREFIX=https://alm-test-amb.herokuapp.com/
 ######################################################
 # if unset defaults => undefined
 ######################################################
-REACT_APP_HOME_GAS_PRICE_SUPPLIER_URL=https://gasprice.poa.network/
-REACT_APP_HOME_GAS_PRICE_SPEED_TYPE=standard
-REACT_APP_HOME_GAS_PRICE_FALLBACK_GWEI=5
-REACT_APP_HOME_GAS_PRICE_UPDATE_INTERVAL=15000
-REACT_APP_HOME_GAS_PRICE_FACTOR=1
-
-######################################################
-# if unset defaults => undefined
-######################################################
-REACT_APP_FOREIGN_GAS_PRICE_SUPPLIER_URL=https://gasprice.poa.network/
-REACT_APP_FOREIGN_GAS_PRICE_SPEED_TYPE=standard
-REACT_APP_FOREIGN_GAS_PRICE_FALLBACK_GWEI=5
-REACT_APP_FOREIGN_GAS_PRICE_UPDATE_INTERVAL=15000
-REACT_APP_FOREIGN_GAS_PRICE_FACTOR=1
+REACT_APP_GAS_PRICE_SUPPLIER_URL=https://gasprice.poa.network/
+REACT_APP_GAS_PRICE_SPEED_TYPE=standard
+REACT_APP_GAS_PRICE_FALLBACK_GWEI=50
+REACT_APP_GAS_PRICE_UPDATE_INTERVAL=15000
 
 ######################################################
 # if unset defaults => 

@@ -15,8 +15,8 @@ const gasPriceWithinLimits = (gasPrice, limits) => {
   return gasPrice;
 };
 
-const normalizeGasPrice = (oracleGasPrice, factor, limits = null) => {
-  let gasPrice = oracleGasPrice * factor;
+const normalizeGasPrice = (oracleGasPrice, limits = null) => {
+  let gasPrice = oracleGasPrice;
   gasPrice = gasPriceWithinLimits(gasPrice, limits);
   return utils.parseUnits(gasPrice.toFixed(2).toString(), 'gwei');
 };
@@ -39,13 +39,11 @@ const gasPriceFromSupplier = async (fetchFn, options = {}) => {
 
     const normalizedGasPrice = normalizeGasPrice(
       oracleGasPrice,
-      options.factor,
       options.limits,
     );
 
     const normalizedFastGasPrice = normalizeGasPrice(
       oracleFastGasPrice,
-      options.factor,
       options.limits,
     );
 
@@ -66,20 +64,16 @@ const gasPriceFromSupplier = async (fetchFn, options = {}) => {
 };
 
 const {
-  REACT_APP_HOME_GAS_PRICE_FALLBACK_GWEI,
-  REACT_APP_HOME_GAS_PRICE_SUPPLIER_URL,
-  REACT_APP_HOME_GAS_PRICE_SPEED_TYPE,
-  REACT_APP_HOME_GAS_PRICE_UPDATE_INTERVAL,
-  REACT_APP_HOME_GAS_PRICE_FACTOR,
-  REACT_APP_FOREIGN_GAS_PRICE_FALLBACK_GWEI,
-  REACT_APP_FOREIGN_GAS_PRICE_SUPPLIER_URL,
-  REACT_APP_FOREIGN_GAS_PRICE_SPEED_TYPE,
-  REACT_APP_FOREIGN_GAS_PRICE_UPDATE_INTERVAL,
-  REACT_APP_FOREIGN_GAS_PRICE_FACTOR,
+  REACT_APP_GAS_PRICE_FALLBACK_GWEI,
+  REACT_APP_GAS_PRICE_SUPPLIER_URL,
+  REACT_APP_GAS_PRICE_SPEED_TYPE,
+  REACT_APP_GAS_PRICE_UPDATE_INTERVAL,
 } = process.env;
 
-const DEFAULT_GAS_PRICE_FACTOR = 1;
-const DEFAULT_GAS_PRICE_UPDATE_INTERVAL = 900000;
+const DEFAULT_GAS_PRICE_FALLBACK_GWEI = '0';
+const DEFAULT_GAS_PRICE_SUPPLIER_URL = 'https://gasprice.poa.network/';
+const DEFAULT_GAS_PRICE_SPEED_TYPE = 'standard';
+const DEFAULT_GAS_PRICE_UPDATE_INTERVAL = 15000;
 
 class GasPriceStore {
   gasPrice = null;
@@ -92,49 +86,27 @@ class GasPriceStore {
 
   updateInterval = null;
 
-  factor = null;
-
-  constructor(isxDai) {
-    if (isxDai) {
-      this.gasPrice = utils.parseUnits(
-        REACT_APP_HOME_GAS_PRICE_FALLBACK_GWEI || '0',
-        'gwei',
-      );
-      this.fastGasPrice = utils.parseUnits(
-        REACT_APP_HOME_GAS_PRICE_FALLBACK_GWEI || '0',
-        'gwei',
-      );
-      this.gasPriceSupplierUrl = REACT_APP_HOME_GAS_PRICE_SUPPLIER_URL;
-      this.speedType = REACT_APP_HOME_GAS_PRICE_SPEED_TYPE;
-      this.updateInterval =
-        REACT_APP_HOME_GAS_PRICE_UPDATE_INTERVAL ||
-        DEFAULT_GAS_PRICE_UPDATE_INTERVAL;
-      this.factor =
-        Number(REACT_APP_HOME_GAS_PRICE_FACTOR) || DEFAULT_GAS_PRICE_FACTOR;
-    } else {
-      this.gasPrice = utils.parseUnits(
-        REACT_APP_FOREIGN_GAS_PRICE_FALLBACK_GWEI || '0',
-        'gwei',
-      );
-      this.fastGasPrice = utils.parseUnits(
-        REACT_APP_FOREIGN_GAS_PRICE_FALLBACK_GWEI || '0',
-        'gwei',
-      );
-      this.gasPriceSupplierUrl = REACT_APP_FOREIGN_GAS_PRICE_SUPPLIER_URL;
-      this.speedType = REACT_APP_FOREIGN_GAS_PRICE_SPEED_TYPE;
-      this.updateInterval =
-        REACT_APP_FOREIGN_GAS_PRICE_UPDATE_INTERVAL ||
-        DEFAULT_GAS_PRICE_UPDATE_INTERVAL;
-      this.factor =
-        Number(REACT_APP_FOREIGN_GAS_PRICE_FACTOR) || DEFAULT_GAS_PRICE_FACTOR;
-    }
+  constructor() {
+    this.gasPrice = utils.parseUnits(
+      REACT_APP_GAS_PRICE_FALLBACK_GWEI || DEFAULT_GAS_PRICE_FALLBACK_GWEI,
+      'gwei',
+    );
+    this.fastGasPrice = utils.parseUnits(
+      REACT_APP_GAS_PRICE_FALLBACK_GWEI || DEFAULT_GAS_PRICE_FALLBACK_GWEI,
+      'gwei',
+    );
+    this.gasPriceSupplierUrl =
+      REACT_APP_GAS_PRICE_SUPPLIER_URL || DEFAULT_GAS_PRICE_SUPPLIER_URL;
+    this.speedType =
+      REACT_APP_GAS_PRICE_SPEED_TYPE || DEFAULT_GAS_PRICE_SPEED_TYPE;
+    this.updateInterval =
+      REACT_APP_GAS_PRICE_UPDATE_INTERVAL || DEFAULT_GAS_PRICE_UPDATE_INTERVAL;
     this.updateGasPrice();
   }
 
   async updateGasPrice() {
     const oracleOptions = {
       speedType: this.speedType,
-      factor: this.factor,
       logger: console,
     };
     const fetchFn = () => fetch(this.gasPriceSupplierUrl);
@@ -159,16 +131,15 @@ class GasPriceStore {
     if (this.fastGasPrice.gt(0)) {
       return this.fastGasPrice;
     }
-    return undefined;
+    return utils.parseUnits('50', 'gwei').toHexString();
   }
 }
 
-const homeGasStore = new GasPriceStore(true);
-const foreignGasStore = new GasPriceStore(false);
+const foreignGasStore = new GasPriceStore();
 
 export const getGasPrice = chainId => {
   if (isxDaiChain(chainId)) {
-    return homeGasStore.gasPriceInHex();
+    return utils.parseUnits('1', 'gwei').toHexString();
   }
   return foreignGasStore.gasPriceInHex();
 };

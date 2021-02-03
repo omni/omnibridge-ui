@@ -38,8 +38,7 @@ jobs:
           REACT_APP_DEBUG_LOGS: true
           REACT_APP_TITLE: OmniBridge - %c
           REACT_APP_DESCRIPTION: 'The Sokol OmniBridge multi-token extension for the Arbitrary Message Bridge between Kovan Testnet and the POA Sokol Testnet is the simplest way to transfer ANY ERC20/ERC677/ERC827 token to and from the POA Sokol Testnet.'
-          REACT_APP_HOME_GAS_PRICE_FALLBACK_GWEI: 5
-          REACT_APP_FOREIGN_GAS_PRICE_FALLBACK_GWEI: 5
+          REACT_APP_GAS_PRICE_FALLBACK_GWEI: 5
           REACT_APP_ETH_PRICE_API_URL: 'https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=USD'
           REACT_APP_ETH_PRICE_UPDATE_INTERVAL: 15000
 
