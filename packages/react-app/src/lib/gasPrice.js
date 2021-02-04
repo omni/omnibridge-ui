@@ -23,7 +23,10 @@ const gasPriceFromSupplier = async () => {
         );
       }
     }
-    return returnJson;
+    if (Object.keys(returnJson).length > 0) {
+      return returnJson;
+    }
+    return null;
   } catch (e) {
     logError(`Gas Price Oracle not available. ${e.message}`);
   }
@@ -36,7 +39,6 @@ const {
   REACT_APP_GAS_PRICE_UPDATE_INTERVAL,
 } = process.env;
 
-const DEFAULT_GAS_PRICE_FALLBACK_GWEI = '0';
 const DEFAULT_GAS_PRICE_SPEED_TYPE = 'standard';
 const DEFAULT_GAS_PRICE_UPDATE_INTERVAL = 15000;
 
@@ -51,11 +53,11 @@ class GasPriceStore {
 
   constructor() {
     this.gasPrice = utils.parseUnits(
-      REACT_APP_GAS_PRICE_FALLBACK_GWEI || DEFAULT_GAS_PRICE_FALLBACK_GWEI,
+      REACT_APP_GAS_PRICE_FALLBACK_GWEI || '0',
       'gwei',
     );
     this.fastGasPrice = utils.parseUnits(
-      REACT_APP_GAS_PRICE_FALLBACK_GWEI || DEFAULT_GAS_PRICE_FALLBACK_GWEI,
+      REACT_APP_GAS_PRICE_FALLBACK_GWEI || '0',
       'gwei',
     );
     this.speedType =
@@ -67,9 +69,13 @@ class GasPriceStore {
 
   async updateGasPrice() {
     const gasPrices = await gasPriceFromSupplier();
-    if (gasPrices) {
-      this.gasPrice = gasPrices[this.speedType];
-      this.fastGasPrice = gasPrices.fast;
+    try {
+      if (gasPrices) {
+        this.gasPrice = gasPrices[this.speedType];
+        this.fastGasPrice = gasPrices.fast;
+      }
+    } catch (gasPriceError) {
+      logError({ gasPriceError });
     }
 
     setTimeout(() => this.updateGasPrice(), this.updateInterval);
