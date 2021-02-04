@@ -93,7 +93,7 @@ const HNYTokenOverride = {
     mediator: '0x0EeAcdb0Dd96588711581C5f3173dD55841b8e91',
     from: '0x71850b7e9ee3f13ab46d67167341e4bdc905eef9',
     to: '0xc3589f56b6869824804a5ea29f2c9886af1b0fce',
-    mode: 'erc677',
+    mode: 'dedicated-erc20',
   },
   1: {
     mediator: '0x81A4833B3A40E7c61eFE9D1a287343797993B1E8',
