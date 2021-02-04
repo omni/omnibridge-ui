@@ -1,12 +1,12 @@
-name: Build and Deploy to test merge
+name: Build and Deploy to production
 on:
   push:
     branches:
-      - rebase-20210204
+      - master
 
 jobs:
   deploy:
-    name: Build & Deploy to test merge
+    name: Build & Deploy to production
     runs-on: ubuntu-latest
     steps:
       - name: Cancel Previous Runs
@@ -48,7 +48,7 @@ jobs:
       - name: Deploy to Firebase
         uses: w9jds/firebase-action@master
         with:
-          args: deploy --only hosting --project merge
+          args: deploy --only hosting --project production
         env:
           CI: true
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}

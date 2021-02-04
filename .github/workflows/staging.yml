@@ -2,7 +2,7 @@ name: Build and Deploy xDai Staging
 on:
   push:
     branches:
-      - master
+      - staging
 
 jobs:
   deploy:

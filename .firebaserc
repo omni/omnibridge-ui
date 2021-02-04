@@ -1,8 +1,7 @@
 {
   "projects": {
-    "xdai": "xdai-omnibridge",
+    "production": "xdai-omnibridge",
     "sokol": "sokol-omnibridge",
     "staging": "omnibridge-staging",
-    "merge": "koal-personal"
   }
 }
