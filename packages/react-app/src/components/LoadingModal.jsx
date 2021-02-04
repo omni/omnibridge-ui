@@ -7,11 +7,13 @@ import {
   ModalContent,
   ModalOverlay,
   Text,
-} from '@chakra-ui/core';
+} from '@chakra-ui/react';
 import React, { useContext } from 'react';
 
+import BlueTickImage from '../assets/blue-tick.svg';
 import LoadingImage from '../assets/loading.svg';
 import { BridgeContext } from '../contexts/BridgeContext';
+import { Web3Context } from '../contexts/Web3Context';
 import { getMonitorUrl } from '../lib/helpers';
 import { ProgressRing } from './ProgressRing';
 
@@ -21,101 +23,89 @@ const getTransactionString = hash => {
   return `${hash.substr(0, 6)}...${hash.substr(len - 4, len - 1)}`;
 };
 
-export const LoadingModal = ({ loadingProps }) => {
-  const {
-    loading,
-    loadingText,
-    fromToken,
-    txHash,
-    receipt,
-    totalConfirms,
-  } = useContext(BridgeContext);
-
+export const LoadingModal = ({ loadingText, txHash, chainId }) => {
+  const { providerChainId } = useContext(Web3Context);
+  const { loading } = useContext(BridgeContext);
   return (
     <Modal
-      isOpen={loading || loadingProps}
+      isOpen={!loading}
       closeOnEsc={false}
       closeOnOverlayClick={false}
       isCentered
     >
       <ModalOverlay background="modalBG">
-        {(!receipt || totalConfirms === 0) && (
-          <Flex direction="column" align="center">
-            <Image src={LoadingImage} mb={4} />
-            <Text color="white" fontWeight="bold">
-              Loading ...
-            </Text>
-          </Flex>
-        )}
-        {receipt && totalConfirms && (
-          <ModalContent
-            boxShadow="0px 1rem 2rem #617492"
-            borderRadius="full"
-            mx={{ base: 12, lg: 0 }}
-            maxW={{ base: '20rem', md: '25rem' }}
-          >
-            <ModalBody p={4}>
-              <Flex
-                align={{ base: 'center', md: 'stretch' }}
-                direction={{ base: 'column', md: 'row' }}
-              >
+        <>
+          {loadingText ? (
+            <ModalContent
+              boxShadow="0px 1rem 2rem #617492"
+              borderRadius={{ base: '1rem', md: 'full' }}
+              mx={{ base: 12, lg: 0 }}
+              maxW={{ base: '20rem', md: '25rem' }}
+            >
+              <ModalBody p={4}>
                 <Flex
-                  height="5rem"
-                  width="5rem"
-                  align="center"
-                  justify="center"
-                  border="5px solid #eef4fd"
-                  borderRadius="50%"
-                  mr={4}
-                  position="relative"
+                  align={{ base: 'center', md: 'stretch' }}
+                  direction={{ base: 'column', md: 'row' }}
                 >
-                  <Text>{`${
-                    receipt.confirmations < totalConfirms
-                      ? receipt.confirmations
-                      : totalConfirms
-                  }/${totalConfirms}`}</Text>
                   <Flex
-                    position="absolute"
-                    justify="center"
+                    height="5rem"
+                    width="5rem"
                     align="center"
-                    color="blue.500"
+                    justify="center"
+                    border="5px solid #eef4fd"
+                    borderRadius="50%"
+                    mr={4}
+                    position="relative"
                   >
-                    <ProgressRing
-                      radius={47.5}
-                      stroke={5}
-                      progress={
-                        receipt.confirmations < totalConfirms
-                          ? receipt.confirmations
-                          : totalConfirms
-                      }
-                      totalProgress={totalConfirms}
-                    />
-                  </Flex>
-                </Flex>
-                <Flex
-                  flex={1}
-                  direction="column"
-                  align={{ base: 'stretch', md: 'center' }}
-                >
-                  <Text width="100%">
-                    {`${loadingText || 'Waiting for Block Confirmations'}...`}
-                  </Text>
-                  <Text width="100%" color="grey">
-                    {'Monitor at ALM '}
-                    <Link
-                      href={getMonitorUrl(fromToken.chainId, txHash)}
-                      rel="noreferrer noopener"
-                      target="_blank"
+                    <Image src={BlueTickImage} />
+                    <Flex
+                      position="absolute"
+                      justify="center"
+                      align="center"
                       color="blue.500"
                     >
-                      {getTransactionString(txHash)}
-                    </Link>
-                  </Text>
+                      <ProgressRing
+                        radius={47.5}
+                        stroke={5}
+                        progress={1}
+                        totalProgress={1}
+                      />
+                    </Flex>
+                  </Flex>
+                  <Flex
+                    flex={1}
+                    direction="column"
+                    align="center"
+                    justify="center"
+                    mt={{ base: 2, md: 0 }}
+                  >
+                    <Text width="100%">{`${loadingText}...`}</Text>
+                    <Text width="100%" color="grey">
+                      {'Monitor at ALM '}
+                      <Link
+                        href={getMonitorUrl(chainId || providerChainId, txHash)}
+                        rel="noreferrer noopener"
+                        target="_blank"
+                        color="blue.500"
+                      >
+                        {getTransactionString(txHash)}
+                      </Link>
+                    </Text>
+                  </Flex>
                 </Flex>
+              </ModalBody>
+            </ModalContent>
+          ) : (
+            <ModalContent background="none" boxShadow="none" borderRadius="0">
+              <Flex direction="column" align="center" justify="center">
+                <Image src={LoadingImage} mb={4} />
+                <Text color="white" fontWeight="bold">
+                  Loading ...
+                </Text>
               </Flex>
-            </ModalBody>
-          </ModalContent>
-        )}
+            </ModalContent>
+          )}
+        </>
       </ModalOverlay>
     </Modal>
   );

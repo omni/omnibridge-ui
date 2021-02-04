@@ -1,7 +1,12 @@
 import React from 'react';
 
 import { BridgeTokens } from '../components/BridgeTokens';
+import { BridgeProvider } from '../contexts/BridgeContext';
 
 export const Home = () => {
-  return <BridgeTokens />;
+  return (
+    <BridgeProvider>
+      <BridgeTokens />
+    </BridgeProvider>
+  );
 };

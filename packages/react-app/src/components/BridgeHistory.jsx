@@ -1,65 +1,95 @@
-import { Flex, Grid, Text } from '@chakra-ui/core';
-import React, { useContext, useEffect, useState } from 'react';
+import { Checkbox, Flex, Grid, Text } from '@chakra-ui/react';
+import React, { useState } from 'react';
+import { Redirect } from 'react-router-dom';
 
-import { Web3Context } from '../contexts/Web3Context';
-import { fetchHistory, fetchNumHistory } from '../lib/history';
+import { useUserHistory } from '../lib/history';
 import { HistoryItem } from './HistoryItem';
 import { HistoryPagination } from './HistoryPagination';
 import { LoadingModal } from './LoadingModal';
+import { NoHistory } from './NoHistory';
+
+const TOTAL_PER_PAGE = 20;
 
 export const BridgeHistory = ({ page }) => {
-  const [history, setHistory] = useState();
-  const [loading, setLoading] = useState(true);
-  const { network, account } = useContext(Web3Context);
-  const [numPages, setNumPages] = useState(0);
+  const [onlyUnReceived, setOnlyUnReceived] = useState(false);
 
-  useEffect(() => {
-    async function getHistory() {
-      setLoading(true);
-      const [gotHistory, totalItems] = await Promise.all([
-        fetchHistory(network.value, account, page),
-        fetchNumHistory(network.value, account),
-      ]);
-      setHistory(gotHistory);
-      setNumPages(Math.ceil(totalItems / 10));
-      setLoading(false);
-    }
-    getHistory();
-  }, [network, account, setHistory, page]);
+  const { transfers, loading } = useUserHistory();
+
+  if (loading) {
+    return (
+      <Flex w="100%" maxW="75rem" direction="column" mt={8} px={8}>
+        <LoadingModal />
+      </Flex>
+    );
+  }
+  const filteredTransfers = onlyUnReceived
+    ? transfers.filter(i => i.receivingTx === null)
+    : transfers;
+
+  const numPages = Math.ceil(filteredTransfers.length / TOTAL_PER_PAGE);
+  const displayHistory = filteredTransfers.slice(
+    (page - 1) * TOTAL_PER_PAGE,
+    Math.min(page * TOTAL_PER_PAGE, filteredTransfers.length),
+  );
+
+  if (numPages > 1 && page > numPages) {
+    return <Redirect to="/history" />;
+  }
+
   return (
-    <Flex w="100%" maxW="75rem" direction="column" mt={8} px={8}>
-      <LoadingModal loadingProps={loading} />
-      <Text fontSize="xl" fontWeight="bold" mb={4}>
-        History
-      </Text>
-      <Grid
-        templateColumns={{ base: '2fr 2fr', md: '2fr 3fr' }}
-        color="grey"
-        fontSize="sm"
-        px={{ base: 4, sm: 8 }}
-        mb={4}
-      >
-        <Text>Date</Text>
-        <Text>Txn Hash</Text>
-      </Grid>
-      {history && history.length > 0 ? (
+    <Flex
+      maxW="75rem"
+      direction="column"
+      mt={8}
+      px={{ base: 4, sm: 8 }}
+      w="100%"
+    >
+      <Flex justify="space-between" align="center" mb={4}>
+        <Text fontSize="xl" fontWeight="bold">
+          History
+        </Text>
+        <Checkbox
+          isChecked={onlyUnReceived}
+          onChange={e => setOnlyUnReceived(e.target.checked)}
+          borderColor="grey"
+          borderRadius="4px"
+          size="lg"
+          variant="solid"
+        >
+          <Text fontSize="sm">Show only unreceived</Text>
+        </Checkbox>
+      </Flex>
+
+      {displayHistory.length > 0 ? (
         <>
-          {history.map(item => (
-            <HistoryItem
-              key={item.txHash}
-              chainId={network.value}
-              date={item.timestamp}
-              hash={item.txHash}
-            />
+          <Grid
+            templateColumns={{
+              base: '1fr',
+              md: '0.5fr 1.75fr 1fr 1fr 1.25fr 0.5fr',
+              lg: '1fr 1.25fr 1fr 1fr 1.25fr 0.5fr',
+            }}
+            color="grey"
+            fontSize="sm"
+            px={4}
+            mb={4}
+            display={{ base: 'none', md: 'grid' }}
+          >
+            <Text>Date</Text>
+            <Text>Direction</Text>
+            <Text textAlign="center">Sending Tx</Text>
+            <Text textAlign="center">Receiving Tx</Text>
+            <Text textAlign="center">Amount</Text>
+            <Text textAlign="right">Status</Text>
+          </Grid>
+          {displayHistory.map(item => (
+            <HistoryItem key={item.sendingTx} data={item} />
           ))}
-          {numPages && (
+          {numPages > 1 && (
             <HistoryPagination numPages={numPages} currentPage={page} />
           )}
         </>
       ) : (
-        <Grid templateColumns="5fr" w="100%">
-          <Text align="center">No History Found</Text>
-        </Grid>
+        <NoHistory />
       )}
     </Flex>
   );

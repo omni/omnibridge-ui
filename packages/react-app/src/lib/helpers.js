@@ -1,4 +1,4 @@
-import { BigNumber } from 'ethers';
+import { BigNumber, utils } from 'ethers';
 
 import {
   ambs,
@@ -7,6 +7,7 @@ import {
   defaultTokensUrl,
   graphEndpoints,
   mediators,
+  networkLabels,
   networkNames,
 } from './constants';
 import { getOverriddenMediator, isOverridden } from './overrides';
@@ -39,122 +40,31 @@ export const isxDaiChain = chainId => {
   }
 };
 
-export const getDefaultToken = chainId => {
-  switch (chainId) {
-    case 1:
-      return defaultTokens[1];
-    case 42:
-      return defaultTokens[42];
-    case 77:
-      return defaultTokens[77];
-    case 100:
-    default:
-      return defaultTokens[100];
-  }
-};
+export const getDefaultToken = chainId =>
+  defaultTokens[chainId] || defaultTokens[100];
 
-export const getMediatorAddress = (tokenAddress, chainId) => {
+export const getMediatorAddressWithOverride = (tokenAddress, chainId) => {
   if (isOverridden(tokenAddress)) {
     return getOverriddenMediator(tokenAddress, chainId);
   }
-  switch (chainId) {
-    case 1:
-      return mediators[1];
-    case 42:
-      return mediators[42];
-    case 77:
-      return mediators[77];
-    case 100:
-    default:
-      return mediators[100];
-  }
+  return getMediatorAddress(chainId);
 };
 
-export const getNetworkName = chainId => {
-  switch (chainId) {
-    case 1:
-      return networkNames[1];
-    case 42:
-      return networkNames[42];
-    case 77:
-      return networkNames[77];
-    case 100:
-    default:
-      return networkNames[100];
-  }
-};
+export const getMediatorAddress = chainId =>
+  mediators[chainId].toLowerCase() || mediators[100].toLowerCase();
 
-export const getAMBAddress = chainId => {
-  switch (chainId) {
-    case 1:
-      return ambs[1];
-    case 42:
-      return ambs[42];
-    case 77:
-      return ambs[77];
-    case 100:
-    default:
-      return ambs[100];
-  }
-};
-
-export const getGraphEndpoint = chainId => {
-  switch (chainId) {
-    case 1:
-      return graphEndpoints[1];
-    case 42:
-      return graphEndpoints[42];
-    case 77:
-      return graphEndpoints[77];
-    case 100:
-    default:
-      return graphEndpoints[100];
-  }
-};
-
-export const getRPCUrl = chainId => {
-  switch (chainId) {
-    case 1:
-      return chainUrls[1].rpc;
-    case 42:
-      return chainUrls[42].rpc;
-    case 77:
-      return chainUrls[77].rpc;
-    case 100:
-    default:
-      return chainUrls[100].rpc;
-  }
-};
-
-export const getExplorerUrl = chainId => {
-  switch (chainId) {
-    case 1:
-      return chainUrls[1].explorer;
-    case 42:
-      return chainUrls[42].explorer;
-    case 77:
-      return chainUrls[77].explorer;
-    case 100:
-    default:
-      return chainUrls[100].explorer;
-  }
-};
-
-export const getMonitorUrl = (chainId, hash) => {
-  const url = 'https://alm-xdai.herokuapp.com/';
-  const testUrl = 'https://alm-test-amb.herokuapp.com/';
-  switch (chainId) {
-    case 1:
-      return `${url}1/${hash}`;
-    case 42:
-      return `${testUrl}42/${hash}`;
-    case 77:
-      return `${testUrl}77/${hash}`;
-    case 100:
-    default:
-      return `${url}100/${hash}`;
-  }
-};
+export const getNetworkName = chainId => networkNames[chainId] || 'Unknown';
+export const getNetworkLabel = chainId => networkLabels[chainId] || 'Unknown';
+export const getAMBAddress = chainId => ambs[chainId] || ambs[100];
+export const getGraphEndpoint = chainId =>
+  graphEndpoints[chainId] || graphEndpoints[100];
+export const getRPCUrl = chainId => (chainUrls[chainId] || chainUrls[100]).rpc;
+export const getExplorerUrl = chainId =>
+  (chainUrls[chainId] || chainUrls[100]).explorer;
+export const getTokenListUrl = chainId =>
+  defaultTokensUrl[chainId] || defaultTokensUrl[100];
+export const getMonitorUrl = (chainId, hash) =>
+  `${(chainUrls[chainId] || chainUrls[100]).monitor}/${chainId}/${hash}`;
 
 export const uniqueTokens = list => {
   const seen = {};
@@ -171,56 +81,17 @@ export const uniqueTokens = list => {
   });
 };
 
-export const getTokenListUrl = chainId => {
-  switch (chainId) {
-    case 1:
-      return defaultTokensUrl[1];
-    case 42:
-      return defaultTokensUrl[42];
-    case 77:
-      return defaultTokensUrl[77];
-    default:
-    case 100:
-      return defaultTokensUrl[100];
-  }
-};
-
 export const formatValue = (num, dec) => {
-  const number = window.BigInt(num);
-  const round = window.BigInt(10 ** Number(dec));
-  const value = Number((number * window.BigInt(1000)) / round) / 1000;
-  return value.toFixed(3);
-};
-
-const countDecimals = value => {
-  if (Math.floor(value) === value) return 0;
-  return value.toString().split('.')[1].length || 0;
+  const str = utils.formatUnits(num, dec);
+  return Number(str).toLocaleString('en', { maximumFractionDigits: 4 });
 };
 
 export const parseValue = (num, dec) => {
-  if (!num) {
-    return window.BigInt(0);
+  if (!num || isNaN(Number(num))) {
+    return BigNumber.from(0);
   }
-  const number = Number(num);
-  const numberDec = countDecimals(number);
-  const round = window.BigInt(10 ** Number(dec));
-  const value =
-    (window.BigInt(Math.floor(number * 10 ** numberDec)) * round) /
-    window.BigInt(10 ** numberDec);
-  return value;
+  return utils.parseUnits(num, dec);
 };
-
-// ETH/ERC20 Default Limits
-export const defaultMinPerTx = (isxDai, decimals) => {
-  let minPerTx = BigNumber.from(10).pow(isxDai ? decimals : decimals - 3);
-  if (minPerTx.lt(1)) {
-    minPerTx = BigNumber.from(1);
-  }
-  return minPerTx;
-};
-export const defaultMaxPerTx = decimals => BigNumber.from(10).pow(decimals + 9);
-export const defaultDailyLimit = decimals =>
-  BigNumber.from(10).pow(decimals + 18);
 
 export const uriToHttp = uri => {
   const protocol = uri.split(':')[0].toLowerCase();
@@ -243,5 +114,20 @@ export const uriToHttp = uri => {
       ];
     default:
       return [];
+  }
+};
+
+export const getAccountString = account => {
+  const len = account.length;
+  return `${account.substr(0, 6)}...${account.substr(
+    len - 4,
+    len - 1,
+  )}`.toUpperCase();
+};
+
+export const logError = error => {
+  if (process.env.REACT_APP_DEBUG_LOGS === 'true') {
+    // eslint-disable-next-line no-console
+    console.error(error);
   }
 };

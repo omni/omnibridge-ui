@@ -1,18 +1,37 @@
 type UserRequest @entity {
   id: ID!
-  user: Bytes!
+  user: Bytes
+  token: Bytes
+  decimals: Int
+  symbol: String
+  amount: BigInt
   timestamp: BigInt!
-  txHash: String!
+  txHash: Bytes!
+  messageId: Bytes
+  encodedData: Bytes
+  message: Message
 }
 
-type BridgeTransfer @entity {
+type Execution @entity {
   id: ID!
-  token: Bytes!
-  recipient: Bytes!
-  value: BigInt!
-  messageId: Bytes!
+  user: Bytes
+  token: Bytes
+  amount: BigInt
+  sender: Bytes
+  executor: Bytes
+  messageId: Bytes
+  status: Boolean
   timestamp: BigInt!
-  txHash: String!
+  txHash: Bytes!
+}
+
+type Message @entity {
+  id: ID!
+  msgId: Bytes
+  txHash: Bytes!
+  msgHash: Bytes
+  msgData: Bytes
+  signatures: [Bytes!]
 }
 
 type Token @entity {
@@ -22,7 +41,7 @@ type Token @entity {
   homeChainId: Int!
   decimals: Int!
   symbol: String!
-  foreignAddress: Bytes!
-  foreignName: String!
-  foreignChainId: Int!
+  foreignAddress: Bytes
+  foreignName: String
+  foreignChainId: Int
 }

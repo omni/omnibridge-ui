@@ -1,6 +1,20 @@
 {
   "network": "xdai",
   "startBlock": "11300566",
-  "mediator": "0xf6A78083ca3e2a662D6dd1703c939c8aCE2e268d",
-  "amb": "0x75Df5AF045d91108662D8080fD1FEFAd6aA0bb59"
+  "omnibridge": "0xf6A78083ca3e2a662D6dd1703c939c8aCE2e268d",
+  "amb": "0x75Df5AF045d91108662D8080fD1FEFAd6aA0bb59",
+  "bridges": [
+    {
+      "name": "OWL",
+      "address": "0xbeD794745e2a0543eE609795ade87A55Bbe935Ba"
+    },
+    {
+      "name": "MOON",
+      "address": "0xF75C28fE07E0647B05160288F172ad27CccD8f30"
+    },
+    {
+      "name": "HNY",
+      "address": "0x0EeAcdb0Dd96588711581C5f3173dD55841b8e91"
+    }
+  ]
 }

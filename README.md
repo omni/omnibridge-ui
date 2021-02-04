@@ -1,6 +1,6 @@
-# xDAI omnibridge
+# Omnibridge
 
-The [multi-token extension](https://docs.tokenbridge.net/eth-xdai-amb-bridge/multi-token-extension) for the Arbitrary Message Bridge between Ethereum and the xDai chain is the simplest way to transfer ANY ERC20/ERC677/ERC827 token to the xDai chain.
+The OmniBridge [multi-token extension](https://docs.tokenbridge.net/eth-xdai-amb-bridge/multi-token-extension) for the Arbitrary Message Bridge between Ethereum and the xDai chain is the simplest way to transfer ANY ERC20/ERC677/ERC827 token to the xDai chain.
 
 ## Project Structure
 
@@ -14,7 +14,8 @@ xdai-omnibridge
 ├── .firebaserc
 ├── .github
 │   └── workflows
-│       └── main.yml
+│       ├── sokol.yml
+│       └── staging.yml
 ├── .gitignore
 ├── .prettierrc.json
 ├── README.md
@@ -22,7 +23,6 @@ xdai-omnibridge
 ├── package.json
 ├── packages
 │   ├── react-app
-│   │   ├── README.md
 │   │   ├── package.json
 │   │   ├── public
 │   │   │   ├── android-chrome-192x192.png
@@ -41,27 +41,44 @@ xdai-omnibridge
 │   │       ├── App.jsx
 │   │       ├── Routes.jsx
 │   │       ├── assets
+│   │       │   ├── advanced.svg
+│   │       │   ├── alert.svg
+│   │       │   ├── blue-tick.svg
+│   │       │   ├── change-network.png
+│   │       │   ├── claim.svg
 │   │       │   ├── close.svg
 │   │       │   ├── confirm-transfer.svg
+│   │       │   ├── custom-token.svg
 │   │       │   ├── details.svg
 │   │       │   ├── down-triangle.svg
 │   │       │   ├── drop-down.svg
+│   │       │   ├── error.svg
 │   │       │   ├── eth-logo.png
+│   │       │   ├── eth.png
+│   │       │   ├── info.svg
 │   │       │   ├── loading.svg
 │   │       │   ├── logo.svg
+│   │       │   ├── multiple-claim.svg
+│   │       │   ├── no-history.svg
+│   │       │   ├── right-arrow.svg
 │   │       │   ├── search.svg
+│   │       │   ├── settings.svg
 │   │       │   ├── transfer.svg
 │   │       │   ├── unlock.svg
 │   │       │   ├── up-triangle.svg
 │   │       │   └── xdai-logo.png
 │   │       ├── components
+│   │       │   ├── AdvancedMenu.jsx
 │   │       │   ├── BridgeHistory.jsx
+│   │       │   ├── BridgeLoadingModal.jsx
 │   │       │   ├── BridgeTokens.jsx
+│   │       │   ├── ClaimTokensModal.jsx
+│   │       │   ├── ClaimTransferModal.jsx
 │   │       │   ├── ConfirmTransferModal.jsx
+│   │       │   ├── ConnectWeb3.jsx
 │   │       │   ├── CustomTokenModal.jsx
 │   │       │   ├── DaiWarning.jsx
 │   │       │   ├── ErrorBoundary.jsx
-│   │       │   ├── ErrorModal.jsx
 │   │       │   ├── Footer.jsx
 │   │       │   ├── FromToken.jsx
 │   │       │   ├── Header.jsx
@@ -69,19 +86,31 @@ xdai-omnibridge
 │   │       │   ├── HistoryPagination.jsx
 │   │       │   ├── Layout.jsx
 │   │       │   ├── LoadingModal.jsx
-│   │       │   ├── NetworkSelector.jsx
+│   │       │   ├── Logo.jsx
+│   │       │   ├── NeedsConfirmationModal.jsx
+│   │       │   ├── NeedsTransactions.jsx
+│   │       │   ├── NoHistory.jsx
 │   │       │   ├── ProgressRing.jsx
+│   │       │   ├── ReverseWarning.jsx
 │   │       │   ├── SelectTokenModal.jsx
 │   │       │   ├── SystemFeedback.jsx
+│   │       │   ├── TermsOfServiceModal.jsx
 │   │       │   ├── ToToken.jsx
 │   │       │   ├── TokenSelectorModal.jsx
 │   │       │   ├── TransferButton.jsx
+│   │       │   ├── TxLink.jsx
 │   │       │   ├── UnlockButton.jsx
+│   │       │   ├── UpdateSettings.jsx
 │   │       │   └── WalletSelector.jsx
-│   │       ├── config.js
 │   │       ├── contexts
 │   │       │   ├── BridgeContext.jsx
 │   │       │   └── Web3Context.jsx
+│   │       ├── hooks
+│   │       │   ├── useCurrentDay.js
+│   │       │   ├── useFeeType.js
+│   │       │   ├── useRewardAddress.js
+│   │       │   ├── useTotalConfirms.js
+│   │       │   └── useTransactionStatus.js
 │   │       ├── icons
 │   │       │   ├── DownArrowIcon.jsx
 │   │       │   ├── ErrorIcon.jsx
@@ -93,17 +122,22 @@ xdai-omnibridge
 │   │       │   ├── PlusIcon.jsx
 │   │       │   ├── RaidGuildIcon.jsx
 │   │       │   ├── RightIcon.jsx
+│   │       │   ├── SettingsIcon.jsx
 │   │       │   ├── TelegramIcon.jsx
 │   │       │   ├── TwitterIcon.jsx
+│   │       │   ├── WalletFilledIcon.jsx
 │   │       │   ├── WalletIcon.jsx
 │   │       │   └── XDaiIcon.jsx
 │   │       ├── index.jsx
 │   │       ├── lib
 │   │       │   ├── amb.js
 │   │       │   ├── bridge.js
-│   │       │   ├── constants.jsx
+│   │       │   ├── constants.js
+│   │       │   ├── ethPrice.js
+│   │       │   ├── gasPrice.js
 │   │       │   ├── helpers.js
 │   │       │   ├── history.js
+│   │       │   ├── overrides.js
 │   │       │   ├── providers.js
 │   │       │   ├── proxy.js
 │   │       │   ├── token.js
@@ -113,7 +147,6 @@ xdai-omnibridge
 │   │       │   └── Home.jsx
 │   │       └── theme.js
 │   └── subgraph
-│       ├── README.md
 │       ├── config
 │       │   ├── kovan.json
 │       │   ├── mainnet.json

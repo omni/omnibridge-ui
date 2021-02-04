@@ -1,5 +1,5 @@
 {
-  "name": "xdai-omnibridge",
+  "name": "omnibridge",
   "version": "1.0.0",
   "keywords": [
     "ethereum",
@@ -9,24 +9,24 @@
   ],
   "private": true,
   "scripts": {
-    "subgraph:auth": "yarn workspace @project/subgraph auth",
-    "subgraph:codegen": "yarn workspace @project/subgraph codegen",
-    "subgraph:build": "yarn workspace @project/subgraph build",
-    "subgraph:prepare-kovan": "yarn workspace @project/subgraph prepare-kovan",
-    "subgraph:deploy-kovan": "yarn workspace @project/subgraph deploy-kovan",
-    "subgraph:prepare-sokol": "yarn workspace @project/subgraph prepare-sokol",
-    "subgraph:deploy-sokol": "yarn workspace @project/subgraph deploy-sokol",
-    "subgraph:prepare-xdai": "yarn workspace @project/subgraph prepare-xdai",
-    "subgraph:deploy-xdai": "yarn workspace @project/subgraph deploy-xdai",
-    "subgraph:prepare-mainnet": "yarn workspace @project/subgraph prepare-mainnet",
-    "subgraph:deploy-mainnet": "yarn workspace @project/subgraph deploy-mainnet",
-    "react-app:build": "yarn workspace @project/react-app build",
-    "react-app:eject": "yarn workspace @project/react-app eject",
-    "react-app:start": "yarn workspace @project/react-app start",
-    "react-app:test": "yarn workspace @project/react-app test",
-    "react-app:lint": "yarn workspace @project/react-app lint",
+    "subgraph:auth": "yarn workspace @omnibridge/subgraph auth",
+    "subgraph:codegen": "yarn workspace @omnibridge/subgraph codegen",
+    "subgraph:build": "yarn workspace @omnibridge/subgraph build",
+    "subgraph:prepare-kovan": "yarn workspace @omnibridge/subgraph prepare-kovan",
+    "subgraph:deploy-kovan": "yarn workspace @omnibridge/subgraph deploy-kovan",
+    "subgraph:prepare-sokol": "yarn workspace @omnibridge/subgraph prepare-sokol",
+    "subgraph:deploy-sokol": "yarn workspace @omnibridge/subgraph deploy-sokol",
+    "subgraph:prepare-xdai": "yarn workspace @omnibridge/subgraph prepare-xdai",
+    "subgraph:deploy-xdai": "yarn workspace @omnibridge/subgraph deploy-xdai",
+    "subgraph:prepare-mainnet": "yarn workspace @omnibridge/subgraph prepare-mainnet",
+    "subgraph:deploy-mainnet": "yarn workspace @omnibridge/subgraph deploy-mainnet",
+    "react-app:build": "yarn workspace @omnibridge/react-app build",
+    "react-app:eject": "yarn workspace @omnibridge/react-app eject",
+    "react-app:start": "yarn workspace @omnibridge/react-app start",
+    "react-app:test": "yarn workspace @omnibridge/react-app test",
+    "react-app:lint": "yarn workspace @omnibridge/react-app lint",
     "lint": "eslint --ignore-path .gitignore \"./packages/**/*.{ts,tsx,js,jsx}\" --fix",
-    "format": "prettier --ignore-path .gitignore --write \"{*,**/*}.{ts,tsx,js,jsx,json,yml,yaml,md}\""
+    "format": "prettier --ignore-path .gitignore --write \"{*,**/*}.{ts,tsx,js,jsx,json,md}\""
   },
   "husky": {
     "hooks": {
@@ -57,6 +57,6 @@
   "license": "UNLICENSED",
   "lint-staged": {
     "*.{js,jsx}": "eslint --fix",
-    "*.{ts,tsx,js,jsx,json,yml,yaml,md}": "prettier --write"
+    "*.{ts,tsx,js,jsx,json,md}": "prettier --write"
   }
 }

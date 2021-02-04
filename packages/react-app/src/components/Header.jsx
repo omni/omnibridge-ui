@@ -1,24 +1,42 @@
-import { Button, Flex, Image, Stack, Text } from '@chakra-ui/core';
-import React, { useState } from 'react';
+import {
+  Button,
+  Flex,
+  Image,
+  Stack,
+  Text,
+  useBreakpointValue,
+} from '@chakra-ui/react';
+import React, { useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import Logo from '../assets/logo.svg';
+import { Web3Context } from '../contexts/Web3Context';
 import { HistoryIcon } from '../icons/HistoryIcon';
-import { NetworkSelector } from './NetworkSelector';
+import { HOME_NETWORK } from '../lib/constants';
+import { getBridgeNetwork } from '../lib/helpers';
+import { UpdateSettings } from './UpdateSettings';
 import { WalletSelector } from './WalletSelector';
 
 export const Header = () => {
+  const { account, providerChainId } = useContext(Web3Context);
   const [isOpen, setOpen] = useState(false);
   const toggleOpen = () => setOpen(open => !open);
+  const valid =
+    !!account &&
+    [HOME_NETWORK, getBridgeNetwork(HOME_NETWORK)].indexOf(providerChainId) >=
+      0;
+  const isSmallScreen = useBreakpointValue({ base: true, md: false });
 
   return (
     <Flex
       justify="space-between"
-      position="relative"
+      position={{ base: isOpen ? 'fixed' : 'relative', md: 'relative' }}
+      top={isOpen ? 0 : undefined}
+      left={isOpen ? 0 : undefined}
       align={{ base: 'stretch', md: 'center' }}
       maxW="75rem"
       minH={20}
-      px={8}
+      px={{ base: 4, sm: 8 }}
       w="100%"
       background={isOpen ? { base: 'white', md: 'transparent' } : 'transparent'}
       direction={{ base: 'column', md: 'row' }}
@@ -26,6 +44,8 @@ export const Header = () => {
       boxShadow={
         isOpen ? { base: '0 0.5rem 1rem #CADAEF', md: 'none' } : 'none'
       }
+      h={isOpen && isSmallScreen ? '100%' : undefined}
+      zIndex={isOpen ? 5 : undefined}
     >
       <Flex justify="space-between" h={20} align="center">
         <Link to="/">
@@ -36,12 +56,12 @@ export const Header = () => {
         </Link>
         <Button
           variant="link"
-          // _focus={{ outline: 'none', border: 'none' }}
           display={{ base: 'block', md: 'none' }}
           color="blue.500"
           _hover={{ color: 'blue.600' }}
           onClick={toggleOpen}
           minW="auto"
+          p="2"
         >
           {!isOpen && (
             <svg fill="currentColor" width="1.5rem" viewBox="0 0 20 20">
@@ -65,28 +85,32 @@ export const Header = () => {
       <Stack
         position={{ base: 'relative', md: 'static' }}
         direction={{ base: 'column', md: 'row' }}
-        spacing={4}
+        spacing={6}
         display={{ base: isOpen ? 'flex' : 'none', md: 'flex' }}
-        // zIndex={{ base: 1, md: 'auto' }}
         w={{ base: '100%', md: 'auto' }}
-        align={{ base: 'flex-start', md: 'center' }}
-        pb={{ base: 4, md: 0 }}
+        h={{ base: '100%', md: 'auto' }}
+        align="center"
+        justify="center"
       >
-        <Link to="/history">
-          <Flex
-            align="center"
-            px={4}
-            fontWeight="bold"
-            color="grey"
-            transition="0.25s"
-            _hover={{ color: 'blue.500' }}
-          >
-            <HistoryIcon mr={2} />
-            <Text color="black"> History</Text>
-          </Flex>
-        </Link>
-        <WalletSelector />
-        <NetworkSelector />
+        {valid && (
+          <>
+            <Link to="/history">
+              <Flex
+                align="center"
+                fontWeight="bold"
+                color="grey"
+                transition="0.25s"
+                _hover={{ color: 'blue.500' }}
+                onClick={() => setOpen(false)}
+              >
+                <HistoryIcon mr={2} />
+                <Text color="black"> History</Text>
+              </Flex>
+            </Link>
+            <UpdateSettings close={() => setOpen(false)} />
+            <WalletSelector close={() => setOpen(false)} />
+          </>
+        )}
       </Stack>
     </Flex>
   );

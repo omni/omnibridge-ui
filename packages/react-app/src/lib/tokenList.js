@@ -6,7 +6,6 @@ import {
   getBridgeNetwork,
   getGraphEndpoint,
   getTokenListUrl,
-  isxDaiChain,
   uniqueTokens,
 } from './helpers';
 
@@ -32,16 +31,12 @@ export const fetchDefaultTokens = async chainId => {
       }
     }
   }
-  // eslint-disable-next-line
-  console.log({
-    defaultTokensError: `DefaultTokenList not found for chainId ${chainId}`,
-  });
   return [];
 };
 
 const homeTokensQuery = gql`
   query homeTokens {
-    tokens {
+    tokens(where: { homeAddress_contains: "0x" }) {
       chainId: homeChainId
       address: homeAddress
       name: homeName
@@ -53,7 +48,7 @@ const homeTokensQuery = gql`
 
 const foreignTokensQuery = gql`
   query foreignTokens {
-    tokens {
+    tokens(where: { foreignAddress_contains: "0x" }) {
       chainId: foreignChainId
       address: foreignAddress
       name: foreignName
@@ -64,12 +59,15 @@ const foreignTokensQuery = gql`
 `;
 
 export const fetchTokensFromSubgraph = async chainId => {
-  const isxDai = isxDaiChain(chainId);
-  const xDaiChainId = isxDai ? chainId : getBridgeNetwork(chainId);
-
-  const endpoint = getGraphEndpoint(xDaiChainId);
-  const query = isxDai ? homeTokensQuery : foreignTokensQuery;
-
-  const data = await request(endpoint, query);
-  return data.tokens;
+  const homeEndpoint = getGraphEndpoint(chainId);
+  const foreignChainId = getBridgeNetwork(chainId);
+  const foreignEndpoint = getGraphEndpoint(foreignChainId);
+  const [homeData, foreignData] = await Promise.all([
+    request(homeEndpoint, homeTokensQuery),
+    request(foreignEndpoint, foreignTokensQuery),
+  ]);
+  const homeTokens = homeData && homeData.tokens ? homeData.tokens : [];
+  const foreignTokens =
+    foreignData && foreignData.tokens ? foreignData.tokens : [];
+  return homeTokens.concat(foreignTokens);
 };
