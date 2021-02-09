@@ -9,6 +9,7 @@ import { getBridgeNetwork } from '../lib/helpers';
 import { ConnectWeb3 } from './ConnectWeb3';
 import { Footer } from './Footer';
 import { Header } from './Header';
+import { TermsOfServiceModal } from './TermsOfServiceModal';
 
 export const Layout = ({ children }) => {
   const { account, providerChainId } = useContext(Web3Context);
@@ -58,6 +59,7 @@ export const Layout = ({ children }) => {
         {valid ? children : <ConnectWeb3 />}
       </Flex>
       <Footer />
+      <TermsOfServiceModal />
     </Flex>
   );
 };
