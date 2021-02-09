@@ -9,6 +9,7 @@ import {
   mediators,
   networkLabels,
   networkNames,
+  subgraphNames,
 } from './constants';
 import { getOverriddenMediator, isOverridden } from './overrides';
 
@@ -58,6 +59,8 @@ export const getNetworkLabel = chainId => networkLabels[chainId] || 'Unknown';
 export const getAMBAddress = chainId => ambs[chainId] || ambs[100];
 export const getGraphEndpoint = chainId =>
   graphEndpoints[chainId] || graphEndpoints[100];
+export const getSubgraphName = chainId =>
+  subgraphNames[chainId] || subgraphNames[100];
 export const getRPCUrl = chainId => (chainUrls[chainId] || chainUrls[100]).rpc;
 export const getExplorerUrl = chainId =>
   (chainUrls[chainId] || chainUrls[100]).explorer;
@@ -129,5 +132,12 @@ export const logError = error => {
   if (process.env.REACT_APP_DEBUG_LOGS === 'true') {
     // eslint-disable-next-line no-console
     console.error(error);
+  }
+};
+
+export const logDebug = error => {
+  if (process.env.REACT_APP_DEBUG_LOGS === 'true') {
+    // eslint-disable-next-line no-console
+    console.debug(error);
   }
 };

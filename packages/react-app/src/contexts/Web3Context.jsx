@@ -4,8 +4,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import Web3 from 'web3';
 import Web3Modal from 'web3modal';
 
-import { INFURA_ID } from '../lib/constants';
-import { getNetworkName, logError } from '../lib/helpers';
+import { getNetworkName, getRPCUrl, logError } from '../lib/helpers';
 
 export const Web3Context = React.createContext({});
 
@@ -30,7 +29,12 @@ const providerOptions = {
   walletconnect: {
     package: WalletConnectProvider,
     options: {
-      infuraId: INFURA_ID,
+      rpc: {
+        1: getRPCUrl(1),
+        42: getRPCUrl(42),
+        100: getRPCUrl(100),
+        77: getRPCUrl(77),
+      },
     },
   },
 };
