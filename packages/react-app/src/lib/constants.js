@@ -102,11 +102,18 @@ export const defaultTokens = {
   },
 };
 
+export const subgraphNames = {
+  100: 'raid-guild/xdai-omnibridge',
+  1: 'raid-guild/mainnet-omnibridge',
+  77: 'dan13ram/sokol-omnibridge',
+  42: 'dan13ram/kovan-omnibridge',
+};
+
 export const graphEndpoints = {
-  100: 'https://api.thegraph.com/subgraphs/name/raid-guild/xdai-omnibridge',
-  1: 'https://api.thegraph.com/subgraphs/name/raid-guild/mainnet-omnibridge',
-  77: 'https://api.thegraph.com/subgraphs/name/dan13ram/sokol-omnibridge',
-  42: 'https://api.thegraph.com/subgraphs/name/dan13ram/kovan-omnibridge',
+  100: `https://api.thegraph.com/subgraphs/name/${subgraphNames[100]}`,
+  1: `https://api.thegraph.com/subgraphs/name/${subgraphNames[1]}`,
+  77: `https://api.thegraph.com/subgraphs/name/${subgraphNames[77]}`,
+  42: `https://api.thegraph.com/subgraphs/name/${subgraphNames[42]}`,
 };
 
 export const mediators = {
@@ -148,3 +155,6 @@ export const defaultTokensUrl = {
   42: '',
   77: '',
 };
+
+export const GRAPH_HEALTH_ENDPOINT =
+  'https://api.thegraph.com/index-node/graphql';

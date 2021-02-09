@@ -2,6 +2,7 @@ import { Checkbox, Flex, Grid, Text } from '@chakra-ui/react';
 import React, { useState } from 'react';
 import { Redirect } from 'react-router-dom';
 
+import { useGraphHealth } from '../hooks/useGraphHealth';
 import { useUserHistory } from '../lib/history';
 import { HistoryItem } from './HistoryItem';
 import { HistoryPagination } from './HistoryPagination';
@@ -14,6 +15,9 @@ export const BridgeHistory = ({ page }) => {
   const [onlyUnReceived, setOnlyUnReceived] = useState(false);
 
   const { transfers, loading } = useUserHistory();
+  useGraphHealth(
+    'Cannot access history data. Wait for a few minutes and reload the application',
+  );
 
   if (loading) {
     return (

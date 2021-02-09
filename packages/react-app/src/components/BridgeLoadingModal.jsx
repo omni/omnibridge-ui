@@ -13,6 +13,7 @@ import React, { useContext } from 'react';
 import BlueTickImage from '../assets/blue-tick.svg';
 import LoadingImage from '../assets/loading.svg';
 import { BridgeContext } from '../contexts/BridgeContext';
+import { useGraphHealth } from '../hooks/useGraphHealth';
 import { useTransactionStatus } from '../hooks/useTransactionStatus';
 import { getMonitorUrl } from '../lib/helpers';
 import { NeedsConfirmationModal } from './NeedsConfirmationModal';
@@ -27,6 +28,9 @@ const getTransactionString = hash => {
 export const BridgeLoadingModal = () => {
   const { loading, fromToken, txHash, totalConfirms } = useContext(
     BridgeContext,
+  );
+  useGraphHealth(
+    'Cannot collect data to finalize the transfer. Wait for a few minutes, reload the application and look for your unclaimed transactions in the History tab',
   );
   const {
     loadingText,

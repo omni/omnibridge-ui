@@ -1,15 +1,16 @@
 import { Flex, Spinner, Text, useBreakpointValue } from '@chakra-ui/react';
 import { BigNumber, utils } from 'ethers';
 import React, { useContext, useEffect, useState } from 'react';
+import { defer } from 'rxjs';
 
 import { BridgeContext } from '../contexts/BridgeContext';
 import { Web3Context } from '../contexts/Web3Context';
-import { formatValue, logError } from '../lib/helpers';
+import { formatValue, getBridgeNetwork, logError } from '../lib/helpers';
 import { fetchTokenBalance } from '../lib/token';
 import { Logo } from './Logo';
 
 export const ToToken = () => {
-  const { account } = useContext(Web3Context);
+  const { account, providerChainId } = useContext(Web3Context);
   const {
     updateBalance,
     toToken: token,
@@ -18,28 +19,34 @@ export const ToToken = () => {
     toBalance: balance,
     setToBalance: setBalance,
   } = useContext(BridgeContext);
+  const chainId = getBridgeNetwork(providerChainId);
 
   const smallScreen = useBreakpointValue({ base: true, lg: false });
   const [balanceLoading, setBalanceLoading] = useState(false);
 
   useEffect(() => {
-    if (token && account) {
+    let subscription;
+    if (token && account && chainId === token.chainId) {
       setBalanceLoading(true);
-      setBalance(BigNumber.from(0));
-      fetchTokenBalance(token, account)
-        .then(b => {
-          setBalance(b);
-          setBalanceLoading(false);
-        })
-        .catch(contractError => {
-          logError({ contractError });
+      subscription = defer(() =>
+        fetchTokenBalance(token, account).catch(toBalanceError => {
+          logError({ toBalanceError });
           setBalance(BigNumber.from(0));
           setBalanceLoading(false);
-        });
+        }),
+      ).subscribe(b => {
+        setBalance(b);
+        setBalanceLoading(false);
+      });
     } else {
       setBalance(BigNumber.from(0));
     }
-  }, [updateBalance, token, account, setBalance, setBalanceLoading]);
+    return () => {
+      if (subscription) {
+        subscription.unsubscribe();
+      }
+    };
+  }, [updateBalance, token, account, setBalance, setBalanceLoading, chainId]);
 
   return (
     <Flex

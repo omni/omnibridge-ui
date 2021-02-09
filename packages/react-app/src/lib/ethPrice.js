@@ -1,28 +1,21 @@
-const ethPriceFromApi = async (fetchFn, options = {}) => {
+import { logDebug, logError } from './helpers';
+
+const ethPriceFromApi = async fetchFn => {
   try {
     const response = await fetchFn();
     const json = await response.json();
     const oracleEthPrice = json.ethereum.usd;
 
     if (!oracleEthPrice) {
-      options.logger &&
-        options.logger.error &&
-        options.logger.error(`Response from Oracle didn't include eth price`);
+      logError(`Response from Oracle didn't include eth price`);
       return null;
     }
 
-    options.logger &&
-      options.logger.debug &&
-      options.logger.debug(
-        { oracleEthPrice },
-        'Gas price updated using the API',
-      );
+    logDebug({ oracleEthPrice, message: 'Gas price updated using the API' });
 
     return oracleEthPrice;
   } catch (e) {
-    options.logger &&
-      options.logger.error &&
-      options.logger.error(`ETH Price API is not available. ${e.message}`);
+    logError(`ETH Price API is not available. ${e.message}`);
   }
   return null;
 };
@@ -34,7 +27,7 @@ const {
 
 const DEFAULT_ETH_PRICE_API_URL =
   'https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=USD';
-const DEFAULT_ETH_PRICE_UPDATE_INTERVAL = 900000;
+const DEFAULT_ETH_PRICE_UPDATE_INTERVAL = 15000;
 
 class EthPriceStore {
   ethPrice = null;
@@ -52,11 +45,8 @@ class EthPriceStore {
   }
 
   async updateGasPrice() {
-    const oracleOptions = {
-      logger: console,
-    };
     const fetchFn = () => fetch(this.ethPriceApiUrl);
-    this.ethPrice = await ethPriceFromApi(fetchFn, oracleOptions);
+    this.ethPrice = await ethPriceFromApi(fetchFn);
     setTimeout(() => this.updateGasPrice(), this.updateInterval);
   }
 

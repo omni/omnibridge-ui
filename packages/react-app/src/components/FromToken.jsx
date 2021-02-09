@@ -10,6 +10,7 @@ import {
 } from '@chakra-ui/react';
 import { BigNumber, utils } from 'ethers';
 import React, { useContext, useEffect, useState } from 'react';
+import { defer } from 'rxjs';
 
 import DropDown from '../assets/drop-down.svg';
 import { BridgeContext } from '../contexts/BridgeContext';
@@ -20,7 +21,7 @@ import { Logo } from './Logo';
 import { SelectTokenModal } from './SelectTokenModal';
 
 export const FromToken = () => {
-  const { account } = useContext(Web3Context);
+  const { account, providerChainId: chainId } = useContext(Web3Context);
   const {
     updateBalance,
     fromToken: token,
@@ -36,23 +37,28 @@ export const FromToken = () => {
   const [balanceLoading, setBalanceLoading] = useState(false);
 
   useEffect(() => {
-    if (token && account) {
+    let subscription;
+    if (token && account && chainId === token.chainId) {
       setBalanceLoading(true);
-      setBalance(BigNumber.from(0));
-      fetchTokenBalance(token, account)
-        .then(b => {
-          setBalance(b);
-          setBalanceLoading(false);
-        })
-        .catch(contractError => {
-          logError({ contractError });
+      subscription = defer(() =>
+        fetchTokenBalance(token, account).catch(fromBalanceError => {
+          logError({ fromBalanceError });
           setBalance(BigNumber.from(0));
           setBalanceLoading(false);
-        });
+        }),
+      ).subscribe(b => {
+        setBalance(b);
+        setBalanceLoading(false);
+      });
     } else {
       setBalance(BigNumber.from(0));
     }
-  }, [updateBalance, token, account, setBalance, setBalanceLoading]);
+    return () => {
+      if (subscription) {
+        subscription.unsubscribe();
+      }
+    };
+  }, [updateBalance, token, account, setBalance, setBalanceLoading, chainId]);
 
   return (
     <Flex

@@ -73,3 +73,11 @@ REACT_APP_UI_STATUS_UPDATE_INTERVAL=1000
 # if unset default => false
 ######################################################
 REACT_APP_DEBUG_LOGS=false
+
+######################################################
+# if unset default =>
+# UPDATE_INTERVAL => 15000
+# THRESHOLD_BLOCKS => 10
+######################################################
+REACT_APP_GRAPH_HEALTH_UPDATE_INTERVAL=15000
+REACT_APP_GRAPH_HEALTH_THRESHOLD_BLOCKS=10
