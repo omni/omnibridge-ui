@@ -67,6 +67,10 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
     transfer().catch(error => {
       if (error && error.message) {
         showError(error.message);
+      } else {
+        showError(
+          'Impossible to perform the operation. Reload the application and try again.',
+        );
       }
       // if (
       //   error &&
