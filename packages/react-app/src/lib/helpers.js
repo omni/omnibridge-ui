@@ -139,10 +139,8 @@ export const getAccountString = account => {
 };
 
 export const logError = error => {
-  if (process.env.REACT_APP_DEBUG_LOGS === 'true') {
-    // eslint-disable-next-line no-console
-    console.error(error);
-  }
+  // eslint-disable-next-line no-console
+  console.error(error);
 };
 
 export const logDebug = error => {
