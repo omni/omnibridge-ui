@@ -19,7 +19,12 @@ import React, { useContext, useEffect, useState } from 'react';
 
 import TransferImage from '../assets/confirm-transfer.svg';
 import { BridgeContext } from '../contexts/BridgeContext';
-import { formatValue, getAccountString, isxDaiChain } from '../lib/helpers';
+import {
+  formatValue,
+  getAccountString,
+  isxDaiChain,
+  logError,
+} from '../lib/helpers';
 import { DaiWarning, isERC20DaiAddress } from './DaiWarning';
 import { NeedsTransactions } from './NeedsTransactions';
 
@@ -65,15 +70,19 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
   };
   const onClick = () => {
     transfer().catch(error => {
-      if (
-        error &&
-        error.message &&
-        !error.message.includes('User denied transaction signature')
-      ) {
-        showError(
-          'Impossible to perform the operation. Reload the application and try again.',
-        );
+      logError(error);
+      if (error && error.message) {
+        showError(error.message);
       }
+      // if (
+      //   error &&
+      //   error.message &&
+      //   !error.message.includes('User denied transaction signature')
+      // ) {
+      //   showError(
+      //     'Impossible to perform the operation. Reload the application and try again.',
+      //   );
+      // }
     });
     onClose();
   };

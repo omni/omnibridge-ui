@@ -97,7 +97,13 @@ export const FromToken = () => {
             mb={2}
             direction={{ base: 'column', sm: 'row' }}
           >
-            <Flex align="center" cursor="pointer" onClick={onOpen}>
+            <Flex
+              align="center"
+              cursor="pointer"
+              onClick={onOpen}
+              zIndex={1}
+              background="white"
+            >
               <Flex
                 justify="center"
                 align="center"
