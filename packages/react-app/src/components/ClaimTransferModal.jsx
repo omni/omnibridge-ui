@@ -29,13 +29,14 @@ import { getBridgeNetwork, getNetworkName, logError } from '../lib/helpers';
 import { LoadingModal } from './LoadingModal';
 
 export const ClaimTransferModal = () => {
-  const { account, ethersProvider } = useContext(Web3Context);
+  const { account, ethersProvider, providerChainId } = useContext(Web3Context);
   const { txHash, setTxHash } = useContext(BridgeContext);
   const [isOpen, setOpen] = useState(false);
   const [claiming, setClaiming] = useState(false);
   const [message, setMessage] = useState(false);
   const [executed, setExecuted] = useState(false);
   const [loadingText, setLoadingText] = useState('');
+  const chainId = getBridgeNetwork(HOME_NETWORK);
 
   const onClose = () => {
     setOpen(false);
@@ -49,7 +50,12 @@ export const ClaimTransferModal = () => {
   }, [message, account, setTxHash]);
 
   const claimable =
-    !claiming && message && message.msgData && message.signatures && !executed;
+    !claiming &&
+    message &&
+    message.msgData &&
+    message.signatures &&
+    !executed &&
+    providerChainId === chainId;
 
   const toast = useToast();
   const showError = errorMsg => {
@@ -70,16 +76,12 @@ export const ClaimTransferModal = () => {
     } else if (claimable) {
       try {
         setClaiming(true);
-        await executeSignatures(
-          ethersProvider,
-          getBridgeNetwork(HOME_NETWORK),
-          message,
-        );
+        await executeSignatures(ethersProvider, chainId, message);
         setLoadingText('Waiting for Execution');
       } catch (executeError) {
         setClaiming(false);
         setLoadingText('');
-        logError({ executeError });
+        logError({ executeError, chainId, message });
       }
     }
   };
