@@ -110,21 +110,26 @@ export const BridgeProvider = ({ children }) => {
   const [approvalTxHash, setApprovalTxHash] = useState();
   const approve = useCallback(async () => {
     setUnlockLoading(true);
+    const approvalAmount =
+      window.localStorage.getItem('infinite-unlock') === 'true'
+        ? LARGEST_UINT256
+        : fromAmount;
     try {
-      const approvalAmount =
-        window.localStorage.getItem('infinite-unlock') === 'true'
-          ? LARGEST_UINT256
-          : fromAmount;
       const tx = await approveToken(ethersProvider, fromToken, approvalAmount);
       setApprovalTxHash(tx.hash);
       await tx.wait();
       setAllowance(approvalAmount);
-    } catch (error) {
-      logError({ approveError: error });
+    } catch (approveError) {
+      logError({
+        approveError,
+        fromToken,
+        approvalAmount: approvalAmount.toString(),
+        account,
+      });
     }
     setApprovalTxHash();
     setUnlockLoading(false);
-  }, [fromAmount, fromToken, ethersProvider]);
+  }, [fromAmount, fromToken, ethersProvider, account]);
 
   const transfer = useCallback(async () => {
     setLoading(true);
@@ -138,7 +143,13 @@ export const BridgeProvider = ({ children }) => {
       setTxHash(tx.hash);
     } catch (transferError) {
       setLoading(false);
-      logError({ transferError });
+      logError({
+        transferError,
+        fromToken,
+        receiver: receiver || account,
+        fromAmount: fromAmount.toString(),
+        account,
+      });
       throw transferError;
     }
   }, [fromToken, account, receiver, ethersProvider, fromAmount]);
