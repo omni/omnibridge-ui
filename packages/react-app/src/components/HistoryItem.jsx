@@ -124,6 +124,13 @@ export const HistoryItem = ({
       } catch (executeError) {
         setLoading(false);
         logError({ executeError, chainId: providerChainId, message });
+        if (executeError && executeError.message) {
+          showError(executeError.message);
+        } else {
+          showError(
+            'Impossible to perform the operation. Reload the application and try again.',
+          );
+        }
       }
     }
   };

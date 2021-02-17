@@ -8,7 +8,7 @@ import {
   getOverriddenMode,
   isOverridden,
 } from './overrides';
-import { getEthersProvider } from './providers';
+import { getEthersProvider, isEIP1193 } from './providers';
 
 export const fetchAllowance = async (
   { mediator, address },
@@ -104,9 +104,13 @@ export const approveToken = async (
   amount,
 ) => {
   const abi = ['function approve(address, uint256)'];
-  const gasPrice = getGasPrice(chainId);
+  const options = isEIP1193(ethersProvider)
+    ? undefined
+    : { gasPrice: getGasPrice(chainId) };
   const tokenContract = new Contract(address, abi, ethersProvider.getSigner());
-  return tokenContract.approve(mediator, amount, { gasPrice });
+  return options
+    ? tokenContract.approve(mediator, amount.toString(), options)
+    : tokenContract.approve(mediator, amount.toString());
 };
 
 export const fetchTokenBalance = async (token, account) => {

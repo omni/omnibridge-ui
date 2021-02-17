@@ -9,7 +9,7 @@ import {
   logError,
 } from './helpers';
 import { getOverriddenToToken, isOverridden } from './overrides';
-import { getEthersProvider } from './providers';
+import { getEthersProvider, isEIP1193 } from './providers';
 import { fetchTokenDetails } from './token';
 
 const getToName = (fromName, fromxDai) => {
@@ -242,27 +242,31 @@ export const fetchTokenLimits = async (
 export const relayTokens = async (ethersProvider, token, receiver, amount) => {
   const signer = ethersProvider.getSigner();
   const { chainId, mode, mediator, address } = token;
-  const gasPrice = getGasPrice(chainId);
+  const options = isEIP1193(ethersProvider)
+    ? undefined
+    : { gasPrice: getGasPrice(chainId) };
   switch (mode) {
     case 'erc677': {
       const abi = ['function transferAndCall(address, uint256, bytes)'];
       const tokenContract = new Contract(address, abi, signer);
-      return tokenContract.transferAndCall(mediator, amount, receiver, {
-        gasPrice,
-      });
+      return options
+        ? tokenContract.transferAndCall(mediator, amount, receiver, options)
+        : tokenContract.transferAndCall(mediator, amount, receiver);
     }
     case 'dedicated-erc20': {
       const abi = ['function relayTokens(address, uint256)'];
       const mediatorContract = new Contract(mediator, abi, signer);
-      return mediatorContract.relayTokens(receiver, amount, { gasPrice });
+      return options
+        ? mediatorContract.relayTokens(receiver, amount, options)
+        : mediatorContract.relayTokens(receiver, amount);
     }
     case 'erc20':
     default: {
       const abi = ['function relayTokens(address, address, uint256)'];
       const mediatorContract = new Contract(mediator, abi, signer);
-      return mediatorContract.relayTokens(token.address, receiver, amount, {
-        gasPrice,
-      });
+      return options
+        ? mediatorContract.relayTokens(token.address, receiver, amount, options)
+        : mediatorContract.relayTokens(token.address, receiver, amount);
     }
   }
 };

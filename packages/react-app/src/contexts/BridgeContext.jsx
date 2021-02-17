@@ -126,9 +126,11 @@ export const BridgeProvider = ({ children }) => {
         approvalAmount: approvalAmount.toString(),
         account,
       });
+      throw approveError;
+    } finally {
+      setApprovalTxHash();
+      setUnlockLoading(false);
     }
-    setApprovalTxHash();
-    setUnlockLoading(false);
   }, [fromAmount, fromToken, ethersProvider, account]);
 
   const transfer = useCallback(async () => {
