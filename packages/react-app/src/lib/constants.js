@@ -30,7 +30,7 @@ export const networkLabels = {
 
 export const chainUrls = {
   100: {
-    rpc: process.env.REACT_APP_HOME_RPC_URL || 'https://xdai.poanetwork.dev',
+    rpc: process.env.REACT_APP_HOME_RPC_URL || 'https://rpc.xdaichain.com',
     explorer:
       process.env.REACT_APP_HOME_EXPLORER_PREFIX ||
       'https://blockscout.com/poa/xdai',

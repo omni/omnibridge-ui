@@ -82,6 +82,13 @@ export const ClaimTransferModal = () => {
         setClaiming(false);
         setLoadingText('');
         logError({ executeError, chainId, message });
+        if (executeError && executeError.message) {
+          showError(executeError.message);
+        } else {
+          showError(
+            'Impossible to perform the operation. Reload the application and try again.',
+          );
+        }
       }
     }
   };

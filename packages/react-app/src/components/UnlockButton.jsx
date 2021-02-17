@@ -39,7 +39,17 @@ export const UnlockButton = () => {
     return true;
   };
   const onClick = () => {
-    if (!unlockLoading && !allowed && valid()) approve();
+    if (!unlockLoading && !allowed && valid()) {
+      approve().catch(error => {
+        if (error && error.message) {
+          showError(error.message);
+        } else {
+          showError(
+            'Impossible to perform the operation. Reload the application and try again.',
+          );
+        }
+      });
+    }
   };
   return (
     <Flex
