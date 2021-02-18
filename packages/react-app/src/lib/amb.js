@@ -1,9 +1,7 @@
 import { Contract, utils } from 'ethers';
 import { gql, request } from 'graphql-request';
 
-import { getGasPrice } from './gasPrice';
 import { getAMBAddress, getGraphEndpoint, logError } from './helpers';
-import { isEIP1193 } from './providers';
 
 export const fetchConfirmations = async (chainId, ethersProvider) => {
   const abi = ['function requiredBlockConfirmations() view returns (uint256)'];
@@ -50,12 +48,7 @@ export const executeSignatures = async (ethersProvider, chainId, message) => {
   );
   const address = getAMBAddress(chainId);
   const ambContract = new Contract(address, abi, ethersProvider.getSigner());
-  const options = isEIP1193(ethersProvider)
-    ? undefined
-    : { gasPrice: getGasPrice(chainId) };
-  return options
-    ? ambContract.executeSignatures(message.msgData, signatures, options)
-    : ambContract.executeSignatures(message.msgData, signatures);
+  return ambContract.executeSignatures(message.msgData, signatures);
 };
 
 const messagesTXQuery = gql`

@@ -1,14 +1,13 @@
 import { BigNumber, Contract } from 'ethers';
 
 import { ADDRESS_ZERO, REVERSE_BRIDGE_ENABLED } from './constants';
-import { getGasPrice } from './gasPrice';
 import { getMediatorAddress, isxDaiChain, logError } from './helpers';
 import {
   getOverriddenMediator,
   getOverriddenMode,
   isOverridden,
 } from './overrides';
-import { getEthersProvider, isEIP1193 } from './providers';
+import { getEthersProvider } from './providers';
 
 export const fetchAllowance = async (
   { mediator, address },
@@ -100,17 +99,12 @@ export const fetchTokenDetails = async token => {
 
 export const approveToken = async (
   ethersProvider,
-  { chainId, address, mediator },
+  { address, mediator },
   amount,
 ) => {
   const abi = ['function approve(address, uint256)'];
-  const options = isEIP1193(ethersProvider)
-    ? undefined
-    : { gasPrice: getGasPrice(chainId) };
   const tokenContract = new Contract(address, abi, ethersProvider.getSigner());
-  return options
-    ? tokenContract.approve(mediator, amount.toString(), options)
-    : tokenContract.approve(mediator, amount.toString());
+  return tokenContract.approve(mediator, amount);
 };
 
 export const fetchTokenBalance = async (token, account) => {
