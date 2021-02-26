@@ -1,10 +1,9 @@
+import { Web3Context } from 'contexts/Web3Context';
 import { Contract } from 'ethers';
+import { HOME_NETWORK } from 'lib/constants';
+import { getMediatorAddress, logError } from 'lib/helpers';
+import { getEthersProvider } from 'lib/providers';
 import { useContext, useEffect, useState } from 'react';
-
-import { Web3Context } from '../contexts/Web3Context';
-import { HOME_NETWORK } from '../lib/constants';
-import { getMediatorAddress, logError } from '../lib/helpers';
-import { getEthersProvider } from '../lib/providers';
 
 export const useRewardAddress = () => {
   const { account } = useContext(Web3Context);

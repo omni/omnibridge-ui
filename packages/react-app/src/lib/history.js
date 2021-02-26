@@ -1,10 +1,9 @@
+import { BridgeContext } from 'contexts/BridgeContext';
+import { Web3Context } from 'contexts/Web3Context';
 import { gql, request } from 'graphql-request';
+import { HOME_NETWORK } from 'lib/constants';
+import { getBridgeNetwork, getGraphEndpoint } from 'lib/helpers';
 import { useContext, useEffect, useState } from 'react';
-
-import { BridgeContext } from '../contexts/BridgeContext';
-import { Web3Context } from '../contexts/Web3Context';
-import { HOME_NETWORK } from './constants';
-import { getBridgeNetwork, getGraphEndpoint } from './helpers';
 
 const pageSize = 1000;
 

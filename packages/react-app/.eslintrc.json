@@ -6,7 +6,14 @@
     "sourceType": "module"
   },
   "plugins": ["simple-import-sort"],
-  "settings": {},
+  "settings": {
+    "import/resolver": {
+      "node": {
+        "extensions": [".js", ".jsx", ".d.ts", ".ts", ".tsx"],
+        "moduleDirectory": ["node_modules", "src"]
+      }
+    }
+  },
   "rules": {
     // Prefer non-default exports
     "import/no-default-export": "error",

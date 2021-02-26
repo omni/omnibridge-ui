@@ -8,11 +8,9 @@
   "plugins": ["simple-import-sort"],
   "settings": {},
   "rules": {
-    // Prefer non-default exports
     "import/no-default-export": "error",
     "import/prefer-default-export": "off",
 
-    // Auto-sort imports
     "sort-imports": "off",
     "import/order": "off",
     "simple-import-sort/sort": "error"

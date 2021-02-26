@@ -1,7 +1,6 @@
 import { gql, request } from 'graphql-request';
-
-import { GRAPH_HEALTH_ENDPOINT, HOME_NETWORK } from './constants';
-import { getBridgeNetwork, getSubgraphName, logError } from './helpers';
+import { GRAPH_HEALTH_ENDPOINT, HOME_NETWORK } from 'lib/constants';
+import { getBridgeNetwork, getSubgraphName, logError } from 'lib/helpers';
 
 const FOREIGN_NETWORK = getBridgeNetwork(HOME_NETWORK);
 

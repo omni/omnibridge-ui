@@ -1,10 +1,9 @@
+import { BridgeContext } from 'contexts/BridgeContext';
+import { Web3Context } from 'contexts/Web3Context';
+import { getMessageFromTxHash, getMessageStatus } from 'lib/amb';
+import { POLLING_INTERVAL } from 'lib/constants';
+import { getBridgeNetwork, isxDaiChain, logError } from 'lib/helpers';
 import { useCallback, useContext, useEffect, useState } from 'react';
-
-import { BridgeContext } from '../contexts/BridgeContext';
-import { Web3Context } from '../contexts/Web3Context';
-import { getMessageFromTxHash, getMessageStatus } from '../lib/amb';
-import { POLLING_INTERVAL } from '../lib/constants';
-import { getBridgeNetwork, isxDaiChain, logError } from '../lib/helpers';
 
 export const useTransactionStatus = () => {
   const { ethersProvider, providerChainId } = useContext(Web3Context);

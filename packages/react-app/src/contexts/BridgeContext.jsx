@@ -1,25 +1,24 @@
+import { Web3Context } from 'contexts/Web3Context';
 import { BigNumber } from 'ethers';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
-
-import { useCurrentDay } from '../hooks/useCurrentDay';
-import { useFeeType } from '../hooks/useFeeType';
-import { useRewardAddress } from '../hooks/useRewardAddress';
-import { useTotalConfirms } from '../hooks/useTotalConfirms';
+import { useCurrentDay } from 'hooks/useCurrentDay';
+import { useFeeType } from 'hooks/useFeeType';
+import { useRewardAddress } from 'hooks/useRewardAddress';
+import { useTotalConfirms } from 'hooks/useTotalConfirms';
 import {
   fetchToAmount,
   fetchTokenLimits,
   fetchToToken,
   transferTokens,
-} from '../lib/bridge';
-import { ADDRESS_ZERO, LARGEST_UINT256 } from '../lib/constants';
+} from 'lib/bridge';
+import { ADDRESS_ZERO, LARGEST_UINT256 } from 'lib/constants';
 import {
   getBridgeNetwork,
   getDefaultToken,
   isxDaiChain,
   logError,
-} from '../lib/helpers';
-import { approveToken, fetchAllowance, fetchTokenDetails } from '../lib/token';
-import { Web3Context } from './Web3Context';
+} from 'lib/helpers';
+import { approveToken, fetchAllowance, fetchTokenDetails } from 'lib/token';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 
 export const BridgeContext = React.createContext({});
 

@@ -1,7 +1,6 @@
 import { ethers } from 'ethers';
 import memoize from 'fast-memoize';
-
-import { getRPCUrl, isxDaiChain } from './helpers';
+import { getRPCUrl, isxDaiChain } from 'lib/helpers';
 
 const memoized = memoize(url => new ethers.providers.JsonRpcProvider(url));
 

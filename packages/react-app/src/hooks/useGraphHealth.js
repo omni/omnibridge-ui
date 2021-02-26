@@ -1,11 +1,10 @@
 import { useToast } from '@chakra-ui/react';
+import { Web3Context } from 'contexts/Web3Context';
+import { HOME_NETWORK } from 'lib/constants';
+import { getHealthStatus } from 'lib/graphHealth';
+import { getBridgeNetwork, logDebug, logError } from 'lib/helpers';
+import { getEthersProvider } from 'lib/providers';
 import { useContext, useEffect, useRef, useState } from 'react';
-
-import { Web3Context } from '../contexts/Web3Context';
-import { HOME_NETWORK } from '../lib/constants';
-import { getHealthStatus } from '../lib/graphHealth';
-import { getBridgeNetwork, logDebug, logError } from '../lib/helpers';
-import { getEthersProvider } from '../lib/providers';
 
 const FOREIGN_NETWORK = getBridgeNetwork(HOME_NETWORK);
 

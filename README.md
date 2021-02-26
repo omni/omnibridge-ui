@@ -14,8 +14,7 @@ xdai-omnibridge
 ├── .firebaserc
 ├── .github
 │   └── workflows
-│       ├── sokol.yml
-│       └── staging.yml
+│       └── sokol.yml
 ├── .gitignore
 ├── .prettierrc.json
 ├── README.md
@@ -108,6 +107,7 @@ xdai-omnibridge
 │   │       ├── hooks
 │   │       │   ├── useCurrentDay.js
 │   │       │   ├── useFeeType.js
+│   │       │   ├── useGraphHealth.js
 │   │       │   ├── useRewardAddress.js
 │   │       │   ├── useTotalConfirms.js
 │   │       │   └── useTransactionStatus.js
@@ -135,6 +135,7 @@ xdai-omnibridge
 │   │       │   ├── constants.js
 │   │       │   ├── ethPrice.js
 │   │       │   ├── gasPrice.js
+│   │       │   ├── graphHealth.js
 │   │       │   ├── helpers.js
 │   │       │   ├── history.js
 │   │       │   ├── overrides.js
@@ -157,12 +158,14 @@ xdai-omnibridge
 │       ├── src
 │       │   ├── abis
 │       │   │   ├── amb.json
-│       │   │   ├── mediator.json
+│       │   │   ├── bridge.json
+│       │   │   ├── omnibridge.json
 │       │   │   └── token.json
 │       │   └── mappings
 │       │       ├── amb.ts
 │       │       ├── bridge.ts
-│       │       └── helpers.ts
+│       │       ├── helpers.ts
+│       │       └── omnibridge.ts
 │       └── subgraph.template.yaml
 └── yarn.lock
 ```

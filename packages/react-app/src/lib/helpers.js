@@ -1,5 +1,4 @@
 import { BigNumber, utils } from 'ethers';
-
 import {
   ambs,
   chainUrls,
@@ -10,8 +9,8 @@ import {
   networkLabels,
   networkNames,
   subgraphNames,
-} from './constants';
-import { getOverriddenMediator, isOverridden } from './overrides';
+} from 'lib/constants';
+import { getOverriddenMediator, isOverridden } from 'lib/overrides';
 
 export const getBridgeNetwork = chainId => {
   switch (chainId) {

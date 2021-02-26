@@ -1,15 +1,14 @@
 import { BigNumber, Contract } from 'ethers';
-
-import { REVERSE_BRIDGE_ENABLED } from './constants';
+import { REVERSE_BRIDGE_ENABLED } from 'lib/constants';
 import {
   getBridgeNetwork,
   getMediatorAddress,
   isxDaiChain,
   logError,
-} from './helpers';
-import { getOverriddenToToken, isOverridden } from './overrides';
-import { getEthersProvider } from './providers';
-import { fetchTokenDetails } from './token';
+} from 'lib/helpers';
+import { getOverriddenToToken, isOverridden } from 'lib/overrides';
+import { getEthersProvider } from 'lib/providers';
+import { fetchTokenDetails } from 'lib/token';
 
 const getToName = (fromName, fromxDai) => {
   if (REVERSE_BRIDGE_ENABLED) {

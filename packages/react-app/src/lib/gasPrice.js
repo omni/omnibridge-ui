@@ -1,7 +1,6 @@
 import { utils } from 'ethers';
 import { GasPriceOracle } from 'gas-price-oracle';
-
-import { isxDaiChain, logError } from './helpers';
+import { isxDaiChain, logError } from 'lib/helpers';
 
 const gasPriceOracle = new GasPriceOracle();
 
