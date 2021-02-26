@@ -1,7 +1,6 @@
 import { Contract, utils } from 'ethers';
 import { gql, request } from 'graphql-request';
-
-import { getAMBAddress, getGraphEndpoint, logError } from './helpers';
+import { getAMBAddress, getGraphEndpoint, logError } from 'lib/helpers';
 
 export const fetchConfirmations = async (chainId, ethersProvider) => {
   const abi = ['function requiredBlockConfirmations() view returns (uint256)'];

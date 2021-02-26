@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { BridgeTokens } from '../components/BridgeTokens';
+import { BridgeTokens } from '../components/bridge/BridgeTokens';
 import { BridgeProvider } from '../contexts/BridgeContext';
 
 export const Home = () => {

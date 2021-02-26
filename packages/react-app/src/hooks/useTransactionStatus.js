@@ -1,10 +1,10 @@
+import { BridgeContext } from 'contexts/BridgeContext';
+import { Web3Context } from 'contexts/Web3Context';
+import { getMessageFromTxHash, getMessageStatus } from 'lib/amb';
+import { POLLING_INTERVAL } from 'lib/constants';
+import { getBridgeNetwork, isxDaiChain, logError } from 'lib/helpers';
 import { useCallback, useContext, useEffect, useState } from 'react';
-
-import { BridgeContext } from '../contexts/BridgeContext';
-import { Web3Context } from '../contexts/Web3Context';
-import { getMessageFromTxHash, getMessageStatus } from '../lib/amb';
-import { POLLING_INTERVAL } from '../lib/constants';
-import { getBridgeNetwork, isxDaiChain, logError } from '../lib/helpers';
+import { defer } from 'rxjs';
 
 export const useTransactionStatus = () => {
   const { ethersProvider, providerChainId } = useContext(Web3Context);
@@ -107,9 +107,12 @@ export const useTransactionStatus = () => {
     // unsubscribe from previous polls
     unsubscribe();
 
-    getReceipt();
+    const deferral = defer(() => getReceipt()).subscribe();
     // unsubscribe when unmount component
-    return unsubscribe;
+    return () => {
+      unsubscribe();
+      deferral.unsubscribe();
+    };
   }, [
     loading,
     providerChainId,

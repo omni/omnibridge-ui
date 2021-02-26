@@ -1,10 +1,9 @@
 import WalletConnectProvider from '@walletconnect/web3-provider';
 import { ethers } from 'ethers';
+import { getNetworkName, getRPCUrl, logError } from 'lib/helpers';
 import React, { useCallback, useEffect, useState } from 'react';
 import Web3 from 'web3';
 import Web3Modal from 'web3modal';
-
-import { getNetworkName, getRPCUrl, logError } from '../lib/helpers';
 
 export const Web3Context = React.createContext({});
 

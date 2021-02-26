@@ -1,15 +1,14 @@
 import { BigNumber, Contract } from 'ethers';
-
-import { REVERSE_BRIDGE_ENABLED } from './constants';
+import { REVERSE_BRIDGE_ENABLED } from 'lib/constants';
 import {
   getBridgeNetwork,
   getMediatorAddress,
   isxDaiChain,
   logError,
-} from './helpers';
-import { getOverriddenToToken, isOverridden } from './overrides';
-import { getEthersProvider } from './providers';
-import { fetchTokenDetails } from './token';
+} from 'lib/helpers';
+import { getOverriddenToToken, isOverridden } from 'lib/overrides';
+import { getEthersProvider } from 'lib/providers';
+import { fetchTokenDetails } from 'lib/token';
 
 const getToName = (fromName, fromxDai) => {
   if (REVERSE_BRIDGE_ENABLED) {
@@ -133,7 +132,7 @@ export const fetchToAmount = async (
   toToken,
   fromAmount,
 ) => {
-  if (fromAmount <= 0 || !fromToken || !toToken) return BigNumber.from(0);
+  if (fromAmount.lte(0) || !fromToken || !toToken) return BigNumber.from(0);
   if (isRewardAddress) {
     return fromAmount;
   }
@@ -144,13 +143,13 @@ export const fetchToAmount = async (
   if (mediatorAddress !== getMediatorAddress(xDaiChainId)) {
     return fromAmount;
   }
-  const ethersProvider = getEthersProvider(xDaiChainId);
-  const abi = [
-    'function calculateFee(bytes32, address, uint256) view returns (uint256)',
-  ];
-  const mediatorContract = new Contract(mediatorAddress, abi, ethersProvider);
 
   try {
+    const ethersProvider = getEthersProvider(xDaiChainId);
+    const abi = [
+      'function calculateFee(bytes32, address, uint256) view returns (uint256)',
+    ];
+    const mediatorContract = new Contract(mediatorAddress, abi, ethersProvider);
     const fee = await mediatorContract.calculateFee(
       feeType,
       tokenAddress,

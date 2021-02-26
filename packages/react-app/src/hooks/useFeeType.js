@@ -1,9 +1,8 @@
 import { Contract } from 'ethers';
+import { HOME_NETWORK } from 'lib/constants';
+import { getMediatorAddress, logError } from 'lib/helpers';
+import { getEthersProvider } from 'lib/providers';
 import { useEffect, useState } from 'react';
-
-import { HOME_NETWORK } from '../lib/constants';
-import { getMediatorAddress, logError } from '../lib/helpers';
-import { getEthersProvider } from '../lib/providers';
 
 export const useFeeType = () => {
   const [homeToForeignFeeType, setHomeToForeignFeeType] = useState(

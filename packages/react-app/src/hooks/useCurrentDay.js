@@ -1,8 +1,7 @@
+import { Web3Context } from 'contexts/Web3Context';
 import { Contract } from 'ethers';
+import { getMediatorAddress, logError } from 'lib/helpers';
 import { useContext, useEffect, useState } from 'react';
-
-import { Web3Context } from '../contexts/Web3Context';
-import { getMediatorAddress, logError } from '../lib/helpers';
 
 export const useCurrentDay = () => {
   const { ethersProvider, providerChainId: chainId } = useContext(Web3Context);
