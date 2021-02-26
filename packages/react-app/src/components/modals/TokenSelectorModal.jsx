@@ -152,16 +152,7 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
                 </Flex>
               </Link>
             </Flex>
-          </ModalHeader>
-          <ModalCloseButton
-            size="lg"
-            top={-10}
-            right={-10}
-            color="white"
-            p={2}
-          />
-          <ModalBody>
-            <Text color="grey" mb={2}>
+            <Text color="grey" my={2} fontSize="md" fontWeight="normal">
               Search Name or Paste Token Contract Address
             </Text>
             <InputGroup mb={4} borderColor="#DAE3F0">
@@ -175,9 +166,23 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
                 <Image src={SearchIcon} />
               </InputRightElement>
             </InputGroup>
+          </ModalHeader>
+          <ModalCloseButton
+            size="lg"
+            top={-10}
+            right={-10}
+            color="white"
+            p={2}
+          />
+          <ModalBody minH="5rem">
             {loading && (
               <Flex w="100%" align="center" justify="center">
-                <Spinner color="blue.500" />
+                <Spinner
+                  color="blue.500"
+                  thickness="4px"
+                  size="xl"
+                  speed="0.75s"
+                />
               </Flex>
             )}
             {!loading &&

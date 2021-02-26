@@ -4,7 +4,7 @@ import { HistoryPagination } from 'components/history/HistoryPagination';
 import { NoHistory } from 'components/history/NoHistory';
 import { LoadingModal } from 'components/modals/LoadingModal';
 import { useGraphHealth } from 'hooks/useGraphHealth';
-import { useUserHistory } from 'lib/history';
+import { useUserHistory } from 'hooks/useUserHistory';
 import React, { useState } from 'react';
 import { Redirect } from 'react-router-dom';
 

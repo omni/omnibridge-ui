@@ -15,7 +15,7 @@ import {
 import ClaimTokensImage from 'assets/multiple-claim.svg';
 import { LoadingModal } from 'components/modals/LoadingModal';
 import { Web3Context } from 'contexts/Web3Context';
-import { useClaimableTransfers } from 'lib/history';
+import { useClaimableTransfers } from 'hooks/useClaimableTransfers';
 import React, { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 

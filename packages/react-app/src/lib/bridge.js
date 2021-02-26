@@ -132,7 +132,7 @@ export const fetchToAmount = async (
   toToken,
   fromAmount,
 ) => {
-  if (fromAmount <= 0 || !fromToken || !toToken) return BigNumber.from(0);
+  if (fromAmount.lte(0) || !fromToken || !toToken) return BigNumber.from(0);
   if (isRewardAddress) {
     return fromAmount;
   }
@@ -143,13 +143,13 @@ export const fetchToAmount = async (
   if (mediatorAddress !== getMediatorAddress(xDaiChainId)) {
     return fromAmount;
   }
-  const ethersProvider = getEthersProvider(xDaiChainId);
-  const abi = [
-    'function calculateFee(bytes32, address, uint256) view returns (uint256)',
-  ];
-  const mediatorContract = new Contract(mediatorAddress, abi, ethersProvider);
 
   try {
+    const ethersProvider = getEthersProvider(xDaiChainId);
+    const abi = [
+      'function calculateFee(bytes32, address, uint256) view returns (uint256)',
+    ];
+    const mediatorContract = new Contract(mediatorAddress, abi, ethersProvider);
     const fee = await mediatorContract.calculateFee(
       feeType,
       tokenAddress,

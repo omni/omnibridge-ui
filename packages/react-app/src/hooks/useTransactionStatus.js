@@ -4,6 +4,7 @@ import { getMessageFromTxHash, getMessageStatus } from 'lib/amb';
 import { POLLING_INTERVAL } from 'lib/constants';
 import { getBridgeNetwork, isxDaiChain, logError } from 'lib/helpers';
 import { useCallback, useContext, useEffect, useState } from 'react';
+import { defer } from 'rxjs';
 
 export const useTransactionStatus = () => {
   const { ethersProvider, providerChainId } = useContext(Web3Context);
@@ -106,9 +107,12 @@ export const useTransactionStatus = () => {
     // unsubscribe from previous polls
     unsubscribe();
 
-    getReceipt();
+    const deferral = defer(() => getReceipt()).subscribe();
     // unsubscribe when unmount component
-    return unsubscribe;
+    return () => {
+      unsubscribe();
+      deferral.unsubscribe();
+    };
   }, [
     loading,
     providerChainId,

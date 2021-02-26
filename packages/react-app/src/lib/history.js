@@ -1,9 +1,5 @@
-import { BridgeContext } from 'contexts/BridgeContext';
-import { Web3Context } from 'contexts/Web3Context';
 import { gql, request } from 'graphql-request';
-import { HOME_NETWORK } from 'lib/constants';
-import { getBridgeNetwork, getGraphEndpoint } from 'lib/helpers';
-import { useContext, useEffect, useState } from 'react';
+import { getGraphEndpoint } from 'lib/helpers';
 
 const pageSize = 1000;
 
@@ -96,8 +92,8 @@ export const getRequests = async (user, chainId) => {
   return { requests };
 };
 
-function combineRequestsWithExecutions(requests, executions, chainId) {
-  return requests.map(req => {
+export const combineRequestsWithExecutions = (requests, executions, chainId) =>
+  requests.map(req => {
     const execution = executions.find(exec => exec.messageId === req.messageId);
     return {
       user: req.user,
@@ -112,83 +108,3 @@ function combineRequestsWithExecutions(requests, executions, chainId) {
       message: { ...req.message, messageId: req.messageId },
     };
   });
-}
-
-export function useUserHistory() {
-  const { account } = useContext(Web3Context);
-  const [transfers, setTransfers] = useState();
-  const [loading, setLoading] = useState(true);
-  const chainId = HOME_NETWORK;
-
-  useEffect(() => {
-    if (!account || !chainId) return;
-    const bridgeChainId = getBridgeNetwork(chainId);
-    async function update() {
-      const [
-        { requests: homeRequests },
-        { requests: foreignRequests },
-      ] = await Promise.all([
-        getRequests(account, chainId),
-        getRequests(account, bridgeChainId),
-      ]);
-      const [
-        { executions: homeExecutions },
-        { executions: foreignExecutions },
-      ] = await Promise.all([
-        getExecutions(chainId, foreignRequests),
-        getExecutions(bridgeChainId, homeRequests),
-      ]);
-      const homeTransfers = combineRequestsWithExecutions(
-        homeRequests,
-        foreignExecutions,
-        chainId,
-      );
-      const foreignTransfers = combineRequestsWithExecutions(
-        foreignRequests,
-        homeExecutions,
-        bridgeChainId,
-      );
-      const allTransfers = [...homeTransfers, ...foreignTransfers].sort(
-        (a, b) => b.timestamp - a.timestamp,
-      );
-      setTransfers(allTransfers);
-      setLoading(false);
-    }
-    setTransfers();
-    setLoading(true);
-    update();
-  }, [chainId, account]);
-
-  return { transfers, loading };
-}
-
-export function useClaimableTransfers() {
-  const { account, providerChainId } = useContext(Web3Context);
-  const { txHash } = useContext(BridgeContext);
-  const [transfers, setTransfers] = useState();
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    if (!account || !providerChainId) return;
-    const chainId = HOME_NETWORK;
-    const bridgeChainId = getBridgeNetwork(chainId);
-    async function update() {
-      setLoading(true);
-      setTransfers();
-      const { requests } = await getRequests(account, chainId);
-      const { executions } = await getExecutions(bridgeChainId, requests);
-      const xDaiTransfers = combineRequestsWithExecutions(
-        requests,
-        executions,
-        chainId,
-      )
-        .sort((a, b) => b.timestamp - a.timestamp)
-        .filter(t => !t.receivingTx);
-      setTransfers(xDaiTransfers);
-      setLoading(false);
-    }
-    update();
-  }, [account, providerChainId, txHash]);
-
-  return { transfers, loading };
-}

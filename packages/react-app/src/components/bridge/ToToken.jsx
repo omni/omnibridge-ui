@@ -1,4 +1,4 @@
-import { Flex, Spinner, Text, useBreakpointValue } from '@chakra-ui/react';
+import { Box, Flex, Spinner, Text, useBreakpointValue } from '@chakra-ui/react';
 import { Logo } from 'components/common/Logo';
 import { BridgeContext } from 'contexts/BridgeContext';
 import { Web3Context } from 'contexts/Web3Context';
@@ -140,7 +140,9 @@ export const ToToken = () => {
             h="52px"
           >
             {loading ? (
-              <Spinner color="black" size="sm" />
+              <Box mt={{ base: 2, lg: 0 }} mb={{ base: 1, lg: 0 }}>
+                <Spinner color="black" size="sm" />
+              </Box>
             ) : (
               <Text fontWeight="bold" fontSize="2xl">
                 {utils.formatUnits(amount, token.decimals)}

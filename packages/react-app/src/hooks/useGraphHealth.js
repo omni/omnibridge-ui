@@ -5,6 +5,7 @@ import { getHealthStatus } from 'lib/graphHealth';
 import { getBridgeNetwork, logDebug, logError } from 'lib/helpers';
 import { getEthersProvider } from 'lib/providers';
 import { useContext, useEffect, useRef, useState } from 'react';
+import { defer } from 'rxjs';
 
 const FOREIGN_NETWORK = getBridgeNetwork(HOME_NETWORK);
 
@@ -94,9 +95,12 @@ export const useGraphHealth = (description, onlyHome = false) => {
     // unsubscribe from previous polls
     unsubscribe();
 
-    load();
+    const deferral = defer(() => load()).subscribe();
     // unsubscribe when unmount component
-    return unsubscribe;
+    return () => {
+      unsubscribe();
+      deferral.unsubscribe();
+    };
   }, []);
 
   const toast = useToast();

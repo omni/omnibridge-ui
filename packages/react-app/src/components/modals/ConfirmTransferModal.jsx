@@ -33,9 +33,11 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
   } = useContext(BridgeContext);
   const [fee, setFee] = useState(0);
   useEffect(() => {
-    setFee(
-      ((Number(fromAmount) - Number(toAmount)) * 100) / Number(fromAmount),
-    );
+    if (fromAmount.gt(0)) {
+      setFee(
+        ((Number(fromAmount) - Number(toAmount)) * 100) / Number(fromAmount),
+      );
+    }
   }, [fromAmount, toAmount]);
   const smallScreen = useBreakpointValue({ base: true, md: false });
   const toast = useToast();
@@ -71,15 +73,6 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
           'Impossible to perform the operation. Reload the application and try again.',
         );
       }
-      // if (
-      //   error &&
-      //   error.message &&
-      //   !error.message.includes('User denied transaction signature')
-      // ) {
-      //   showError(
-      //     'Impossible to perform the operation. Reload the application and try again.',
-      //   );
-      // }
     });
     onClose();
   };

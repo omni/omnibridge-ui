@@ -59,6 +59,20 @@ export const FromToken = () => {
     };
   }, [updateBalance, token, account, setBalance, setBalanceLoading, chainId]);
 
+  useEffect(() => {
+    let subscription;
+    if (token && token.decimals) {
+      subscription = defer(() =>
+        setAmount(parseValue(input, token.decimals)),
+      ).subscribe();
+    }
+    return () => {
+      if (subscription) {
+        subscription.unsubscribe();
+      }
+    };
+  }, [input, token, setAmount]);
+
   return (
     <Flex
       align="center"
@@ -166,7 +180,6 @@ export const FromToken = () => {
               fontWeight="bold"
               onChange={e => {
                 setInput(e.target.value);
-                setAmount(parseValue(e.target.value, token.decimals));
               }}
               fontSize="2xl"
             />
@@ -180,7 +193,6 @@ export const FromToken = () => {
               _hover={{ bg: 'blue.100' }}
               onClick={() => {
                 setInput(utils.formatUnits(balance, token.decimals));
-                setAmount(balance);
               }}
             >
               Max

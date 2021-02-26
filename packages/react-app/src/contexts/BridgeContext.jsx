@@ -28,8 +28,8 @@ export const BridgeProvider = ({ children }) => {
   const [receiver, setReceiver] = useState('');
   const [fromToken, setFromToken] = useState();
   const [toToken, setToToken] = useState();
-  const [fromAmount, setFromAmount] = useState(0);
-  const [toAmount, setToAmount] = useState(0);
+  const [fromAmount, setFromAmount] = useState(BigNumber.from(0));
+  const [toAmount, setToAmount] = useState(BigNumber.from(0));
   const [toAmountLoading, setToAmountLoading] = useState(false);
   const [allowed, setAllowed] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -67,17 +67,20 @@ export const BridgeProvider = ({ children }) => {
   }, [fromAmount, fromAllowance, fromToken]);
 
   const setAmount = useCallback(
-    amount => {
+    async amount => {
       setFromAmount(amount);
       setToAmountLoading(true);
       const isxDai = isxDaiChain(providerChainId);
       const feeType = !isxDai ? foreignToHomeFeeType : homeToForeignFeeType;
-      fetchToAmount(isRewardAddress, feeType, fromToken, toToken, amount).then(
-        gotToAmount => {
-          setToAmount(gotToAmount);
-          setToAmountLoading(false);
-        },
+      const gotToAmount = await fetchToAmount(
+        isRewardAddress,
+        feeType,
+        fromToken,
+        toToken,
+        amount,
       );
+      setToAmount(gotToAmount);
+      setToAmountLoading(false);
     },
     [
       fromToken,
@@ -91,10 +94,6 @@ export const BridgeProvider = ({ children }) => {
 
   const setToken = useCallback(async tokenWithoutMode => {
     setLoading(true);
-    setAmountInput('');
-    setFromAmount(0);
-    setAllowed(true);
-    setToAmount(0);
     const [token, gotToToken] = await Promise.all([
       fetchTokenDetails(tokenWithoutMode),
       fetchToToken(tokenWithoutMode),
@@ -174,12 +173,10 @@ export const BridgeProvider = ({ children }) => {
   );
 
   useEffect(() => {
-    setAmountInput('');
-    setAmount(BigNumber.from(0));
     setUpdateBalance(t => !t);
     setLoading(false);
     setDefaultToken(providerChainId);
-  }, [providerChainId, setAmount, setDefaultToken]);
+  }, [providerChainId, setDefaultToken]);
 
   const updateTokenLimits = useCallback(async () => {
     if (
