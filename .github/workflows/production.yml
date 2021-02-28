@@ -32,7 +32,7 @@ jobs:
         run: yarn react-app:build
         env:
           CI: true
-          REACT_APP_FOREIGN_RPC_URL: https://mainnet.blockscout.com/
+          #REACT_APP_FOREIGN_RPC_URL: https://mainnet.blockscout.com/
           REACT_APP_INFURA_ID: ${{ secrets.INFURA_ID }}
           REACT_APP_HOME_NETWORK: xdai
           REACT_APP_HOME_RPC_URL: https://rpc.xdaichain.com/
