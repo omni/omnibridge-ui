@@ -55,6 +55,7 @@ const networkTags = {
   1: <Tag bg="#5A74DA" txt="Ethereum" />,
   42: <Tag bg="#5A74DA" txt="Kovan" />,
   77: <Tag bg="#4DA9A6" txt="POA Sokol" />,
+  56: <Tag bg="#5A74DA" txt="BSC" />,
 };
 
 const getNetworkTag = chainId => networkTags[chainId];
