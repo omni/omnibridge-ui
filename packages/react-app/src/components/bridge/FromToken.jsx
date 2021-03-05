@@ -14,7 +14,7 @@ import { SelectTokenModal } from 'components/modals/SelectTokenModal';
 import { BridgeContext } from 'contexts/BridgeContext';
 import { Web3Context } from 'contexts/Web3Context';
 import { BigNumber, utils } from 'ethers';
-import { formatValue, logError, parseValue } from 'lib/helpers';
+import { formatValue, logError } from 'lib/helpers';
 import { fetchTokenBalance } from 'lib/token';
 import React, { useContext, useEffect, useState } from 'react';
 import { defer } from 'rxjs';
@@ -60,18 +60,13 @@ export const FromToken = () => {
   }, [updateBalance, token, account, setBalance, setBalanceLoading, chainId]);
 
   useEffect(() => {
-    let subscription;
-    if (token && token.decimals) {
-      subscription = defer(() =>
-        setAmount(parseValue(input, token.decimals)),
-      ).subscribe();
-    }
+    const subscription = defer(() => {
+      setAmount(input);
+    }).subscribe();
     return () => {
-      if (subscription) {
-        subscription.unsubscribe();
-      }
+      subscription.unsubscribe();
     };
-  }, [input, token, setAmount]);
+  }, [input, setAmount]);
 
   return (
     <Flex
