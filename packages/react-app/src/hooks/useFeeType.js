@@ -11,9 +11,9 @@ export const useFeeType = () => {
   const [foreignToHomeFeeType, setForeignToHomeFeeType] = useState(
     '0x03be2b2875cb41e0e77355e802a16769bb8dfcf825061cde185c73bf94f12625',
   );
-  const chainId = HOME_NETWORK;
 
   useEffect(() => {
+    const chainId = HOME_NETWORK;
     const ethersProvider = getEthersProvider(chainId);
     const mediatorAddress = getMediatorAddress(chainId);
     const abi = [
@@ -31,7 +31,7 @@ export const useFeeType = () => {
       .HOME_TO_FOREIGN_FEE()
       .then(feeType => setHomeToForeignFeeType(feeType))
       .catch(contractError => logError({ contractError }));
-  }, [setForeignToHomeFeeType, setHomeToForeignFeeType, chainId]);
+  }, []);
 
   return { homeToForeignFeeType, foreignToHomeFeeType };
 };

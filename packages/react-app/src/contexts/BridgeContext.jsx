@@ -16,6 +16,7 @@ import {
   getDefaultToken,
   isxDaiChain,
   logError,
+  parseValue,
 } from 'lib/helpers';
 import { approveToken, fetchAllowance, fetchTokenDetails } from 'lib/token';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
@@ -26,10 +27,11 @@ export const BridgeProvider = ({ children }) => {
   const { ethersProvider, account, providerChainId } = useContext(Web3Context);
 
   const [receiver, setReceiver] = useState('');
-  const [fromToken, setFromToken] = useState();
-  const [toToken, setToToken] = useState();
-  const [fromAmount, setFromAmount] = useState(BigNumber.from(0));
-  const [toAmount, setToAmount] = useState(BigNumber.from(0));
+  const [{ fromToken, toToken }, setTokens] = useState({});
+  const [{ fromAmount, toAmount }, setAmounts] = useState({
+    fromAmount: BigNumber.from(0),
+    toAmount: BigNumber.from(0),
+  });
   const [toAmountLoading, setToAmountLoading] = useState(false);
   const [allowed, setAllowed] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -67,9 +69,10 @@ export const BridgeProvider = ({ children }) => {
   }, [fromAmount, fromAllowance, fromToken]);
 
   const setAmount = useCallback(
-    async amount => {
-      setFromAmount(amount);
+    async inputAmount => {
+      if (!fromToken || !toToken) return;
       setToAmountLoading(true);
+      const amount = parseValue(inputAmount, fromToken.decimals);
       const isxDai = isxDaiChain(providerChainId);
       const feeType = !isxDai ? foreignToHomeFeeType : homeToForeignFeeType;
       const gotToAmount = await fetchToAmount(
@@ -79,7 +82,7 @@ export const BridgeProvider = ({ children }) => {
         toToken,
         amount,
       );
-      setToAmount(gotToAmount);
+      setAmounts({ fromAmount: amount, toAmount: gotToAmount });
       setToAmountLoading(false);
     },
     [
@@ -98,8 +101,7 @@ export const BridgeProvider = ({ children }) => {
       fetchTokenDetails(tokenWithoutMode),
       fetchToToken(tokenWithoutMode),
     ]);
-    setToToken(gotToToken);
-    setFromToken(token);
+    setTokens({ fromToken: token, toToken: gotToToken });
     setLoading(false);
   }, []);
 
@@ -162,9 +164,7 @@ export const BridgeProvider = ({ children }) => {
         toToken.chainId === chainId &&
         toToken.address !== ADDRESS_ZERO
       ) {
-        const token = { ...toToken };
-        setToToken(fromToken);
-        setFromToken(token);
+        setTokens({ fromToken: toToken, toToken: fromToken });
       } else if (!fromToken || fromToken.chainId !== chainId) {
         setToken(getDefaultToken(chainId));
       }
