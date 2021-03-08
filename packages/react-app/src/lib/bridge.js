@@ -163,9 +163,7 @@ export const fetchToAmount = async (
 };
 
 export const fetchToToken = async fromToken => {
-  const toToken = await fetchToTokenDetails(
-    fromToken,
-  ).catch(tokenDetailsError => logError({ tokenDetailsError }));
+  const toToken = await fetchToTokenDetails(fromToken);
 
   return {
     symbol: fromToken.symbol,

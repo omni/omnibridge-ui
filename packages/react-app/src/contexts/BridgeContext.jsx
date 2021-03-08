@@ -1,3 +1,4 @@
+import { useToast } from '@chakra-ui/react';
 import { Web3Context } from 'contexts/Web3Context';
 import { BigNumber } from 'ethers';
 import { useApproval } from 'hooks/useApproval';
@@ -81,15 +82,32 @@ export const BridgeProvider = ({ children }) => {
     ],
   );
 
-  const setToken = useCallback(async tokenWithoutMode => {
-    setLoading(true);
-    const [token, gotToToken] = await Promise.all([
-      fetchTokenDetails(tokenWithoutMode),
-      fetchToToken(tokenWithoutMode),
-    ]);
-    setTokens({ fromToken: token, toToken: gotToToken });
-    setLoading(false);
-  }, []);
+  const toast = useToast();
+
+  const setToken = useCallback(
+    async tokenWithoutMode => {
+      setLoading(true);
+      try {
+        const [token, gotToToken] = await Promise.all([
+          fetchTokenDetails(tokenWithoutMode),
+          fetchToToken(tokenWithoutMode),
+        ]);
+        setTokens({ fromToken: token, toToken: gotToToken });
+      } catch (tokenDetailsError) {
+        toast({
+          title: 'Error',
+          description:
+            'Cannot fetch token details. Wait for a few minutes and reload the application',
+          status: 'error',
+          duration: null,
+          isClosable: false,
+        });
+        logError({ tokenDetailsError });
+      }
+      setLoading(false);
+    },
+    [toast],
+  );
 
   const transfer = useCallback(async () => {
     setLoading(true);
