@@ -1,5 +1,6 @@
 import { Web3Context } from 'contexts/Web3Context';
 import { BigNumber } from 'ethers';
+import { useApproval } from 'hooks/useApproval';
 import { useCurrentDay } from 'hooks/useCurrentDay';
 import { useFeeType } from 'hooks/useFeeType';
 import { useRewardAddress } from 'hooks/useRewardAddress';
@@ -10,7 +11,7 @@ import {
   fetchToToken,
   transferTokens,
 } from 'lib/bridge';
-import { ADDRESS_ZERO, LARGEST_UINT256 } from 'lib/constants';
+import { ADDRESS_ZERO } from 'lib/constants';
 import {
   getBridgeNetwork,
   getDefaultToken,
@@ -18,7 +19,7 @@ import {
   logError,
   parseValue,
 } from 'lib/helpers';
-import { approveToken, fetchAllowance, fetchTokenDetails } from 'lib/token';
+import { fetchTokenDetails } from 'lib/token';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 
 export const BridgeContext = React.createContext({});
@@ -33,7 +34,6 @@ export const BridgeProvider = ({ children }) => {
     toAmount: BigNumber.from(0),
   });
   const [toAmountLoading, setToAmountLoading] = useState(false);
-  const [allowed, setAllowed] = useState(true);
   const [loading, setLoading] = useState(false);
   const [txHash, setTxHash] = useState();
   const [amountInput, setAmountInput] = useState('');
@@ -45,28 +45,14 @@ export const BridgeProvider = ({ children }) => {
   const isRewardAddress = useRewardAddress();
   const currentDay = useCurrentDay();
   const { homeToForeignFeeType, foreignToHomeFeeType } = useFeeType();
-  const [fromAllowance, setAllowance] = useState(BigNumber.from(0));
-  const [updateFromAllowance, setUpdateFromAllowance] = useState(false);
   const [updateBalance, setUpdateBalance] = useState(false);
-
-  useEffect(() => {
-    if (fromToken && providerChainId === fromToken.chainId) {
-      fetchAllowance(fromToken, account, ethersProvider).then(setAllowance);
-    }
-  }, [
-    ethersProvider,
-    account,
-    fromToken,
-    providerChainId,
-    updateFromAllowance,
-  ]);
-
-  useEffect(() => {
-    setAllowed(
-      (fromToken && fromToken.mode === 'erc677') ||
-        fromAllowance.gte(fromAmount),
-    );
-  }, [fromAmount, fromAllowance, fromToken]);
+  const {
+    allowed,
+    updateAllowance,
+    unlockLoading,
+    approvalTxHash,
+    approve,
+  } = useApproval(fromToken, fromAmount);
 
   const setAmount = useCallback(
     async inputAmount => {
@@ -104,34 +90,6 @@ export const BridgeProvider = ({ children }) => {
     setTokens({ fromToken: token, toToken: gotToToken });
     setLoading(false);
   }, []);
-
-  const [unlockLoading, setUnlockLoading] = useState(false);
-
-  const [approvalTxHash, setApprovalTxHash] = useState();
-  const approve = useCallback(async () => {
-    setUnlockLoading(true);
-    const approvalAmount =
-      window.localStorage.getItem('infinite-unlock') === 'true'
-        ? LARGEST_UINT256
-        : fromAmount;
-    try {
-      const tx = await approveToken(ethersProvider, fromToken, approvalAmount);
-      setApprovalTxHash(tx.hash);
-      await tx.wait();
-      setAllowance(approvalAmount);
-    } catch (approveError) {
-      logError({
-        approveError,
-        fromToken,
-        approvalAmount: approvalAmount.toString(),
-        account,
-      });
-      throw approveError;
-    } finally {
-      setApprovalTxHash();
-      setUnlockLoading(false);
-    }
-  }, [fromAmount, fromToken, ethersProvider, account]);
 
   const transfer = useCallback(async () => {
     setLoading(true);
@@ -234,7 +192,7 @@ export const BridgeProvider = ({ children }) => {
         setToBalance,
         tokenLimits,
         updateTokenLimits,
-        setUpdateFromAllowance,
+        updateAllowance,
         receiver,
         setReceiver,
         updateBalance,

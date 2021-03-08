@@ -13,7 +13,7 @@ export const useTotalConfirms = () => {
         .then(total => setTotalConfirms(total))
         .catch(confirmsError => logError({ confirmsError }));
     }
-  }, [setTotalConfirms, providerChainId, ethersProvider]);
+  }, [providerChainId, ethersProvider]);
 
   return totalConfirms;
 };
