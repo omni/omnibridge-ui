@@ -1,5 +1,5 @@
 import { BigNumber, Contract } from 'ethers';
-import { REVERSE_BRIDGE_ENABLED } from 'lib/constants';
+import { ADDRESS_ZERO, REVERSE_BRIDGE_ENABLED } from 'lib/constants';
 import {
   getBridgeNetwork,
   getMediatorAddress,
@@ -175,6 +175,48 @@ export const fetchToToken = async fromToken => {
   };
 };
 
+const getDefaultTokenLimits = async (
+  decimals,
+  mediatorContract,
+  toMediatorContract,
+) => {
+  let [minPerTx, maxPerTx, dailyLimit] = await Promise.all([
+    mediatorContract.minPerTx(ADDRESS_ZERO),
+    toMediatorContract.executionMaxPerTx(ADDRESS_ZERO),
+    mediatorContract.executionDailyLimit(ADDRESS_ZERO),
+  ]);
+
+  if (decimals < 18) {
+    const factor = BigNumber.from(10).pow(18 - decimals);
+
+    minPerTx = minPerTx.div(factor);
+    maxPerTx = maxPerTx.div(factor);
+    dailyLimit = dailyLimit.div(factor);
+
+    if (minPerTx.eq(0)) {
+      minPerTx = BigNumber.from(1);
+      if (maxPerTx.lte(minPerTx)) {
+        maxPerTx = BigNumber.from(100);
+        if (dailyLimit.lte(maxPerTx)) {
+          dailyLimit = BigNumber.from(10000);
+        }
+      }
+    }
+  } else {
+    const factor = BigNumber.from(10).pow(decimals - 18);
+
+    minPerTx = minPerTx.mul(factor);
+    maxPerTx = maxPerTx.mul(factor);
+    dailyLimit = dailyLimit.mul(factor);
+  }
+
+  return {
+    minPerTx,
+    maxPerTx,
+    dailyLimit,
+  };
+};
+
 export const fetchTokenLimits = async (
   ethersProvider,
   token,
@@ -204,6 +246,15 @@ export const fetchTokenLimits = async (
       abi,
       getEthersProvider(toToken.chainId),
     );
+
+    if (toToken.address === ADDRESS_ZERO) {
+      return getDefaultTokenLimits(
+        token.decimals,
+        mediatorContract,
+        toMediatorContract,
+      );
+    }
+
     const [
       minPerTx,
       executionMaxPerTx,
@@ -222,6 +273,7 @@ export const fetchTokenLimits = async (
           mediatorContract.executionDailyLimit(token.address),
           toMediatorContract.totalExecutedPerDay(toToken.address, currentDay),
         ]);
+
     return {
       minPerTx,
       maxPerTx: executionMaxPerTx,
