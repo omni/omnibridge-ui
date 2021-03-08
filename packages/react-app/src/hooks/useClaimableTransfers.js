@@ -1,7 +1,6 @@
 import { BridgeContext } from 'contexts/BridgeContext';
 import { Web3Context } from 'contexts/Web3Context';
-import { HOME_NETWORK } from 'lib/constants';
-import { getBridgeNetwork } from 'lib/helpers';
+import { FOREIGN_CHAIN_ID, HOME_CHAIN_ID } from 'lib/constants';
 import {
   combineRequestsWithExecutions,
   getExecutions,
@@ -18,8 +17,8 @@ export const useClaimableTransfers = () => {
 
   useEffect(() => {
     if (!account || !providerChainId) return () => undefined;
-    const chainId = HOME_NETWORK;
-    const bridgeChainId = getBridgeNetwork(chainId);
+    const chainId = HOME_CHAIN_ID;
+    const bridgeChainId = FOREIGN_CHAIN_ID;
     async function update() {
       setLoading(true);
       setTransfers();

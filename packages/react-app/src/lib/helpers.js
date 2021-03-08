@@ -4,7 +4,9 @@ import {
   chainUrls,
   defaultTokens,
   defaultTokensUrl,
+  FOREIGN_CHAIN_ID,
   graphEndpoints,
+  HOME_CHAIN_ID,
   mediators,
   networkLabels,
   networkNames,
@@ -13,31 +15,11 @@ import {
 import { getOverriddenMediator, isOverridden } from 'lib/overrides';
 
 export const getBridgeNetwork = chainId => {
-  switch (chainId) {
-    case 1:
-      return 100;
-    case 42:
-      return 77;
-    case 77:
-      return 42;
-    case 100:
-    default:
-      return 1;
-  }
+  return chainId === HOME_CHAIN_ID ? FOREIGN_CHAIN_ID : HOME_CHAIN_ID;
 };
 
 export const isxDaiChain = chainId => {
-  switch (chainId) {
-    case 1:
-      return false;
-    case 42:
-      return false;
-    case 77:
-      return true;
-    case 100:
-    default:
-      return true;
-  }
+  return chainId === HOME_CHAIN_ID;
 };
 
 export const getDefaultToken = chainId =>

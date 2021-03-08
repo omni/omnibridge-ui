@@ -1,5 +1,5 @@
 import { Contract } from 'ethers';
-import { HOME_NETWORK } from 'lib/constants';
+import { HOME_CHAIN_ID } from 'lib/constants';
 import { getMediatorAddress, logError } from 'lib/helpers';
 import { getEthersProvider } from 'lib/providers';
 import { useEffect, useState } from 'react';
@@ -11,7 +11,7 @@ export const useFeeType = () => {
   const [foreignToHomeFeeType, setForeignToHomeFeeType] = useState(
     '0x03be2b2875cb41e0e77355e802a16769bb8dfcf825061cde185c73bf94f12625',
   );
-  const chainId = HOME_NETWORK;
+  const chainId = HOME_CHAIN_ID;
 
   useEffect(() => {
     const ethersProvider = getEthersProvider(chainId);

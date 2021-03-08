@@ -34,7 +34,8 @@ jobs:
           CI: true
           #REACT_APP_FOREIGN_RPC_URL: https://mainnet.blockscout.com/
           REACT_APP_INFURA_ID: ${{ secrets.INFURA_ID }}
-          REACT_APP_HOME_NETWORK: xdai
+          REACT_APP_HOME_CHAIN_ID: 100
+          REACT_APP_FOREIGN_CHAIN_ID: 1
           REACT_APP_HOME_RPC_URL: https://rpc.xdaichain.com/
           REACT_APP_ENABLE_REVERSED_BRIDGE: false
           REACT_APP_DEBUG_LOGS: false

@@ -17,7 +17,7 @@ import {
   getMessageFromTxHash,
   getMessageStatus,
 } from 'lib/amb';
-import { HOME_NETWORK, POLLING_INTERVAL } from 'lib/constants';
+import { FOREIGN_CHAIN_ID, POLLING_INTERVAL } from 'lib/constants';
 import {
   getBridgeNetwork,
   getExplorerUrl,
@@ -105,11 +105,7 @@ export const HistoryItem = ({
   const claimTokens = async () => {
     if (loading) return;
     if (isxDai) {
-      showError(
-        `Please switch wallet to ${getNetworkName(
-          getBridgeNetwork(HOME_NETWORK),
-        )}`,
-      );
+      showError(`Please switch wallet to ${getNetworkName(FOREIGN_CHAIN_ID)}`);
     } else if (!claimable) {
       showError('Still Collecting Signatures...');
     } else {

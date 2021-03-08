@@ -1,6 +1,5 @@
 import { Web3Context } from 'contexts/Web3Context';
-import { HOME_NETWORK } from 'lib/constants';
-import { getBridgeNetwork } from 'lib/helpers';
+import { FOREIGN_CHAIN_ID, HOME_CHAIN_ID } from 'lib/constants';
 import {
   combineRequestsWithExecutions,
   getExecutions,
@@ -13,11 +12,11 @@ export const useUserHistory = () => {
   const { account } = useContext(Web3Context);
   const [transfers, setTransfers] = useState();
   const [loading, setLoading] = useState(true);
-  const chainId = HOME_NETWORK;
+  const chainId = HOME_CHAIN_ID;
 
   useEffect(() => {
     if (!account || !chainId) return () => undefined;
-    const bridgeChainId = getBridgeNetwork(chainId);
+    const bridgeChainId = FOREIGN_CHAIN_ID;
     async function update() {
       const [
         { requests: homeRequests },

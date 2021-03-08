@@ -33,7 +33,8 @@ jobs:
         env:
           CI: true
           REACT_APP_INFURA_ID: ${{ secrets.PERSONAL_INFURA_ID }}
-          REACT_APP_HOME_NETWORK: sokol
+          REACT_APP_HOME_CHAIN_ID: 77
+          REACT_APP_FOREIGN_CHAIN_ID: 42
           REACT_APP_ENABLE_REVERSED_BRIDGE: true
           REACT_APP_DEBUG_LOGS: true
           REACT_APP_TITLE: OmniBridge - %c
