@@ -3,7 +3,7 @@ import BSCLogo from 'assets/bsc-logo.png';
 import EthLogo from 'assets/eth-logo.png';
 import xDAILogo from 'assets/xdai-logo.png';
 import { Web3Context } from 'contexts/Web3Context';
-import { getBridgeNetwork,isxDaiChain, uriToHttp } from 'lib/helpers';
+import { getBridgeNetwork, uriToHttp } from 'lib/helpers';
 import React, { useContext, useState } from 'react';
 
 const BAD_SRCS = {};
