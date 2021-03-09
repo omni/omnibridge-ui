@@ -17,31 +17,36 @@ import {
 } from '@chakra-ui/react';
 import SettingsImage from 'assets/settings.svg';
 import { SettingsIcon } from 'icons/SettingsIcon';
-import React, { useRef, useState } from 'react';
+import { useSettings } from 'contexts/SettingsContext';
+import React, { useRef, useCallback } from 'react';
 
 export const UpdateSettings = ({ close }) => {
   const initialRef = useRef();
-  const localMainnetRPC = window.localStorage.getItem('mainnet-rpc-url');
-  const [mainnetRPC, setMainnetRPC] = useState(localMainnetRPC || '');
-  const localXDaiRPC = window.localStorage.getItem('xdai-rpc-url');
-  const [xdaiRPC, setXDaiRPC] = useState(localXDaiRPC || '');
-  const localInfiniteUnlock =
-    window.localStorage.getItem('infinite-unlock') === 'true';
-  const [infiniteUnlock, setInfiniteUnlock] = useState(localInfiniteUnlock);
+  const {
+    mainnetRPC,
+    setMainnetRPC,
+    xdaiRPC,
+    setXDaiRPC,
+    infiniteUnlock,
+    setInfiniteUnlock,
+    neverShowClaims,
+    setNeverShowClaims,
+    update,
+    save,
+    needsSaving,
+  } = useSettings();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const isChanged =
-    localMainnetRPC !== mainnetRPC ||
-    localXDaiRPC !== xdaiRPC ||
-    localInfiniteUnlock !== infiniteUnlock;
-
-  const onSave = () => {
-    if (!isChanged) return;
-    window.localStorage.setItem('mainnet-rpc-url', mainnetRPC);
-    window.localStorage.setItem('xdai-rpc-url', xdaiRPC);
-    window.localStorage.setItem('infinite-unlock', infiniteUnlock.toString());
+  const onSave = useCallback(() => {
+    save();
     onClose();
-  };
+  }, [save, onClose]);
+
+  const openSettings = useCallback(() => {
+    close();
+    update();
+    onOpen();
+  }, [close, update, onOpen]);
 
   return (
     <>
@@ -52,10 +57,7 @@ export const UpdateSettings = ({ close }) => {
         color="grey"
         transition="0.25s"
         _hover={{ color: 'blue.500' }}
-        onClick={() => {
-          close();
-          onOpen();
-        }}
+        onClick={openSettings}
       >
         <SettingsIcon mr={2} />
         <Text color="black"> Settings</Text>
@@ -114,6 +116,13 @@ export const UpdateSettings = ({ close }) => {
                     value={xdaiRPC}
                   />
                 </InputGroup>
+                <Text mb={2}>Turn Off Unclaimed Notifications</Text>
+                <Switch
+                  mb={4}
+                  colorScheme="blue"
+                  isChecked={neverShowClaims}
+                  onChange={e => setNeverShowClaims(e.target.checked)}
+                />
               </Flex>
             </ModalBody>
             <ModalFooter p={6}>
@@ -125,20 +134,12 @@ export const UpdateSettings = ({ close }) => {
               >
                 <Button
                   px={12}
-                  onClick={onClose}
-                  background="background"
-                  _hover={{ background: '#bfd3f2' }}
-                  color="#687D9D"
-                  ref={initialRef}
-                >
-                  Back
-                </Button>
-                <Button
-                  px={12}
                   onClick={onSave}
                   colorScheme="blue"
                   mt={{ base: 2, md: 0 }}
-                  isDisabled={!isChanged}
+                  isDisabled={!needsSaving}
+                  ref={initialRef}
+                  w="100%"
                 >
                   Save
                 </Button>

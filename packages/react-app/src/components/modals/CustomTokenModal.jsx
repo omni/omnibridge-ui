@@ -18,8 +18,11 @@ import { BridgeContext } from 'contexts/BridgeContext';
 import { Web3Context } from 'contexts/Web3Context';
 import { utils } from 'ethers';
 import { logError, uniqueTokens } from 'lib/helpers';
+import { LOCAL_STORAGE_KEYS } from 'lib/constants';
 import { fetchTokenDetails } from 'lib/token';
 import React, { useContext, useRef, useState } from 'react';
+
+const { CUSTOM_TOKENS } = LOCAL_STORAGE_KEYS;
 
 export const CustomTokenModal = ({ isOpen, onClose, onBack }) => {
   const { setToken } = useContext(BridgeContext);
@@ -42,7 +45,7 @@ export const CustomTokenModal = ({ isOpen, onClose, onBack }) => {
   };
 
   const addCustomToken = () => {
-    let localTokensList = window.localStorage.getItem('customTokens');
+    let localTokensList = window.localStorage.getItem(CUSTOM_TOKENS);
     let customTokensList = [];
 
     if (!localTokensList) {
@@ -56,7 +59,7 @@ export const CustomTokenModal = ({ isOpen, onClose, onBack }) => {
     }
     customTokensList = uniqueTokens(customTokensList);
     window.localStorage.setItem(
-      'customTokens',
+      CUSTOM_TOKENS,
       JSON.stringify(customTokensList),
     );
     setToken(customToken);
