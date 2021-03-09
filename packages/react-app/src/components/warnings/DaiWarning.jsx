@@ -22,22 +22,20 @@ export const isERC20DaiAddress = token => {
   );
 };
 
+const XDaiBridgeLink = () => (
+  <Link href="https://bridge.xdaichain.com/" color="blue.500" isExternal>
+    xDai Ethereum Bridge
+  </Link>
+);
+
 export const DaiWarning = () => {
   return (
     <Flex align="flex-middle" direction="column">
       <Alert status="warning" borderRadius={5} mb={5}>
         <AlertIcon minWidth="20px" />
         <Text fontSize="small">
-          Bridges DAI on Ethereum to DAI on xDai, DOES NOT mint native xDai. If
-          you want native xDai, use the&nbsp;
-          <Link
-            href="https://dai-bridge.poa.network"
-            color="blue.500"
-            isExternal
-          >
-            xDai Bridge
-          </Link>
-          .
+          Bridging DAI token to xDai Chain DOES NOT mint native xDai token. If
+          you want native xDai, use the <XDaiBridgeLink />.
         </Text>
       </Alert>
     </Flex>
