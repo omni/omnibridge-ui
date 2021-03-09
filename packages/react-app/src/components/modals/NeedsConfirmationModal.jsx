@@ -14,14 +14,14 @@ import ChangeNetworkImage from 'assets/change-network.png';
 import InfoImage from 'assets/info.svg';
 import { BridgeContext } from 'contexts/BridgeContext';
 import { FOREIGN_CHAIN_ID } from 'lib/constants';
-import { getNetworkName, isxDaiChain } from 'lib/helpers';
+import { getNetworkName } from 'lib/helpers';
 import React, { useContext, useState } from 'react';
 
 export const NeedsConfirmationModal = ({ setNeedsConfirmation }) => {
   const { fromToken, toToken, setTxHash } = useContext(BridgeContext);
-  const isxDai = fromToken !== undefined && isxDaiChain(fromToken.chainId);
   const toUnit =
-    toToken !== undefined && toToken.symbol + (isxDai ? ' on Mainnet' : '');
+    (toToken !== undefined && toToken.symbol) ||
+    (fromToken !== undefined && fromToken.symbol);
 
   const [isOpen, setOpen] = useState(true);
   const onClose = () => {
