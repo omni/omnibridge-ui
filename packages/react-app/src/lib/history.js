@@ -1,5 +1,5 @@
 import { gql, request } from 'graphql-request';
-import { getGraphEndpoint } from 'lib/helpers';
+import { getBridgeNetwork, getGraphEndpoint } from 'lib/helpers';
 
 const pageSize = 1000;
 
@@ -41,6 +41,7 @@ const executionsQuery = gql`
     ) {
       txHash
       messageId
+      token
     }
   }
 `;
@@ -92,8 +93,13 @@ export const getRequests = async (user, chainId) => {
   return { requests };
 };
 
-export const combineRequestsWithExecutions = (requests, executions, chainId) =>
-  requests.map(req => {
+export const combineRequestsWithExecutions = (
+  requests,
+  executions,
+  chainId,
+) => {
+  const bridgeChainId = getBridgeNetwork(chainId);
+  return requests.map(req => {
     const execution = executions.find(exec => exec.messageId === req.messageId);
     return {
       user: req.user,
@@ -102,9 +108,19 @@ export const combineRequestsWithExecutions = (requests, executions, chainId) =>
       sendingTx: req.txHash,
       receivingTx: execution ? execution.txHash : null,
       amount: req.amount,
-      token: req.token,
-      decimals: req.decimals,
-      symbol: req.symbol,
+      fromToken: {
+        address: req.token,
+        decimals: req.decimals,
+        symbol: req.symbol,
+        chainId,
+      },
+      toToken: {
+        address: execution.token,
+        decimals: req.decimals,
+        symbol: req.symbol,
+        chainId: bridgeChainId,
+      },
       message: { ...req.message, messageId: req.messageId },
     };
   });
+};
