@@ -32,6 +32,7 @@ export const AddToMetamask = ({ token, ...props }) => {
 
   return (
     <Image
+      cursor="pointer"
       src={MetamaskFox}
       alt="metamask-fox"
       onClick={addToken}
