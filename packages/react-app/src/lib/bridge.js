@@ -1,29 +1,21 @@
-import { BigNumber, Contract } from 'ethers';
+import { BigNumber, Contract, ethers } from 'ethers';
 import { REVERSE_BRIDGE_ENABLED } from 'lib/constants';
 import {
   getBridgeNetwork,
   getMediatorAddress,
+  getNetworkLabel,
   isxDaiChain,
   logError,
 } from 'lib/helpers';
 import { getOverriddenToToken, isOverridden } from 'lib/overrides';
 import { getEthersProvider } from 'lib/providers';
-import { fetchTokenDetails } from 'lib/token';
+import { fetchTokenDetails, fetchTokenName } from 'lib/token';
 
-const getToName = (fromName, fromxDai) => {
-  if (REVERSE_BRIDGE_ENABLED) {
-    if (fromxDai) {
-      if (fromName.includes('on xDai')) return fromName.slice(0, -8);
-      return `${fromName} on Mainnet`;
-    }
-    if (fromName.includes('on Mainnet')) return fromName.slice(0, -11);
-    return `${fromName} on xDai`;
+const getToName = (fromName, toChainId, toAddress) => {
+  if (toAddress === ethers.constants.AddressZero) {
+    return `${fromName} on ${getNetworkLabel(toChainId)}`;
   }
-  if (fromxDai) {
-    if (fromName.includes('on xDai')) return fromName.slice(0, -8);
-    return fromName;
-  }
-  return `${fromName} on xDai`;
+  return fetchTokenName({ chainId: toChainId, address: toAddress });
 };
 
 export const fetchToTokenAddress = async (
@@ -69,7 +61,7 @@ export const fetchToTokenDetails = async ({
       isxDai ? fromChainId : toChainId,
       fromAddress,
     );
-    const toName = getToName(fromName, isxDai);
+    const toName = await getToName(fromName, toChainId, toAddress);
     return {
       name: toName,
       chainId: toChainId,
@@ -104,7 +96,7 @@ export const fetchToTokenDetails = async ({
 
     const toAddress = await toMediatorContract.bridgedTokenAddress(fromAddress);
 
-    const toName = isxDai ? `${fromName} on Mainnet` : `${fromName} on xDai`;
+    const toName = await getToName(fromName, toChainId, toAddress);
     return {
       name: toName,
       chainId: toChainId,
@@ -115,7 +107,7 @@ export const fetchToTokenDetails = async ({
   }
   const toAddress = await fromMediatorContract.nativeTokenAddress(fromAddress);
 
-  const toName = getToName(fromName, isxDai);
+  const toName = await getToName(fromName, toChainId, toAddress);
   return {
     name: toName,
     chainId: toChainId,

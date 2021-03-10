@@ -1,3 +1,5 @@
+import { FOREIGN_CHAIN_ID } from 'lib/constants';
+
 const OWLTokenOverride = {
   100: {
     mediator: '0xbeD794745e2a0543eE609795ade87A55Bbe935Ba',
@@ -120,13 +122,14 @@ const overrides = {
   ['0x71850b7e9ee3f13ab46d67167341e4bdc905eef9'.toLowerCase()]: HNYTokenOverride,
 };
 
-export const isOverridden = tokenAddress =>
-  tokenAddress
-    ? Object.prototype.hasOwnProperty.call(
-        overrides,
-        tokenAddress.toLowerCase(),
-      )
-    : false;
+export const isOverridden = tokenAddress => {
+  if (FOREIGN_CHAIN_ID === 56) return false;
+  if (!tokenAddress) return false;
+  return Object.prototype.hasOwnProperty.call(
+    overrides,
+    tokenAddress.toLowerCase(),
+  );
+};
 
 export const getOverriddenToToken = (tokenAddress, chainId) =>
   overrides[tokenAddress.toLowerCase()][chainId].to;

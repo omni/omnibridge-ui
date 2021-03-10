@@ -24,7 +24,7 @@ export const networkNames = {
 export const networkLabels = {
   1: 'Mainnet',
   42: 'Kovan',
-  56: 'Binance Smart Chain',
+  56: 'BSC',
   77: 'Sokol',
   100: 'xDai',
 };

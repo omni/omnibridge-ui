@@ -57,6 +57,13 @@ export const getMode = async (
   return 'erc677';
 };
 
+export const fetchTokenName = token => {
+  const ethersProvider = getEthersProvider(token.chainId);
+  const abi = ['function name() view returns (string)'];
+  const tokenContract = new Contract(token.address, abi, ethersProvider);
+  return tokenContract.name();
+};
+
 export const fetchTokenDetails = async token => {
   const ethersProvider = getEthersProvider(token.chainId);
   const abi = [
