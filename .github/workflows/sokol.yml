@@ -32,7 +32,6 @@ jobs:
         run: yarn react-app:build
         env:
           CI: true
-          REACT_APP_INFURA_ID: ${{ secrets.PERSONAL_INFURA_ID }}
           REACT_APP_HOME_CHAIN_ID: 77
           REACT_APP_FOREIGN_CHAIN_ID: 42
           REACT_APP_ENABLE_REVERSED_BRIDGE: true
@@ -42,6 +41,17 @@ jobs:
           REACT_APP_GAS_PRICE_FALLBACK_GWEI: 5
           REACT_APP_ETH_PRICE_API_URL: 'https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=USD'
           REACT_APP_ETH_PRICE_UPDATE_INTERVAL: 15000
+          REACT_APP_FOREIGN_MEDIATOR_ADDRESS: '0xA960d095470f7509955d5402e36d9DB984B5C8E2'
+          REACT_APP_HOME_MEDIATOR_ADDRESS: '0x40CdfF886715A4012fAD0219D15C98bB149AeF0e'
+          REACT_APP_FOREIGN_AMB_ADDRESS: '0xFe446bEF1DbF7AFE24E81e05BC8B271C1BA9a560'
+          REACT_APP_HOME_AMB_ADDRESS: '0xFe446bEF1DbF7AFE24E81e05BC8B271C1BA9a560'
+          REACT_APP_FOREIGN_GRAPH_NAME: 'dan13ram/kovan-omnibridge'
+          REACT_APP_HOME_GRAPH_NAME: 'dan13ram/sokol-omnibridge'
+          REACT_APP_HOME_RPC_URL: 'https://sokol.poa.network'
+          REACT_APP_HOME_EXPLORER_PREFIX: 'https://blockscout.com/poa/sokol'
+          REACT_APP_AMB_LIVE_MONITOR_PREFIX: 'https://alm-test-amb.herokuapp.com'
+          REACT_APP_FOREIGN_RPC_URL: 'https://kovan.infura.io/v3/${{ secrets.PERSONAL_INFURA_ID }}'
+          REACT_APP_FOREIGN_EXPLORER_PREFIX: 'https://blockscout.com/eth/kovan'
 
       - name: Deploy to Firebase
         uses: w9jds/firebase-action@master

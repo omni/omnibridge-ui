@@ -13,11 +13,10 @@ export const HOME_CHAIN_ID = Number(process.env.REACT_APP_HOME_CHAIN_ID) || 77;
 export const FOREIGN_CHAIN_ID =
   Number(process.env.REACT_APP_FOREIGN_CHAIN_ID) || 42;
 
-export const INFURA_ID = process.env.REACT_APP_INFURA_ID;
-
 export const networkNames = {
   1: 'ETH Mainnet',
   42: 'Kovan Testnet',
+  56: 'Binance Smart Chain',
   77: 'Sokol Testnet',
   100: 'xDai Chain',
 };
@@ -25,58 +24,25 @@ export const networkNames = {
 export const networkLabels = {
   1: 'Mainnet',
   42: 'Kovan',
+  56: 'Binance Smart Chain',
   77: 'Sokol',
   100: 'xDai',
 };
 
 export const chainUrls = {
-  100: {
-    rpc: process.env.REACT_APP_HOME_RPC_URL || 'https://rpc.xdaichain.com',
-    explorer:
-      process.env.REACT_APP_HOME_EXPLORER_PREFIX ||
-      'https://blockscout.com/poa/xdai',
-    monitor:
-      process.env.REACT_APP_AMB_LIVE_MONITOR_PREFIX ||
-      'https://alm-xdai.herokuapp.com',
-    chainId: 100,
-    name: networkNames[100],
+  [HOME_CHAIN_ID]: {
+    rpc: process.env.REACT_APP_HOME_RPC_URL,
+    explorer: process.env.REACT_APP_HOME_EXPLORER_PREFIX,
+    monitor: process.env.REACT_APP_AMB_LIVE_MONITOR_PREFIX,
+    chainId: HOME_CHAIN_ID,
+    name: networkNames[HOME_CHAIN_ID],
   },
-  1: {
-    rpc:
-      process.env.REACT_APP_FOREIGN_RPC_URL ||
-      `https://mainnet.infura.io/v3/${INFURA_ID}`,
-    explorer:
-      process.env.REACT_APP_FOREIGN_EXPLORER_PREFIX ||
-      'https://blockscout.com/eth/mainnet',
-    monitor:
-      process.env.REACT_APP_AMB_LIVE_MONITOR_PREFIX ||
-      'https://alm-xdai.herokuapp.com',
-    chainId: 1,
-    name: networkNames[1],
-  },
-  77: {
-    rpc: process.env.REACT_APP_HOME_RPC_URL || 'https://sokol.poa.network',
-    explorer:
-      process.env.REACT_APP_HOME_EXPLORER_PREFIX ||
-      'https://blockscout.com/poa/sokol',
-    monitor:
-      process.env.REACT_APP_AMB_LIVE_MONITOR_PREFIX ||
-      'https://alm-test-amb.herokuapp.com',
-    chainId: 77,
-    name: networkNames[77],
-  },
-  42: {
-    rpc:
-      process.env.REACT_APP_FOREIGN_RPC_URL ||
-      `https://kovan.infura.io/v3/${INFURA_ID}`,
-    explorer:
-      process.env.REACT_APP_FOREIGN_EXPLORER_PREFIX ||
-      'https://blockscout.com/eth/kovan',
-    monitor:
-      process.env.REACT_APP_AMB_LIVE_MONITOR_PREFIX ||
-      'https://alm-test-amb.herokuapp.com',
-    chainId: 42,
-    name: networkNames[42],
+  [FOREIGN_CHAIN_ID]: {
+    rpc: process.env.REACT_APP_FOREIGN_RPC_URL,
+    explorer: process.env.REACT_APP_FOREIGN_EXPLORER_PREFIX,
+    monitor: process.env.REACT_APP_AMB_LIVE_MONITOR_PREFIX,
+    chainId: FOREIGN_CHAIN_ID,
+    name: networkNames[FOREIGN_CHAIN_ID],
   },
 };
 
@@ -85,66 +51,52 @@ export const defaultTokens = {
     address: '0xb7D311E2Eb55F2f68a9440da38e7989210b9A05e',
     chainId: 100,
     symbol: 'STAKE',
+    name: 'STAKE on xDai',
   },
   1: {
     address: '0x0Ae055097C6d159879521C384F1D2123D1f195e6',
     chainId: 1,
     symbol: 'STAKE',
+    name: 'STAKE',
   },
   77: {
     address: '0x408ec1bb883da0ea0fb3c955ea6befcd05aa7c3a',
     chainId: 77,
     symbol: 'STAKE',
+    name: 'STAKE on xDai',
   },
   42: {
     address: '0xFD2df5dCe4c89B007A43CF88d8161dAf1A17C7AB',
     chainId: 42,
     symbol: 'STAKE',
+    name: 'STAKE',
+  },
+  56: {
+    address: '0x24e5CF4a0577563d4e7761D14D53C8D0b504E337',
+    chainId: 56,
+    symbol: 'STAKE',
+    name: 'STAKE on xDai on BSC',
   },
 };
 
 export const subgraphNames = {
-  100: 'raid-guild/xdai-omnibridge',
-  1: 'raid-guild/mainnet-omnibridge',
-  77: 'dan13ram/sokol-omnibridge',
-  42: 'dan13ram/kovan-omnibridge',
+  [HOME_CHAIN_ID]: process.env.REACT_APP_HOME_GRAPH_NAME,
+  [FOREIGN_CHAIN_ID]: process.env.REACT_APP_FOREIGN_GRAPH_NAME,
 };
 
 export const graphEndpoints = {
-  100: `https://api.thegraph.com/subgraphs/name/${subgraphNames[100]}`,
-  1: `https://api.thegraph.com/subgraphs/name/${subgraphNames[1]}`,
-  77: `https://api.thegraph.com/subgraphs/name/${subgraphNames[77]}`,
-  42: `https://api.thegraph.com/subgraphs/name/${subgraphNames[42]}`,
+  [HOME_CHAIN_ID]: `https://api.thegraph.com/subgraphs/name/${subgraphNames[HOME_CHAIN_ID]}`,
+  [FOREIGN_CHAIN_ID]: `https://api.thegraph.com/subgraphs/name/${subgraphNames[FOREIGN_CHAIN_ID]}`,
 };
 
 export const mediators = {
-  42:
-    process.env.REACT_APP_FOREIGN_MEDIATOR_ADDRESS ||
-    '0xA960d095470f7509955d5402e36d9DB984B5C8E2',
-  77:
-    process.env.REACT_APP_HOME_MEDIATOR_ADDRESS ||
-    '0x40CdfF886715A4012fAD0219D15C98bB149AeF0e',
-  1:
-    process.env.REACT_APP_FOREIGN_MEDIATOR_ADDRESS ||
-    '0x88ad09518695c6c3712AC10a214bE5109a655671',
-  100:
-    process.env.REACT_APP_HOME_MEDIATOR_ADDRESS ||
-    '0xf6A78083ca3e2a662D6dd1703c939c8aCE2e268d',
+  [HOME_CHAIN_ID]: process.env.REACT_APP_HOME_MEDIATOR_ADDRESS,
+  [FOREIGN_CHAIN_ID]: process.env.REACT_APP_FOREIGN_MEDIATOR_ADDRESS,
 };
 
 export const ambs = {
-  42:
-    process.env.REACT_APP_HOME_AMB_ADDRESS ||
-    '0xFe446bEF1DbF7AFE24E81e05BC8B271C1BA9a560',
-  77:
-    process.env.REACT_APP_FOREIGN_AMB_ADDRESS ||
-    '0xFe446bEF1DbF7AFE24E81e05BC8B271C1BA9a560',
-  1:
-    process.env.REACT_APP_HOME_AMB_ADDRESS ||
-    '0x4C36d2919e407f0Cc2Ee3c993ccF8ac26d9CE64e',
-  100:
-    process.env.REACT_APP_FOREIGN_AMB_ADDRESS ||
-    '0x75Df5AF045d91108662D8080fD1FEFAd6aA0bb59',
+  [HOME_CHAIN_ID]: process.env.REACT_APP_HOME_AMB_ADDRESS,
+  [FOREIGN_CHAIN_ID]: process.env.REACT_APP_FOREIGN_AMB_ADDRESS,
 };
 
 export const REVERSE_BRIDGE_ENABLED =
@@ -155,6 +107,7 @@ export const defaultTokensUrl = {
   1: 'https://tokens.uniswap.org',
   42: '',
   77: '',
+  56: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/smartchain/tokenlist.json',
 };
 
 export const GRAPH_HEALTH_ENDPOINT =

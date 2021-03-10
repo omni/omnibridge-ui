@@ -23,7 +23,7 @@ export const isxDaiChain = chainId => {
 };
 
 export const getDefaultToken = chainId =>
-  defaultTokens[chainId] || defaultTokens[100];
+  defaultTokens[chainId] || defaultTokens[HOME_CHAIN_ID];
 
 export const getMediatorAddressWithOverride = (tokenAddress, chainId) => {
   if (isOverridden(tokenAddress)) {
@@ -33,22 +33,25 @@ export const getMediatorAddressWithOverride = (tokenAddress, chainId) => {
 };
 
 export const getMediatorAddress = chainId =>
-  mediators[chainId].toLowerCase() || mediators[100].toLowerCase();
+  mediators[chainId].toLowerCase() || mediators[HOME_CHAIN_ID].toLowerCase();
 
 export const getNetworkName = chainId => networkNames[chainId] || 'Unknown';
 export const getNetworkLabel = chainId => networkLabels[chainId] || 'Unknown';
-export const getAMBAddress = chainId => ambs[chainId] || ambs[100];
+export const getAMBAddress = chainId => ambs[chainId] || ambs[HOME_CHAIN_ID];
 export const getGraphEndpoint = chainId =>
-  graphEndpoints[chainId] || graphEndpoints[100];
+  graphEndpoints[chainId] || graphEndpoints[HOME_CHAIN_ID];
 export const getSubgraphName = chainId =>
-  subgraphNames[chainId] || subgraphNames[100];
-export const getRPCUrl = chainId => (chainUrls[chainId] || chainUrls[100]).rpc;
+  subgraphNames[chainId] || subgraphNames[HOME_CHAIN_ID];
+export const getRPCUrl = chainId =>
+  (chainUrls[chainId] || chainUrls[HOME_CHAIN_ID]).rpc;
 export const getExplorerUrl = chainId =>
-  (chainUrls[chainId] || chainUrls[100]).explorer;
+  (chainUrls[chainId] || chainUrls[HOME_CHAIN_ID]).explorer;
 export const getTokenListUrl = chainId =>
-  defaultTokensUrl[chainId] || defaultTokensUrl[100];
+  defaultTokensUrl[chainId] || defaultTokensUrl[HOME_CHAIN_ID];
 export const getMonitorUrl = (chainId, hash) =>
-  `${(chainUrls[chainId] || chainUrls[100]).monitor}/${chainId}/${hash}`;
+  `${
+    (chainUrls[chainId] || chainUrls[HOME_CHAIN_ID]).monitor
+  }/${chainId}/${hash}`;
 
 export const uniqueTokens = list => {
   const seen = {};
