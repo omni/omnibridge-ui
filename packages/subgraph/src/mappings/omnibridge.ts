@@ -6,7 +6,7 @@ import {
 } from '../types/Omnibridge/Omnibridge';
 import { Execution, UserRequest, Token } from '../types/schema';
 
-import { fetchTokenInfo, overrides } from './helpers';
+import { fetchTokenInfo, overrides, getDirection } from './helpers';
 
 export function handleBridgeTransfer(event: TokensBridged): void {
   log.debug('Parsing TokensBridged', []);
@@ -64,9 +64,15 @@ export function handleNewToken(event: NewTokenRegistered): void {
   token.decimals = tokenObject.decimals;
 
   let network = dataSource.network();
-  if (network == 'xdai') {
+  let direction = getDirection();
+  if (network == 'xdai' && direction == 'mainnet-xdai') {
     token.homeChainId = 100;
     token.foreignChainId = 1;
+    token.homeName = tokenObject.name;
+    token.foreignName = tokenObject.name.slice(0, -8);
+  } else if (network == 'xdai' && direction == 'bsc-xdai') {
+    token.homeChainId = 100;
+    token.foreignChainId = 56;
     token.homeName = tokenObject.name;
     token.foreignName = tokenObject.name.slice(0, -8);
   } else if (network == 'poa-sokol') {
@@ -84,6 +90,11 @@ export function handleNewToken(event: NewTokenRegistered): void {
     token.foreignChainId = 100;
     token.homeName = tokenObject.name;
     token.foreignName = tokenObject.name.slice(0, -11);
+  } else if (network == 'bsc') {
+    token.homeChainId = 56;
+    token.foreignChainId = 100;
+    token.homeName = tokenObject.name;
+    token.foreignName = tokenObject.name.slice(0, -7);
   }
 
   token.save();
