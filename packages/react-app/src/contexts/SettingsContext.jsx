@@ -1,6 +1,5 @@
-import React, { useCallback, useEffect, useState, useContext } from 'react';
-
 import { LOCAL_STORAGE_KEYS } from 'lib/constants';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 
 const {
   INFINITE_UNLOCK,

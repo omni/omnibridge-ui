@@ -16,9 +16,9 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import SettingsImage from 'assets/settings.svg';
-import { SettingsIcon } from 'icons/SettingsIcon';
 import { useSettings } from 'contexts/SettingsContext';
-import React, { useRef, useCallback } from 'react';
+import { SettingsIcon } from 'icons/SettingsIcon';
+import React, { useCallback, useRef } from 'react';
 
 export const UpdateSettings = ({ close }) => {
   const initialRef = useRef();
@@ -116,7 +116,7 @@ export const UpdateSettings = ({ close }) => {
                     value={xdaiRPC}
                   />
                 </InputGroup>
-                <Text mb={2}>Turn Off Unclaimed Notifications</Text>
+                <Text mb={2}>Turn Off Claim Notifications</Text>
                 <Switch
                   mb={4}
                   colorScheme="blue"

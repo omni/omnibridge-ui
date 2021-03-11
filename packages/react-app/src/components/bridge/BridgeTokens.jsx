@@ -14,8 +14,8 @@ import {
   ReverseWarning,
 } from 'components/warnings/ReverseWarning';
 import { BridgeContext } from 'contexts/BridgeContext';
-import { Web3Context } from 'contexts/Web3Context';
 import { useSettings } from 'contexts/SettingsContext';
+import { Web3Context } from 'contexts/Web3Context';
 import { HOME_NETWORK } from 'lib/constants';
 import { getBridgeNetwork, getNetworkName } from 'lib/helpers';
 import React, { useContext } from 'react';

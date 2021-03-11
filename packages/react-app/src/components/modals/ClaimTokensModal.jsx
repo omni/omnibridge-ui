@@ -16,9 +16,9 @@ import ClaimTokensImage from 'assets/multiple-claim.svg';
 import { LoadingModal } from 'components/modals/LoadingModal';
 import { Web3Context } from 'contexts/Web3Context';
 import { useClaimableTransfers } from 'hooks/useClaimableTransfers';
+import { LOCAL_STORAGE_KEYS } from 'lib/constants';
 import React, { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { LOCAL_STORAGE_KEYS } from 'lib/constants';
 
 const { DONT_SHOW_CLAIMS } = LOCAL_STORAGE_KEYS;
 

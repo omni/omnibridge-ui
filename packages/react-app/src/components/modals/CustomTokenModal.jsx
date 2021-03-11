@@ -17,8 +17,8 @@ import CustomTokenImage from 'assets/custom-token.svg';
 import { BridgeContext } from 'contexts/BridgeContext';
 import { Web3Context } from 'contexts/Web3Context';
 import { utils } from 'ethers';
-import { logError, uniqueTokens } from 'lib/helpers';
 import { LOCAL_STORAGE_KEYS } from 'lib/constants';
+import { logError, uniqueTokens } from 'lib/helpers';
 import { fetchTokenDetails } from 'lib/token';
 import React, { useContext, useRef, useState } from 'react';
 

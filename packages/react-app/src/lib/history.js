@@ -1,5 +1,6 @@
 import { gql, request } from 'graphql-request';
 import { getBridgeNetwork, getGraphEndpoint } from 'lib/helpers';
+
 import { ADDRESS_ZERO } from './constants';
 
 const pageSize = 1000;

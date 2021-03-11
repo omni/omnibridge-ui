@@ -1,7 +1,7 @@
 import { ethers } from 'ethers';
 import memoize from 'fast-memoize';
-import { getRPCUrl, isxDaiChain } from 'lib/helpers';
 import { LOCAL_STORAGE_KEYS } from 'lib/constants';
+import { getRPCUrl, isxDaiChain } from 'lib/helpers';
 
 const { MAINNET_RPC_URL, XDAI_RPC_URL } = LOCAL_STORAGE_KEYS;
 
