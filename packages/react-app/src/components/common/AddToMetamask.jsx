@@ -4,12 +4,13 @@ import { useWeb3 } from 'contexts/Web3Context';
 import { getNetworkName } from 'lib/helpers';
 import { addTokenToMetamask } from 'lib/metamask';
 import React from 'react';
+import { ADDRESS_ZERO } from 'lib/constants';
 
 export const AddToMetamask = ({ token, ...props }) => {
   const { providerChainId } = useWeb3();
   const toast = useToast();
 
-  if (!window.ethereum) return null;
+  if (!window.ethereum || token.address === ADDRESS_ZERO) return null;
 
   const showError = msg => {
     if (msg) {

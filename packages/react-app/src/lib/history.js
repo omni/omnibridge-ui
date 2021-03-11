@@ -1,5 +1,6 @@
 import { gql, request } from 'graphql-request';
 import { getBridgeNetwork, getGraphEndpoint } from 'lib/helpers';
+import { ADDRESS_ZERO } from './constants';
 
 const pageSize = 1000;
 
@@ -115,7 +116,7 @@ export const combineRequestsWithExecutions = (
         chainId,
       },
       toToken: {
-        address: execution.token,
+        address: execution ? execution.token : ADDRESS_ZERO,
         decimals: req.decimals,
         symbol: req.symbol,
         chainId: bridgeChainId,
