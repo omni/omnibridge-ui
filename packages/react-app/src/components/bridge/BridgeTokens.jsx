@@ -15,6 +15,7 @@ import {
 } from 'components/warnings/ReverseWarning';
 import { BridgeContext } from 'contexts/BridgeContext';
 import { Web3Context } from 'contexts/Web3Context';
+import { useSettings } from 'contexts/SettingsContext';
 import { HOME_NETWORK } from 'lib/constants';
 import { getBridgeNetwork, getNetworkName } from 'lib/helpers';
 import React, { useContext } from 'react';
@@ -22,11 +23,14 @@ import React, { useContext } from 'react';
 export const BridgeTokens = () => {
   const { providerChainId: chainId } = useContext(Web3Context);
   const { fromToken, toToken, txHash, loading } = useContext(BridgeContext);
+  const { neverShowClaims, needsSaving } = useSettings();
   const isERC20Dai = isERC20DaiAddress(fromToken);
   const isNativexDaiToken = isNativexDaiAddress(toToken);
   const smallScreen = useBreakpointValue({ base: true, lg: false });
   const bridgeChainId = getBridgeNetwork(chainId);
 
+  const txNeedsClaiming =
+    !!txHash && !loading && chainId === getBridgeNetwork(HOME_NETWORK);
   return (
     <Flex
       w={{ base: undefined, lg: 'calc(100% - 4rem)' }}
@@ -41,12 +45,10 @@ export const BridgeTokens = () => {
       my="auto"
     >
       <BridgeLoadingModal />
-      {!!txHash && !loading && chainId === getBridgeNetwork(HOME_NETWORK) ? (
-        <ClaimTransferModal />
-      ) : (
+      {txNeedsClaiming ? <ClaimTransferModal /> : null}
+      {txNeedsClaiming || neverShowClaims || needsSaving ? null : (
         <ClaimTokensModal />
       )}
-
       {!smallScreen && (
         <Flex w="100%" justify="space-between">
           <Flex align="flex-start" direction="column">

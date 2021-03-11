@@ -4,6 +4,7 @@ import { ChakraProvider, CSSReset } from '@chakra-ui/react';
 import { css, Global } from '@emotion/react';
 import { ErrorBoundary } from 'components/common/ErrorBoundary';
 import { Layout } from 'components/common/Layout';
+import { SettingsProvider } from 'contexts/SettingsContext';
 import { Web3Provider } from 'contexts/Web3Context';
 import React from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
@@ -28,13 +29,15 @@ export const App = () => {
       <CSSReset />
       <Global styles={GlobalStyles} />
       <ErrorBoundary>
-        <Web3Provider>
-          <Router>
-            <Layout>
-              <Routes />
-            </Layout>
-          </Router>
-        </Web3Provider>
+        <SettingsProvider>
+          <Web3Provider>
+            <Router>
+              <Layout>
+                <Routes />
+              </Layout>
+            </Router>
+          </Web3Provider>
+        </SettingsProvider>
       </ErrorBoundary>
     </ChakraProvider>
   );

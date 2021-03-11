@@ -83,7 +83,7 @@ export const defaultTokens = {
   100: {
     address: '0xb7D311E2Eb55F2f68a9440da38e7989210b9A05e',
     chainId: 100,
-    symbol: 'STAKE',
+    symbol: 'STAKE on xDai',
   },
   1: {
     address: '0x0Ae055097C6d159879521C384F1D2123D1f195e6',
@@ -93,7 +93,7 @@ export const defaultTokens = {
   77: {
     address: '0x408ec1bb883da0ea0fb3c955ea6befcd05aa7c3a',
     chainId: 77,
-    symbol: 'STAKE',
+    symbol: 'STAKE on xDai',
   },
   42: {
     address: '0xFD2df5dCe4c89B007A43CF88d8161dAf1A17C7AB',
@@ -158,3 +158,12 @@ export const defaultTokensUrl = {
 
 export const GRAPH_HEALTH_ENDPOINT =
   'https://api.thegraph.com/index-node/graphql';
+
+export const LOCAL_STORAGE_KEYS = {
+  DONT_SHOW_CLAIMS: 'dont-show-claims',
+  MAINNET_RPC_URL: 'mainnet-rpc-url',
+  XDAI_RPC_URL: 'xdai-rpc-url',
+  NEVER_SHOW_CLAIMS: 'never-show-claims',
+  INFINITE_UNLOCK: 'infinite-unlock',
+  CUSTOM_TOKENS: 'customTokens',
+};
