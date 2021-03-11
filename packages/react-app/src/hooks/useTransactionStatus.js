@@ -13,7 +13,7 @@ export const useTransactionStatus = () => {
     setLoading,
     txHash,
     setTxHash,
-    setUpdateFromAllowance,
+    updateAllowance,
     totalConfirms,
   } = useContext(BridgeContext);
   const [needsConfirmation, setNeedsConfirmation] = useState(false);
@@ -21,18 +21,18 @@ export const useTransactionStatus = () => {
   const [receipt, setReceipt] = useState();
   const completeReceipt = useCallback(() => {
     setTxHash();
-    setUpdateFromAllowance(a => !a);
+    updateAllowance();
     setLoadingText();
     setReceipt();
     setLoading(false);
-  }, [setLoading, setUpdateFromAllowance, setTxHash]);
+  }, [setLoading, updateAllowance, setTxHash]);
 
   const incompleteReceipt = useCallback(() => {
-    setUpdateFromAllowance(a => !a);
+    updateAllowance();
     setLoadingText();
     setReceipt();
     setLoading(false);
-  }, [setLoading, setUpdateFromAllowance]);
+  }, [setLoading, updateAllowance]);
 
   useEffect(() => {
     const subscriptions = [];

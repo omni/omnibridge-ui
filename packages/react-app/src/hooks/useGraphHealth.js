@@ -69,6 +69,8 @@ export const useGraphHealth = (description, onlyHome = false) => {
             !homeHealth.isFailed &&
             homeHealth.isSynced &&
             Math.abs(homeHealth.latestBlockNumber - homeBlockNumber) <
+              THRESHOLD_BLOCKS &&
+            Math.abs(homeHealth.chainHeadBlockNumber - homeBlockNumber) <
               THRESHOLD_BLOCKS,
         );
 
@@ -78,6 +80,8 @@ export const useGraphHealth = (description, onlyHome = false) => {
             !foreignHealth.isFailed &&
             foreignHealth.isSynced &&
             Math.abs(foreignHealth.latestBlockNumber - foreignBlockNumber) <
+              THRESHOLD_BLOCKS &&
+            Math.abs(foreignHealth.chainHeadBlockNumber - foreignBlockNumber) <
               THRESHOLD_BLOCKS,
         );
 

@@ -61,6 +61,7 @@ const extractStatus = ({ fatalError, synced, chains }) => ({
   isFailed: !!fatalError,
   isSynced: synced,
   latestBlockNumber: Number(chains[0].latestBlock.number),
+  chainHeadBlockNumber: Number(chains[0].chainHeadBlock.number),
 });
 
 const failedStatus = {
@@ -68,6 +69,7 @@ const failedStatus = {
   isFailed: true,
   isSynced: false,
   latestBlockNumber: 0,
+  chainHeadBlockNumber: 0,
 };
 
 export const getHealthStatus = async () => {

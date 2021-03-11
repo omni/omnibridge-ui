@@ -16,8 +16,11 @@ import ClaimTokensImage from 'assets/multiple-claim.svg';
 import { LoadingModal } from 'components/modals/LoadingModal';
 import { Web3Context } from 'contexts/Web3Context';
 import { useClaimableTransfers } from 'hooks/useClaimableTransfers';
+import { LOCAL_STORAGE_KEYS } from 'lib/constants';
 import React, { useContext, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+
+const { DONT_SHOW_CLAIMS } = LOCAL_STORAGE_KEYS;
 
 export const ClaimTokensModal = () => {
   const { account, providerChainId } = useContext(Web3Context);
@@ -26,16 +29,16 @@ export const ClaimTokensModal = () => {
 
   const onClose = () => {
     setOpen(false);
-    window.localStorage.setItem('dont-show-claims', 'true');
+    window.localStorage.setItem(DONT_SHOW_CLAIMS, 'true');
   };
 
   useEffect(() => {
-    window.localStorage.setItem('dont-show-claims', 'false');
+    window.localStorage.setItem(DONT_SHOW_CLAIMS, 'false');
   }, [account, providerChainId]);
 
   useEffect(() => {
     const dontShowClaims =
-      window.localStorage.getItem('dont-show-claims') === 'true';
+      window.localStorage.getItem(DONT_SHOW_CLAIMS) === 'true';
     setOpen(!!transfers && transfers.length > 0 && !dontShowClaims);
   }, [transfers]);
 

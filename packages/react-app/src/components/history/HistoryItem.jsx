@@ -9,6 +9,7 @@ import {
 } from '@chakra-ui/react';
 import BlueTickImage from 'assets/blue-tick.svg';
 import RightArrowImage from 'assets/right-arrow.svg';
+import { AddToMetamask } from 'components/common/AddToMetamask';
 import { TxLink } from 'components/common/TxLink';
 import { Web3Context } from 'contexts/Web3Context';
 import { BigNumber, utils } from 'ethers';
@@ -67,8 +68,7 @@ export const HistoryItem = ({
     sendingTx,
     receivingTx: inputReceivingTx,
     amount,
-    decimals,
-    symbol,
+    toToken,
     message: inputMessage,
   },
 }) => {
@@ -260,8 +260,11 @@ export const HistoryItem = ({
             Amount
           </Text>
           <Text my="auto" textAlign="center">
-            {formatUnits(BigNumber.from(amount), decimals)} {symbol}
+            {`${formatUnits(BigNumber.from(amount), toToken.decimals)} ${
+              toToken.symbol
+            }`}
           </Text>
+          <AddToMetamask token={toToken} ml="0.25rem" />
         </Flex>
         {receivingTx ? (
           <Flex align="center" justify={{ base: 'center', md: 'flex-end' }}>

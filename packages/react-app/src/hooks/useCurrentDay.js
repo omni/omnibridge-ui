@@ -17,7 +17,7 @@ export const useCurrentDay = () => {
       .getCurrentDay()
       .then(day => setCurrentDay(day))
       .catch(contractError => logError({ contractError }));
-  }, [ethersProvider, setCurrentDay, chainId]);
+  }, [ethersProvider, chainId]);
 
   return currentDay;
 };

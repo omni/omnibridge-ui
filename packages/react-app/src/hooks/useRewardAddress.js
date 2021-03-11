@@ -8,10 +8,10 @@ import { useContext, useEffect, useState } from 'react';
 export const useRewardAddress = () => {
   const { account } = useContext(Web3Context);
   const [isRewardAddress, setRewardAddress] = useState(false);
-  const chainId = HOME_CHAIN_ID;
 
   useEffect(() => {
     if (!account) return;
+    const chainId = HOME_CHAIN_ID;
     const ethersProvider = getEthersProvider(chainId);
     const mediatorAddress = getMediatorAddress(chainId);
     const abi = ['function isRewardAddress(address) view returns (bool)'];
@@ -21,7 +21,7 @@ export const useRewardAddress = () => {
       .isRewardAddress(account)
       .then(is => setRewardAddress(is))
       .catch(contractError => logError({ contractError }));
-  }, [account, setRewardAddress, chainId]);
+  }, [account]);
 
   return isRewardAddress;
 };

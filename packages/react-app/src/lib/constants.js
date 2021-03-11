@@ -112,3 +112,12 @@ export const defaultTokensUrl = {
 
 export const GRAPH_HEALTH_ENDPOINT =
   'https://api.thegraph.com/index-node/graphql';
+
+export const LOCAL_STORAGE_KEYS = {
+  DONT_SHOW_CLAIMS: 'dont-show-claims',
+  MAINNET_RPC_URL: 'mainnet-rpc-url',
+  XDAI_RPC_URL: 'xdai-rpc-url',
+  NEVER_SHOW_CLAIMS: 'never-show-claims',
+  INFINITE_UNLOCK: 'infinite-unlock',
+  CUSTOM_TOKENS: 'customTokens',
+};
