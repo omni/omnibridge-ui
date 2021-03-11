@@ -1,4 +1,5 @@
 import { Box, Flex, Spinner, Text, useBreakpointValue } from '@chakra-ui/react';
+import { AddToMetamask } from 'components/common/AddToMetamask';
 import { Logo } from 'components/common/Logo';
 import { BridgeContext } from 'contexts/BridgeContext';
 import { Web3Context } from 'contexts/Web3Context';
@@ -99,6 +100,7 @@ export const ToToken = () => {
               <Text fontSize="lg" fontWeight="bold">
                 {token.name}
               </Text>
+              <AddToMetamask token={token} ml="0.5rem" asModal />
             </Flex>
             <Flex
               flex={1}
@@ -111,15 +113,17 @@ export const ToToken = () => {
               {balanceLoading ? (
                 <Spinner size="sm" color="grey" />
               ) : (
-                <Text
-                  color="grey"
-                  textAlign="right"
+                <Flex
                   {...(smallScreen
                     ? {}
                     : { position: 'absolute', bottom: '4px', right: 0 })}
+                  justify="flex-end"
+                  align="center"
                 >
-                  {`Balance: ${formatValue(balance, token.decimals)}`}
-                </Text>
+                  <Text color="grey" textAlign="right">
+                    {`Balance: ${formatValue(balance, token.decimals)}`}
+                  </Text>
+                </Flex>
               )}
             </Flex>
           </Flex>

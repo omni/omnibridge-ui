@@ -72,6 +72,7 @@ export const NeedsConfirmationModal = ({ setNeedsConfirmation }) => {
                   justify="center"
                   align="center"
                   minW="4rem"
+                  maxW="4rem"
                   flex={1}
                 >
                   <Image src={InfoImage} />
