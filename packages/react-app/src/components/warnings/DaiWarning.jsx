@@ -7,6 +7,7 @@ const ERC20DaiAddress = {
   1: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
   42: '0x4F96Fe3b7A6Cf9725f59d353F723c1bDb64CA6Aa',
   77: '0xa844e8c64608dede1f22f519ad0e98e2629684df',
+  56: '0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3',
 };
 
 export const isERC20DaiAddress = token => {
@@ -15,8 +16,17 @@ export const isERC20DaiAddress = token => {
   }
 
   const isxDai = isxDaiChain(token.chainId);
-  return !isxDai && token.address === ERC20DaiAddress[token.chainId];
+  return (
+    !isxDai &&
+    token.address.toLowerCase() === ERC20DaiAddress[token.chainId].toLowerCase()
+  );
 };
+
+const XDaiBridgeLink = () => (
+  <Link href="https://bridge.xdaichain.com/" color="blue.500" isExternal>
+    xDai Ethereum Bridge
+  </Link>
+);
 
 export const DaiWarning = () => {
   return (
@@ -24,16 +34,8 @@ export const DaiWarning = () => {
       <Alert status="warning" borderRadius={5} mb={5}>
         <AlertIcon minWidth="20px" />
         <Text fontSize="small">
-          Bridges DAI on Ethereum to DAI on xDai, DOES NOT mint native xDai. If
-          you want native xDai, use the&nbsp;
-          <Link
-            href="https://dai-bridge.poa.network"
-            color="blue.500"
-            isExternal
-          >
-            xDai Bridge
-          </Link>
-          .
+          Bridging DAI token to xDai Chain DOES NOT mint native xDai token. If
+          you want native xDai, use the <XDaiBridgeLink />.
         </Text>
       </Alert>
     </Flex>

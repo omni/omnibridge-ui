@@ -1,11 +1,13 @@
 import { gql, request } from 'graphql-request';
-import { GRAPH_HEALTH_ENDPOINT, HOME_NETWORK } from 'lib/constants';
-import { getBridgeNetwork, getSubgraphName, logError } from 'lib/helpers';
+import {
+  FOREIGN_CHAIN_ID,
+  GRAPH_HEALTH_ENDPOINT,
+  HOME_CHAIN_ID,
+} from 'lib/constants';
+import { getSubgraphName, logError } from 'lib/helpers';
 
-const FOREIGN_NETWORK = getBridgeNetwork(HOME_NETWORK);
-
-const HOME_SUBGRAPH = getSubgraphName(HOME_NETWORK);
-const FOREIGN_SUBGRAPH = getSubgraphName(FOREIGN_NETWORK);
+const HOME_SUBGRAPH = getSubgraphName(HOME_CHAIN_ID);
+const FOREIGN_SUBGRAPH = getSubgraphName(FOREIGN_CHAIN_ID);
 
 const healthQuery = gql`
   query getHealthStatus($subgraphHome: String!, $subgraphForeign: String!) {

@@ -19,7 +19,12 @@ import TransferImage from 'assets/confirm-transfer.svg';
 import { NeedsTransactions } from 'components/modals/NeedsTransactionsModal';
 import { DaiWarning, isERC20DaiAddress } from 'components/warnings/DaiWarning';
 import { BridgeContext } from 'contexts/BridgeContext';
-import { formatValue, getAccountString, isxDaiChain } from 'lib/helpers';
+import {
+  formatValue,
+  getAccountString,
+  getNetworkLabel,
+  isxDaiChain,
+} from 'lib/helpers';
 import React, { useContext, useEffect, useState } from 'react';
 
 export const ConfirmTransferModal = ({ isOpen, onClose }) => {
@@ -43,15 +48,10 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
   const toast = useToast();
   if (!fromToken || !toToken) return null;
   const isxDai = isxDaiChain(fromToken.chainId);
-  const isBridgedToken = fromToken.name.endsWith(isxDai ? 'xDai' : 'Mainnet');
   const fromAmt = formatValue(fromAmount, fromToken.decimals);
-  const fromUnit = isBridgedToken
-    ? fromToken.symbol + (isxDai ? ' on xDai' : ' on Mainnet')
-    : fromToken.symbol;
+  const fromUnit = fromToken.symbol;
   const toAmt = formatValue(toAmount, toToken.decimals);
-  const toUnit = !isBridgedToken
-    ? toToken.symbol + (!isxDai ? ' on xDai' : ' on Mainnet')
-    : toToken.symbol;
+  const toUnit = toToken.symbol;
   const isERC20Dai = isERC20DaiAddress(fromToken);
 
   const showError = msg => {
@@ -165,6 +165,9 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
             <Box w="100%" fontSize="sm" color={isxDai ? 'black' : 'grey'}>
               <Text as="span">{`Please confirm that you would like to send `}</Text>
               <Text as="b">{`${fromAmt} ${fromUnit}`}</Text>
+              <Text as="span">{` from ${getNetworkLabel(
+                fromToken.chainId,
+              )}`}</Text>
               {receiver ? (
                 <>
                   <Text as="span">{` and `}</Text>
@@ -175,6 +178,7 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
                 <Text as="span">{` and receive `}</Text>
               )}
               <Text as="b">{`${toAmt} ${toUnit}`}</Text>
+              <Text as="span">{` on ${getNetworkLabel(toToken.chainId)}`}</Text>
             </Box>
             {isxDai && <NeedsTransactions />}
           </ModalBody>

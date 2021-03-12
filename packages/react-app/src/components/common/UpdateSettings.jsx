@@ -18,6 +18,8 @@ import {
 import SettingsImage from 'assets/settings.svg';
 import { useSettings } from 'contexts/SettingsContext';
 import { SettingsIcon } from 'icons/SettingsIcon';
+import { FOREIGN_CHAIN_ID, HOME_CHAIN_ID } from 'lib/constants';
+import { getNetworkLabel } from 'lib/helpers';
 import React, { useCallback, useRef } from 'react';
 
 export const UpdateSettings = ({ close }) => {
@@ -96,7 +98,9 @@ export const UpdateSettings = ({ close }) => {
                   isChecked={infiniteUnlock}
                   onChange={e => setInfiniteUnlock(e.target.checked)}
                 />
-                <Text mb={2}>Custom Mainnet RPC URL</Text>
+                <Text mb={2}>
+                  Custom {getNetworkLabel(FOREIGN_CHAIN_ID)} RPC URL
+                </Text>
                 <InputGroup mb={4} borderColor="#DAE3F0">
                   <Input
                     id="symbol"
@@ -106,7 +110,9 @@ export const UpdateSettings = ({ close }) => {
                     value={mainnetRPC}
                   />
                 </InputGroup>
-                <Text mb={2}>Custom xDai RPC URL</Text>
+                <Text mb={2}>
+                  Custom {getNetworkLabel(HOME_CHAIN_ID)} RPC URL
+                </Text>
                 <InputGroup mb={4} borderColor="#DAE3F0">
                   <Input
                     id="decimals"

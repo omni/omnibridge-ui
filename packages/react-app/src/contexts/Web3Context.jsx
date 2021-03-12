@@ -34,6 +34,7 @@ const providerOptions = {
         42: getRPCUrl(42),
         100: getRPCUrl(100),
         77: getRPCUrl(77),
+        56: getRPCUrl(56),
       },
     },
   },
@@ -58,10 +59,9 @@ export const Web3Provider = ({ children }) => {
           web3Provider.currentProvider,
         );
 
-        const providerNetwork = await provider.getNetwork();
         setWeb3State({
           ethersProvider: provider,
-          providerChainId: providerNetwork.chainId,
+          providerChainId: Number(prov.chainId),
         });
         if (updateAccount) {
           const signer = provider.getSigner();

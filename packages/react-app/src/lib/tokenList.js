@@ -26,7 +26,10 @@ export const fetchDefaultTokens = async chainId => {
     const response = await fetch(url);
     if (response.ok) {
       const json = await response.json();
-      if (tokenListValidator(json)) {
+      if (chainId === 56) {
+        json.tokens = json.tokens.map(token => ({ ...token, chainId }));
+      }
+      if (tokenListValidator(json) || chainId === 56) {
         return json.tokens.filter(token => token.chainId === chainId);
       }
     }

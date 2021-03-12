@@ -1,6 +1,11 @@
 import { Alert, AlertIcon, Flex, Text } from '@chakra-ui/react';
-import { ADDRESS_ZERO, REVERSE_BRIDGE_ENABLED } from 'lib/constants';
-import { isxDaiChain } from 'lib/helpers';
+import {
+  ADDRESS_ZERO,
+  FOREIGN_CHAIN_ID,
+  HOME_CHAIN_ID,
+  REVERSE_BRIDGE_ENABLED,
+} from 'lib/constants';
+import { getNetworkName, isxDaiChain } from 'lib/helpers';
 import React from 'react';
 
 export const isNativexDaiAddress = token => {
@@ -22,7 +27,8 @@ export const ReverseWarning = ({ isSmallScreen }) => {
         <AlertIcon minWidth="20px" />
         <Text fontSize="small">
           The current version of OmniBridge does not support sending native
-          ERC20 tokens from the xDai chain to the Ethereum Mainnet.
+          ERC20 tokens from the {getNetworkName(HOME_CHAIN_ID)} to the{' '}
+          {getNetworkName(FOREIGN_CHAIN_ID)}.
         </Text>
       </Alert>
     </Flex>

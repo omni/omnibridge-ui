@@ -6,16 +6,14 @@ import { Footer } from 'components/common/Footer';
 import { Header } from 'components/common/Header';
 import { TermsOfServiceModal } from 'components/modals/TermsOfServiceModal';
 import { Web3Context } from 'contexts/Web3Context';
-import { HOME_NETWORK } from 'lib/constants';
-import { getBridgeNetwork } from 'lib/helpers';
+import { FOREIGN_CHAIN_ID, HOME_CHAIN_ID } from 'lib/constants';
 import React, { useContext } from 'react';
 
 export const Layout = ({ children }) => {
   const { account, providerChainId } = useContext(Web3Context);
   const valid =
     !!account &&
-    [HOME_NETWORK, getBridgeNetwork(HOME_NETWORK)].indexOf(providerChainId) >=
-      0;
+    [HOME_CHAIN_ID, FOREIGN_CHAIN_ID].indexOf(providerChainId) >= 0;
   return (
     <Flex
       p={0}

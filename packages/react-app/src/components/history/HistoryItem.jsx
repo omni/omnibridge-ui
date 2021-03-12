@@ -18,7 +18,7 @@ import {
   getMessageFromTxHash,
   getMessageStatus,
 } from 'lib/amb';
-import { HOME_NETWORK, POLLING_INTERVAL } from 'lib/constants';
+import { FOREIGN_CHAIN_ID, POLLING_INTERVAL } from 'lib/constants';
 import {
   getBridgeNetwork,
   getExplorerUrl,
@@ -56,6 +56,7 @@ const networkTags = {
   1: <Tag bg="#5A74DA" txt="Ethereum" />,
   42: <Tag bg="#5A74DA" txt="Kovan" />,
   77: <Tag bg="#4DA9A6" txt="POA Sokol" />,
+  56: <Tag bg="#5A74DA" txt="BSC" />,
 };
 
 const getNetworkTag = chainId => networkTags[chainId];
@@ -104,11 +105,7 @@ export const HistoryItem = ({
   const claimTokens = async () => {
     if (loading) return;
     if (isxDai) {
-      showError(
-        `Please switch wallet to ${getNetworkName(
-          getBridgeNetwork(HOME_NETWORK),
-        )}`,
-      );
+      showError(`Please switch wallet to ${getNetworkName(FOREIGN_CHAIN_ID)}`);
     } else if (!claimable) {
       showError('Still Collecting Signatures...');
     } else {

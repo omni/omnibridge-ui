@@ -16,7 +16,7 @@ import {
 import { BridgeContext } from 'contexts/BridgeContext';
 import { useSettings } from 'contexts/SettingsContext';
 import { Web3Context } from 'contexts/Web3Context';
-import { HOME_NETWORK } from 'lib/constants';
+import { FOREIGN_CHAIN_ID } from 'lib/constants';
 import { getBridgeNetwork, getNetworkName } from 'lib/helpers';
 import React, { useContext } from 'react';
 
@@ -29,8 +29,7 @@ export const BridgeTokens = () => {
   const smallScreen = useBreakpointValue({ base: true, lg: false });
   const bridgeChainId = getBridgeNetwork(chainId);
 
-  const txNeedsClaiming =
-    !!txHash && !loading && chainId === getBridgeNetwork(HOME_NETWORK);
+  const txNeedsClaiming = !!txHash && !loading && chainId === FOREIGN_CHAIN_ID;
   return (
     <Flex
       w={{ base: undefined, lg: 'calc(100% - 4rem)' }}

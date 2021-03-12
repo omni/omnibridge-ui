@@ -1,8 +1,9 @@
 ######################################################
 # update interval execution status of a message;
-# if unset default => sokol
+# if unset default => 77 and 42
 ######################################################
-REACT_APP_HOME_NETWORK=<sokol/xdai>
+REACT_APP_HOME_CHAIN_ID=100
+REACT_APP_FOREIGN_CHAIN_ID=1
 
 ######################################################
 # update interval execution status of a message;

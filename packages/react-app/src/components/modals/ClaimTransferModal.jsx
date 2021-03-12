@@ -23,8 +23,12 @@ import {
   getMessageFromTxHash,
   getMessageStatus,
 } from 'lib/amb';
-import { HOME_NETWORK, POLLING_INTERVAL } from 'lib/constants';
-import { getBridgeNetwork, getNetworkName, logError } from 'lib/helpers';
+import {
+  FOREIGN_CHAIN_ID,
+  HOME_CHAIN_ID,
+  POLLING_INTERVAL,
+} from 'lib/constants';
+import { getNetworkName, logError } from 'lib/helpers';
 import React, { useContext, useEffect, useState } from 'react';
 
 export const ClaimTransferModal = () => {
@@ -35,7 +39,6 @@ export const ClaimTransferModal = () => {
   const [message, setMessage] = useState(false);
   const [executed, setExecuted] = useState(false);
   const [loadingText, setLoadingText] = useState('');
-  const chainId = getBridgeNetwork(HOME_NETWORK);
 
   const onClose = () => {
     setOpen(false);
@@ -54,7 +57,7 @@ export const ClaimTransferModal = () => {
     message.msgData &&
     message.signatures &&
     !executed &&
-    providerChainId === chainId;
+    providerChainId === FOREIGN_CHAIN_ID;
 
   const toast = useToast();
   const showError = errorMsg => {
@@ -75,12 +78,12 @@ export const ClaimTransferModal = () => {
     } else if (claimable) {
       try {
         setClaiming(true);
-        await executeSignatures(ethersProvider, chainId, message);
+        await executeSignatures(ethersProvider, FOREIGN_CHAIN_ID, message);
         setLoadingText('Waiting for Execution');
       } catch (executeError) {
         setClaiming(false);
         setLoadingText('');
-        logError({ executeError, chainId, message });
+        logError({ executeError, chainId: FOREIGN_CHAIN_ID, message });
         if (executeError && executeError.message) {
           showError(executeError.message);
         } else {
@@ -106,15 +109,12 @@ export const ClaimTransferModal = () => {
       try {
         if (!message || !message.signatures) {
           unsubscribe();
-          const msg = await getMessageFromTxHash(HOME_NETWORK, txHash);
+          const msg = await getMessageFromTxHash(HOME_CHAIN_ID, txHash);
           setMessage(msg);
           return;
         }
 
-        status = await getMessageStatus(
-          getBridgeNetwork(HOME_NETWORK),
-          message.msgId,
-        );
+        status = await getMessageStatus(FOREIGN_CHAIN_ID, message.msgId);
         if (status) {
           unsubscribe();
           if (claiming) {
@@ -150,7 +150,7 @@ export const ClaimTransferModal = () => {
     return (
       <LoadingModal
         loadingText={message ? loadingText : ''}
-        chainId={HOME_NETWORK}
+        chainId={HOME_CHAIN_ID}
         txHash={txHash}
       />
     );
@@ -198,10 +198,12 @@ export const ClaimTransferModal = () => {
                 <Flex align="center" fontSize="12px" p={4}>
                   <Text>
                     {`The claim process may take a variable period of time on ${getNetworkName(
-                      getBridgeNetwork(HOME_NETWORK),
-                    )} depending on network congestion. Your ${
+                      FOREIGN_CHAIN_ID,
+                    )}${' '}
+                    depending on network congestion. Your ${
                       message.symbol
-                    } balance will increase to reflect the completed transfer after the claim is processed`}
+                    } balance will increase to reflect${' '}
+                    the completed transfer after the claim is processed`}
                   </Text>
                 </Flex>
               </Flex>

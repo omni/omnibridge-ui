@@ -1,13 +1,11 @@
 import { useToast } from '@chakra-ui/react';
 import { Web3Context } from 'contexts/Web3Context';
-import { HOME_NETWORK } from 'lib/constants';
+import { FOREIGN_CHAIN_ID, HOME_CHAIN_ID } from 'lib/constants';
 import { getHealthStatus } from 'lib/graphHealth';
-import { getBridgeNetwork, logDebug, logError } from 'lib/helpers';
+import { logDebug, logError } from 'lib/helpers';
 import { getEthersProvider } from 'lib/providers';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { defer } from 'rxjs';
-
-const FOREIGN_NETWORK = getBridgeNetwork(HOME_NETWORK);
 
 const {
   REACT_APP_GRAPH_HEALTH_UPDATE_INTERVAL,
@@ -29,7 +27,7 @@ const THRESHOLD_BLOCKS =
 export const useGraphHealth = (description, onlyHome = false) => {
   const { providerChainId } = useContext(Web3Context);
 
-  const isHome = providerChainId === HOME_NETWORK;
+  const isHome = providerChainId === HOME_CHAIN_ID;
 
   const [homeHealthy, setHomeHealthy] = useState(true);
 
@@ -54,8 +52,8 @@ export const useGraphHealth = (description, onlyHome = false) => {
           foreignBlockNumber,
         ] = await Promise.all([
           getHealthStatus(),
-          getEthersProvider(HOME_NETWORK).getBlockNumber(),
-          getEthersProvider(FOREIGN_NETWORK).getBlockNumber(),
+          getEthersProvider(HOME_CHAIN_ID).getBlockNumber(),
+          getEthersProvider(FOREIGN_CHAIN_ID).getBlockNumber(),
         ]);
         logDebug({
           homeHealth,
