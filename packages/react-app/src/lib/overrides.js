@@ -105,16 +105,16 @@ const HNYTokenOverride = {
 
 const DATATokenOverride = {
   100: {
-    mediator: '0x0EeAcdb0Dd96588711581C5f3173dD55841b8e91',
+    mediator: '0x7d55f9981d4E10A193314E001b96f72FCc901e40',
     from: '0xE4a2620edE1058D61BEe5F45F6414314fdf10548',
     to: '0x0cf0ee63788a0849fe5297f3407f701e122cc023',
-    mode: 'dedicated-erc20',
+    mode: 'erc677',
   },
   1: {
-    mediator: '0x81A4833B3A40E7c61eFE9D1a287343797993B1E8',
+    mediator: '0x2eeeDdeECe91c9F4c5bA4C8E1d784A0234C6d015',
     from: '0x0cf0ee63788a0849fe5297f3407f701e122cc023',
     to: '0xE4a2620edE1058D61BEe5F45F6414314fdf10548',
-    mode: 'erc677',
+    mode: 'erc20',
   },
 };
 
