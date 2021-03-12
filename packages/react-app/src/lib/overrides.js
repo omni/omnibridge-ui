@@ -108,13 +108,13 @@ const DATATokenOverride = {
     mediator: '0x7d55f9981d4E10A193314E001b96f72FCc901e40',
     from: '0xE4a2620edE1058D61BEe5F45F6414314fdf10548',
     to: '0x0cf0ee63788a0849fe5297f3407f701e122cc023',
-    mode: 'erc677',
+    mode: 'dedicated-erc20',
   },
   1: {
     mediator: '0x2eeeDdeECe91c9F4c5bA4C8E1d784A0234C6d015',
     from: '0x0cf0ee63788a0849fe5297f3407f701e122cc023',
     to: '0xE4a2620edE1058D61BEe5F45F6414314fdf10548',
-    mode: 'erc20',
+    mode: 'dedicated-erc20',
   },
 };
 
