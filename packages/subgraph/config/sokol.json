@@ -6,7 +6,8 @@
   "bridges": [
     {
       "name": "DEMO2712",
-      "address": "0x2a5fc52d8A563B2F181c6A527D422e1592C9ecFa"
+      "address": "0x2a5fc52d8A563B2F181c6A527D422e1592C9ecFa",
+      "startBlock": "19084051"
     }
   ]
 }

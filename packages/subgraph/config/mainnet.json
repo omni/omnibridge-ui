@@ -6,19 +6,23 @@
   "bridges": [
     {
       "name": "OWL",
-      "address": "0xed7e6720Ac8525Ac1AEee710f08789D02cD87ecB"
+      "address": "0xed7e6720Ac8525Ac1AEee710f08789D02cD87ecB",
+      "startBlock": "10840608"
     },
     {
       "name": "MOON",
-      "address": "0xE7228B4EBAD37Ba031a8b63473727f991e262dCd"
+      "address": "0xE7228B4EBAD37Ba031a8b63473727f991e262dCd",
+      "startBlock": "11753831"
     },
     {
       "name": "HNY",
-      "address": "0x81A4833B3A40E7c61eFE9D1a287343797993B1E8"
+      "address": "0x81A4833B3A40E7c61eFE9D1a287343797993B1E8",
+      "startBlock": "11761811"
     },
     {
       "name": "DATA",
-      "address": "0x0cf0ee63788a0849fe5297f3407f701e122cc023"
+      "address": "0x0cf0ee63788a0849fe5297f3407f701e122cc023",
+      "startBlock": "12028802"
     }
   ]
 }
