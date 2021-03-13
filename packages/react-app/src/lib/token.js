@@ -162,5 +162,6 @@ export const fetchTokenBalanceWithProvider = async (
   } catch (error) {
     logError({ balanceError: error });
   }
+
   return BigNumber.from(0);
 };
