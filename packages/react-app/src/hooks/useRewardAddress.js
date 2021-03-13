@@ -20,7 +20,7 @@ export const useRewardAddress = () => {
     mediatorContract
       .isRewardAddress(account)
       .then(is => setRewardAddress(is))
-      .catch(contractError => logError({ contractError }));
+      .catch(rewardAddressError => logError({ rewardAddressError }));
   }, [account]);
 
   return isRewardAddress;

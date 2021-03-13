@@ -16,7 +16,7 @@ export const useCurrentDay = () => {
     mediatorContract
       .getCurrentDay()
       .then(day => setCurrentDay(day))
-      .catch(contractError => logError({ contractError }));
+      .catch(currentDayError => logError({ currentDayError }));
   }, [ethersProvider, chainId]);
 
   return currentDay;

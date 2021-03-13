@@ -25,12 +25,12 @@ export const useFeeType = () => {
     mediatorContract
       .FOREIGN_TO_HOME_FEE()
       .then(feeType => setForeignToHomeFeeType(feeType))
-      .catch(contractError => logError({ contractError }));
+      .catch(feeTypeError => logError({ feeTypeError }));
 
     mediatorContract
       .HOME_TO_FOREIGN_FEE()
       .then(feeType => setHomeToForeignFeeType(feeType))
-      .catch(contractError => logError({ contractError }));
+      .catch(feeTypeError => logError({ feeTypeError }));
   }, []);
 
   return { homeToForeignFeeType, foreignToHomeFeeType };

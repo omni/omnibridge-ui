@@ -48,12 +48,12 @@ jobs:
           REACT_APP_HOME_MEDIATOR_ADDRESS: '0xf6A78083ca3e2a662D6dd1703c939c8aCE2e268d'
           REACT_APP_FOREIGN_AMB_ADDRESS: '0x4C36d2919e407f0Cc2Ee3c993ccF8ac26d9CE64e'
           REACT_APP_HOME_AMB_ADDRESS: '0x75Df5AF045d91108662D8080fD1FEFAd6aA0bb59'
-          REACT_APP_FOREIGN_GRAPH_NAME: 'dan13ram/mainnet-omnibridge'
-          REACT_APP_HOME_GRAPH_NAME: 'dan13ram/xdai-omnibridge'
+          REACT_APP_FOREIGN_GRAPH_NAME: 'raid-guild/mainnet-omnibridge'
+          REACT_APP_HOME_GRAPH_NAME: 'raid-guild/xdai-omnibridge'
           REACT_APP_HOME_RPC_URL: 'https://rpc.xdaichain.com/'
-          REACT_APP_HOME_EXPLORER_PREFIX: 'https://blockscout.com/poa/xdai'
+          REACT_APP_HOME_EXPLORER_PREFIX: 'https://blockscout.com/xdai/mainnet'
           REACT_APP_AMB_LIVE_MONITOR_PREFIX: 'https://alm-xdai.herokuapp.com'
-          REACT_APP_FOREIGN_RPC_URL: 'https://mainnet.infura.io/v3/${{ secrets.PERSONAL_INFURA_ID }}'
+          REACT_APP_FOREIGN_RPC_URL: 'https://mainnet.infura.io/v3/${{ secrets.INFURA_ID }}'
           REACT_APP_FOREIGN_EXPLORER_PREFIX: 'https://blockscout.com/eth/mainnet'
 
       - name: Deploy to Firebase

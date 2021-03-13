@@ -139,13 +139,11 @@ const overrides = {
   ['0xE4a2620edE1058D61BEe5F45F6414314fdf10548'.toLowerCase()]: DATATokenOverride,
 };
 
-export const isOverridden = tokenAddress => {
+export const isOverridden = (tokenAddress, chainId) => {
   if (FOREIGN_CHAIN_ID === 56) return false;
   if (!tokenAddress) return false;
-  return Object.prototype.hasOwnProperty.call(
-    overrides,
-    tokenAddress.toLowerCase(),
-  );
+  const override = overrides[tokenAddress.toLowerCase()];
+  return override !== undefined && override[chainId] !== undefined;
 };
 
 export const getOverriddenToToken = (tokenAddress, chainId) =>
