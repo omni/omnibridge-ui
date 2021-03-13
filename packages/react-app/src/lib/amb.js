@@ -8,7 +8,7 @@ export const fetchConfirmations = async (chainId, ethersProvider) => {
   const ambContract = new Contract(address, abi, ethersProvider);
   const requiredConfirmations = await ambContract
     .requiredBlockConfirmations()
-    .catch(contractError => logError({ contractError }));
+    .catch(blockConfirmationsError => logError({ blockConfirmationsError }));
   return parseInt(requiredConfirmations, 10);
 };
 

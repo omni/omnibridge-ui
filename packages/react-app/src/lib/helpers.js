@@ -26,7 +26,7 @@ export const getDefaultToken = chainId =>
   defaultTokens[chainId] || defaultTokens[HOME_CHAIN_ID];
 
 export const getMediatorAddressWithOverride = (tokenAddress, chainId) => {
-  if (isOverridden(tokenAddress)) {
+  if (isOverridden(tokenAddress, chainId)) {
     return getOverriddenMediator(tokenAddress, chainId);
   }
   return getMediatorAddress(chainId);

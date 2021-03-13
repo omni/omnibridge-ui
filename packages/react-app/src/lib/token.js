@@ -37,7 +37,7 @@ export const fetchAllowance = async (
 };
 
 export const fetchMode = async token => {
-  if (isOverridden(token.address)) {
+  if (isOverridden(token.address, token.chainId)) {
     return getOverriddenMode(token.address, token.chainId);
   }
   if (!REVERSE_BRIDGE_ENABLED) {
@@ -90,11 +90,13 @@ export const fetchTokenDetailsString = async token => {
     'function name() view returns (string)',
   ];
   const tokenContract = new Contract(token.address, abi, ethersProvider);
+
   const [name, symbol, decimals] = await Promise.all([
     tokenContract.name(),
     tokenContract.symbol(),
     tokenContract.decimals(),
   ]);
+
   return { name, symbol, decimals };
 };
 

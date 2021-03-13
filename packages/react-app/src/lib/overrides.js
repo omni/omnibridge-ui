@@ -105,6 +105,21 @@ const HNYTokenOverride = {
   },
 };
 
+const DATATokenOverride = {
+  100: {
+    mediator: '0x7d55f9981d4E10A193314E001b96f72FCc901e40',
+    from: '0xE4a2620edE1058D61BEe5F45F6414314fdf10548',
+    to: '0x0cf0ee63788a0849fe5297f3407f701e122cc023',
+    mode: 'dedicated-erc20',
+  },
+  1: {
+    mediator: '0x2eeeDdeECe91c9F4c5bA4C8E1d784A0234C6d015',
+    from: '0x0cf0ee63788a0849fe5297f3407f701e122cc023',
+    to: '0xE4a2620edE1058D61BEe5F45F6414314fdf10548',
+    mode: 'dedicated-erc20',
+  },
+};
+
 const overrides = {
   ['0x0905Ab807F8FD040255F0cF8fa14756c1D824931'.toLowerCase()]: OWLTokenOverride,
   ['0x1a5f9352af8af974bfc03399e3767df6370d82e4'.toLowerCase()]: OWLTokenOverride,
@@ -120,15 +135,15 @@ const overrides = {
   ['0xa4764045851F17AA60B6c8E8b62072Bea9538521'.toLowerCase()]: DEMO2712TokenOverrideSokol,
   ['0xc3589f56b6869824804a5ea29f2c9886af1b0fce'.toLowerCase()]: HNYTokenOverride,
   ['0x71850b7e9ee3f13ab46d67167341e4bdc905eef9'.toLowerCase()]: HNYTokenOverride,
+  ['0x0cf0ee63788a0849fe5297f3407f701e122cc023'.toLowerCase()]: DATATokenOverride,
+  ['0xE4a2620edE1058D61BEe5F45F6414314fdf10548'.toLowerCase()]: DATATokenOverride,
 };
 
-export const isOverridden = tokenAddress => {
+export const isOverridden = (tokenAddress, chainId) => {
   if (FOREIGN_CHAIN_ID === 56) return false;
   if (!tokenAddress) return false;
-  return Object.prototype.hasOwnProperty.call(
-    overrides,
-    tokenAddress.toLowerCase(),
-  );
+  const override = overrides[tokenAddress.toLowerCase()];
+  return override !== undefined && override[chainId] !== undefined;
 };
 
 export const getOverriddenToToken = (tokenAddress, chainId) =>

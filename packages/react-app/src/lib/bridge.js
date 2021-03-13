@@ -44,7 +44,7 @@ export const fetchToTokenDetails = async ({
 }) => {
   const toChainId = getBridgeNetwork(fromChainId);
 
-  if (isOverridden(fromAddress)) {
+  if (isOverridden(fromAddress, fromChainId)) {
     return fetchTokenDetails({
       address: getOverriddenToToken(fromAddress, fromChainId),
       chainId: toChainId,

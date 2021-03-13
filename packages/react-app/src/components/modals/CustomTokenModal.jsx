@@ -78,8 +78,8 @@ export const CustomTokenModal = ({ isOpen, onClose, onBack }) => {
               ...tokenDetails,
             });
           })
-          .catch(contractError => {
-            logError({ contractError });
+          .catch(customTokenError => {
+            logError({ customTokenError });
             setAddressInvalid(true);
           });
       } else {
