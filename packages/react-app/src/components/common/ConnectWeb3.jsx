@@ -1,12 +1,41 @@
-import { Button, Flex, Text } from '@chakra-ui/react';
+import { Button, ButtonGroup, Flex, Text } from '@chakra-ui/react';
 import { Web3Context } from 'contexts/Web3Context';
 import { WalletFilledIcon } from 'icons/WalletFilledIcon';
 import { FOREIGN_CHAIN_ID, HOME_CHAIN_ID } from 'lib/constants';
-import { getNetworkName } from 'lib/helpers';
+import { getNetworkName, getWalletProviderName } from 'lib/helpers';
+import { addChainToMetaMask } from 'lib/metamask';
 import React, { useContext } from 'react';
 
 export const ConnectWeb3 = () => {
-  const { connectWeb3, loading, account, disconnect } = useContext(Web3Context);
+  const {
+    connectWeb3,
+    loading,
+    account,
+    disconnect,
+    ethersProvider,
+  } = useContext(Web3Context);
+
+  const renderDisconnectButton = () => {
+    return getWalletProviderName(ethersProvider) === 'metamask' ? (
+      <ButtonGroup spacing={3} width="100%" mt={2}>
+        <Button onClick={disconnect} colorScheme="blue" px={12}>
+          Disconnect
+        </Button>
+        <Button
+          onClick={() => addChainToMetaMask({ chainId: HOME_CHAIN_ID })}
+          colorScheme="pink"
+          px={10}
+        >
+          Add {getNetworkName(HOME_CHAIN_ID)} to MetaMask
+        </Button>
+      </ButtonGroup>
+    ) : (
+      <Button onClick={disconnect} colorScheme="blue" px={12}>
+        Disconnect
+      </Button>
+    );
+  };
+
   return (
     <Flex
       background="white"
@@ -16,8 +45,8 @@ export const ConnectWeb3 = () => {
       align="center"
       w="calc(100% - 2rem)"
       mt="5rem"
-      p="2rem"
-      maxW="27.5rem"
+      p="2.5rem"
+      maxW="32.5rem"
       mx={4}
     >
       <Flex
@@ -51,9 +80,7 @@ export const ConnectWeb3 = () => {
         </>
       )}
       {account && !loading ? (
-        <Button onClick={disconnect} colorScheme="blue" px={12}>
-          Disconnect
-        </Button>
+        renderDisconnectButton()
       ) : (
         <Button
           onClick={connectWeb3}

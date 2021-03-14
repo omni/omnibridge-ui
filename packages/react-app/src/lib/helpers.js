@@ -35,6 +35,8 @@ export const getMediatorAddressWithOverride = (tokenAddress, chainId) => {
 export const getMediatorAddress = chainId =>
   mediators[chainId].toLowerCase() || mediators[HOME_CHAIN_ID].toLowerCase();
 
+export const getWalletProviderName = provider =>
+  provider?.connection?.url || null;
 export const getNetworkName = chainId => networkNames[chainId] || 'Unknown';
 export const getNetworkLabel = chainId => networkLabels[chainId] || 'Unknown';
 export const getAMBAddress = chainId => ambs[chainId] || ambs[HOME_CHAIN_ID];
