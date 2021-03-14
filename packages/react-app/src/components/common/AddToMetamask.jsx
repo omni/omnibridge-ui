@@ -1,14 +1,14 @@
 import { Image, useDisclosure, useToast } from '@chakra-ui/react';
 import MetamaskFox from 'assets/metamask-fox.svg';
 import { AddToMetamaskModal } from 'components/modals/AddToMetamaskModal';
-import { useWeb3 } from 'contexts/Web3Context';
+import { useWeb3Context } from 'contexts/Web3Context';
 import { ADDRESS_ZERO } from 'lib/constants';
 import { getNetworkName, logError } from 'lib/helpers';
 import { addTokenToMetamask } from 'lib/metamask';
 import React from 'react';
 
 export const AddToMetamask = ({ token, asModal = false, ...props }) => {
-  const { providerChainId } = useWeb3();
+  const { providerChainId } = useWeb3Context();
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
 

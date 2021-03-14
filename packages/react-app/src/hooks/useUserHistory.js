@@ -1,15 +1,15 @@
-import { Web3Context } from 'contexts/Web3Context';
+import { useWeb3Context } from 'contexts/Web3Context';
 import { FOREIGN_CHAIN_ID, HOME_CHAIN_ID } from 'lib/constants';
 import {
   combineRequestsWithExecutions,
   getExecutions,
   getRequests,
 } from 'lib/history';
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { defer } from 'rxjs';
 
 export const useUserHistory = () => {
-  const { account } = useContext(Web3Context);
+  const { account } = useWeb3Context();
   const [transfers, setTransfers] = useState();
   const [loading, setLoading] = useState(true);
   const chainId = HOME_CHAIN_ID;

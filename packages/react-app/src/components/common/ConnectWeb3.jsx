@@ -1,12 +1,12 @@
 import { Button, Flex, Text } from '@chakra-ui/react';
-import { Web3Context } from 'contexts/Web3Context';
+import { useWeb3Context } from 'contexts/Web3Context';
 import { WalletFilledIcon } from 'icons/WalletFilledIcon';
 import { FOREIGN_CHAIN_ID, HOME_CHAIN_ID } from 'lib/constants';
 import { getNetworkName } from 'lib/helpers';
-import React, { useContext } from 'react';
+import React from 'react';
 
 export const ConnectWeb3 = () => {
-  const { connectWeb3, loading, account, disconnect } = useContext(Web3Context);
+  const { connectWeb3, loading, account, disconnect } = useWeb3Context();
   return (
     <Flex
       background="white"

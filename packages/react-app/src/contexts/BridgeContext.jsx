@@ -1,5 +1,5 @@
 import { useToast } from '@chakra-ui/react';
-import { Web3Context } from 'contexts/Web3Context';
+import { useWeb3Context } from 'contexts/Web3Context';
 import { BigNumber } from 'ethers';
 import { useApproval } from 'hooks/useApproval';
 import { useCurrentDay } from 'hooks/useCurrentDay';
@@ -21,12 +21,12 @@ import {
   parseValue,
 } from 'lib/helpers';
 import { fetchTokenDetails } from 'lib/token';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 export const BridgeContext = React.createContext({});
 
 export const BridgeProvider = ({ children }) => {
-  const { ethersProvider, account, providerChainId } = useContext(Web3Context);
+  const { ethersProvider, account, providerChainId } = useWeb3Context();
 
   const [receiver, setReceiver] = useState('');
   const [{ fromToken, toToken }, setTokens] = useState({});
