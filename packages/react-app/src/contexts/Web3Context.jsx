@@ -109,7 +109,6 @@ export const Web3Provider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    console.log(web3Modal);
     if (window.ethereum) {
       window.ethereum.autoRefreshOnNetworkChange = false;
     }
