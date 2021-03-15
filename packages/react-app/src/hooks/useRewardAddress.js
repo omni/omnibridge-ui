@@ -1,12 +1,12 @@
-import { Web3Context } from 'contexts/Web3Context';
+import { useWeb3Context } from 'contexts/Web3Context';
 import { Contract } from 'ethers';
 import { HOME_CHAIN_ID } from 'lib/constants';
 import { getMediatorAddress, logError } from 'lib/helpers';
 import { getEthersProvider } from 'lib/providers';
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export const useRewardAddress = () => {
-  const { account } = useContext(Web3Context);
+  const { account } = useWeb3Context();
   const [isRewardAddress, setRewardAddress] = useState(false);
 
   useEffect(() => {

@@ -3,13 +3,13 @@ import TransferIcon from 'assets/transfer.svg';
 import { ConfirmTransferModal } from 'components/modals/ConfirmTransferModal';
 import { isNativexDaiAddress } from 'components/warnings/ReverseWarning';
 import { BridgeContext } from 'contexts/BridgeContext';
-import { Web3Context } from 'contexts/Web3Context';
+import { useWeb3Context } from 'contexts/Web3Context';
 import { utils } from 'ethers';
 import { formatValue, isxDaiChain } from 'lib/helpers';
 import React, { useContext } from 'react';
 
 export const TransferButton = () => {
-  const { ethersProvider } = useContext(Web3Context);
+  const { ethersProvider } = useWeb3Context();
   const {
     receiver,
     fromAmount: amount,

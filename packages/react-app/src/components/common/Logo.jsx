@@ -2,9 +2,9 @@ import { Image } from '@chakra-ui/react';
 import BSCLogo from 'assets/bsc-logo.png';
 import EthLogo from 'assets/eth-logo.png';
 import xDAILogo from 'assets/xdai-logo.png';
-import { Web3Context } from 'contexts/Web3Context';
+import { useWeb3Context } from 'contexts/Web3Context';
 import { getBridgeNetwork, uriToHttp } from 'lib/helpers';
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 
 const BAD_SRCS = {};
 
@@ -20,7 +20,7 @@ const logos = {
  * Renders an image by sequentially trying a list of URIs, and then eventually a fallback triangle alert
  */
 export const Logo = ({ uri, reverseFallback = false }) => {
-  const { providerChainId } = useContext(Web3Context);
+  const { providerChainId } = useWeb3Context();
   const chainId = reverseFallback
     ? getBridgeNetwork(providerChainId)
     : providerChainId;

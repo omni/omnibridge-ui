@@ -17,7 +17,7 @@ import ErrorImage from 'assets/error.svg';
 import InfoImage from 'assets/info.svg';
 import { LoadingModal } from 'components/modals/LoadingModal';
 import { BridgeContext } from 'contexts/BridgeContext';
-import { Web3Context } from 'contexts/Web3Context';
+import { useWeb3Context } from 'contexts/Web3Context';
 import {
   executeSignatures,
   getMessageFromTxHash,
@@ -32,7 +32,7 @@ import { getNetworkName, logError } from 'lib/helpers';
 import React, { useContext, useEffect, useState } from 'react';
 
 export const ClaimTransferModal = () => {
-  const { account, ethersProvider, providerChainId } = useContext(Web3Context);
+  const { account, ethersProvider, providerChainId } = useWeb3Context();
   const { txHash, setTxHash } = useContext(BridgeContext);
   const [isOpen, setOpen] = useState(false);
   const [claiming, setClaiming] = useState(false);

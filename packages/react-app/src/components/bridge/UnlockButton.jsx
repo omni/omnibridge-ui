@@ -2,11 +2,11 @@ import { Flex, Image, Spinner, Text, useToast } from '@chakra-ui/react';
 import UnlockIcon from 'assets/unlock.svg';
 import { TxLink } from 'components/common/TxLink';
 import { BridgeContext } from 'contexts/BridgeContext';
-import { Web3Context } from 'contexts/Web3Context';
+import { useWeb3Context } from 'contexts/Web3Context';
 import React, { useContext } from 'react';
 
 export const UnlockButton = () => {
-  const { providerChainId } = useContext(Web3Context);
+  const { providerChainId } = useWeb3Context();
   const {
     fromAmount: amount,
     fromBalance: balance,

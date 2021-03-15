@@ -1,10 +1,10 @@
-import { Web3Context } from 'contexts/Web3Context';
+import { useWeb3Context } from 'contexts/Web3Context';
 import { fetchConfirmations } from 'lib/amb';
 import { logError } from 'lib/helpers';
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export const useTotalConfirms = () => {
-  const { providerChainId, ethersProvider } = useContext(Web3Context);
+  const { providerChainId, ethersProvider } = useWeb3Context();
   const [totalConfirms, setTotalConfirms] = useState(8);
 
   useEffect(() => {
