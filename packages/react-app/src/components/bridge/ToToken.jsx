@@ -2,7 +2,7 @@ import { Box, Flex, Spinner, Text, useBreakpointValue } from '@chakra-ui/react';
 import { AddToMetamask } from 'components/common/AddToMetamask';
 import { Logo } from 'components/common/Logo';
 import { BridgeContext } from 'contexts/BridgeContext';
-import { Web3Context } from 'contexts/Web3Context';
+import { useWeb3Context } from 'contexts/Web3Context';
 import { BigNumber, utils } from 'ethers';
 import { formatValue, getBridgeNetwork, logError } from 'lib/helpers';
 import { fetchTokenBalance } from 'lib/token';
@@ -10,7 +10,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { defer } from 'rxjs';
 
 export const ToToken = () => {
-  const { account, providerChainId } = useContext(Web3Context);
+  const { account, providerChainId } = useWeb3Context();
   const {
     updateBalance,
     toToken: token,

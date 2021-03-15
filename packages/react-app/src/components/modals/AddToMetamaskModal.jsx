@@ -21,7 +21,7 @@ import {
 } from '@chakra-ui/react';
 import ErrorImage from 'assets/error.svg';
 import MetamaskFox from 'assets/metamask-fox.svg';
-import { useWeb3 } from 'contexts/Web3Context';
+import { useWeb3Context } from 'contexts/Web3Context';
 import { useCopyToClipboard } from 'hooks/useCopyToClipboard';
 import { getAccountString, getNetworkName, logError } from 'lib/helpers';
 import { addTokenToMetamask } from 'lib/metamask';
@@ -29,7 +29,7 @@ import React, { useState } from 'react';
 
 export const AddToMetamaskModal = ({ isOpen, onClose, token: tokenToAdd }) => {
   const [token] = useState(tokenToAdd);
-  const { providerChainId } = useWeb3();
+  const { providerChainId } = useWeb3Context();
   const needsNetworkChange = token.chainId !== providerChainId;
   const [loading, setLoading] = useState(false);
   const [copied, handleCopy] = useCopyToClipboard();

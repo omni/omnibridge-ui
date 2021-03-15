@@ -14,16 +14,16 @@ import {
 } from '@chakra-ui/react';
 import ClaimTokensImage from 'assets/multiple-claim.svg';
 import { LoadingModal } from 'components/modals/LoadingModal';
-import { Web3Context } from 'contexts/Web3Context';
+import { useWeb3Context } from 'contexts/Web3Context';
 import { useClaimableTransfers } from 'hooks/useClaimableTransfers';
 import { LOCAL_STORAGE_KEYS } from 'lib/constants';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 const { DONT_SHOW_CLAIMS } = LOCAL_STORAGE_KEYS;
 
 export const ClaimTokensModal = () => {
-  const { account, providerChainId } = useContext(Web3Context);
+  const { account, providerChainId } = useWeb3Context();
   const { transfers, loading } = useClaimableTransfers();
   const [isOpen, setOpen] = useState(false);
 

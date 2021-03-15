@@ -1,5 +1,5 @@
 import { BridgeContext } from 'contexts/BridgeContext';
-import { Web3Context } from 'contexts/Web3Context';
+import { useWeb3Context } from 'contexts/Web3Context';
 import { FOREIGN_CHAIN_ID, HOME_CHAIN_ID } from 'lib/constants';
 import {
   combineRequestsWithExecutions,
@@ -10,7 +10,7 @@ import { useContext, useEffect, useState } from 'react';
 import { defer } from 'rxjs';
 
 export const useClaimableTransfers = () => {
-  const { account, providerChainId } = useContext(Web3Context);
+  const { account, providerChainId } = useWeb3Context();
   const { txHash } = useContext(BridgeContext);
   const [transfers, setTransfers] = useState();
   const [loading, setLoading] = useState(false);

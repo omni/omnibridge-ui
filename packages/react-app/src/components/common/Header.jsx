@@ -9,14 +9,14 @@ import {
 import Logo from 'assets/logo.svg';
 import { UpdateSettings } from 'components/common/UpdateSettings';
 import { WalletSelector } from 'components/common/WalletSelector';
-import { Web3Context } from 'contexts/Web3Context';
+import { useWeb3Context } from 'contexts/Web3Context';
 import { HistoryIcon } from 'icons/HistoryIcon';
 import { FOREIGN_CHAIN_ID, HOME_CHAIN_ID } from 'lib/constants';
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 export const Header = () => {
-  const { account, providerChainId } = useContext(Web3Context);
+  const { account, providerChainId } = useWeb3Context();
   const [isOpen, setOpen] = useState(false);
   const toggleOpen = () => setOpen(open => !open);
   const valid =
