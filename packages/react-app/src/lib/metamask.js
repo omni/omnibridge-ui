@@ -1,6 +1,6 @@
 import { utils } from 'ethers';
 
-import { getNetworkName, getRPCUrl } from './helpers';
+import { getNetworkCurrency, getNetworkName, getRPCUrl } from './helpers';
 
 export const addTokenToMetamask = async token => {
   return window.ethereum.request({
@@ -18,6 +18,7 @@ export const addTokenToMetamask = async token => {
 
 export const addChainToMetaMask = async ethereumChain => {
   const { chainId } = ethereumChain;
+  const { name, symbol } = getNetworkCurrency(chainId);
   return window.ethereum.request({
     method: 'wallet_addEthereumChain',
     params: [
@@ -25,8 +26,8 @@ export const addChainToMetaMask = async ethereumChain => {
         chainId: utils.hexValue(chainId),
         chainName: getNetworkName(chainId),
         nativeCurrency: {
-          name: 'SOME',
-          symbol: 'BODY',
+          name,
+          symbol,
           decimals: 18,
         },
         rpcUrls: [getRPCUrl(chainId)],

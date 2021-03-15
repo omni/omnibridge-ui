@@ -1,7 +1,11 @@
-import { Button, ButtonGroup, Flex, Text } from '@chakra-ui/react';
+import { Badge, Button, Flex, Text, Tooltip } from '@chakra-ui/react';
 import { Web3Context } from 'contexts/Web3Context';
 import { WalletFilledIcon } from 'icons/WalletFilledIcon';
-import { FOREIGN_CHAIN_ID, HOME_CHAIN_ID } from 'lib/constants';
+import {
+  FOREIGN_CHAIN_ID,
+  HOME_CHAIN_ID,
+  NON_ETH_CHAIN_IDS,
+} from 'lib/constants';
 import { getNetworkName, getWalletProviderName } from 'lib/helpers';
 import { addChainToMetaMask } from 'lib/metamask';
 import React, { useContext } from 'react';
@@ -15,24 +19,28 @@ export const ConnectWeb3 = () => {
     ethersProvider,
   } = useContext(Web3Context);
 
-  const renderDisconnectButton = () => {
-    return getWalletProviderName(ethersProvider) === 'metamask' ? (
-      <ButtonGroup spacing={3} width="100%" mt={2}>
-        <Button onClick={disconnect} colorScheme="blue" px={12}>
-          Disconnect
-        </Button>
-        <Button
-          onClick={() => addChainToMetaMask({ chainId: HOME_CHAIN_ID })}
-          colorScheme="pink"
-          px={10}
+  const renderConnectChain = (chainId, colorScheme = 'orange') => {
+    const networkName = getNetworkName(chainId);
+    const isWalletMetamask =
+      getWalletProviderName(ethersProvider) === 'metamask';
+
+    return isWalletMetamask && NON_ETH_CHAIN_IDS.includes(chainId) ? (
+      <Tooltip label={`Switch to ${networkName}`} position="auto">
+        <Badge
+          py={0.5}
+          px={2}
+          m={1}
+          borderRadius={5}
+          size="1"
+          cursor="pointer"
+          colorScheme={colorScheme}
+          onClick={() => addChainToMetaMask({ chainId })}
         >
-          Add {getNetworkName(HOME_CHAIN_ID)} to MetaMask
-        </Button>
-      </ButtonGroup>
+          {networkName}
+        </Badge>
+      </Tooltip>
     ) : (
-      <Button onClick={disconnect} colorScheme="blue" px={12}>
-        Disconnect
-      </Button>
+      networkName
     );
   };
 
@@ -69,18 +77,24 @@ export const ConnectWeb3 = () => {
           <Text fontSize="xl" fontWeight="bold" mb={4}>
             {account ? `Switch to a supported network` : 'Connect Wallet'}
           </Text>
-          <Text color="greyText" mb={4} textAlign="center">
-            {account
-              ? `To access OmniBridge, please switch to${' '}
-                ${getNetworkName(HOME_CHAIN_ID)} or ${getNetworkName(
-                  FOREIGN_CHAIN_ID,
-                )}`
-              : 'To get started, connect your wallet'}
-          </Text>
+
+          {!account ? (
+            <Text color="greyText" mb={4} textAlign="center">
+              To get started, connect your wallet
+            </Text>
+          ) : (
+            <Text color="greyText" mb={4} textAlign="center">
+              To access OmniBridge, please switch to <br />
+              {renderConnectChain(HOME_CHAIN_ID, 'green')}or{' '}
+              {renderConnectChain(FOREIGN_CHAIN_ID, 'orange')}
+            </Text>
+          )}
         </>
       )}
       {account && !loading ? (
-        renderDisconnectButton()
+        <Button onClick={disconnect} colorScheme="blue" px={12}>
+          Disconnect
+        </Button>
       ) : (
         <Button
           onClick={connectWeb3}
