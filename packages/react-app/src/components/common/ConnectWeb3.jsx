@@ -1,5 +1,5 @@
 import { Badge, Button, Flex, Text, Tooltip } from '@chakra-ui/react';
-import { Web3Context } from 'contexts/Web3Context';
+import { useWeb3Context } from 'contexts/Web3Context';
 import { WalletFilledIcon } from 'icons/WalletFilledIcon';
 import {
   FOREIGN_CHAIN_ID,
@@ -8,7 +8,7 @@ import {
 } from 'lib/constants';
 import { getNetworkName, getWalletProviderName } from 'lib/helpers';
 import { addChainToMetaMask } from 'lib/metamask';
-import React, { useContext } from 'react';
+import React from 'react';
 
 export const ConnectWeb3 = () => {
   const {
@@ -17,7 +17,7 @@ export const ConnectWeb3 = () => {
     account,
     disconnect,
     ethersProvider,
-  } = useContext(Web3Context);
+  } = useWeb3Context();
 
   const renderConnectChain = (chainId, colorScheme = 'orange') => {
     const networkName = getNetworkName(chainId);
