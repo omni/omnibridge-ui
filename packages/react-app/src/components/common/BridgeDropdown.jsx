@@ -5,12 +5,6 @@ import { bridgeNames } from 'lib/constants';
 import { getBridgeName, getBridgeNetwork, getBridgeUrl } from 'lib/helpers';
 import React, { useContext, useState } from 'react';
 
-// Get Current active bridge
-// Have logic to switch bridge
-// getNetworkName()
-// On change redirect to new bridge
-// So onCHange needs the url
-// For loop through
 export const BridgeDropdown = () => {
   const { providerChainId: chainId } = useContext(Web3Context);
   const bridgeChainId = getBridgeNetwork(chainId);
