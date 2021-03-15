@@ -30,13 +30,13 @@ export function getDirection(): String {
     return 'mainnet-xdai';
   } else if (network == 'bsc') {
     return 'bsc-xdai';
-  } else if (network == 'sokol' || network == 'kovan') {
+  } else if (network == 'poa-sokol' || network == 'kovan') {
     return 'kovan-sokol';
   }
   return '';
 }
 
-function getOverrides(): TypedMap<Address, boolean> {
+export function getOverrides(): TypedMap<Address, boolean> {
   let overriddenTokens = new TypedMap<Address, boolean>();
   let direction = getDirection();
 
@@ -99,8 +99,6 @@ function getOverrides(): TypedMap<Address, boolean> {
   return overriddenTokens;
 }
 
-export var overrides = getOverrides();
-
 export function fetchTokenInfo(address: Address): TokenObject {
   let tokenInstance = Token.bind(address);
   log.debug('TokenContract at {}', [address.toHex()]);
@@ -126,7 +124,7 @@ export function fetchTokenInfo(address: Address): TokenObject {
   return tokenObject;
 }
 
-function getMediatedTokens(): TypedMap<Address, Address> {
+export function getMediatedTokens(): TypedMap<Address, Address> {
   let mediatedTokens = new TypedMap<Address, Address>();
   let direction = getDirection();
 
@@ -189,12 +187,6 @@ function getMediatedTokens(): TypedMap<Address, Address> {
   return mediatedTokens;
 }
 
-export var mediatedTokens = getMediatedTokens();
-
-export function fetchMediatedTokenInfo(mediator: Address): TokenObject {
-  return fetchTokenInfo(mediatedTokens.get(mediator));
-}
-
 export function updateHomeToken(tokenAddress: Address): void {
   let token = TokenEntity.load(tokenAddress.toHexString());
   if (token == null) {
@@ -234,9 +226,6 @@ export function updateHomeTokenInfo(
     }
 
     token.save();
-    log.debug('New homeToken {} and foreignToken {}', [
-      token.homeAddress.toHexString(),
-      token.foreignAddress.toHexString(),
-    ]);
+    log.debug('New overridden homeToken {}', [token.homeAddress.toHexString()]);
   }
 }

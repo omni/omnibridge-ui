@@ -7,13 +7,16 @@ import { Execution, UserRequest } from '../types/schema';
 
 import {
   fetchTokenInfo,
-  mediatedTokens,
+  getMediatedTokens,
   updateHomeTokenInfo,
   updateHomeToken,
 } from './helpers';
 
 export function handleBridgeTransfer(event: TokensBridged): void {
-  log.debug('Parsing TokensBridged', []);
+  log.debug('Parsing TokensBridged for txHash {}', [
+    event.transaction.hash.toHexString(),
+  ]);
+  let mediatedTokens = getMediatedTokens();
   if (!mediatedTokens.isSet(event.address)) return;
   let txHash = event.transaction.hash;
   let execution = Execution.load(txHash.toHexString());
@@ -35,7 +38,10 @@ export function handleBridgeTransfer(event: TokensBridged): void {
 }
 
 export function handleInitiateTransfer(event: TokensBridgingInitiated): void {
-  log.debug('Parsing TokensBridged', []);
+  log.debug('Parsing TokensBridgingInitiated for txHash {}', [
+    event.transaction.hash.toHexString(),
+  ]);
+  let mediatedTokens = getMediatedTokens();
   if (!mediatedTokens.isSet(event.address)) return;
   let txHash = event.transaction.hash;
   let request = UserRequest.load(txHash.toHexString());

@@ -46,7 +46,11 @@ export const ClaimTransferModal = () => {
 
   useEffect(() => {
     setOpen(!!message);
-    if (message && message.user.toLowerCase() !== account.toLowerCase()) {
+    if (
+      message &&
+      message.user &&
+      message.user.toLowerCase() !== account.toLowerCase()
+    ) {
       setTxHash();
     }
   }, [message, account, setTxHash]);
