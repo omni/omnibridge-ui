@@ -13,6 +13,7 @@ export const HOME_CHAIN_ID = Number(process.env.REACT_APP_HOME_CHAIN_ID) || 77;
 export const FOREIGN_CHAIN_ID =
   Number(process.env.REACT_APP_FOREIGN_CHAIN_ID) || 42;
 export const NON_ETH_CHAIN_IDS = [56, 77, 100];
+export const DEFAULT_BRIDGE = '42-77';
 
 export const networkNames = {
   1: 'ETH Mainnet',
@@ -20,6 +21,18 @@ export const networkNames = {
   56: 'Binance Smart Chain',
   77: 'Sokol Testnet',
   100: 'xDai Chain',
+};
+
+export const bridgeUrls = {
+  '42-77': 'https://sokol-omnibridge.web.app/',
+  '1-100': 'http://omni.xdaichain.com/',
+  '56-100': 'https://bsc-to-xdai-omnibridge.web.app/',
+};
+
+export const bridgeNames = {
+  'https://sokol-omnibridge.web.app/': 'Kovan-Sokol',
+  'http://omni.xdaichain.com/': 'ETH-xDai',
+  'https://bsc-to-xdai-omnibridge.web.app/': 'BSC-xDai',
 };
 
 export const networkLabels = {

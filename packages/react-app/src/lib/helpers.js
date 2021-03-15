@@ -1,7 +1,10 @@
 import { BigNumber, utils } from 'ethers';
 import {
   ambs,
+  bridgeNames,
+  bridgeUrls,
   chainUrls,
+  DEFAULT_BRIDGE,
   defaultTokens,
   defaultTokensUrl,
   FOREIGN_CHAIN_ID,
@@ -17,6 +20,14 @@ import { getOverriddenMediator, isOverridden } from 'lib/overrides';
 
 export const getBridgeNetwork = chainId => {
   return chainId === HOME_CHAIN_ID ? FOREIGN_CHAIN_ID : HOME_CHAIN_ID;
+};
+
+export const getBridgeUrl = bridgeId => {
+  return bridgeUrls[bridgeId] || bridgeUrls[DEFAULT_BRIDGE];
+};
+
+export const getBridgeName = bridgeUrl => {
+  return bridgeNames[bridgeUrl];
 };
 
 export const isxDaiChain = chainId => {
@@ -76,9 +87,7 @@ export const uniqueTokens = list => {
 export const formatValue = (num, dec) => {
   const str = utils.formatUnits(num, dec);
   if (str.length > 50) {
-    const expStr = Number(str)
-      .toExponential()
-      .replace(/e\+?/, ' x 10^');
+    const expStr = Number(str).toExponential().replace(/e\+?/, ' x 10^');
     const split = expStr.split(' x 10^');
     const first = Number(split[0]).toLocaleString('en', {
       maximumFractionDigits: 4,

@@ -7,6 +7,7 @@ import {
   useBreakpointValue,
 } from '@chakra-ui/react';
 import Logo from 'assets/logo.svg';
+import { BridgeDropdown } from 'components/common/BridgeDropdown';
 import { UpdateSettings } from 'components/common/UpdateSettings';
 import { WalletSelector } from 'components/common/WalletSelector';
 import { useWeb3Context } from 'contexts/Web3Context';
@@ -104,6 +105,7 @@ export const Header = () => {
                 <Text color="black"> History</Text>
               </Flex>
             </Link>
+            <BridgeDropdown />
             <UpdateSettings close={() => setOpen(false)} />
             <WalletSelector close={() => setOpen(false)} />
           </>
