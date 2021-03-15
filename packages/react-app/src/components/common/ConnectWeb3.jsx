@@ -54,7 +54,7 @@ export const ConnectWeb3 = () => {
       w="calc(100% - 2rem)"
       mt="5rem"
       p="2.5rem"
-      maxW="32.5rem"
+      maxW="27.5rem"
       mx={4}
     >
       <Flex
