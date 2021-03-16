@@ -16,16 +16,12 @@ export function getDirection(): String {
   if (network == 'xdai') {
     if (
       address ==
-      Address.fromString('0xf6A78083ca3e2a662D6dd1703c939c8aCE2e268d')
-    ) {
-      return 'mainnet-xdai';
-    }
-    if (
-      address ==
       Address.fromString('0x59447362798334d3485c64D1e4870Fde2DDC0d75')
+      // must add other bsc-xdai dedication-bridge addresses here in the future (if any)
     ) {
       return 'bsc-xdai';
     }
+    return 'mainnet-xdai';
   } else if (network == 'mainnet') {
     return 'mainnet-xdai';
   } else if (network == 'bsc') {
