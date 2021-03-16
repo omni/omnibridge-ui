@@ -53,7 +53,7 @@ export const ConnectWeb3 = () => {
       align="center"
       w="calc(100% - 2rem)"
       mt="5rem"
-      p="2.5rem"
+      p="2rem"
       maxW="27.5rem"
       mx={4}
     >
