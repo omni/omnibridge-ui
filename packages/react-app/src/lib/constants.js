@@ -12,6 +12,7 @@ export const POLLING_INTERVAL =
 export const HOME_CHAIN_ID = Number(process.env.REACT_APP_HOME_CHAIN_ID) || 77;
 export const FOREIGN_CHAIN_ID =
   Number(process.env.REACT_APP_FOREIGN_CHAIN_ID) || 42;
+export const NON_ETH_CHAIN_IDS = [56, 77, 100];
 
 export const networkNames = {
   1: 'ETH Mainnet',
@@ -27,6 +28,29 @@ export const networkLabels = {
   56: 'BSC',
   77: 'Sokol',
   100: 'xDai',
+};
+
+export const networkCurrencies = {
+  1: {
+    name: 'Ethereum',
+    symbol: 'ETH',
+  },
+  42: {
+    name: 'Ethereum',
+    symbol: 'ETH',
+  },
+  56: {
+    name: 'Binance Coin',
+    symbol: 'BNB',
+  },
+  77: {
+    name: 'Sokol POA',
+    symbol: 'SPOA',
+  },
+  100: {
+    name: 'xDai',
+    symbol: 'xDai',
+  },
 };
 
 export const chainUrls = {

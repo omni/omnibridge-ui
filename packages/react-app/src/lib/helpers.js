@@ -8,6 +8,7 @@ import {
   graphEndpoints,
   HOME_CHAIN_ID,
   mediators,
+  networkCurrencies,
   networkLabels,
   networkNames,
   subgraphNames,
@@ -35,8 +36,12 @@ export const getMediatorAddressWithOverride = (tokenAddress, chainId) => {
 export const getMediatorAddress = chainId =>
   mediators[chainId].toLowerCase() || mediators[HOME_CHAIN_ID].toLowerCase();
 
+export const getWalletProviderName = provider =>
+  provider?.connection?.url || null;
 export const getNetworkName = chainId => networkNames[chainId] || 'Unknown';
 export const getNetworkLabel = chainId => networkLabels[chainId] || 'Unknown';
+export const getNetworkCurrency = chainId =>
+  networkCurrencies[chainId] || { name: 'Unknown', symbol: 'Unknown' };
 export const getAMBAddress = chainId => ambs[chainId] || ambs[HOME_CHAIN_ID];
 export const getGraphEndpoint = chainId =>
   graphEndpoints[chainId] || graphEndpoints[HOME_CHAIN_ID];
