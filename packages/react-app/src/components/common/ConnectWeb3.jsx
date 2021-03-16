@@ -1,4 +1,4 @@
-import { Badge, Button, Flex, Text, Tooltip } from '@chakra-ui/react';
+import { Badge, Button, Flex, Text, Tooltip, useToast } from '@chakra-ui/react';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { WalletFilledIcon } from 'icons/WalletFilledIcon';
 import {
@@ -6,7 +6,7 @@ import {
   HOME_CHAIN_ID,
   NON_ETH_CHAIN_IDS,
 } from 'lib/constants';
-import { getNetworkName, getWalletProviderName } from 'lib/helpers';
+import { getNetworkName, getWalletProviderName, logError } from 'lib/helpers';
 import { addChainToMetaMask } from 'lib/metamask';
 import React from 'react';
 
@@ -18,6 +18,27 @@ export const ConnectWeb3 = () => {
     disconnect,
     ethersProvider,
   } = useWeb3Context();
+  const toast = useToast();
+
+  const showError = msg => {
+    if (msg) {
+      toast({
+        title: 'Error',
+        description: msg,
+        status: 'error',
+        isClosable: 'true',
+      });
+    }
+  };
+
+  const addChain = async chainId => {
+    await addChainToMetaMask({ chainId }).catch(metamaskError => {
+      logError({ metamaskError });
+      if (metamaskError?.message) {
+        showError(metamaskError.message);
+      }
+    });
+  };
 
   const renderConnectChain = chainId => {
     const networkName = getNetworkName(chainId);
@@ -34,7 +55,7 @@ export const ConnectWeb3 = () => {
           size="1"
           cursor="pointer"
           colorScheme="blue"
-          onClick={() => addChainToMetaMask({ chainId })}
+          onClick={() => addChain(chainId)}
         >
           {networkName}
         </Badge>
