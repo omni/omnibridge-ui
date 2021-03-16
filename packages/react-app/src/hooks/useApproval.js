@@ -1,14 +1,14 @@
-import { Web3Context } from 'contexts/Web3Context';
+import { useWeb3Context } from 'contexts/Web3Context';
 import { BigNumber } from 'ethers';
 import { LARGEST_UINT256, LOCAL_STORAGE_KEYS } from 'lib/constants';
 import { logError } from 'lib/helpers';
 import { approveToken, fetchAllowance } from 'lib/token';
-import { useCallback, useContext, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 const { INFINITE_UNLOCK } = LOCAL_STORAGE_KEYS;
 
 export const useApproval = (fromToken, fromAmount) => {
-  const { account, ethersProvider, providerChainId } = useContext(Web3Context);
+  const { account, ethersProvider, providerChainId } = useWeb3Context();
   const [allowance, setAllowance] = useState(BigNumber.from(0));
   const [trigger, shouldTrigger] = useState(false);
   const updateAllowance = () => shouldTrigger(u => !u);

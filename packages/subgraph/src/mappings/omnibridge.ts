@@ -6,10 +6,12 @@ import {
 } from '../types/Omnibridge/Omnibridge';
 import { Execution, UserRequest, Token } from '../types/schema';
 
-import { fetchTokenInfo, overrides, getDirection } from './helpers';
+import { fetchTokenInfo, getOverrides, getDirection } from './helpers';
 
 export function handleBridgeTransfer(event: TokensBridged): void {
-  log.debug('Parsing TokensBridged', []);
+  log.debug('Parsing TokensBridged for txHash {}', [
+    event.transaction.hash.toHexString(),
+  ]);
   let txHash = event.transaction.hash;
   let execution = Execution.load(txHash.toHexString());
   if (execution == null) {
@@ -26,7 +28,9 @@ export function handleBridgeTransfer(event: TokensBridged): void {
 }
 
 export function handleInitiateTransfer(event: TokensBridgingInitiated): void {
-  log.debug('Parsing TokensBridged', []);
+  log.debug('Parsing TokensBridgingInitiated for txHash {}', [
+    event.transaction.hash.toHexString(),
+  ]);
   let txHash = event.transaction.hash;
   let request = UserRequest.load(txHash.toHexString());
   if (request == null) {
@@ -47,6 +51,8 @@ export function handleInitiateTransfer(event: TokensBridgingInitiated): void {
 
 export function handleNewToken(event: NewTokenRegistered): void {
   log.debug('Parsing NewTokenRegistered', []);
+
+  let overrides = getOverrides();
 
   if (
     overrides.isSet(event.params.foreignToken) ||

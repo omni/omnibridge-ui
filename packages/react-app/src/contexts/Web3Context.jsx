@@ -6,7 +6,7 @@ import Web3 from 'web3';
 import Web3Modal from 'web3modal';
 
 export const Web3Context = React.createContext({});
-export const useWeb3 = () => useContext(Web3Context);
+export const useWeb3Context = () => useContext(Web3Context);
 
 const updateTitle = chainId => {
   const networkName = getNetworkName(chainId);

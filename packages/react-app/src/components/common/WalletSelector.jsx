@@ -8,13 +8,13 @@ import {
   Text,
   useBreakpointValue,
 } from '@chakra-ui/react';
-import { Web3Context } from 'contexts/Web3Context';
+import { useWeb3Context } from 'contexts/Web3Context';
 import { WalletIcon } from 'icons/WalletIcon';
 import { getAccountString, getNetworkLabel, getNetworkName } from 'lib/helpers';
-import React, { useContext } from 'react';
+import React from 'react';
 
 export const WalletSelector = ({ close }) => {
-  const { disconnect, account, providerChainId } = useContext(Web3Context);
+  const { disconnect, account, providerChainId } = useWeb3Context();
 
   const placement = useBreakpointValue({ base: 'bottom', md: 'bottom-end' });
   return (

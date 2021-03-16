@@ -1,10 +1,10 @@
 import { useToast } from '@chakra-ui/react';
-import { Web3Context } from 'contexts/Web3Context';
+import { useWeb3Context } from 'contexts/Web3Context';
 import { FOREIGN_CHAIN_ID, HOME_CHAIN_ID } from 'lib/constants';
 import { getHealthStatus } from 'lib/graphHealth';
 import { logDebug, logError } from 'lib/helpers';
 import { getEthersProvider } from 'lib/providers';
-import { useContext, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { defer } from 'rxjs';
 
 const {
@@ -25,7 +25,7 @@ const THRESHOLD_BLOCKS =
   DEFAULT_GRAPH_HEALTH_THRESHOLD_BLOCKS;
 
 export const useGraphHealth = (description, onlyHome = false) => {
-  const { providerChainId } = useContext(Web3Context);
+  const { providerChainId } = useWeb3Context();
 
   const isHome = providerChainId === HOME_CHAIN_ID;
 

@@ -19,7 +19,7 @@ import {
 import SearchIcon from 'assets/search.svg';
 import { Logo } from 'components/common/Logo';
 import { BridgeContext } from 'contexts/BridgeContext';
-import { Web3Context } from 'contexts/Web3Context';
+import { useWeb3Context } from 'contexts/Web3Context';
 import { PlusIcon } from 'icons/PlusIcon';
 import { formatValue, logError, uniqueTokens } from 'lib/helpers';
 import { fetchTokenBalanceWithProvider } from 'lib/token';
@@ -33,7 +33,7 @@ import React, {
 } from 'react';
 
 export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
-  const { account, ethersProvider, providerChainId } = useContext(Web3Context);
+  const { account, ethersProvider, providerChainId } = useWeb3Context();
   const { setToken } = useContext(BridgeContext);
   const [tokenList, setTokenList] = useState([]);
   const [loading, setLoading] = useState(true);

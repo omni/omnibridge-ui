@@ -11,7 +11,7 @@ import BlueTickImage from 'assets/blue-tick.svg';
 import RightArrowImage from 'assets/right-arrow.svg';
 import { AddToMetamask } from 'components/common/AddToMetamask';
 import { TxLink } from 'components/common/TxLink';
-import { Web3Context } from 'contexts/Web3Context';
+import { useWeb3Context } from 'contexts/Web3Context';
 import { BigNumber, utils } from 'ethers';
 import {
   executeSignatures,
@@ -27,7 +27,7 @@ import {
   isxDaiChain,
   logError,
 } from 'lib/helpers';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 const { formatUnits } = utils;
 
@@ -72,7 +72,7 @@ export const HistoryItem = ({
     message: inputMessage,
   },
 }) => {
-  const { providerChainId, ethersProvider } = useContext(Web3Context);
+  const { providerChainId, ethersProvider } = useWeb3Context();
   const bridgeChainId = getBridgeNetwork(chainId);
   const [receivingTx, setReceiving] = useState(inputReceivingTx);
   const [message, setMessage] = useState(inputMessage);

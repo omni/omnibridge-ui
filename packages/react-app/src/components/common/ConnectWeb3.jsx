@@ -1,12 +1,70 @@
-import { Button, Flex, Text } from '@chakra-ui/react';
-import { Web3Context } from 'contexts/Web3Context';
+import { Badge, Button, Flex, Text, Tooltip, useToast } from '@chakra-ui/react';
+import { useWeb3Context } from 'contexts/Web3Context';
 import { WalletFilledIcon } from 'icons/WalletFilledIcon';
-import { FOREIGN_CHAIN_ID, HOME_CHAIN_ID } from 'lib/constants';
-import { getNetworkName } from 'lib/helpers';
-import React, { useContext } from 'react';
+import {
+  FOREIGN_CHAIN_ID,
+  HOME_CHAIN_ID,
+  NON_ETH_CHAIN_IDS,
+} from 'lib/constants';
+import { getNetworkName, getWalletProviderName, logError } from 'lib/helpers';
+import { addChainToMetaMask } from 'lib/metamask';
+import React from 'react';
 
 export const ConnectWeb3 = () => {
-  const { connectWeb3, loading, account, disconnect } = useContext(Web3Context);
+  const {
+    connectWeb3,
+    loading,
+    account,
+    disconnect,
+    ethersProvider,
+  } = useWeb3Context();
+  const toast = useToast();
+
+  const showError = msg => {
+    if (msg) {
+      toast({
+        title: 'Error',
+        description: msg,
+        status: 'error',
+        isClosable: 'true',
+      });
+    }
+  };
+
+  const addChain = async chainId => {
+    await addChainToMetaMask({ chainId }).catch(metamaskError => {
+      logError({ metamaskError });
+      if (metamaskError?.message) {
+        showError(metamaskError.message);
+      }
+    });
+  };
+
+  const renderConnectChain = chainId => {
+    const networkName = getNetworkName(chainId);
+    const isWalletMetamask =
+      getWalletProviderName(ethersProvider) === 'metamask';
+
+    return isWalletMetamask && NON_ETH_CHAIN_IDS.includes(chainId) ? (
+      <Tooltip label={`Switch to ${networkName}`} position="auto">
+        <Badge
+          py={0.5}
+          px={2}
+          m={1}
+          borderRadius={5}
+          size="1"
+          cursor="pointer"
+          colorScheme="blue"
+          onClick={() => addChain(chainId)}
+        >
+          {networkName}
+        </Badge>
+      </Tooltip>
+    ) : (
+      networkName
+    );
+  };
+
   return (
     <Flex
       background="white"
@@ -40,14 +98,18 @@ export const ConnectWeb3 = () => {
           <Text fontSize="xl" fontWeight="bold" mb={4}>
             {account ? `Switch to a supported network` : 'Connect Wallet'}
           </Text>
-          <Text color="greyText" mb={4} textAlign="center">
-            {account
-              ? `To access OmniBridge, please switch to${' '}
-                ${getNetworkName(HOME_CHAIN_ID)} or ${getNetworkName(
-                  FOREIGN_CHAIN_ID,
-                )}`
-              : 'To get started, connect your wallet'}
-          </Text>
+
+          {!account ? (
+            <Text color="greyText" mb={4} textAlign="center">
+              To get started, connect your wallet
+            </Text>
+          ) : (
+            <Text color="greyText" mb={4} textAlign="center">
+              To access OmniBridge, please switch to
+              {renderConnectChain(HOME_CHAIN_ID)}or{' '}
+              {renderConnectChain(FOREIGN_CHAIN_ID)}
+            </Text>
+          )}
         </>
       )}
       {account && !loading ? (

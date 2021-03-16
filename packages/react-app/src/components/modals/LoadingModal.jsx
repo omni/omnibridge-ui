@@ -12,7 +12,7 @@ import BlueTickImage from 'assets/blue-tick.svg';
 import LoadingImage from 'assets/loading.svg';
 import { ProgressRing } from 'components/common/ProgressRing';
 import { BridgeContext } from 'contexts/BridgeContext';
-import { Web3Context } from 'contexts/Web3Context';
+import { useWeb3Context } from 'contexts/Web3Context';
 import { getMonitorUrl } from 'lib/helpers';
 import React, { useContext } from 'react';
 
@@ -23,7 +23,7 @@ const getTransactionString = hash => {
 };
 
 export const LoadingModal = ({ loadingText, txHash, chainId }) => {
-  const { providerChainId } = useContext(Web3Context);
+  const { providerChainId } = useWeb3Context();
   const { loading } = useContext(BridgeContext);
   return (
     <Modal

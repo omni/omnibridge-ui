@@ -12,7 +12,7 @@ import DropDown from 'assets/drop-down.svg';
 import { Logo } from 'components/common/Logo';
 import { SelectTokenModal } from 'components/modals/SelectTokenModal';
 import { BridgeContext } from 'contexts/BridgeContext';
-import { Web3Context } from 'contexts/Web3Context';
+import { useWeb3Context } from 'contexts/Web3Context';
 import { BigNumber, utils } from 'ethers';
 import { formatValue, logError } from 'lib/helpers';
 import { fetchTokenBalance } from 'lib/token';
@@ -20,7 +20,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { defer } from 'rxjs';
 
 export const FromToken = () => {
-  const { account, providerChainId: chainId } = useContext(Web3Context);
+  const { account, providerChainId: chainId } = useWeb3Context();
   const {
     updateBalance,
     fromToken: token,

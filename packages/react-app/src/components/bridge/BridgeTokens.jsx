@@ -15,13 +15,13 @@ import {
 } from 'components/warnings/ReverseWarning';
 import { BridgeContext } from 'contexts/BridgeContext';
 import { useSettings } from 'contexts/SettingsContext';
-import { Web3Context } from 'contexts/Web3Context';
+import { useWeb3Context } from 'contexts/Web3Context';
 import { FOREIGN_CHAIN_ID } from 'lib/constants';
 import { getBridgeNetwork, getNetworkName } from 'lib/helpers';
 import React, { useContext } from 'react';
 
 export const BridgeTokens = () => {
-  const { providerChainId: chainId } = useContext(Web3Context);
+  const { providerChainId: chainId } = useWeb3Context();
   const { fromToken, toToken, txHash, loading } = useContext(BridgeContext);
   const { neverShowClaims, needsSaving } = useSettings();
   const isERC20Dai = isERC20DaiAddress(fromToken);
