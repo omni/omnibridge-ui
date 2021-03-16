@@ -19,7 +19,7 @@ export const ConnectWeb3 = () => {
     ethersProvider,
   } = useWeb3Context();
 
-  const renderConnectChain = (chainId, colorScheme = 'orange') => {
+  const renderConnectChain = chainId => {
     const networkName = getNetworkName(chainId);
     const isWalletMetamask =
       getWalletProviderName(ethersProvider) === 'metamask';
@@ -33,7 +33,7 @@ export const ConnectWeb3 = () => {
           borderRadius={5}
           size="1"
           cursor="pointer"
-          colorScheme={colorScheme}
+          colorScheme="blue"
           onClick={() => addChainToMetaMask({ chainId })}
         >
           {networkName}
@@ -84,9 +84,9 @@ export const ConnectWeb3 = () => {
             </Text>
           ) : (
             <Text color="greyText" mb={4} textAlign="center">
-              To access OmniBridge, please switch to <br />
-              {renderConnectChain(HOME_CHAIN_ID, 'green')}or{' '}
-              {renderConnectChain(FOREIGN_CHAIN_ID, 'orange')}
+              To access OmniBridge, please switch to
+              {renderConnectChain(HOME_CHAIN_ID)}or{' '}
+              {renderConnectChain(FOREIGN_CHAIN_ID)}
             </Text>
           )}
         </>
