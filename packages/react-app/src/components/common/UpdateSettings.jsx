@@ -33,6 +33,8 @@ export const UpdateSettings = ({ close }) => {
     setInfiniteUnlock,
     neverShowClaims,
     setNeverShowClaims,
+    tokenListWithBalance,
+    setTokenListWithBalance,
     update,
     save,
     needsSaving,
@@ -128,6 +130,13 @@ export const UpdateSettings = ({ close }) => {
                   colorScheme="blue"
                   isChecked={neverShowClaims}
                   onChange={e => setNeverShowClaims(e.target.checked)}
+                />
+                <Text mb={2}>Fetch token list with balance</Text>
+                <Switch
+                  mb={4}
+                  colorScheme="blue"
+                  isChecked={tokenListWithBalance}
+                  onChange={e => setTokenListWithBalance(e.target.checked)}
                 />
               </Flex>
             </ModalBody>

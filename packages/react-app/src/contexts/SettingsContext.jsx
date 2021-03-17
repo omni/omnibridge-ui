@@ -15,6 +15,7 @@ export const SettingsProvider = ({ children }) => {
   const [xdaiRPC, setXDaiRPC] = useState('');
   const [neverShowClaims, setNeverShowClaims] = useState(false);
   const [infiniteUnlock, setInfiniteUnlock] = useState(false);
+  const [tokenListWithBalance, setTokenListWithBalance] = useState(false);
 
   const [trigger, shouldTrigger] = useState(false);
 
@@ -65,6 +66,8 @@ export const SettingsProvider = ({ children }) => {
         setInfiniteUnlock,
         neverShowClaims,
         setNeverShowClaims,
+        tokenListWithBalance,
+        setTokenListWithBalance,
         update,
         save,
         needsSaving,
