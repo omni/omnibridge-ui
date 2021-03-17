@@ -19,6 +19,7 @@ import {
 import SearchIcon from 'assets/search.svg';
 import { Logo } from 'components/common/Logo';
 import { BridgeContext } from 'contexts/BridgeContext';
+import { useSettings } from 'contexts/SettingsContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { PlusIcon } from 'icons/PlusIcon';
 import { formatValue, logError, uniqueTokens } from 'lib/helpers';
@@ -33,10 +34,39 @@ import React, {
 } from 'react';
 
 export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
-  const { account, ethersProvider, providerChainId } = useWeb3Context();
+  // Ref
+  const initialRef = useRef();
+  // Contexts
   const { setToken } = useContext(BridgeContext);
-  const [tokenList, setTokenList] = useState([]);
+  const { account, ethersProvider, providerChainId } = useWeb3Context();
+  const { tokenListWithBalance: tokenBalanceToggle } = useSettings();
+  // State
   const [loading, setLoading] = useState(true);
+  const [tokenList, setTokenList] = useState([]);
+  const [filteredTokenList, setFilteredTokenList] = useState([]);
+  const smallScreen = useBreakpointValue({ sm: false, base: true });
+
+  // Callbacks
+  const fetchTokenListWithBalance = useCallback(
+    async tList => {
+      const tokenListWithBalance = await Promise.all(
+        tList.map(async token => ({
+          ...token,
+          balance: await fetchTokenBalanceWithProvider(
+            ethersProvider,
+            token,
+            account,
+          ),
+        })),
+      );
+
+      return tokenListWithBalance.sort(
+        ({ balance: balanceA }, { balance: balanceB }) =>
+          balanceB.sub(balanceA).gt(0) ? 1 : -1,
+      );
+    },
+    [account, ethersProvider],
+  );
 
   const setDefaultTokenList = useCallback(
     async (chainId, customTokens) => {
@@ -48,77 +78,52 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
             customTokens.filter(token => token.chainId === chainId),
           ),
         );
-        const tokenListWithBalance = await Promise.all(
-          customTokenList.map(async token => ({
-            ...token,
-            balance: await fetchTokenBalanceWithProvider(
-              ethersProvider,
-              token,
-              account,
-            ),
-          })),
+        setTokenList(
+          tokenBalanceToggle
+            ? await fetchTokenListWithBalance(customTokenList)
+            : customTokenList,
         );
-        const sortedTokenList = tokenListWithBalance.sort(function checkBalance(
-          { balance: balanceA },
-          { balance: balanceB },
-        ) {
-          if (balanceB.sub(balanceA).gt(0)) {
-            return 1;
-          }
-          return -1;
-        });
-        setTokenList(sortedTokenList);
       } catch (fetchTokensError) {
         logError({ fetchTokensError });
       }
       setLoading(false);
     },
-    [account, ethersProvider],
+    [fetchTokenListWithBalance, tokenBalanceToggle],
   );
 
-  const [filteredTokenList, setFilteredTokenList] = useState([]);
+  // Effects
+  useEffect(() => {
+    tokenList.length && setFilteredTokenList(tokenList);
+  }, [tokenList, setFilteredTokenList]);
 
+  useEffect(() => {
+    if (!isOpen) return;
+    let localTokenList = window.localStorage.getItem('customTokens');
+    localTokenList =
+      !localTokenList || !localTokenList.length
+        ? []
+        : JSON.parse(localTokenList);
+    providerChainId && setDefaultTokenList(providerChainId, localTokenList);
+  }, [isOpen, providerChainId, setDefaultTokenList]);
+
+  // Handlers
   const onClick = token => {
     setToken(token);
     onClose();
   };
 
-  const initialRef = useRef();
-
   const onChange = e => {
     const newFilteredTokenList = tokenList.filter(token => {
       const lowercaseSearch = e.target.value.toLowerCase();
+      const { name, symbol, address } = token;
       return (
-        token.name.toLowerCase().includes(lowercaseSearch) ||
-        token.symbol.toLowerCase().includes(lowercaseSearch) ||
-        token.address.toLowerCase().includes(lowercaseSearch)
+        name.toLowerCase().includes(lowercaseSearch) ||
+        symbol.toLowerCase().includes(lowercaseSearch) ||
+        address.toLowerCase().includes(lowercaseSearch)
       );
     });
     setFilteredTokenList(newFilteredTokenList);
   };
-
-  useEffect(() => {
-    setFilteredTokenList(tokenList);
-  }, [tokenList, setFilteredTokenList]);
-
-  useEffect(() => {
-    let localTokenList = window.localStorage.getItem('customTokens');
-    if (!localTokenList) {
-      localTokenList = [];
-    }
-    if (localTokenList.length < 1) {
-      localTokenList = [];
-    } else {
-      localTokenList = JSON.parse(localTokenList);
-    }
-
-    if (!isOpen) return;
-    if (providerChainId) {
-      setDefaultTokenList(providerChainId, localTokenList);
-    }
-  }, [isOpen, providerChainId, setDefaultTokenList]);
-
-  const smallScreen = useBreakpointValue({ sm: false, base: true });
 
   return (
     <Modal
@@ -214,9 +219,11 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
                         {token.symbol}
                       </Text>
                     </Flex>
-                    <Text color="grey" fontWeight="normal">
-                      {formatValue(token.balance, token.decimals)}
-                    </Text>
+                    {tokenBalanceToggle && token.balance && token.decimals && (
+                      <Text color="grey" fontWeight="normal">
+                        {formatValue(token.balance, token.decimals)}
+                      </Text>
+                    )}
                   </Flex>
                 </Button>
               ))}
