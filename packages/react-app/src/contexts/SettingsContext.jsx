@@ -19,6 +19,7 @@ export const SettingsProvider = ({ children }) => {
   const [disableBalanceFetchToken, setDisableBalanceFetchToken] = useLocalState(
     false,
     'disable-balance-while-token-fetch',
+    'boolean',
   );
 
   const [trigger, shouldTrigger] = useState(false);
