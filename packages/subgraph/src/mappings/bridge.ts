@@ -7,10 +7,11 @@ import { Execution, UserRequest } from '../types/schema';
 
 import {
   fetchTokenInfo,
-  getMediatedTokens,
   updateHomeTokenInfo,
   updateHomeToken,
 } from './helpers';
+
+import { getMediatedTokens } from './overrides';
 
 export function handleBridgeTransfer(event: TokensBridged): void {
   log.debug('Parsing TokensBridged for txHash {}', [
