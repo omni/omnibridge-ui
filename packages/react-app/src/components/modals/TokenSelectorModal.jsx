@@ -191,44 +191,52 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
               </Flex>
             )}
             {!loading &&
-              filteredTokenList.map(token => (
-                <Button
-                  variant="outline"
-                  size="lg"
-                  width="100%"
-                  borderColor="#DAE3F0"
-                  key={token.address}
-                  onClick={() => onClick(token)}
-                  mb={2}
-                  px={4}
-                >
-                  <Flex align="center" width="100%" justify="space-between">
-                    <Flex align="center">
-                      <Flex
-                        justify="center"
-                        align="center"
-                        background="white"
-                        border="1px solid #DAE3F0"
-                        boxSize={8}
-                        overflow="hidden"
-                        borderRadius="50%"
-                      >
-                        <Logo uri={token.logoURI} />
+              filteredTokenList.map(token => {
+                const {
+                  decimals,
+                  balance,
+                  name,
+                  address,
+                  logoURI,
+                  symbol,
+                } = token;
+                return (
+                  <Button
+                    variant="outline"
+                    size="lg"
+                    width="100%"
+                    borderColor="#DAE3F0"
+                    key={address}
+                    onClick={() => onClick(token)}
+                    mb={2}
+                    px={4}
+                  >
+                    <Flex align="center" width="100%" justify="space-between">
+                      <Flex align="center">
+                        <Flex
+                          justify="center"
+                          align="center"
+                          background="white"
+                          border="1px solid #DAE3F0"
+                          boxSize={8}
+                          overflow="hidden"
+                          borderRadius="50%"
+                        >
+                          <Logo uri={logoURI} />
+                        </Flex>
+                        <Text fontSize="lg" fontWeight="bold" mx={2}>
+                          {symbol}
+                        </Text>
                       </Flex>
-                      <Text fontSize="lg" fontWeight="bold" mx={2}>
-                        {token.symbol}
+                      <Text color="grey" fontWeight="normal">
+                        {disableBalanceFetchToken && balance && decimals
+                          ? formatValue(balance, decimals)
+                          : name}
                       </Text>
                     </Flex>
-                    {disableBalanceFetchToken &&
-                      token.balance &&
-                      token.decimals && (
-                        <Text color="grey" fontWeight="normal">
-                          {formatValue(token.balance, token.decimals)}
-                        </Text>
-                      )}
-                  </Flex>
-                </Button>
-              ))}
+                  </Button>
+                );
+              })}
           </ModalBody>
         </ModalContent>
       </ModalOverlay>
