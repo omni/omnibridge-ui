@@ -228,7 +228,13 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
                           {symbol}
                         </Text>
                       </Flex>
-                      <Text color="grey" fontWeight="normal">
+                      <Text
+                        color="grey"
+                        fontWeight="normal"
+                        textOverflow="ellipsis"
+                        overflow="hidden"
+                        maxWidth="60%"
+                      >
                         {!disableBalanceFetchToken && balance && decimals
                           ? formatValue(balance, decimals)
                           : name}
