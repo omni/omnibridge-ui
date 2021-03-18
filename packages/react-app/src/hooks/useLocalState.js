@@ -1,14 +1,15 @@
 import { useCallback, useEffect, useState } from 'react';
 
-const useLocalState = (initialValue, key) => {
-  const [value, setValue] = useState(initialValue);
+const useLocalState = (initialValue, key = 'omnibridge-key') => {
+  const [value, setValue] = useState(localStorage.getItem(key) || initialValue);
 
   const updateValue = useCallback(
     val => {
-      localStorage.setItem(key, val);
-      setValue(val);
+      const result = typeof val === 'function' ? val(value) : val;
+      localStorage.setItem(key, result);
+      setValue(result);
     },
-    [key],
+    [key, value],
   );
 
   useEffect(() => {

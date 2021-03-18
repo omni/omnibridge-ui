@@ -39,7 +39,7 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
   // Contexts
   const { setToken } = useContext(BridgeContext);
   const { account, ethersProvider, providerChainId } = useWeb3Context();
-  const { tokenListWithBalance: tokenBalanceToggle } = useSettings();
+  const { disableBalanceFetchToken } = useSettings();
   // State
   const [loading, setLoading] = useState(true);
   const [tokenList, setTokenList] = useState([]);
@@ -79,7 +79,7 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
           ),
         );
         setTokenList(
-          tokenBalanceToggle
+          !disableBalanceFetchToken
             ? await fetchTokenListWithBalance(customTokenList)
             : customTokenList,
         );
@@ -88,7 +88,7 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
       }
       setLoading(false);
     },
-    [fetchTokenListWithBalance, tokenBalanceToggle],
+    [fetchTokenListWithBalance, disableBalanceFetchToken],
   );
 
   // Effects
@@ -219,11 +219,13 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
                         {token.symbol}
                       </Text>
                     </Flex>
-                    {tokenBalanceToggle && token.balance && token.decimals && (
-                      <Text color="grey" fontWeight="normal">
-                        {formatValue(token.balance, token.decimals)}
-                      </Text>
-                    )}
+                    {disableBalanceFetchToken &&
+                      token.balance &&
+                      token.decimals && (
+                        <Text color="grey" fontWeight="normal">
+                          {formatValue(token.balance, token.decimals)}
+                        </Text>
+                      )}
                   </Flex>
                 </Button>
               ))}

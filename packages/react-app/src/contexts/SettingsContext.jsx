@@ -1,3 +1,4 @@
+import { useLocalState } from 'hooks/useLocalState';
 import { LOCAL_STORAGE_KEYS } from 'lib/constants';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 
@@ -15,7 +16,10 @@ export const SettingsProvider = ({ children }) => {
   const [xdaiRPC, setXDaiRPC] = useState('');
   const [neverShowClaims, setNeverShowClaims] = useState(false);
   const [infiniteUnlock, setInfiniteUnlock] = useState(false);
-  const [tokenListWithBalance, setTokenListWithBalance] = useState(false);
+  const [disableBalanceFetchToken, setDisableBalanceFetchToken] = useLocalState(
+    false,
+    'disable-balance-while-token-fetch',
+  );
 
   const [trigger, shouldTrigger] = useState(false);
 
@@ -66,8 +70,8 @@ export const SettingsProvider = ({ children }) => {
         setInfiniteUnlock,
         neverShowClaims,
         setNeverShowClaims,
-        tokenListWithBalance,
-        setTokenListWithBalance,
+        disableBalanceFetchToken,
+        setDisableBalanceFetchToken,
         update,
         save,
         needsSaving,
