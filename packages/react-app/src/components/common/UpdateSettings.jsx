@@ -35,9 +35,7 @@ export const UpdateSettings = ({ close }) => {
     setNeverShowClaims,
     disableBalanceFetchToken,
     setDisableBalanceFetchToken,
-    update,
     save,
-    needsSaving,
   } = useSettings();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -48,9 +46,8 @@ export const UpdateSettings = ({ close }) => {
 
   const openSettings = useCallback(() => {
     close();
-    update();
     onOpen();
-  }, [close, update, onOpen]);
+  }, [close, onOpen]);
 
   return (
     <>
@@ -152,7 +149,6 @@ export const UpdateSettings = ({ close }) => {
                   onClick={onSave}
                   colorScheme="blue"
                   mt={{ base: 2, md: 0 }}
-                  isDisabled={!needsSaving}
                   ref={initialRef}
                   w="100%"
                 >

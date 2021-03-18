@@ -20,10 +20,11 @@ const useLocalState = (
 
   const updateValue = useCallback(
     val => {
-      console.log(val, typeof val);
       const result = typeof val === 'function' ? val(value) : val;
-      localStorage.setItem(key, result);
-      setValue(result);
+      if (JSON.stringify(result) !== JSON.stringify(value)) {
+        localStorage.setItem(key, result);
+        setValue(result);
+      }
     },
     [key, value],
   );
