@@ -229,7 +229,7 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
                         </Text>
                       </Flex>
                       <Text color="grey" fontWeight="normal">
-                        {disableBalanceFetchToken && balance && decimals
+                        {!disableBalanceFetchToken && balance && decimals
                           ? formatValue(balance, decimals)
                           : name}
                       </Text>
