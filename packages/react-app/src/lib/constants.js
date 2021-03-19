@@ -144,4 +144,5 @@ export const LOCAL_STORAGE_KEYS = {
   NEVER_SHOW_CLAIMS: 'never-show-claims',
   INFINITE_UNLOCK: 'infinite-unlock',
   CUSTOM_TOKENS: 'customTokens',
+  DISABLE_BALANCE_WHILE_TOKEN_FETCH: 'disable-balance-while-token-fetch',
 };
