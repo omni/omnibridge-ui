@@ -67,7 +67,6 @@ export const SettingsProvider = ({ children }) => {
       window.localStorage.getItem(DISABLE_BALANCE_WHILE_TOKEN_FETCH) !==
         disableBalanceFetchToken.toString()
     ) {
-      console.log('UPDATE HAPPENED');
       setNeedsSaving(true);
     }
   }, [
