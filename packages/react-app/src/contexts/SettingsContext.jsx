@@ -1,6 +1,6 @@
 import { useLocalState } from 'hooks/useLocalState';
 import { LOCAL_STORAGE_KEYS } from 'lib/constants';
-import React, { useCallback, useContext } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 
 const {
   INFINITE_UNLOCK,
@@ -19,25 +19,64 @@ export const SettingsProvider = ({ children }) => {
   const [neverShowClaims, setNeverShowClaims] = useLocalState(
     false,
     NEVER_SHOW_CLAIMS,
-    'boolean',
+    { valueType: 'boolean' },
   );
+
   const [infiniteUnlock, setInfiniteUnlock] = useLocalState(
     false,
     INFINITE_UNLOCK,
-    'boolean',
+    { valueType: 'boolean' },
   );
+
   const [disableBalanceFetchToken, setDisableBalanceFetchToken] = useLocalState(
     false,
     DISABLE_BALANCE_WHILE_TOKEN_FETCH,
-    'boolean',
+    {
+      valueType: 'boolean',
+    },
   );
 
+  const [needsSaving, setNeedsSaving] = useState(false);
+
   const save = useCallback(() => {
-    setMainnetRPC(mRPC => mRPC);
-    setXDaiRPC(xRPC => xRPC);
-    setNeverShowClaims(nClaims => nClaims);
-    setInfiniteUnlock(iUnlock => iUnlock);
-  }, [setInfiniteUnlock, setMainnetRPC, setXDaiRPC, setNeverShowClaims]);
+    if (needsSaving) {
+      setMainnetRPC(mRPC => mRPC, true);
+      setXDaiRPC(xRPC => xRPC, true);
+      setNeverShowClaims(nClaims => nClaims, true);
+      setInfiniteUnlock(iUnlock => iUnlock, true);
+      setDisableBalanceFetchToken(dBalanceToken => dBalanceToken, true);
+      setNeedsSaving(false);
+    }
+  }, [
+    setInfiniteUnlock,
+    setDisableBalanceFetchToken,
+    setMainnetRPC,
+    setXDaiRPC,
+    setNeverShowClaims,
+    needsSaving,
+  ]);
+
+  useEffect(() => {
+    if (
+      window.localStorage.getItem(XDAI_RPC_URL) !== xdaiRPC ||
+      window.localStorage.getItem(MAINNET_RPC_URL) !== mainnetRPC ||
+      window.localStorage.getItem(NEVER_SHOW_CLAIMS) !==
+        neverShowClaims.toString() ||
+      window.localStorage.getItem(INFINITE_UNLOCK) !==
+        infiniteUnlock.toString() ||
+      window.localStorage.getItem(DISABLE_BALANCE_WHILE_TOKEN_FETCH) !==
+        disableBalanceFetchToken.toString()
+    ) {
+      console.log('UPDATE HAPPENED');
+      setNeedsSaving(true);
+    }
+  }, [
+    mainnetRPC,
+    xdaiRPC,
+    neverShowClaims,
+    infiniteUnlock,
+    disableBalanceFetchToken,
+  ]);
 
   return (
     <SettingsContext.Provider
@@ -52,6 +91,8 @@ export const SettingsProvider = ({ children }) => {
         setNeverShowClaims,
         disableBalanceFetchToken,
         setDisableBalanceFetchToken,
+        needsSaving,
+        setNeedsSaving,
         save,
       }}
     >

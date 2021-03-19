@@ -1,39 +1,45 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 const useLocalState = (
   initialValue,
   key = 'omnibridge-key',
-  valueType = 'string',
+  { valueType = 'string', isLazilyStored = false } = {},
 ) => {
-  const storageValue = localStorage.getItem(key);
-  let castedValue = storageValue;
-
-  if (valueType === 'number') {
-    castedValue = parseInt(storageValue, 10);
-  } else if (valueType === 'boolean') {
-    castedValue = Boolean(storageValue);
-  } else if (valueType === 'object') {
-    castedValue = JSON.parse(storageValue);
-  }
+  const storageValue = window.localStorage.getItem(key);
+  const castedValue = useMemo(() => {
+    if (valueType === 'number') {
+      return parseInt(storageValue, 10);
+    }
+    if (valueType === 'boolean') {
+      return storageValue === 'true';
+    }
+    if (valueType === 'object') {
+      return JSON.parse(storageValue);
+    }
+    return storageValue;
+  }, [storageValue, valueType]);
 
   const [value, setValue] = useState(castedValue || initialValue);
 
   const updateValue = useCallback(
-    val => {
+    (val, shouldBeCached = false) => {
       const result = typeof val === 'function' ? val(value) : val;
-      if (JSON.stringify(result) !== JSON.stringify(value)) {
-        localStorage.setItem(key, result);
-        setValue(result);
-      }
+      JSON.stringify(result) !== JSON.stringify(value) && setValue(result);
+      (!!isLazilyStored || !!shouldBeCached) &&
+        window.localStorage.setItem(key, result);
     },
-    [key, value],
+    [key, value, isLazilyStored],
   );
 
   useEffect(() => {
     updateValue(value);
-  }, [value, updateValue]);
+  }, [key, value, updateValue]);
 
-  return [value, updateValue];
+  useEffect(() => {
+    !storageValue && localStorage.setItem(key, initialValue);
+  }, [key, initialValue, storageValue]);
+
+  return [value, updateValue, castedValue];
 };
 
 export { useLocalState };

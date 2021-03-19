@@ -35,6 +35,7 @@ export const UpdateSettings = ({ close }) => {
     setNeverShowClaims,
     disableBalanceFetchToken,
     setDisableBalanceFetchToken,
+    needsSaving,
     save,
   } = useSettings();
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -150,6 +151,7 @@ export const UpdateSettings = ({ close }) => {
                   colorScheme="blue"
                   mt={{ base: 2, md: 0 }}
                   ref={initialRef}
+                  disabled={!needsSaving}
                   w="100%"
                 >
                   Save
