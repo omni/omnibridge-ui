@@ -33,9 +33,10 @@ export const UpdateSettings = ({ close }) => {
     setInfiniteUnlock,
     neverShowClaims,
     setNeverShowClaims,
-    update,
-    save,
+    disableBalanceFetchToken,
+    setDisableBalanceFetchToken,
     needsSaving,
+    save,
   } = useSettings();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
@@ -46,9 +47,8 @@ export const UpdateSettings = ({ close }) => {
 
   const openSettings = useCallback(() => {
     close();
-    update();
     onOpen();
-  }, [close, update, onOpen]);
+  }, [close, onOpen]);
 
   return (
     <>
@@ -129,6 +129,13 @@ export const UpdateSettings = ({ close }) => {
                   isChecked={neverShowClaims}
                   onChange={e => setNeverShowClaims(e.target.checked)}
                 />
+                <Text mb={2}>Disable balances in token list</Text>
+                <Switch
+                  mb={4}
+                  colorScheme="blue"
+                  isChecked={disableBalanceFetchToken}
+                  onChange={e => setDisableBalanceFetchToken(e.target.checked)}
+                />
               </Flex>
             </ModalBody>
             <ModalFooter p={6}>
@@ -143,8 +150,8 @@ export const UpdateSettings = ({ close }) => {
                   onClick={onSave}
                   colorScheme="blue"
                   mt={{ base: 2, md: 0 }}
-                  isDisabled={!needsSaving}
                   ref={initialRef}
+                  disabled={!needsSaving}
                   w="100%"
                 >
                   Save

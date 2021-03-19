@@ -1,6 +1,11 @@
 import { utils } from 'ethers';
 
-import { getNetworkCurrency, getNetworkName, getRPCUrl } from './helpers';
+import {
+  getExplorerUrl,
+  getNetworkCurrency,
+  getNetworkName,
+  getRPCUrl,
+} from './helpers';
 
 export const addTokenToMetamask = async token => {
   return window.ethereum.request({
@@ -31,6 +36,7 @@ export const addChainToMetaMask = async ethereumChain => {
           decimals: 18,
         },
         rpcUrls: [getRPCUrl(chainId)],
+        blockExplorerUrls: [getExplorerUrl(chainId)],
       },
     ],
   });

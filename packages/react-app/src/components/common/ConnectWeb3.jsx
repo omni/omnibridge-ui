@@ -1,4 +1,13 @@
-import { Badge, Button, Flex, Text, Tooltip, useToast } from '@chakra-ui/react';
+import {
+  Badge,
+  Button,
+  Flex,
+  Image,
+  Text,
+  Tooltip,
+  useToast,
+} from '@chakra-ui/react';
+import MetamaskFox from 'assets/metamask-fox.svg';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { WalletFilledIcon } from 'icons/WalletFilledIcon';
 import {
@@ -46,9 +55,11 @@ export const ConnectWeb3 = () => {
       getWalletProviderName(ethersProvider) === 'metamask';
 
     return isWalletMetamask && NON_ETH_CHAIN_IDS.includes(chainId) ? (
-      <Tooltip label={`Switch to ${networkName}`} position="auto">
+      <Tooltip label={`Click to switch to ${networkName}`} position="auto">
         <Badge
-          py={0.5}
+          display="inline-flex"
+          alignItems="center"
+          py={1}
           px={2}
           m={1}
           borderRadius={5}
@@ -57,6 +68,7 @@ export const ConnectWeb3 = () => {
           colorScheme="blue"
           onClick={() => addChain(chainId)}
         >
+          <Image boxSize={5} src={MetamaskFox} mr={2} />
           {networkName}
         </Badge>
       </Tooltip>

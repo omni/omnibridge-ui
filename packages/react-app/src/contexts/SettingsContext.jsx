@@ -1,3 +1,4 @@
+import { useLocalState } from 'hooks/useLocalState';
 import { LOCAL_STORAGE_KEYS } from 'lib/constants';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 
@@ -6,53 +7,75 @@ const {
   MAINNET_RPC_URL,
   XDAI_RPC_URL,
   NEVER_SHOW_CLAIMS,
+  DISABLE_BALANCE_WHILE_TOKEN_FETCH,
 } = LOCAL_STORAGE_KEYS;
 
 const SettingsContext = React.createContext({});
 
 export const SettingsProvider = ({ children }) => {
-  const [mainnetRPC, setMainnetRPC] = useState('');
-  const [xdaiRPC, setXDaiRPC] = useState('');
-  const [neverShowClaims, setNeverShowClaims] = useState(false);
-  const [infiniteUnlock, setInfiniteUnlock] = useState(false);
+  const [mainnetRPC, setMainnetRPC] = useLocalState('', MAINNET_RPC_URL);
+  const [xdaiRPC, setXDaiRPC] = useLocalState('', XDAI_RPC_URL);
 
-  const [trigger, shouldTrigger] = useState(false);
+  const [neverShowClaims, setNeverShowClaims] = useLocalState(
+    false,
+    NEVER_SHOW_CLAIMS,
+    { valueType: 'boolean' },
+  );
+
+  const [infiniteUnlock, setInfiniteUnlock] = useLocalState(
+    false,
+    INFINITE_UNLOCK,
+    { valueType: 'boolean' },
+  );
+
+  const [disableBalanceFetchToken, setDisableBalanceFetchToken] = useLocalState(
+    false,
+    DISABLE_BALANCE_WHILE_TOKEN_FETCH,
+    {
+      valueType: 'boolean',
+    },
+  );
 
   const [needsSaving, setNeedsSaving] = useState(false);
 
-  useEffect(() => {
-    setMainnetRPC(window.localStorage.getItem(MAINNET_RPC_URL) || '');
-    setXDaiRPC(window.localStorage.getItem(XDAI_RPC_URL) || '');
-    setNeverShowClaims(
-      window.localStorage.getItem(NEVER_SHOW_CLAIMS) === 'true',
-    );
-    setInfiniteUnlock(window.localStorage.getItem(INFINITE_UNLOCK) === 'true');
-    setNeedsSaving(false);
-  }, [trigger]);
-
-  const update = () => shouldTrigger(t => !t);
   const save = useCallback(() => {
     if (needsSaving) {
-      window.localStorage.setItem(MAINNET_RPC_URL, mainnetRPC);
-      window.localStorage.setItem(XDAI_RPC_URL, xdaiRPC);
-      window.localStorage.setItem(NEVER_SHOW_CLAIMS, neverShowClaims);
-      window.localStorage.setItem(INFINITE_UNLOCK, infiniteUnlock);
+      setMainnetRPC(mRPC => mRPC, true);
+      setXDaiRPC(xRPC => xRPC, true);
+      setNeverShowClaims(nClaims => nClaims, true);
+      setInfiniteUnlock(iUnlock => iUnlock, true);
+      setDisableBalanceFetchToken(dBalanceToken => dBalanceToken, true);
       setNeedsSaving(false);
     }
-  }, [mainnetRPC, xdaiRPC, neverShowClaims, infiniteUnlock, needsSaving]);
+  }, [
+    setInfiniteUnlock,
+    setDisableBalanceFetchToken,
+    setMainnetRPC,
+    setXDaiRPC,
+    setNeverShowClaims,
+    needsSaving,
+  ]);
 
   useEffect(() => {
     if (
       window.localStorage.getItem(XDAI_RPC_URL) !== xdaiRPC ||
       window.localStorage.getItem(MAINNET_RPC_URL) !== mainnetRPC ||
-      (window.localStorage.getItem(NEVER_SHOW_CLAIMS) === 'true') !==
-        neverShowClaims ||
-      (window.localStorage.getItem(INFINITE_UNLOCK) === 'true') !==
-        infiniteUnlock
+      window.localStorage.getItem(NEVER_SHOW_CLAIMS) !==
+        neverShowClaims.toString() ||
+      window.localStorage.getItem(INFINITE_UNLOCK) !==
+        infiniteUnlock.toString() ||
+      window.localStorage.getItem(DISABLE_BALANCE_WHILE_TOKEN_FETCH) !==
+        disableBalanceFetchToken.toString()
     ) {
       setNeedsSaving(true);
     }
-  }, [mainnetRPC, xdaiRPC, neverShowClaims, infiniteUnlock]);
+  }, [
+    mainnetRPC,
+    xdaiRPC,
+    neverShowClaims,
+    infiniteUnlock,
+    disableBalanceFetchToken,
+  ]);
 
   return (
     <SettingsContext.Provider
@@ -65,9 +88,11 @@ export const SettingsProvider = ({ children }) => {
         setInfiniteUnlock,
         neverShowClaims,
         setNeverShowClaims,
-        update,
-        save,
+        disableBalanceFetchToken,
+        setDisableBalanceFetchToken,
         needsSaving,
+        setNeedsSaving,
+        save,
       }}
     >
       {children}
