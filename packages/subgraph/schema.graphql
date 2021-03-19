@@ -10,6 +10,7 @@ type UserRequest @entity {
   messageId: Bytes
   encodedData: Bytes
   message: Message
+  recipient: Bytes
 }
 
 type Execution @entity {

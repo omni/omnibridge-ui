@@ -6,7 +6,9 @@ import {
 } from '../types/Omnibridge/Omnibridge';
 import { Execution, UserRequest, Token } from '../types/schema';
 
-import { fetchTokenInfo, getOverrides, getDirection } from './helpers';
+import { fetchTokenInfo, getDirection } from './helpers';
+
+import { getOverrides } from './overrides';
 
 export function handleBridgeTransfer(event: TokensBridged): void {
   log.debug('Parsing TokensBridged for txHash {}', [

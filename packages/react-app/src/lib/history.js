@@ -5,16 +5,43 @@ import { ADDRESS_ZERO } from './constants';
 
 const pageSize = 1000;
 
-const requestsQuery = gql`
+const requestsUserQuery = gql`
   query getRequests($user: String!, $first: Int!, $skip: Int!) {
     requests: userRequests(
-      where: { user_contains: $user }
+      where: { user: $user }
       orderBy: txHash
       orderDirection: desc
       first: $first
       skip: $skip
     ) {
-      user
+      user: recipient
+      txHash
+      messageId
+      timestamp
+      amount
+      token
+      decimals
+      symbol
+      message {
+        txHash
+        msgId
+        msgData
+        signatures
+      }
+    }
+  }
+`;
+
+const requestsRecipientQuery = gql`
+  query getRequests($user: String!, $first: Int!, $skip: Int!) {
+    requests: userRequests(
+      where: { user_not: $user, recipient: $user }
+      orderBy: txHash
+      orderDirection: desc
+      first: $first
+      skip: $skip
+    ) {
+      user: recipient
       txHash
       messageId
       timestamp
@@ -73,6 +100,16 @@ export const getExecutions = async (chainId, requests) => {
 };
 
 export const getRequests = async (user, chainId) => {
+  const [userRequests, recipientRequests] = await Promise.all([
+    getRequestsWithQuery(user, chainId, requestsUserQuery),
+    getRequestsWithQuery(user, chainId, requestsRecipientQuery),
+  ]);
+  return {
+    requests: [...userRequests.requests, ...recipientRequests.requests],
+  };
+};
+
+export const getRequestsWithQuery = async (user, chainId, query) => {
   let requests = [];
   let page = 0;
   const first = pageSize;
@@ -80,7 +117,7 @@ export const getRequests = async (user, chainId) => {
   // eslint-disable-next-line no-constant-condition
   while (true) {
     // eslint-disable-next-line no-await-in-loop
-    const data = await request(getGraphEndpoint(chainId), requestsQuery, {
+    const data = await request(getGraphEndpoint(chainId), query, {
       user,
       first,
       skip: page * pageSize,

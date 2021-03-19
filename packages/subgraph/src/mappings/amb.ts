@@ -10,6 +10,8 @@ import {
 
 import { UserRequest, Execution, Message } from '../types/schema';
 
+import { decodeRecipient } from './helpers';
+
 export function handleUserRequestForAffirmation(
   event: UserRequestForAffirmation,
 ): void {
@@ -30,6 +32,7 @@ export function handleUserRequestForAffirmation(
   request.messageId = event.params.messageId;
   request.message = message.id;
   request.encodedData = event.params.encodedData;
+  request.recipient = decodeRecipient(event.params.encodedData);
   request.save();
 }
 
@@ -53,6 +56,7 @@ export function handleUserRequestForSignature(
   request.messageId = event.params.messageId;
   request.message = message.id;
   request.encodedData = event.params.encodedData;
+  request.recipient = decodeRecipient(event.params.encodedData);
   request.save();
 }
 
