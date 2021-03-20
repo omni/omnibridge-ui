@@ -60,6 +60,11 @@ export const Web3Provider = ({ children }) => {
     chainId: null,
   });
 
+  const [isTokenInjected, setIsTokenInjected] = useState({
+    status: false,
+    token: null,
+  });
+
   const setWeb3Provider = useCallback(async (prov, updateAccount = false) => {
     try {
       if (prov) {
@@ -93,11 +98,21 @@ export const Web3Provider = ({ children }) => {
     try {
       setLoading(true);
       const queryParams = fetchQueryParams();
-      if (queryParams?.from)
+
+      if (queryParams?.from) {
         setIsChainIdInjected({
           status: true,
           chainId: parseInt(queryParams.from, 10),
         });
+      }
+
+      if (queryParams?.token) {
+        setIsTokenInjected({
+          status: true,
+          token: queryParams.token.toLowerCase(),
+        });
+      }
+
       const modalProvider = await web3Modal.connect();
 
       await setWeb3Provider(modalProvider, true);
@@ -144,6 +159,7 @@ export const Web3Provider = ({ children }) => {
         providerChainId,
         account,
         isChainIdInjected,
+        isTokenInjected,
       }}
     >
       {children}

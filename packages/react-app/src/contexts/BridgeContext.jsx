@@ -21,12 +21,18 @@ import {
   parseValue,
 } from 'lib/helpers';
 import { fetchTokenDetails } from 'lib/token';
+import { fetchTokenList } from 'lib/tokenList';
 import React, { useCallback, useEffect, useState } from 'react';
 
 export const BridgeContext = React.createContext({});
 
 export const BridgeProvider = ({ children }) => {
-  const { ethersProvider, account, providerChainId } = useWeb3Context();
+  const {
+    ethersProvider,
+    account,
+    providerChainId,
+    isTokenInjected,
+  } = useWeb3Context();
 
   const [receiver, setReceiver] = useState('');
   const [amountInput, setAmountInput] = useState('');
@@ -36,6 +42,7 @@ export const BridgeProvider = ({ children }) => {
     toAmount: BigNumber.from(0),
   });
   const [toAmountLoading, setToAmountLoading] = useState(false);
+  const [isCustomTokenAbsent, setIsCustomTokenAbsent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [updateBalance, setUpdateBalance] = useState(false);
   const [fromBalance, setFromBalance] = useState(BigNumber.from(0));
@@ -147,11 +154,35 @@ export const BridgeProvider = ({ children }) => {
     [setToken, fromToken, toToken],
   );
 
+  const checkForCustomToken = useCallback(async () => {
+    const { token } = isTokenInjected;
+    if (!fromToken && !toToken) {
+      const tokenList = await fetchTokenList(providerChainId);
+      const customToken = tokenList.find(t => t.symbol.toLowerCase() === token);
+      customToken ? setToken(customToken) : setDefaultToken(providerChainId);
+      setIsCustomTokenAbsent(!customToken);
+    }
+  }, [
+    isTokenInjected,
+    providerChainId,
+    setToken,
+    setDefaultToken,
+    fromToken,
+    toToken,
+  ]);
+
   useEffect(() => {
     setUpdateBalance(t => !t);
     setLoading(false);
-    setDefaultToken(providerChainId);
-  }, [providerChainId, setDefaultToken]);
+    isTokenInjected.status
+      ? checkForCustomToken()
+      : setDefaultToken(providerChainId);
+  }, [
+    checkForCustomToken,
+    isTokenInjected.status,
+    providerChainId,
+    setDefaultToken,
+  ]);
 
   const updateTokenLimits = useCallback(async () => {
     if (
@@ -193,6 +224,8 @@ export const BridgeProvider = ({ children }) => {
         toToken,
         setToken,
         setDefaultToken,
+        isCustomTokenAbsent,
+        setIsCustomTokenAbsent,
         allowed,
         approve,
         transfer,
