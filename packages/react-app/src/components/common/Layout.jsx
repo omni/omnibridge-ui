@@ -10,10 +10,24 @@ import { FOREIGN_CHAIN_ID, HOME_CHAIN_ID } from 'lib/constants';
 import React from 'react';
 
 export const Layout = ({ children }) => {
-  const { account, providerChainId } = useWeb3Context();
+  const {
+    account,
+    loading,
+    providerChainId,
+    isChainIdInjected: { chainId, status },
+  } = useWeb3Context();
+
+  let isCustomChainProvided = false;
+  if (status && providerChainId !== chainId) {
+    isCustomChainProvided = true;
+  }
+
   const valid =
+    !loading &&
+    !isCustomChainProvided &&
     !!account &&
     [HOME_CHAIN_ID, FOREIGN_CHAIN_ID].indexOf(providerChainId) >= 0;
+
   return (
     <Flex
       p={0}

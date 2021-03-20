@@ -29,6 +29,7 @@ export const BridgeProvider = ({ children }) => {
   const { ethersProvider, account, providerChainId } = useWeb3Context();
 
   const [receiver, setReceiver] = useState('');
+  const [amountInput, setAmountInput] = useState('');
   const [{ fromToken, toToken }, setTokens] = useState({});
   const [{ fromAmount, toAmount }, setAmounts] = useState({
     fromAmount: BigNumber.from(0),
@@ -36,17 +37,17 @@ export const BridgeProvider = ({ children }) => {
   });
   const [toAmountLoading, setToAmountLoading] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [txHash, setTxHash] = useState();
-  const [amountInput, setAmountInput] = useState('');
+  const [updateBalance, setUpdateBalance] = useState(false);
   const [fromBalance, setFromBalance] = useState(BigNumber.from(0));
   const [toBalance, setToBalance] = useState(BigNumber.from(0));
+  const [txHash, setTxHash] = useState();
   const [tokenLimits, setTokenLimits] = useState();
 
+  const toast = useToast();
   const totalConfirms = useTotalConfirms();
   const isRewardAddress = useRewardAddress();
   const currentDay = useCurrentDay();
   const { homeToForeignFeeType, foreignToHomeFeeType } = useFeeType();
-  const [updateBalance, setUpdateBalance] = useState(false);
   const {
     allowed,
     updateAllowance,
@@ -81,8 +82,6 @@ export const BridgeProvider = ({ children }) => {
       foreignToHomeFeeType,
     ],
   );
-
-  const toast = useToast();
 
   const setToken = useCallback(
     async tokenWithoutMode => {
