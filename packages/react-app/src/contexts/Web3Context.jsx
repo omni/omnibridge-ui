@@ -1,5 +1,6 @@
 import WalletConnectProvider from '@walletconnect/web3-provider';
 import { ethers } from 'ethers';
+import { FOREIGN_CHAIN_ID, HOME_CHAIN_ID } from 'lib/constants';
 import {
   fetchQueryParams,
   getNetworkName,
@@ -99,7 +100,12 @@ export const Web3Provider = ({ children }) => {
       setLoading(true);
       const queryParams = fetchQueryParams();
 
-      if (queryParams?.from) {
+      if (
+        queryParams?.from &&
+        [HOME_CHAIN_ID, FOREIGN_CHAIN_ID].includes(
+          parseInt(queryParams?.from, 10),
+        )
+      ) {
         setIsChainIdInjected({
           status: true,
           chainId: parseInt(queryParams.from, 10),

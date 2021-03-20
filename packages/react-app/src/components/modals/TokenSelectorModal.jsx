@@ -76,7 +76,6 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
       setLoading(true);
       try {
         const baseTokenList = await fetchTokenList(chainId);
-        console.log(baseTokenList);
         const customTokenList = uniqueTokens(
           baseTokenList.concat(
             customTokens.filter(token => token.chainId === chainId),
