@@ -14,6 +14,7 @@ import {
 } from 'lib/bridge';
 import { ADDRESS_ZERO } from 'lib/constants';
 import {
+  fetchQueryParams,
   getBridgeNetwork,
   getDefaultToken,
   isxDaiChain,
@@ -21,18 +22,12 @@ import {
   parseValue,
 } from 'lib/helpers';
 import { fetchTokenDetails } from 'lib/token';
-import { fetchTokenList } from 'lib/tokenList';
 import React, { useCallback, useEffect, useState } from 'react';
 
 export const BridgeContext = React.createContext({});
 
 export const BridgeProvider = ({ children }) => {
-  const {
-    ethersProvider,
-    account,
-    providerChainId,
-    isTokenInjected,
-  } = useWeb3Context();
+  const { ethersProvider, account, providerChainId } = useWeb3Context();
 
   const [receiver, setReceiver] = useState('');
   const [amountInput, setAmountInput] = useState('');
@@ -41,8 +36,12 @@ export const BridgeProvider = ({ children }) => {
     fromAmount: BigNumber.from(0),
     toAmount: BigNumber.from(0),
   });
+  const [isTokenInjected, setIsTokenInjected] = useState({
+    status: false,
+    token: null,
+  });
   const [toAmountLoading, setToAmountLoading] = useState(false);
-  const [isCustomTokenAbsent, setIsCustomTokenAbsent] = useState(false);
+  const [queryTrigger, setQueryTrigger] = useState(null);
   const [loading, setLoading] = useState(false);
   const [updateBalance, setUpdateBalance] = useState(false);
   const [fromBalance, setFromBalance] = useState(BigNumber.from(0));
@@ -92,27 +91,29 @@ export const BridgeProvider = ({ children }) => {
 
   const setToken = useCallback(
     async tokenWithoutMode => {
-      setLoading(true);
+      const isCustomTokenPresent = !queryTrigger && isTokenInjected.status;
       try {
         const [token, gotToToken] = await Promise.all([
           fetchTokenDetails(tokenWithoutMode),
           fetchToToken(tokenWithoutMode),
         ]);
         setTokens({ fromToken: token, toToken: gotToToken });
+        return true;
       } catch (tokenDetailsError) {
         toast({
           title: 'Error',
-          description:
-            'Cannot fetch token details. Wait for a few minutes and reload the application',
+          description: !isCustomTokenPresent
+            ? 'Cannot fetch token details. Wait for a few minutes and reload the application'
+            : 'Token not found.',
           status: 'error',
-          duration: null,
-          isClosable: false,
+          duration: isCustomTokenPresent ? 2000 : null,
+          isClosable: !isCustomTokenPresent,
         });
         logError({ tokenDetailsError });
+        return false;
       }
-      setLoading(false);
     },
-    [toast],
+    [toast, isTokenInjected.status, queryTrigger],
   );
 
   const transfer = useCallback(async () => {
@@ -134,7 +135,6 @@ export const BridgeProvider = ({ children }) => {
         fromAmount: fromAmount.toString(),
         account,
       });
-      throw transferError;
     }
   }, [fromToken, account, receiver, ethersProvider, fromAmount]);
 
@@ -155,34 +155,40 @@ export const BridgeProvider = ({ children }) => {
   );
 
   const checkForCustomToken = useCallback(async () => {
-    const { token } = isTokenInjected;
-    if (!fromToken && !toToken) {
-      const tokenList = await fetchTokenList(providerChainId);
-      const customToken = tokenList.find(t => t.symbol.toLowerCase() === token);
-      customToken ? setToken(customToken) : setDefaultToken(providerChainId);
-      setIsCustomTokenAbsent(!customToken);
+    const { token: address, status } = isTokenInjected;
+    if (!status) {
+      setDefaultToken(providerChainId);
+    } else if (!fromToken || !toToken) {
+      const isCustomTokenSet = await setToken({
+        chainId: providerChainId,
+        address,
+      });
+      !isCustomTokenSet && setDefaultToken(providerChainId);
     }
+    setLoading(false);
   }, [
     isTokenInjected,
     providerChainId,
-    setToken,
     setDefaultToken,
+    setToken,
     fromToken,
     toToken,
   ]);
 
   useEffect(() => {
+    setQueryTrigger(true);
+    const queryParams = fetchQueryParams();
     setUpdateBalance(t => !t);
-    setLoading(false);
-    isTokenInjected.status
-      ? checkForCustomToken()
-      : setDefaultToken(providerChainId);
-  }, [
-    checkForCustomToken,
-    isTokenInjected.status,
-    providerChainId,
-    setDefaultToken,
-  ]);
+    setIsTokenInjected({
+      status: !!queryParams,
+      token: queryParams?.token || null,
+    });
+    setQueryTrigger(false);
+  }, []);
+
+  useEffect(() => {
+    queryTrigger !== null && checkForCustomToken();
+  }, [queryTrigger, checkForCustomToken]);
 
   const updateTokenLimits = useCallback(async () => {
     if (
@@ -224,8 +230,8 @@ export const BridgeProvider = ({ children }) => {
         toToken,
         setToken,
         setDefaultToken,
-        isCustomTokenAbsent,
-        setIsCustomTokenAbsent,
+        isTokenInjected,
+        setIsTokenInjected,
         allowed,
         approve,
         transfer,
