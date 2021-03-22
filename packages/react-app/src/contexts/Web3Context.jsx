@@ -56,10 +56,7 @@ export const Web3Provider = ({ children }) => {
   const { providerChainId, ethersProvider } = web3State;
   const [account, setAccount] = useState();
   const [loading, setLoading] = useState(true);
-  const [isChainIdInjected, setIsChainIdInjected] = useState({
-    status: false,
-    chainId: null,
-  });
+  const [customChainId, setCustomChainId] = useState(null);
 
   const setWeb3Provider = useCallback(async (prov, updateAccount = false) => {
     try {
@@ -101,10 +98,7 @@ export const Web3Provider = ({ children }) => {
           parseInt(queryParams?.from, 10),
         )
       ) {
-        setIsChainIdInjected({
-          status: true,
-          chainId: parseInt(queryParams.from, 10),
-        });
+        setCustomChainId(parseInt(queryParams.from, 10));
       }
 
       const modalProvider = await web3Modal.connect();
@@ -152,7 +146,7 @@ export const Web3Provider = ({ children }) => {
         disconnect,
         providerChainId,
         account,
-        isChainIdInjected,
+        customChainId,
       }}
     >
       {children}

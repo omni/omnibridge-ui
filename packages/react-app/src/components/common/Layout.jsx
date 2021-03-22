@@ -10,15 +10,10 @@ import { FOREIGN_CHAIN_ID, HOME_CHAIN_ID } from 'lib/constants';
 import React from 'react';
 
 export const Layout = ({ children }) => {
-  const {
-    account,
-    loading,
-    providerChainId,
-    isChainIdInjected: { chainId, status },
-  } = useWeb3Context();
+  const { account, loading, providerChainId, customChainId } = useWeb3Context();
 
   let isCustomChainProvided = false;
-  if (status && providerChainId !== chainId) {
+  if (customChainId && providerChainId !== customChainId) {
     isCustomChainProvided = true;
   }
 

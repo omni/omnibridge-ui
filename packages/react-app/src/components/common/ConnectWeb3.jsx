@@ -26,7 +26,7 @@ export const ConnectWeb3 = () => {
     account,
     disconnect,
     ethersProvider,
-    isChainIdInjected,
+    customChainId,
   } = useWeb3Context();
   const toast = useToast();
 
@@ -79,12 +79,13 @@ export const ConnectWeb3 = () => {
   };
 
   const renderHelperBox = () => {
-    const { chainId, status } = isChainIdInjected;
-    if (status && [HOME_CHAIN_ID, FOREIGN_CHAIN_ID].includes(chainId)) {
+    if (
+      customChainId &&
+      [HOME_CHAIN_ID, FOREIGN_CHAIN_ID].includes(customChainId)
+    ) {
       return (
         <Text color="greyText" mb={4} textAlign="center">
-          Please switch to {renderConnectChain(isChainIdInjected.chainId)} for
-          swapping
+          Please switch to {renderConnectChain(customChainId)} for swapping
         </Text>
       );
     }
@@ -128,11 +129,7 @@ export const ConnectWeb3 = () => {
       ) : (
         <>
           <Text fontSize="xl" fontWeight="bold" mb={4}>
-            {account
-              ? `Switch to a ${
-                  isChainIdInjected.status ? 'chosen' : 'supported'
-                } network`
-              : 'Connect Wallet'}
+            {account ? `Switch your network` : 'Connect Wallet'}
           </Text>
 
           {!account ? (

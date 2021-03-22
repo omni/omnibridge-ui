@@ -36,10 +36,7 @@ export const BridgeProvider = ({ children }) => {
     fromAmount: BigNumber.from(0),
     toAmount: BigNumber.from(0),
   });
-  const [isTokenInjected, setIsTokenInjected] = useState({
-    status: false,
-    token: null,
-  });
+  const [customTokenAddress, setCustomTokenAddress] = useState(null);
   const [toAmountLoading, setToAmountLoading] = useState(false);
   const [queryTrigger, setQueryTrigger] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -91,7 +88,7 @@ export const BridgeProvider = ({ children }) => {
 
   const setToken = useCallback(
     async tokenWithoutMode => {
-      const isCustomTokenPresent = !queryTrigger && isTokenInjected.status;
+      const isCustomTokenPresent = !queryTrigger && customTokenAddress;
       try {
         const [token, gotToToken] = await Promise.all([
           fetchTokenDetails(tokenWithoutMode),
@@ -113,7 +110,7 @@ export const BridgeProvider = ({ children }) => {
         return false;
       }
     },
-    [toast, isTokenInjected.status, queryTrigger],
+    [toast, customTokenAddress, queryTrigger],
   );
 
   const transfer = useCallback(async () => {
@@ -139,7 +136,7 @@ export const BridgeProvider = ({ children }) => {
   }, [fromToken, account, receiver, ethersProvider, fromAmount]);
 
   const setDefaultToken = useCallback(
-    chainId => {
+    async chainId => {
       if (
         fromToken &&
         toToken &&
@@ -148,26 +145,26 @@ export const BridgeProvider = ({ children }) => {
       ) {
         setTokens({ fromToken: toToken, toToken: fromToken });
       } else if (!fromToken || fromToken.chainId !== chainId) {
-        setToken(getDefaultToken(chainId));
+        await setToken(getDefaultToken(chainId));
       }
     },
     [setToken, fromToken, toToken],
   );
 
   const checkForCustomToken = useCallback(async () => {
-    const { token: address, status } = isTokenInjected;
-    if (!status) {
-      setDefaultToken(providerChainId);
+    setLoading(true);
+    if (!customTokenAddress) {
+      await setDefaultToken(providerChainId);
     } else if (!fromToken || !toToken) {
       const isCustomTokenSet = await setToken({
         chainId: providerChainId,
-        address,
+        customTokenAddress,
       });
-      !isCustomTokenSet && setDefaultToken(providerChainId);
+      !isCustomTokenSet && (await setDefaultToken(providerChainId));
     }
     setLoading(false);
   }, [
-    isTokenInjected,
+    customTokenAddress,
     providerChainId,
     setDefaultToken,
     setToken,
@@ -179,16 +176,14 @@ export const BridgeProvider = ({ children }) => {
     setQueryTrigger(true);
     const queryParams = fetchQueryParams();
     setUpdateBalance(t => !t);
-    setIsTokenInjected({
-      status: !!queryParams,
-      token: queryParams?.token || null,
-    });
+    setCustomTokenAddress(queryParams?.token || null);
     setQueryTrigger(false);
   }, []);
 
   useEffect(() => {
-    queryTrigger !== null && checkForCustomToken();
-  }, [queryTrigger, checkForCustomToken]);
+    queryTrigger !== null && queryTrigger === false && checkForCustomToken();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [queryTrigger]);
 
   const updateTokenLimits = useCallback(async () => {
     if (
@@ -230,8 +225,8 @@ export const BridgeProvider = ({ children }) => {
         toToken,
         setToken,
         setDefaultToken,
-        isTokenInjected,
-        setIsTokenInjected,
+        customTokenAddress,
+        setCustomTokenAddress,
         allowed,
         approve,
         transfer,
