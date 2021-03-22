@@ -21,7 +21,6 @@ import { defer } from 'rxjs';
 
 export const FromToken = () => {
   const { account, providerChainId: chainId } = useWeb3Context();
-  const { isCustomTokenAbsent } = useContext(BridgeContext);
   const {
     updateBalance,
     fromToken: token,
@@ -35,10 +34,6 @@ export const FromToken = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const smallScreen = useBreakpointValue({ base: true, lg: false });
   const [balanceLoading, setBalanceLoading] = useState(false);
-
-  useEffect(() => {
-    isCustomTokenAbsent && onOpen();
-  }, [isCustomTokenAbsent, onOpen]);
 
   useEffect(() => {
     let subscription;
@@ -84,11 +79,7 @@ export const FromToken = () => {
       minH={smallScreen ? '5rem' : 8}
       minW={smallScreen ? '15rem' : undefined}
     >
-      <SelectTokenModal
-        onClose={onClose}
-        isOpen={isOpen}
-        isCustomTokenAbsent={isCustomTokenAbsent}
-      />
+      <SelectTokenModal onClose={onClose} isOpen={isOpen} />
       {!smallScreen && (
         <svg width="100%" viewBox="0 0 381 94" fill="none">
           <path
