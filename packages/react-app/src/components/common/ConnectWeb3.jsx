@@ -128,7 +128,11 @@ export const ConnectWeb3 = () => {
       ) : (
         <>
           <Text fontSize="xl" fontWeight="bold" mb={4}>
-            {account ? `Switch to a supported network` : 'Connect Wallet'}
+            {account
+              ? `Switch to a ${
+                  isChainIdInjected.status ? 'chosen' : 'supported'
+                } network`
+              : 'Connect Wallet'}
           </Text>
 
           {!account ? (
