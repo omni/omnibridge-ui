@@ -158,7 +158,7 @@ export const BridgeProvider = ({ children }) => {
     } else if (!fromToken || !toToken) {
       const isCustomTokenSet = await setToken({
         chainId: providerChainId,
-        customTokenAddress,
+        address: customTokenAddress,
       });
       !isCustomTokenSet && (await setDefaultToken(providerChainId));
     }
