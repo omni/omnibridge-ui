@@ -26,6 +26,7 @@ export const ConnectWeb3 = () => {
     account,
     disconnect,
     ethersProvider,
+    customChainId,
   } = useWeb3Context();
   const toast = useToast();
 
@@ -73,7 +74,27 @@ export const ConnectWeb3 = () => {
         </Badge>
       </Tooltip>
     ) : (
-      networkName
+      <span style={{ fontWeight: 'bold' }}>{networkName}</span>
+    );
+  };
+
+  const renderHelperBox = () => {
+    if (
+      customChainId &&
+      [HOME_CHAIN_ID, FOREIGN_CHAIN_ID].includes(customChainId)
+    ) {
+      return (
+        <Text color="greyText" mb={4} textAlign="center">
+          Please switch to {renderConnectChain(customChainId)} for swapping
+        </Text>
+      );
+    }
+    return (
+      <Text color="greyText" mb={4} textAlign="center">
+        To access OmniBridge, please switch to
+        {renderConnectChain(HOME_CHAIN_ID)}or{' '}
+        {renderConnectChain(FOREIGN_CHAIN_ID)}
+      </Text>
     );
   };
 
@@ -108,7 +129,7 @@ export const ConnectWeb3 = () => {
       ) : (
         <>
           <Text fontSize="xl" fontWeight="bold" mb={4}>
-            {account ? `Switch to a supported network` : 'Connect Wallet'}
+            {account ? `Switch your network` : 'Connect Wallet'}
           </Text>
 
           {!account ? (
@@ -116,11 +137,7 @@ export const ConnectWeb3 = () => {
               To get started, connect your wallet
             </Text>
           ) : (
-            <Text color="greyText" mb={4} textAlign="center">
-              To access OmniBridge, please switch to
-              {renderConnectChain(HOME_CHAIN_ID)}or{' '}
-              {renderConnectChain(FOREIGN_CHAIN_ID)}
-            </Text>
+            renderHelperBox()
           )}
         </>
       )}

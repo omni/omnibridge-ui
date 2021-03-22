@@ -22,6 +22,7 @@ import { BridgeContext } from 'contexts/BridgeContext';
 import { useSettings } from 'contexts/SettingsContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { PlusIcon } from 'icons/PlusIcon';
+import { LOCAL_STORAGE_KEYS } from 'lib/constants';
 import { formatValue, logError, uniqueTokens } from 'lib/helpers';
 import { fetchTokenBalanceWithProvider } from 'lib/token';
 import { fetchTokenList } from 'lib/tokenList';
@@ -32,6 +33,8 @@ import React, {
   useRef,
   useState,
 } from 'react';
+
+const { CUSTOM_TOKENS } = LOCAL_STORAGE_KEYS;
 
 export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
   // Ref
@@ -98,7 +101,7 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
 
   useEffect(() => {
     if (!isOpen) return;
-    let localTokenList = window.localStorage.getItem('customTokens');
+    let localTokenList = window.localStorage.getItem(CUSTOM_TOKENS);
     localTokenList =
       !localTokenList || !localTokenList.length
         ? []

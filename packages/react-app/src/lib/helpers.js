@@ -76,9 +76,7 @@ export const uniqueTokens = list => {
 export const formatValue = (num, dec) => {
   const str = utils.formatUnits(num, dec);
   if (str.length > 50) {
-    const expStr = Number(str)
-      .toExponential()
-      .replace(/e\+?/, ' x 10^');
+    const expStr = Number(str).toExponential().replace(/e\+?/, ' x 10^');
     const split = expStr.split(' x 10^');
     const first = Number(split[0]).toLocaleString('en', {
       maximumFractionDigits: 4,
@@ -117,6 +115,19 @@ export const uriToHttp = uri => {
     default:
       return [];
   }
+};
+
+export const fetchQueryParams = () => {
+  const { search } = new URL(window.location);
+  if (!search.trim().length) return null;
+  return search
+    .replace('?', '')
+    .split(/&/g)
+    .reduce((acc, keyValuePair) => {
+      const [key, value] = keyValuePair.split('=');
+      acc[key] = value;
+      return acc;
+    }, {});
 };
 
 export const getAccountString = account => {

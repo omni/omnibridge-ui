@@ -1,6 +1,12 @@
 import WalletConnectProvider from '@walletconnect/web3-provider';
 import { ethers } from 'ethers';
-import { getNetworkName, getRPCUrl, logError } from 'lib/helpers';
+import { FOREIGN_CHAIN_ID, HOME_CHAIN_ID } from 'lib/constants';
+import {
+  fetchQueryParams,
+  getNetworkName,
+  getRPCUrl,
+  logError,
+} from 'lib/helpers';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import Web3 from 'web3';
 import Web3Modal from 'web3modal';
@@ -50,6 +56,7 @@ export const Web3Provider = ({ children }) => {
   const { providerChainId, ethersProvider } = web3State;
   const [account, setAccount] = useState();
   const [loading, setLoading] = useState(true);
+  const [customChainId, setCustomChainId] = useState(null);
 
   const setWeb3Provider = useCallback(async (prov, updateAccount = false) => {
     try {
@@ -83,6 +90,17 @@ export const Web3Provider = ({ children }) => {
   const connectWeb3 = useCallback(async () => {
     try {
       setLoading(true);
+      const queryParams = fetchQueryParams();
+
+      if (
+        queryParams?.from &&
+        [HOME_CHAIN_ID, FOREIGN_CHAIN_ID].includes(
+          parseInt(queryParams?.from, 10),
+        )
+      ) {
+        setCustomChainId(parseInt(queryParams.from, 10));
+      }
+
       const modalProvider = await web3Modal.connect();
 
       await setWeb3Provider(modalProvider, true);
@@ -128,6 +146,7 @@ export const Web3Provider = ({ children }) => {
         disconnect,
         providerChainId,
         account,
+        customChainId,
       }}
     >
       {children}

@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 
 export const SelectTokenModal = ({ isOpen, onClose }) => {
   const [custom, setCustom] = useState(false);
+
   return (
     <>
       {!custom && (
@@ -16,7 +17,10 @@ export const SelectTokenModal = ({ isOpen, onClose }) => {
       {custom && (
         <CustomTokenModal
           isOpen={isOpen}
-          onClose={onClose}
+          onClose={() => {
+            setCustom(false);
+            onClose();
+          }}
           onBack={() => setCustom(false)}
         />
       )}
