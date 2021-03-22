@@ -182,8 +182,7 @@ export const BridgeProvider = ({ children }) => {
 
   useEffect(() => {
     queryTrigger !== null && queryTrigger === false && checkForCustomToken();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [queryTrigger]);
+  }, [queryTrigger, checkForCustomToken]);
 
   const updateTokenLimits = useCallback(async () => {
     if (
