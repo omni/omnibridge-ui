@@ -9,17 +9,15 @@ import {
 } from '@chakra-ui/react';
 import MetamaskFox from 'assets/metamask-fox.svg';
 import { useWeb3Context } from 'contexts/Web3Context';
+import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { WalletFilledIcon } from 'icons/WalletFilledIcon';
-import {
-  FOREIGN_CHAIN_ID,
-  HOME_CHAIN_ID,
-  NON_ETH_CHAIN_IDS,
-} from 'lib/constants';
+import { NON_ETH_CHAIN_IDS } from 'lib/constants';
 import { getNetworkName, getWalletProviderName, logError } from 'lib/helpers';
 import { addChainToMetaMask } from 'lib/metamask';
 import React from 'react';
 
 export const ConnectWeb3 = () => {
+  const { homeChainId, foreignChainId } = useBridgeDirection();
   const {
     connectWeb3,
     loading,
@@ -81,7 +79,7 @@ export const ConnectWeb3 = () => {
   const renderHelperBox = () => {
     if (
       customChainId &&
-      [HOME_CHAIN_ID, FOREIGN_CHAIN_ID].includes(customChainId)
+      [homeChainId, foreignChainId].includes(customChainId)
     ) {
       return (
         <Text color="greyText" mb={4} textAlign="center">
@@ -92,8 +90,7 @@ export const ConnectWeb3 = () => {
     return (
       <Text color="greyText" mb={4} textAlign="center">
         To access OmniBridge, please switch to
-        {renderConnectChain(HOME_CHAIN_ID)}or{' '}
-        {renderConnectChain(FOREIGN_CHAIN_ID)}
+        {renderConnectChain(homeChainId)}or {renderConnectChain(foreignChainId)}
       </Text>
     );
   };

@@ -6,10 +6,11 @@ import { Footer } from 'components/common/Footer';
 import { Header } from 'components/common/Header';
 import { TermsOfServiceModal } from 'components/modals/TermsOfServiceModal';
 import { useWeb3Context } from 'contexts/Web3Context';
-import { FOREIGN_CHAIN_ID, HOME_CHAIN_ID } from 'lib/constants';
+import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import React from 'react';
 
 export const Layout = ({ children }) => {
+  const { homeChainId, foreignChainId } = useBridgeDirection();
   const { account, loading, providerChainId, customChainId } = useWeb3Context();
 
   let isCustomChainProvided = false;
@@ -21,7 +22,7 @@ export const Layout = ({ children }) => {
     !loading &&
     !isCustomChainProvided &&
     !!account &&
-    [HOME_CHAIN_ID, FOREIGN_CHAIN_ID].indexOf(providerChainId) >= 0;
+    [homeChainId, foreignChainId].indexOf(providerChainId) >= 0;
 
   return (
     <Flex

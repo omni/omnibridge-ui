@@ -2,17 +2,16 @@ import schema from '@uniswap/token-lists/src/tokenlist.schema.json';
 import Ajv from 'ajv';
 import { gql, request } from 'graphql-request';
 
-import {
-  getBridgeNetwork,
-  getGraphEndpoint,
-  getTokenListUrl,
-  uniqueTokens,
-} from './helpers';
+import { getTokenListUrl, uniqueTokens } from './helpers';
 
-export const fetchTokenList = async chainId => {
+export const fetchTokenList = async (
+  chainId,
+  homeEndpoint,
+  foreignEndpoint,
+) => {
   const [defaultTokens, subgraphTokens] = await Promise.all([
     fetchDefaultTokens(chainId),
-    fetchTokensFromSubgraph(chainId),
+    fetchTokensFromSubgraph(homeEndpoint, foreignEndpoint),
   ]);
   const tokens = uniqueTokens(defaultTokens.concat(subgraphTokens));
   return tokens;
@@ -20,7 +19,7 @@ export const fetchTokenList = async chainId => {
 
 const tokenListValidator = new Ajv({ allErrors: true }).compile(schema);
 
-export const fetchDefaultTokens = async chainId => {
+const fetchDefaultTokens = async chainId => {
   const url = getTokenListUrl(chainId);
   if (url) {
     const response = await fetch(url);
@@ -61,10 +60,7 @@ const foreignTokensQuery = gql`
   }
 `;
 
-export const fetchTokensFromSubgraph = async chainId => {
-  const homeEndpoint = getGraphEndpoint(chainId);
-  const foreignChainId = getBridgeNetwork(chainId);
-  const foreignEndpoint = getGraphEndpoint(foreignChainId);
+const fetchTokensFromSubgraph = async (homeEndpoint, foreignEndpoint) => {
   const [homeData, foreignData] = await Promise.all([
     request(homeEndpoint, homeTokensQuery),
     request(foreignEndpoint, foreignTokensQuery),

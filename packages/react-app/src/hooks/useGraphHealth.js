@@ -1,6 +1,6 @@
 import { useToast } from '@chakra-ui/react';
 import { useWeb3Context } from 'contexts/Web3Context';
-import { FOREIGN_CHAIN_ID, HOME_CHAIN_ID } from 'lib/constants';
+import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { getHealthStatus } from 'lib/graphHealth';
 import { logDebug, logError } from 'lib/helpers';
 import { getEthersProvider } from 'lib/providers';
@@ -25,9 +25,10 @@ const THRESHOLD_BLOCKS =
   DEFAULT_GRAPH_HEALTH_THRESHOLD_BLOCKS;
 
 export const useGraphHealth = (description, onlyHome = false) => {
+  const { bridgeDirection, homeChainId, foreignChainId } = useBridgeDirection();
   const { providerChainId } = useWeb3Context();
 
-  const isHome = providerChainId === HOME_CHAIN_ID;
+  const isHome = providerChainId === homeChainId;
 
   const [homeHealthy, setHomeHealthy] = useState(true);
 
@@ -51,9 +52,9 @@ export const useGraphHealth = (description, onlyHome = false) => {
           homeBlockNumber,
           foreignBlockNumber,
         ] = await Promise.all([
-          getHealthStatus(),
-          getEthersProvider(HOME_CHAIN_ID).getBlockNumber(),
-          getEthersProvider(FOREIGN_CHAIN_ID).getBlockNumber(),
+          getHealthStatus(bridgeDirection),
+          getEthersProvider(homeChainId).getBlockNumber(),
+          getEthersProvider(foreignChainId).getBlockNumber(),
         ]);
         logDebug({
           homeHealth,
@@ -103,7 +104,7 @@ export const useGraphHealth = (description, onlyHome = false) => {
       unsubscribe();
       deferral.unsubscribe();
     };
-  }, []);
+  }, [bridgeDirection, foreignChainId, homeChainId]);
 
   const toast = useToast();
   const toastIdRef = useRef();

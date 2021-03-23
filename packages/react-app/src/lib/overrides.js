@@ -1,4 +1,8 @@
-import { FOREIGN_CHAIN_ID } from 'lib/constants';
+import {
+  BSC_XDAI_BRIDGE,
+  ETH_XDAI_BRIDGE,
+  KOVAN_SOKOL_BRIDGE,
+} from 'lib/networks';
 
 const OWLTokenOverride = {
   100: {
@@ -120,7 +124,7 @@ const DATATokenOverride = {
   },
 };
 
-const overrides = {
+const ETH_XDAI_OVERRIDES = {
   ['0x0905Ab807F8FD040255F0cF8fa14756c1D824931'.toLowerCase()]: OWLTokenOverride,
   ['0x1a5f9352af8af974bfc03399e3767df6370d82e4'.toLowerCase()]: OWLTokenOverride,
   ['0xE2e73A1c69ecF83F464EFCE6A5be353a37cA09b2'.toLowerCase()]: LINKTokenOverride,
@@ -131,26 +135,49 @@ const overrides = {
   ['0x408ec1bb883da0ea0fb3c955ea6befcd05aa7c3a'.toLowerCase()]: STAKETokenOverrideSokol,
   ['0xe1cA72ff3434B131765c62Cbcbc26060F7Aba03D'.toLowerCase()]: MOONTokenOverride,
   ['0x1e16aa4Df73d29C029d94CeDa3e3114EC191E25A'.toLowerCase()]: MOONTokenOverride,
-  ['0xd846B096949E15b42ABCaEB82137c5a3495B1Ed4'.toLowerCase()]: DEMO2712TokenOverrideSokol,
-  ['0xa4764045851F17AA60B6c8E8b62072Bea9538521'.toLowerCase()]: DEMO2712TokenOverrideSokol,
   ['0xc3589f56b6869824804a5ea29f2c9886af1b0fce'.toLowerCase()]: HNYTokenOverride,
   ['0x71850b7e9ee3f13ab46d67167341e4bdc905eef9'.toLowerCase()]: HNYTokenOverride,
   ['0x0cf0ee63788a0849fe5297f3407f701e122cc023'.toLowerCase()]: DATATokenOverride,
   ['0xE4a2620edE1058D61BEe5F45F6414314fdf10548'.toLowerCase()]: DATATokenOverride,
 };
 
-export const isOverridden = (tokenAddress, chainId) => {
-  if (FOREIGN_CHAIN_ID === 56) return false;
-  if (!tokenAddress) return false;
-  const override = overrides[tokenAddress.toLowerCase()];
+const KOVAN_SOKOL_OVERRIDES = {
+  ['0xd846B096949E15b42ABCaEB82137c5a3495B1Ed4'.toLowerCase()]: DEMO2712TokenOverrideSokol,
+  ['0xa4764045851F17AA60B6c8E8b62072Bea9538521'.toLowerCase()]: DEMO2712TokenOverrideSokol,
+};
+
+const BSC_XDAI_OVERRIDES = {};
+
+const OVERRIDES = {
+  [ETH_XDAI_BRIDGE]: ETH_XDAI_OVERRIDES,
+  [KOVAN_SOKOL_BRIDGE]: KOVAN_SOKOL_OVERRIDES,
+  [BSC_XDAI_BRIDGE]: BSC_XDAI_OVERRIDES,
+};
+
+export const isOverridden = (bridgeDirection, { address, chainId }) => {
+  if (!address || !chainId || !bridgeDirection) return false;
+  const overrides = OVERRIDES[bridgeDirection];
+  const override = overrides[address.toLowerCase()];
   return override !== undefined && override[chainId] !== undefined;
 };
 
-export const getOverriddenToToken = (tokenAddress, chainId) =>
-  overrides[tokenAddress.toLowerCase()][chainId].to;
+export const getOverriddenToToken = (bridgeDirection, { address, chainId }) => {
+  if (!address || !chainId || !bridgeDirection) return false;
+  const overrides = OVERRIDES[bridgeDirection];
+  return overrides[address.toLowerCase()][chainId].to;
+};
 
-export const getOverriddenMode = (tokenAddress, chainId) =>
-  overrides[tokenAddress.toLowerCase()][chainId].mode;
+export const getOverriddenMode = (bridgeDirection, { address, chainId }) => {
+  if (!address || !chainId || !bridgeDirection) return false;
+  const overrides = OVERRIDES[bridgeDirection];
+  return overrides[address.toLowerCase()][chainId].mode;
+};
 
-export const getOverriddenMediator = (tokenAddress, chainId) =>
-  overrides[tokenAddress.toLowerCase()][chainId].mediator.toLowerCase();
+export const getOverriddenMediator = (
+  bridgeDirection,
+  { address, chainId },
+) => {
+  if (!address || !chainId || !bridgeDirection) return false;
+  const overrides = OVERRIDES[bridgeDirection];
+  return overrides[address.toLowerCase()][chainId].mediator.toLowerCase();
+};

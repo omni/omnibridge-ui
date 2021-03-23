@@ -1,12 +1,18 @@
 import { BridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
+import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { getMessageFromTxHash, getMessageStatus } from 'lib/amb';
 import { POLLING_INTERVAL } from 'lib/constants';
-import { getBridgeNetwork, isxDaiChain, logError } from 'lib/helpers';
+import { logError } from 'lib/helpers';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { defer } from 'rxjs';
 
 export const useTransactionStatus = () => {
+  const {
+    homeChainId,
+    getBridgeChainId,
+    getGraphEndpoint,
+  } = useBridgeDirection();
   const { ethersProvider, providerChainId } = useWeb3Context();
   const {
     loading,
@@ -51,7 +57,7 @@ export const useTransactionStatus = () => {
     const chainId = providerChainId;
     let message = null;
     let status = false;
-    const isxDai = isxDaiChain(chainId);
+    const isHome = chainId === homeChainId;
     setLoadingText('Waiting for Block Confirmations');
 
     const getReceipt = async () => {
@@ -61,15 +67,18 @@ export const useTransactionStatus = () => {
           setReceipt(txReceipt);
           if (txReceipt.confirmations >= totalConfirms) {
             setLoadingText(
-              isxDai ? 'Collecting Signatures' : 'Waiting for Execution',
+              isHome ? 'Collecting Signatures' : 'Waiting for Execution',
             );
           }
 
-          if (txReceipt && (!message || (isxDai && !message.signatures))) {
-            message = await getMessageFromTxHash(chainId, txHash);
+          if (txReceipt && (!message || (isHome && !message.signatures))) {
+            message = await getMessageFromTxHash(
+              getGraphEndpoint(chainId),
+              txHash,
+            );
           }
 
-          if (isxDai) {
+          if (isHome) {
             if (message && message.signatures) {
               setNeedsConfirmation(true);
               incompleteReceipt();
@@ -78,7 +87,7 @@ export const useTransactionStatus = () => {
             }
           } else if (message) {
             status = await getMessageStatus(
-              getBridgeNetwork(chainId),
+              getGraphEndpoint(getBridgeChainId(chainId)),
               message.msgId,
             );
             if (status) {
@@ -92,7 +101,7 @@ export const useTransactionStatus = () => {
         if (
           !txReceipt ||
           !message ||
-          (isxDai ? !message.signatures : !status)
+          (isHome ? !message.signatures : !status)
         ) {
           const timeoutId = setTimeout(() => getReceipt(), POLLING_INTERVAL);
           subscriptions.push(timeoutId);
@@ -122,11 +131,14 @@ export const useTransactionStatus = () => {
     completeReceipt,
     incompleteReceipt,
     setReceipt,
+    homeChainId,
+    getBridgeChainId,
+    getGraphEndpoint,
   ]);
 
   useEffect(() => {
-    setNeedsConfirmation(needs => isxDaiChain(providerChainId) && needs);
-  }, [providerChainId]);
+    setNeedsConfirmation(needs => providerChainId === homeChainId && needs);
+  }, [homeChainId, providerChainId]);
 
   return {
     loadingText,

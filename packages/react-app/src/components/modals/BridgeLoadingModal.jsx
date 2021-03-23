@@ -13,9 +13,9 @@ import LoadingImage from 'assets/loading.svg';
 import { ProgressRing } from 'components/common/ProgressRing';
 import { NeedsConfirmationModal } from 'components/modals/NeedsConfirmationModal';
 import { BridgeContext } from 'contexts/BridgeContext';
+import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { useGraphHealth } from 'hooks/useGraphHealth';
 import { useTransactionStatus } from 'hooks/useTransactionStatus';
-import { getMonitorUrl } from 'lib/helpers';
 import React, { useContext } from 'react';
 
 const getTransactionString = hash => {
@@ -25,6 +25,7 @@ const getTransactionString = hash => {
 };
 
 export const BridgeLoadingModal = () => {
+  const { getMonitorUrl } = useBridgeDirection();
   const { loading, fromToken, txHash, totalConfirms } = useContext(
     BridgeContext,
   );

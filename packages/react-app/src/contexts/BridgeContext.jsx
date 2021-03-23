@@ -2,6 +2,7 @@ import { useToast } from '@chakra-ui/react';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { BigNumber } from 'ethers';
 import { useApproval } from 'hooks/useApproval';
+import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { useCurrentDay } from 'hooks/useCurrentDay';
 import { useFeeType } from 'hooks/useFeeType';
 import { useRewardAddress } from 'hooks/useRewardAddress';
@@ -15,9 +16,7 @@ import {
 import { ADDRESS_ZERO } from 'lib/constants';
 import {
   fetchQueryParams,
-  getBridgeNetwork,
   getDefaultToken,
-  isxDaiChain,
   logError,
   parseValue,
 } from 'lib/helpers';
@@ -29,6 +28,11 @@ export const BridgeContext = React.createContext({});
 export const BridgeProvider = ({ children }) => {
   const { ethersProvider, account, providerChainId } = useWeb3Context();
 
+  const {
+    bridgeDirection,
+    getBridgeChainId,
+    homeChainId,
+  } = useBridgeDirection();
   const [receiver, setReceiver] = useState('');
   const [amountInput, setAmountInput] = useState('');
   const [{ fromToken, toToken }, setTokens] = useState({});
@@ -64,19 +68,24 @@ export const BridgeProvider = ({ children }) => {
       if (!fromToken || !toToken) return;
       setToAmountLoading(true);
       const amount = parseValue(inputAmount, fromToken.decimals);
-      const isxDai = isxDaiChain(providerChainId);
-      const feeType = !isxDai ? foreignToHomeFeeType : homeToForeignFeeType;
-      const gotToAmount = await fetchToAmount(
-        isRewardAddress,
-        feeType,
-        fromToken,
-        toToken,
-        amount,
-      );
+      const isHome = providerChainId === homeChainId;
+      const feeType = !isHome ? foreignToHomeFeeType : homeToForeignFeeType;
+      const gotToAmount = isRewardAddress
+        ? amount
+        : await fetchToAmount(
+            bridgeDirection,
+            feeType,
+            fromToken,
+            toToken,
+            amount,
+          );
+
       setAmounts({ fromAmount: amount, toAmount: gotToAmount });
       setToAmountLoading(false);
     },
     [
+      homeChainId,
+      bridgeDirection,
       fromToken,
       toToken,
       providerChainId,
@@ -91,8 +100,12 @@ export const BridgeProvider = ({ children }) => {
       const isCustomTokenPresent = !queryTrigger && customTokenAddress;
       try {
         const [token, gotToToken] = await Promise.all([
-          fetchTokenDetails(tokenWithoutMode),
-          fetchToToken(tokenWithoutMode),
+          fetchTokenDetails(bridgeDirection, tokenWithoutMode),
+          fetchToToken(
+            bridgeDirection,
+            tokenWithoutMode,
+            getBridgeChainId(tokenWithoutMode.chainId),
+          ),
         ]);
         setTokens({ fromToken: token, toToken: gotToToken });
         return true;
@@ -110,7 +123,13 @@ export const BridgeProvider = ({ children }) => {
         return false;
       }
     },
-    [toast, customTokenAddress, queryTrigger],
+    [
+      queryTrigger,
+      customTokenAddress,
+      bridgeDirection,
+      getBridgeChainId,
+      toast,
+    ],
   );
 
   const transfer = useCallback(async () => {
@@ -190,12 +209,13 @@ export const BridgeProvider = ({ children }) => {
       fromToken &&
       fromToken.chainId === providerChainId &&
       toToken &&
-      toToken.chainId === getBridgeNetwork(providerChainId) &&
+      toToken.chainId === getBridgeChainId(providerChainId) &&
       ethersProvider &&
       fromToken.symbol === toToken.symbol &&
       currentDay
     ) {
       const limits = await fetchTokenLimits(
+        bridgeDirection,
         ethersProvider,
         fromToken,
         toToken,
@@ -203,7 +223,15 @@ export const BridgeProvider = ({ children }) => {
       );
       setTokenLimits(limits);
     }
-  }, [fromToken, toToken, currentDay, providerChainId, ethersProvider]);
+  }, [
+    providerChainId,
+    fromToken,
+    toToken,
+    getBridgeChainId,
+    ethersProvider,
+    currentDay,
+    bridgeDirection,
+  ]);
 
   useEffect(() => {
     updateTokenLimits();

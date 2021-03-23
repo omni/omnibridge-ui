@@ -18,20 +18,23 @@ import InfoImage from 'assets/info.svg';
 import { LoadingModal } from 'components/modals/LoadingModal';
 import { BridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
+import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import {
   executeSignatures,
   getMessageFromTxHash,
   getMessageStatus,
 } from 'lib/amb';
-import {
-  FOREIGN_CHAIN_ID,
-  HOME_CHAIN_ID,
-  POLLING_INTERVAL,
-} from 'lib/constants';
+import { POLLING_INTERVAL } from 'lib/constants';
 import { getNetworkName, logError } from 'lib/helpers';
 import React, { useContext, useEffect, useState } from 'react';
 
 export const ClaimTransferModal = () => {
+  const {
+    homeChainId,
+    foreignChainId,
+    foreignAmbAddress,
+    getGraphEndpoint,
+  } = useBridgeDirection();
   const { account, ethersProvider, providerChainId } = useWeb3Context();
   const { txHash, setTxHash } = useContext(BridgeContext);
   const [isOpen, setOpen] = useState(false);
@@ -61,7 +64,7 @@ export const ClaimTransferModal = () => {
     message.msgData &&
     message.signatures &&
     !executed &&
-    providerChainId === FOREIGN_CHAIN_ID;
+    providerChainId === foreignChainId;
 
   const toast = useToast();
   const showError = errorMsg => {
@@ -82,12 +85,12 @@ export const ClaimTransferModal = () => {
     } else if (claimable) {
       try {
         setClaiming(true);
-        await executeSignatures(ethersProvider, FOREIGN_CHAIN_ID, message);
+        await executeSignatures(ethersProvider, foreignAmbAddress, message);
         setLoadingText('Waiting for Execution');
       } catch (executeError) {
         setClaiming(false);
         setLoadingText('');
-        logError({ executeError, chainId: FOREIGN_CHAIN_ID, message });
+        logError({ executeError, chainId: foreignChainId, message });
         if (executeError && executeError.message) {
           showError(executeError.message);
         } else {
@@ -113,12 +116,18 @@ export const ClaimTransferModal = () => {
       try {
         if (!message || !message.signatures) {
           unsubscribe();
-          const msg = await getMessageFromTxHash(HOME_CHAIN_ID, txHash);
+          const msg = await getMessageFromTxHash(
+            getGraphEndpoint(homeChainId),
+            txHash,
+          );
           setMessage(msg);
           return;
         }
 
-        status = await getMessageStatus(FOREIGN_CHAIN_ID, message.msgId);
+        status = await getMessageStatus(
+          getGraphEndpoint(foreignChainId),
+          message.msgId,
+        );
         if (status) {
           unsubscribe();
           if (claiming) {
@@ -148,13 +157,21 @@ export const ClaimTransferModal = () => {
     getStatus();
     // unsubscribe when unmount component
     return unsubscribe;
-  }, [message, claiming, txHash, setTxHash]);
+  }, [
+    message,
+    claiming,
+    txHash,
+    setTxHash,
+    foreignChainId,
+    homeChainId,
+    getGraphEndpoint,
+  ]);
 
   if (!message || claiming)
     return (
       <LoadingModal
         loadingText={message ? loadingText : ''}
-        chainId={HOME_CHAIN_ID}
+        chainId={homeChainId}
         txHash={txHash}
       />
     );
@@ -202,7 +219,7 @@ export const ClaimTransferModal = () => {
                 <Flex align="center" fontSize="12px" p={4}>
                   <Text>
                     {`The claim process may take a variable period of time on ${getNetworkName(
-                      FOREIGN_CHAIN_ID,
+                      foreignChainId,
                     )}${' '}
                     depending on network congestion. Your ${
                       message.symbol

@@ -21,6 +21,7 @@ import { Logo } from 'components/common/Logo';
 import { BridgeContext } from 'contexts/BridgeContext';
 import { useSettings } from 'contexts/SettingsContext';
 import { useWeb3Context } from 'contexts/Web3Context';
+import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { PlusIcon } from 'icons/PlusIcon';
 import { LOCAL_STORAGE_KEYS } from 'lib/constants';
 import { formatValue, logError, uniqueTokens } from 'lib/helpers';
@@ -48,6 +49,7 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
   const [tokenList, setTokenList] = useState([]);
   const [filteredTokenList, setFilteredTokenList] = useState([]);
   const smallScreen = useBreakpointValue({ sm: false, base: true });
+  const { getBridgeChainId, getGraphEndpoint } = useBridgeDirection();
 
   // Callbacks
   const fetchTokenListWithBalance = useCallback(
@@ -75,7 +77,11 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
     async (chainId, customTokens) => {
       setLoading(true);
       try {
-        const baseTokenList = await fetchTokenList(chainId);
+        const baseTokenList = await fetchTokenList(
+          chainId,
+          getGraphEndpoint(chainId),
+          getGraphEndpoint(getBridgeChainId(chainId)),
+        );
         const customTokenList = uniqueTokens(
           baseTokenList.concat(
             customTokens.filter(token => token.chainId === chainId),
@@ -91,7 +97,12 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
       }
       setLoading(false);
     },
-    [fetchTokenListWithBalance, disableBalanceFetchToken],
+    [
+      getGraphEndpoint,
+      getBridgeChainId,
+      disableBalanceFetchToken,
+      fetchTokenListWithBalance,
+    ],
   );
 
   // Effects

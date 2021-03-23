@@ -1,5 +1,4 @@
 import { Alert, AlertIcon, Flex, Link, Text } from '@chakra-ui/react';
-import { isxDaiChain } from 'lib/helpers';
 import React from 'react';
 
 const ERC20DaiAddress = {
@@ -15,9 +14,7 @@ export const isERC20DaiAddress = token => {
     return false;
   }
 
-  const isxDai = isxDaiChain(token.chainId);
   return (
-    !isxDai &&
     token.address.toLowerCase() === ERC20DaiAddress[token.chainId].toLowerCase()
   );
 };

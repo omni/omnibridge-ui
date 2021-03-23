@@ -13,7 +13,7 @@ import LoadingImage from 'assets/loading.svg';
 import { ProgressRing } from 'components/common/ProgressRing';
 import { BridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
-import { getMonitorUrl } from 'lib/helpers';
+import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import React, { useContext } from 'react';
 
 const getTransactionString = hash => {
@@ -23,6 +23,7 @@ const getTransactionString = hash => {
 };
 
 export const LoadingModal = ({ loadingText, txHash, chainId }) => {
+  const { getMonitorUrl } = useBridgeDirection();
   const { providerChainId } = useWeb3Context();
   const { loading } = useContext(BridgeContext);
   return (

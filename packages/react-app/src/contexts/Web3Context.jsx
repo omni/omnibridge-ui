@@ -1,6 +1,6 @@
 import WalletConnectProvider from '@walletconnect/web3-provider';
 import { ethers } from 'ethers';
-import { FOREIGN_CHAIN_ID, HOME_CHAIN_ID } from 'lib/constants';
+import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import {
   fetchQueryParams,
   getNetworkName,
@@ -52,6 +52,7 @@ const web3Modal = new Web3Modal({
 });
 
 export const Web3Provider = ({ children }) => {
+  const { homeChainId, foreignChainId } = useBridgeDirection();
   const [web3State, setWeb3State] = useState({});
   const { providerChainId, ethersProvider } = web3State;
   const [account, setAccount] = useState();
@@ -94,9 +95,7 @@ export const Web3Provider = ({ children }) => {
 
       if (
         queryParams?.from &&
-        [HOME_CHAIN_ID, FOREIGN_CHAIN_ID].includes(
-          parseInt(queryParams?.from, 10),
-        )
+        [homeChainId, foreignChainId].includes(parseInt(queryParams?.from, 10))
       ) {
         setCustomChainId(parseInt(queryParams.from, 10));
       }
@@ -118,7 +117,7 @@ export const Web3Provider = ({ children }) => {
       logError({ web3ModalError: error });
     }
     setLoading(false);
-  }, [setWeb3Provider]);
+  }, [foreignChainId, homeChainId, setWeb3Provider]);
 
   const disconnect = useCallback(async () => {
     web3Modal.clearCachedProvider();
