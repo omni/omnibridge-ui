@@ -83,7 +83,6 @@ export const Header = () => {
       <Stack
         position={{ base: 'relative', md: 'static' }}
         direction={{ base: 'column', md: 'row' }}
-        spacing={6}
         display={{ base: isOpen ? 'flex' : 'none', md: 'flex' }}
         w={{ base: '100%', md: 'auto' }}
         h={{ base: '100%', md: 'auto' }}
@@ -93,23 +92,21 @@ export const Header = () => {
         {valid && (
           <>
             <Link to="/history">
-              <Flex
-                align="center"
-                fontWeight="bold"
+              <Button
+                variant="ghost"
                 color="grey"
-                transition="0.25s"
-                _hover={{ color: 'blue.500' }}
+                _hover={{ color: 'blue.500', bgColor: 'blackAlpha.100' }}
                 onClick={() => setOpen(false)}
+                leftIcon={<HistoryIcon />}
               >
-                <HistoryIcon mr={2} />
                 <Text color="black"> History</Text>
-              </Flex>
+              </Button>
             </Link>
-            <BridgeDropdown />
             <UpdateSettings close={() => setOpen(false)} />
             <WalletSelector close={() => setOpen(false)} />
           </>
         )}
+        <BridgeDropdown />
       </Stack>
     </Flex>
   );

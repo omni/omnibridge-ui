@@ -53,18 +53,15 @@ export const UpdateSettings = ({ close }) => {
 
   return (
     <>
-      <Flex
-        cursor="pointer"
-        align="center"
-        fontWeight="bold"
+      <Button
+        variant="ghost"
         color="grey"
-        transition="0.25s"
-        _hover={{ color: 'blue.500' }}
+        _hover={{ color: 'blue.500', bgColor: 'blackAlpha.100' }}
         onClick={openSettings}
+        leftIcon={<SettingsIcon />}
       >
-        <SettingsIcon mr={2} />
         <Text color="black"> Settings</Text>
-      </Flex>
+      </Button>
       <Modal
         isOpen={isOpen}
         onClose={onClose}

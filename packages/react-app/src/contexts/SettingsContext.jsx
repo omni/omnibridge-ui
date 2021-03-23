@@ -13,12 +13,16 @@ const {
 const SettingsContext = React.createContext({});
 
 export const SettingsProvider = ({ children }) => {
-  const [bridgeDirection, setBridgeDirection] = useLocalState(
-    DEFAULT_BRIDGE_DIRECTION,
-    BRIDGE_DIRECTION,
-  );
+  const [
+    bridgeDirection,
+    setBridgeDirection,
+  ] = useLocalState(DEFAULT_BRIDGE_DIRECTION, BRIDGE_DIRECTION, {
+    isStoredImmediately: true,
+  });
 
-  const [{ homeRPCKey, foreignRPCKey }, setRPCKeys] = useState({});
+  const [{ homeRPCKey, foreignRPCKey }, setRPCKeys] = useState(
+    getRPCKeys(DEFAULT_BRIDGE_DIRECTION),
+  );
 
   useEffect(() => {
     setRPCKeys(getRPCKeys(bridgeDirection));

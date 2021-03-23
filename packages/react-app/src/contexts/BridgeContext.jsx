@@ -3,9 +3,7 @@ import { useWeb3Context } from 'contexts/Web3Context';
 import { BigNumber } from 'ethers';
 import { useApproval } from 'hooks/useApproval';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
-import { useCurrentDay } from 'hooks/useCurrentDay';
-import { useFeeType } from 'hooks/useFeeType';
-import { useRewardAddress } from 'hooks/useRewardAddress';
+import { useMediatorInfo } from 'hooks/useMediatorInfo';
 import { useTotalConfirms } from 'hooks/useTotalConfirms';
 import {
   fetchToAmount,
@@ -52,9 +50,7 @@ export const BridgeProvider = ({ children }) => {
 
   const toast = useToast();
   const totalConfirms = useTotalConfirms();
-  const isRewardAddress = useRewardAddress();
-  const currentDay = useCurrentDay();
-  const { homeToForeignFeeType, foreignToHomeFeeType } = useFeeType();
+  const { isRewardAddress, currentDay, homeToForeignFeeType, foreignToHomeFeeType } = useMediatorInfo();
   const {
     allowed,
     updateAllowance,

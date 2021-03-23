@@ -28,7 +28,9 @@ export const BridgeTokens = () => {
   const { fromToken, toToken, txHash, loading } = useContext(BridgeContext);
   const { neverShowClaims, needsSaving } = useSettings();
   const isERC20Dai =
-    fromToken.chainId === foreignChainId && isERC20DaiAddress(fromToken);
+    !!fromToken &&
+    fromToken.chainId === foreignChainId &&
+    isERC20DaiAddress(fromToken);
   const isNativeHomeToken =
     !!toToken &&
     !enableReversedBridge &&

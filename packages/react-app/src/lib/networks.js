@@ -1,10 +1,10 @@
-export const ETH_XDAI_BRIDGE = 'mainnet-xdai';
+export const ETH_XDAI_BRIDGE = 'eth-xdai';
 export const BSC_XDAI_BRIDGE = 'bsc-xdai';
 export const KOVAN_SOKOL_BRIDGE = 'kovan-sokol';
 
 export const networks = {
   [ETH_XDAI_BRIDGE]: {
-    label: 'ETH-xDai',
+    label: 'eth⥊xdai',
     homeChainId: 100,
     foreignChainId: 1,
     enableReversedBridge: false,
@@ -17,7 +17,7 @@ export const networks = {
     ambLiveMonitorPrefix: 'https://alm-xdai.herokuapp.com',
   },
   [BSC_XDAI_BRIDGE]: {
-    label: 'BSC-xDai',
+    label: 'bsc⥊xdai',
     homeChainId: 100,
     foreignChainId: 56,
     enableReversedBridge: true,
@@ -30,7 +30,7 @@ export const networks = {
     ambLiveMonitorPrefix: 'https://alm-bsc-xdai.herokuapp.com',
   },
   [KOVAN_SOKOL_BRIDGE]: {
-    label: 'Kovan-Sokol',
+    label: 'kovan⥊sokol',
     homeChainId: 77,
     foreignChainId: 42,
     enableReversedBridge: true,

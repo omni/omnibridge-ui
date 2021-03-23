@@ -145,5 +145,5 @@ export const LOCAL_STORAGE_KEYS = {
   INFINITE_UNLOCK: 'infinite-unlock',
   CUSTOM_TOKENS: 'customTokens',
   DISABLE_BALANCE_WHILE_TOKEN_FETCH: 'disable-balance-while-token-fetch',
-  BRIDGE_NETWORK: 'bridge-network',
+  BRIDGE_DIRECTION: 'bridge-direction',
 };

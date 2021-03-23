@@ -162,6 +162,7 @@ export const getRPCKeys = bridgeDirection => {
 };
 
 export const getMediatorAddressWithoutOverride = (bridgeDirection, chainId) => {
+  if (!bridgeDirection || !chainId) return null;
   const { homeChainId, homeMediatorAddress, foreignMediatorAddress } = networks[
     bridgeDirection
   ];
@@ -169,6 +170,7 @@ export const getMediatorAddressWithoutOverride = (bridgeDirection, chainId) => {
 };
 
 export const getMediatorAddress = (bridgeDirection, token) => {
+  if (!token || !token.chainId || !token.address) return null;
   if (isOverridden(bridgeDirection, token)) {
     return getOverriddenMediator(bridgeDirection, token);
   }
