@@ -7,21 +7,22 @@ import {
   useBreakpointValue,
 } from '@chakra-ui/react';
 import Logo from 'assets/logo.svg';
+import { BridgeDropdown } from 'components/common/BridgeDropdown';
 import { UpdateSettings } from 'components/common/UpdateSettings';
 import { WalletSelector } from 'components/common/WalletSelector';
 import { useWeb3Context } from 'contexts/Web3Context';
+import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { HistoryIcon } from 'icons/HistoryIcon';
-import { FOREIGN_CHAIN_ID, HOME_CHAIN_ID } from 'lib/constants';
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 export const Header = () => {
+  const { homeChainId, foreignChainId } = useBridgeDirection();
   const { account, providerChainId } = useWeb3Context();
   const [isOpen, setOpen] = useState(false);
   const toggleOpen = () => setOpen(open => !open);
   const valid =
-    !!account &&
-    [HOME_CHAIN_ID, FOREIGN_CHAIN_ID].indexOf(providerChainId) >= 0;
+    !!account && [homeChainId, foreignChainId].indexOf(providerChainId) >= 0;
   const isSmallScreen = useBreakpointValue({ base: true, md: false });
 
   return (
@@ -82,7 +83,6 @@ export const Header = () => {
       <Stack
         position={{ base: 'relative', md: 'static' }}
         direction={{ base: 'column', md: 'row' }}
-        spacing={6}
         display={{ base: isOpen ? 'flex' : 'none', md: 'flex' }}
         w={{ base: '100%', md: 'auto' }}
         h={{ base: '100%', md: 'auto' }}
@@ -92,22 +92,21 @@ export const Header = () => {
         {valid && (
           <>
             <Link to="/history">
-              <Flex
-                align="center"
-                fontWeight="bold"
+              <Button
+                variant="ghost"
                 color="grey"
-                transition="0.25s"
-                _hover={{ color: 'blue.500' }}
+                _hover={{ color: 'blue.500', bgColor: 'blackAlpha.100' }}
                 onClick={() => setOpen(false)}
+                leftIcon={<HistoryIcon />}
               >
-                <HistoryIcon mr={2} />
                 <Text color="black"> History</Text>
-              </Flex>
+              </Button>
             </Link>
             <UpdateSettings close={() => setOpen(false)} />
-            <WalletSelector close={() => setOpen(false)} />
           </>
         )}
+        <WalletSelector close={() => setOpen(false)} />
+        <BridgeDropdown close={() => setOpen(false)} />
       </Stack>
     </Flex>
   );

@@ -1,7 +1,7 @@
 import { Flex, Image, Link, Text } from '@chakra-ui/react';
 import AlertImage from 'assets/alert.svg';
 import { utils } from 'ethers';
-import { FOREIGN_CHAIN_ID, HOME_CHAIN_ID } from 'lib/constants';
+import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { getEthereumPrice } from 'lib/ethPrice';
 import { getFastGasPrice } from 'lib/gasPrice';
 import { getNetworkName } from 'lib/helpers';
@@ -18,6 +18,7 @@ const LearnMoreLink = () => (
 );
 
 export const NeedsTransactions = () => {
+  const { homeChainId, foreignChainId } = useBridgeDirection();
   const GAS_COST = 260000;
 
   const gasPrice = getFastGasPrice();
@@ -29,7 +30,7 @@ export const NeedsTransactions = () => {
   const gasCostInUSDString = gasCostInUSD.toFixed(2);
 
   let txCostText = '';
-  if (FOREIGN_CHAIN_ID === 1) {
+  if (foreignChainId === 1) {
     txCostText = (
       <>
         You will need some xDai and approximately {gasCostInETHString} ETH (
@@ -56,9 +57,9 @@ export const NeedsTransactions = () => {
       <Flex align="center" fontSize="12px" p={2} pl={4}>
         <Text>
           {`The claim process requires 2 transactions, one on ${getNetworkName(
-            HOME_CHAIN_ID,
+            homeChainId,
           )} and one
-          on ${getNetworkName(FOREIGN_CHAIN_ID)}. `}
+          on ${getNetworkName(foreignChainId)}. `}
           {txCostText}
         </Text>
       </Flex>

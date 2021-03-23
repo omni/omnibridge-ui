@@ -4,13 +4,15 @@ import { Logo } from 'components/common/Logo';
 import { BridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { BigNumber, utils } from 'ethers';
-import { formatValue, getBridgeNetwork, logError } from 'lib/helpers';
+import { useBridgeDirection } from 'hooks/useBridgeDirection';
+import { formatValue, logError } from 'lib/helpers';
 import { fetchTokenBalance } from 'lib/token';
 import React, { useContext, useEffect, useState } from 'react';
 import { defer } from 'rxjs';
 
 export const ToToken = () => {
   const { account, providerChainId } = useWeb3Context();
+  const { getBridgeChainId } = useBridgeDirection();
   const {
     updateBalance,
     toToken: token,
@@ -19,7 +21,7 @@ export const ToToken = () => {
     toBalance: balance,
     setToBalance: setBalance,
   } = useContext(BridgeContext);
-  const chainId = getBridgeNetwork(providerChainId);
+  const chainId = getBridgeChainId(providerChainId);
 
   const smallScreen = useBreakpointValue({ base: true, lg: false });
   const [balanceLoading, setBalanceLoading] = useState(false);

@@ -17,6 +17,7 @@ export const WalletSelector = ({ close }) => {
   const { disconnect, account, providerChainId } = useWeb3Context();
 
   const placement = useBreakpointValue({ base: 'bottom', md: 'bottom-end' });
+  if (!account || !providerChainId) return null;
   return (
     <Flex>
       <Popover placement={placement}>

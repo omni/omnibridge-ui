@@ -13,20 +13,14 @@ import { AddToMetamask } from 'components/common/AddToMetamask';
 import { TxLink } from 'components/common/TxLink';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { BigNumber, utils } from 'ethers';
+import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import {
   executeSignatures,
   getMessageFromTxHash,
   getMessageStatus,
 } from 'lib/amb';
-import { FOREIGN_CHAIN_ID, POLLING_INTERVAL } from 'lib/constants';
-import {
-  getBridgeNetwork,
-  getExplorerUrl,
-  getMonitorUrl,
-  getNetworkName,
-  isxDaiChain,
-  logError,
-} from 'lib/helpers';
+import { POLLING_INTERVAL } from 'lib/constants';
+import { getExplorerUrl, getNetworkName, logError } from 'lib/helpers';
 import React, { useEffect, useState } from 'react';
 
 const { formatUnits } = utils;
@@ -72,8 +66,16 @@ export const HistoryItem = ({
     message: inputMessage,
   },
 }) => {
+  const {
+    homeChainId,
+    foreignChainId,
+    foreignAmbAddress,
+    getBridgeChainId,
+    getMonitorUrl,
+    getGraphEndpoint,
+  } = useBridgeDirection();
   const { providerChainId, ethersProvider } = useWeb3Context();
-  const bridgeChainId = getBridgeNetwork(chainId);
+  const bridgeChainId = getBridgeChainId(chainId);
   const [receivingTx, setReceiving] = useState(inputReceivingTx);
   const [message, setMessage] = useState(inputMessage);
 
@@ -99,13 +101,12 @@ export const HistoryItem = ({
     }
   };
   const claimable = message && message.msgData && message.signatures;
-  const isxDai = isxDaiChain(providerChainId);
   const [loading, setLoading] = useState(false);
   const [txHash, setTxHash] = useState();
   const claimTokens = async () => {
     if (loading) return;
-    if (isxDai) {
-      showError(`Please switch wallet to ${getNetworkName(FOREIGN_CHAIN_ID)}`);
+    if (providerChainId === homeChainId) {
+      showError(`Please switch wallet to ${getNetworkName(foreignChainId)}`);
     } else if (!claimable) {
       showError('Still Collecting Signatures...');
     } else {
@@ -113,7 +114,7 @@ export const HistoryItem = ({
         setLoading(true);
         const tx = await executeSignatures(
           ethersProvider,
-          providerChainId,
+          foreignAmbAddress,
           message,
         );
         setTxHash(tx.hash);
@@ -147,8 +148,12 @@ export const HistoryItem = ({
     const getStatus = async () => {
       try {
         [execution, request] = await Promise.all([
-          !receivingTx ? getMessageStatus(bridgeChainId, msgId) : null,
-          !message.signatures ? getMessageFromTxHash(chainId, sendingTx) : null,
+          !receivingTx
+            ? getMessageStatus(getGraphEndpoint(bridgeChainId), msgId)
+            : null,
+          !message.signatures
+            ? getMessageFromTxHash(getGraphEndpoint(chainId), sendingTx)
+            : null,
         ]);
         if (execution) {
           setReceiving(execution.txHash);
@@ -173,7 +178,14 @@ export const HistoryItem = ({
     getStatus();
     // unsubscribe when unmount component
     return unsubscribe;
-  }, [chainId, receivingTx, bridgeChainId, message, sendingTx]);
+  }, [
+    chainId,
+    receivingTx,
+    bridgeChainId,
+    message,
+    sendingTx,
+    getGraphEndpoint,
+  ]);
 
   return (
     <Flex

@@ -11,7 +11,7 @@ import {
 import Details from 'assets/details.svg';
 import { BridgeContext } from 'contexts/BridgeContext';
 import { formatValue } from 'lib/helpers';
-import React, { useContext, useState } from 'react';
+import React, { useCallback, useContext, useState } from 'react';
 
 export const SystemFeedback = () => {
   const { fromToken: token, tokenLimits, updateTokenLimits } = useContext(
@@ -20,11 +20,11 @@ export const SystemFeedback = () => {
 
   const [loading, setLoading] = useState(false);
 
-  const update = async () => {
+  const update = useCallback(async () => {
     setLoading(true);
     await updateTokenLimits();
     setLoading(false);
-  };
+  }, [updateTokenLimits]);
 
   return (
     <Popover>

@@ -19,15 +19,12 @@ import TransferImage from 'assets/confirm-transfer.svg';
 import { NeedsTransactions } from 'components/modals/NeedsTransactionsModal';
 import { DaiWarning, isERC20DaiAddress } from 'components/warnings/DaiWarning';
 import { BridgeContext } from 'contexts/BridgeContext';
-import {
-  formatValue,
-  getAccountString,
-  getNetworkLabel,
-  isxDaiChain,
-} from 'lib/helpers';
+import { useBridgeDirection } from 'hooks/useBridgeDirection';
+import { formatValue, getAccountString, getNetworkLabel } from 'lib/helpers';
 import React, { useContext, useEffect, useState } from 'react';
 
 export const ConfirmTransferModal = ({ isOpen, onClose }) => {
+  const { homeChainId, foreignChainId } = useBridgeDirection();
   const {
     receiver,
     fromToken,
@@ -47,12 +44,15 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
   const smallScreen = useBreakpointValue({ base: true, md: false });
   const toast = useToast();
   if (!fromToken || !toToken) return null;
-  const isxDai = isxDaiChain(fromToken.chainId);
+  const isHome = fromToken.chainId === homeChainId;
   const fromAmt = formatValue(fromAmount, fromToken.decimals);
   const fromUnit = fromToken.symbol;
   const toAmt = formatValue(toAmount, toToken.decimals);
   const toUnit = toToken.symbol;
-  const isERC20Dai = isERC20DaiAddress(fromToken);
+  const isERC20Dai =
+    !!fromToken &&
+    fromToken.chainId === foreignChainId &&
+    isERC20DaiAddress(fromToken);
 
   const showError = msg => {
     if (msg) {
@@ -162,7 +162,7 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
               {`Bridge Fees ${Number(fee.toFixed(3))}%`}
             </Flex>
             <Divider color="#DAE3F0" my={4} />
-            <Box w="100%" fontSize="sm" color={isxDai ? 'black' : 'grey'}>
+            <Box w="100%" fontSize="sm" color={isHome ? 'black' : 'grey'}>
               <Text as="span">{`Please confirm that you would like to send `}</Text>
               <Text as="b">{`${fromAmt} ${fromUnit}`}</Text>
               <Text as="span">{` from ${getNetworkLabel(
@@ -180,7 +180,7 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
               <Text as="b">{`${toAmt} ${toUnit}`}</Text>
               <Text as="span">{` on ${getNetworkLabel(toToken.chainId)}`}</Text>
             </Box>
-            {isxDai && <NeedsTransactions />}
+            {isHome && <NeedsTransactions />}
           </ModalBody>
           <ModalFooter p={6}>
             <Flex

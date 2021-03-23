@@ -29,15 +29,15 @@ export const App = () => {
       <CSSReset />
       <Global styles={GlobalStyles} />
       <ErrorBoundary>
-        <SettingsProvider>
-          <Web3Provider>
-            <Router>
+        <Router>
+          <SettingsProvider>
+            <Web3Provider>
               <Layout>
                 <Routes />
               </Layout>
-            </Router>
-          </Web3Provider>
-        </SettingsProvider>
+            </Web3Provider>
+          </SettingsProvider>
+        </Router>
       </ErrorBoundary>
     </ChakraProvider>
   );

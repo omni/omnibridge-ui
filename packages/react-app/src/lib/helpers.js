@@ -1,62 +1,43 @@
 import { BigNumber, utils } from 'ethers';
 import {
-  ambs,
   chainUrls,
   defaultTokens,
   defaultTokensUrl,
-  FOREIGN_CHAIN_ID,
-  graphEndpoints,
-  HOME_CHAIN_ID,
-  mediators,
+  LOCAL_STORAGE_KEYS,
   networkCurrencies,
   networkLabels,
   networkNames,
-  subgraphNames,
 } from 'lib/constants';
-import { getOverriddenMediator, isOverridden } from 'lib/overrides';
+import {
+  BSC_XDAI_BRIDGE,
+  ETH_XDAI_BRIDGE,
+  KOVAN_SOKOL_BRIDGE,
+  networks,
+} from 'lib/networks';
 
-export const getBridgeNetwork = chainId => {
-  return chainId === HOME_CHAIN_ID ? FOREIGN_CHAIN_ID : HOME_CHAIN_ID;
-};
-
-export const isxDaiChain = chainId => {
-  return chainId === HOME_CHAIN_ID;
-};
+import { getOverriddenMediator, isOverridden } from './overrides';
 
 export const getDefaultToken = chainId =>
-  defaultTokens[chainId] || defaultTokens[HOME_CHAIN_ID];
-
-export const getMediatorAddressWithOverride = (tokenAddress, chainId) => {
-  if (isOverridden(tokenAddress, chainId)) {
-    return getOverriddenMediator(tokenAddress, chainId);
-  }
-  return getMediatorAddress(chainId);
-};
-
-export const getMediatorAddress = chainId =>
-  mediators[chainId].toLowerCase() || mediators[HOME_CHAIN_ID].toLowerCase();
+  defaultTokens[chainId] || defaultTokens[1];
 
 export const getWalletProviderName = provider =>
   provider?.connection?.url || null;
-export const getNetworkName = chainId => networkNames[chainId] || 'Unknown';
+
+export const getNetworkName = chainId =>
+  networkNames[chainId] || 'Unknown Network';
+
 export const getNetworkLabel = chainId => networkLabels[chainId] || 'Unknown';
+
 export const getNetworkCurrency = chainId =>
   networkCurrencies[chainId] || { name: 'Unknown', symbol: 'Unknown' };
-export const getAMBAddress = chainId => ambs[chainId] || ambs[HOME_CHAIN_ID];
-export const getGraphEndpoint = chainId =>
-  graphEndpoints[chainId] || graphEndpoints[HOME_CHAIN_ID];
-export const getSubgraphName = chainId =>
-  subgraphNames[chainId] || subgraphNames[HOME_CHAIN_ID];
-export const getRPCUrl = chainId =>
-  (chainUrls[chainId] || chainUrls[HOME_CHAIN_ID]).rpc;
+
+export const getRPCUrl = chainId => (chainUrls[chainId] || chainUrls[1]).rpc;
+
 export const getExplorerUrl = chainId =>
-  (chainUrls[chainId] || chainUrls[HOME_CHAIN_ID]).explorer;
+  (chainUrls[chainId] || chainUrls[1]).explorer;
+
 export const getTokenListUrl = chainId =>
-  defaultTokensUrl[chainId] || defaultTokensUrl[HOME_CHAIN_ID];
-export const getMonitorUrl = (chainId, hash) =>
-  `${
-    (chainUrls[chainId] || chainUrls[HOME_CHAIN_ID]).monitor
-  }/${chainId}/${hash}`;
+  defaultTokensUrl[chainId] || defaultTokensUrl[1];
 
 export const uniqueTokens = list => {
   const seen = {};
@@ -148,4 +129,51 @@ export const logDebug = error => {
     // eslint-disable-next-line no-console
     console.debug(error);
   }
+};
+
+const {
+  XDAI_RPC_URL,
+  MAINNET_RPC_URL,
+  BSC_RPC_URL,
+  KOVAN_RPC_URL,
+  SOKOL_RPC_URL,
+} = LOCAL_STORAGE_KEYS;
+
+export const getRPCKeys = bridgeDirection => {
+  switch (bridgeDirection) {
+    case ETH_XDAI_BRIDGE:
+      return {
+        homeRPCKey: XDAI_RPC_URL,
+        foreignRPCKey: MAINNET_RPC_URL,
+      };
+    case BSC_XDAI_BRIDGE:
+      return {
+        homeRPCKey: XDAI_RPC_URL,
+        foreignRPCKey: BSC_RPC_URL,
+      };
+    case KOVAN_SOKOL_BRIDGE:
+    default:
+      return {
+        homeRPCKey: SOKOL_RPC_URL,
+        foreignRPCKey: KOVAN_RPC_URL,
+      };
+  }
+};
+
+export const getMediatorAddressWithoutOverride = (bridgeDirection, chainId) => {
+  if (!bridgeDirection || !chainId) return null;
+  const { homeChainId, homeMediatorAddress, foreignMediatorAddress } = networks[
+    bridgeDirection
+  ];
+  return homeChainId === chainId
+    ? homeMediatorAddress.toLowerCase()
+    : foreignMediatorAddress.toLowerCase();
+};
+
+export const getMediatorAddress = (bridgeDirection, token) => {
+  if (!token || !token.chainId || !token.address) return null;
+  if (isOverridden(bridgeDirection, token)) {
+    return getOverriddenMediator(bridgeDirection, token);
+  }
+  return getMediatorAddressWithoutOverride(bridgeDirection, token.chainId);
 };

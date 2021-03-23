@@ -9,27 +9,37 @@ import { BridgeLoadingModal } from 'components/modals/BridgeLoadingModal';
 import { ClaimTokensModal } from 'components/modals/ClaimTokensModal';
 import { ClaimTransferModal } from 'components/modals/ClaimTransferModal';
 import { DaiWarning, isERC20DaiAddress } from 'components/warnings/DaiWarning';
-import {
-  isNativexDaiAddress,
-  ReverseWarning,
-} from 'components/warnings/ReverseWarning';
+import { ReverseWarning } from 'components/warnings/ReverseWarning';
 import { BridgeContext } from 'contexts/BridgeContext';
 import { useSettings } from 'contexts/SettingsContext';
 import { useWeb3Context } from 'contexts/Web3Context';
-import { FOREIGN_CHAIN_ID } from 'lib/constants';
-import { getBridgeNetwork, getNetworkName } from 'lib/helpers';
+import { useBridgeDirection } from 'hooks/useBridgeDirection';
+import { ADDRESS_ZERO } from 'lib/constants';
+import { getNetworkName } from 'lib/helpers';
 import React, { useContext } from 'react';
 
 export const BridgeTokens = () => {
   const { providerChainId: chainId } = useWeb3Context();
+  const {
+    getBridgeChainId,
+    foreignChainId,
+    enableReversedBridge,
+  } = useBridgeDirection();
   const { fromToken, toToken, txHash, loading } = useContext(BridgeContext);
   const { neverShowClaims, needsSaving } = useSettings();
-  const isERC20Dai = isERC20DaiAddress(fromToken);
-  const isNativexDaiToken = isNativexDaiAddress(toToken);
+  const isERC20Dai =
+    !!fromToken &&
+    fromToken.chainId === foreignChainId &&
+    isERC20DaiAddress(fromToken);
+  const showReverseBridgeWarning =
+    !!toToken &&
+    !enableReversedBridge &&
+    toToken.chainId === foreignChainId &&
+    toToken.address === ADDRESS_ZERO;
   const smallScreen = useBreakpointValue({ base: true, lg: false });
-  const bridgeChainId = getBridgeNetwork(chainId);
+  const bridgeChainId = getBridgeChainId(chainId);
 
-  const txNeedsClaiming = !!txHash && !loading && chainId === FOREIGN_CHAIN_ID;
+  const txNeedsClaiming = !!txHash && !loading && chainId === foreignChainId;
   return (
     <Flex
       w={{ base: undefined, lg: 'calc(100% - 4rem)' }}
@@ -59,7 +69,7 @@ export const BridgeTokens = () => {
             </Text>
           </Flex>
           {isERC20Dai && <DaiWarning />}
-          {isNativexDaiToken && <ReverseWarning />}
+          {showReverseBridgeWarning && <ReverseWarning />}
           <Flex align="flex-end" direction="column">
             <Text color="greyText" fontSize="sm">
               To
@@ -76,7 +86,9 @@ export const BridgeTokens = () => {
         my={4}
       >
         {smallScreen && isERC20Dai && <DaiWarning />}
-        {smallScreen && isNativexDaiToken && <ReverseWarning isSmallScreen />}
+        {smallScreen && showReverseBridgeWarning && (
+          <ReverseWarning isSmallScreen />
+        )}
         {smallScreen && (
           <Flex align="flex-start" direction="column" m={2}>
             <Text color="greyText" fontSize="sm">
