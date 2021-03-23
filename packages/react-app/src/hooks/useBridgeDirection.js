@@ -4,9 +4,11 @@ import { useCallback, useMemo } from 'react';
 
 export const useBridgeDirection = () => {
   const { bridgeDirection } = useSettings();
-  const bridgeConfig = useMemo(() => networks[bridgeDirection], [
-    bridgeDirection,
-  ]);
+  const bridgeConfig = useMemo(
+    () => networks[bridgeDirection] || Object.values(networks)[0],
+    [bridgeDirection],
+  );
+
   const {
     homeChainId,
     foreignChainId,

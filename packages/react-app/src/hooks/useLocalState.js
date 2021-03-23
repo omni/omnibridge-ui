@@ -31,9 +31,9 @@ export const useLocalState = (
     (val, shouldBeStored = false) => {
       const result = typeof val === 'function' ? val(value) : val;
       JSON.stringify(result) !== JSON.stringify(value) && setValue(result);
-      (!!isStoredImmediately || !!shouldBeStored) &&
-        !!key &&
+      if ((!!isStoredImmediately || !!shouldBeStored) && !!key) {
         window.localStorage.setItem(key, result);
+      }
     },
     [key, value, isStoredImmediately],
   );
@@ -43,7 +43,9 @@ export const useLocalState = (
   }, [key, value, updateValue]);
 
   useEffect(() => {
-    !!key && !storageValue && localStorage.setItem(key, initialValue);
+    if (!!key && !storageValue) {
+      localStorage.setItem(key, initialValue);
+    }
   }, [key, initialValue, storageValue]);
 
   return [value, updateValue, castedValue];

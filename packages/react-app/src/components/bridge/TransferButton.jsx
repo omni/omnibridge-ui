@@ -26,7 +26,7 @@ export const TransferButton = () => {
     allowed,
   } = useContext(BridgeContext);
   const isHome = token && token.chainId && token.chainId === homeChainId;
-  const isNativeHomeToken =
+  const showReverseBridgeWarning =
     !!toToken &&
     !enableReversedBridge &&
     toToken.chainId === foreignChainId &&
@@ -64,7 +64,7 @@ export const TransferButton = () => {
       showError('Not enough balance');
     } else if (receiver && !utils.isAddress(receiver)) {
       showError(`Please specify a valid recipient address`);
-    } else if (isNativeHomeToken) {
+    } else if (showReverseBridgeWarning) {
       showError(`Token is native ERC20 on ${getNetworkName(homeChainId)}`);
     } else {
       return true;

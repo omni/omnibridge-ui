@@ -8,6 +8,7 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import MetamaskFox from 'assets/metamask-fox.svg';
+import { useSettings } from 'contexts/SettingsContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { WalletFilledIcon } from 'icons/WalletFilledIcon';
@@ -23,13 +24,13 @@ export const ConnectWeb3 = () => {
     label: bridgeLabel,
     getBridgeChainId,
   } = useBridgeDirection();
+  const { customChainId } = useSettings();
   const {
     connectWeb3,
     loading,
     account,
     disconnect,
     ethersProvider,
-    customChainId,
   } = useWeb3Context();
   const toast = useToast();
 
@@ -139,6 +140,7 @@ export const ConnectWeb3 = () => {
     foreignChainId,
     renderBridgeLabel,
     renderChain,
+    getBridgeChainId,
   ]);
 
   return (

@@ -1,6 +1,6 @@
 import { BigNumber } from 'ethers';
 
-import { KOVAN_SOKOL_BRIDGE } from './networks';
+import { ETH_XDAI_BRIDGE } from './networks';
 
 export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000';
 
@@ -12,7 +12,7 @@ export const POLLING_INTERVAL =
   process.env.REACT_APP_UI_STATUS_UPDATE_INTERVAL || 1000;
 
 export const DEFAULT_BRIDGE_DIRECTION =
-  process.env.REACT_APP_DEFAULT_BRIDGE_DIRECTION || KOVAN_SOKOL_BRIDGE;
+  process.env.REACT_APP_DEFAULT_BRIDGE_DIRECTION || ETH_XDAI_BRIDGE;
 
 export const NON_ETH_CHAIN_IDS = [56, 77, 100];
 
@@ -57,34 +57,36 @@ export const networkCurrencies = {
   },
 };
 
+const INFURA_ID = process.env.REACT_APP_INFURA_ID;
+
 export const chainUrls = {
   1: {
-    rpc: process.env.REACT_APP_ETH_RPC_URL,
-    explorer: process.env.REACT_APP_ETH_EXPLORER_PREFIX,
+    rpc: `https://mainnet.infura.io/v3/${INFURA_ID}`,
+    explorer: 'https://blockscout.com/eth/mainnet',
     chainId: 1,
     name: networkNames[1],
   },
   42: {
-    rpc: process.env.REACT_APP_KOVAN_RPC_URL,
-    explorer: process.env.REACT_APP_KOVAN_EXPLORER_PREFIX,
+    rpc: `https://kovan.infura.io/v3/${INFURA_ID}`,
+    explorer: 'https://blockscout.com/eth/kovan',
     chainId: 42,
     name: networkNames[42],
   },
   56: {
-    rpc: process.env.REACT_APP_BSC_RPC_URL,
-    explorer: process.env.REACT_APP_BSC_EXPLORER_PREFIX,
+    rpc: 'https://bsc-dataseed.binance.org',
+    explorer: 'https://bscscan.com',
     chainId: 56,
     name: networkNames[56],
   },
   77: {
-    rpc: process.env.REACT_APP_SOKOL_RPC_URL,
-    explorer: process.env.REACT_APP_SOKOL_EXPLORER_PREFIX,
+    rpc: 'https://sokol.poa.network',
+    explorer: 'https://blockscout.com/poa/sokol',
     chainId: 77,
     name: networkNames[77],
   },
   100: {
-    rpc: process.env.REACT_APP_XDAI_RPC_URL,
-    explorer: process.env.REACT_APP_XDAI_EXPLORER_PREFIX,
+    rpc: 'https://rpc.xdaichain.com',
+    explorer: 'https://blockscout.com/xdai/mainnet',
     chainId: 100,
     name: networkNames[100],
   },

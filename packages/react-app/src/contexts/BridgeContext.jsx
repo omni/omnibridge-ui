@@ -50,7 +50,12 @@ export const BridgeProvider = ({ children }) => {
 
   const toast = useToast();
   const totalConfirms = useTotalConfirms();
-  const { isRewardAddress, currentDay, homeToForeignFeeType, foreignToHomeFeeType } = useMediatorInfo();
+  const {
+    isRewardAddress,
+    currentDay,
+    homeToForeignFeeType,
+    foreignToHomeFeeType,
+  } = useMediatorInfo();
   const {
     allowed,
     updateAllowance,
@@ -202,13 +207,14 @@ export const BridgeProvider = ({ children }) => {
   const updateTokenLimits = useCallback(async () => {
     if (
       providerChainId &&
-      fromToken &&
-      fromToken.chainId === providerChainId &&
-      toToken &&
-      toToken.chainId === getBridgeChainId(providerChainId) &&
       ethersProvider &&
+      fromToken &&
+      toToken &&
+      fromToken.chainId === providerChainId &&
+      toToken.chainId === getBridgeChainId(providerChainId) &&
       fromToken.symbol === toToken.symbol &&
-      currentDay
+      currentDay &&
+      bridgeDirection
     ) {
       const limits = await fetchTokenLimits(
         bridgeDirection,
@@ -248,8 +254,6 @@ export const BridgeProvider = ({ children }) => {
         toToken,
         setToken,
         setDefaultToken,
-        customTokenAddress,
-        setCustomTokenAddress,
         allowed,
         approve,
         transfer,
@@ -272,7 +276,6 @@ export const BridgeProvider = ({ children }) => {
         updateBalance,
         setUpdateBalance,
         unlockLoading,
-
         approvalTxHash,
       }}
     >

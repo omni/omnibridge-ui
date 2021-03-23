@@ -23,7 +23,8 @@ export const getDefaultToken = chainId =>
 export const getWalletProviderName = provider =>
   provider?.connection?.url || null;
 
-export const getNetworkName = chainId => networkNames[chainId] || 'Unknown';
+export const getNetworkName = chainId =>
+  networkNames[chainId] || 'Unknown Network';
 
 export const getNetworkLabel = chainId => networkLabels[chainId] || 'Unknown';
 
@@ -56,9 +57,7 @@ export const uniqueTokens = list => {
 export const formatValue = (num, dec) => {
   const str = utils.formatUnits(num, dec);
   if (str.length > 50) {
-    const expStr = Number(str)
-      .toExponential()
-      .replace(/e\+?/, ' x 10^');
+    const expStr = Number(str).toExponential().replace(/e\+?/, ' x 10^');
     const split = expStr.split(' x 10^');
     const first = Number(split[0]).toLocaleString('en', {
       maximumFractionDigits: 4,
@@ -166,7 +165,9 @@ export const getMediatorAddressWithoutOverride = (bridgeDirection, chainId) => {
   const { homeChainId, homeMediatorAddress, foreignMediatorAddress } = networks[
     bridgeDirection
   ];
-  return homeChainId === chainId ? homeMediatorAddress : foreignMediatorAddress;
+  return homeChainId === chainId
+    ? homeMediatorAddress.toLowerCase()
+    : foreignMediatorAddress.toLowerCase();
 };
 
 export const getMediatorAddress = (bridgeDirection, token) => {

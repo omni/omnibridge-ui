@@ -238,6 +238,7 @@ export const fetchTokenLimits = async (
   const isDedicatedMediatorToken =
     token.mediator !==
     getMediatorAddressWithoutOverride(bridgeDirection, token.chainId);
+
   const abi = isDedicatedMediatorToken
     ? [
         'function minPerTx() view returns (uint256)',

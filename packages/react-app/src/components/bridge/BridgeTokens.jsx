@@ -31,7 +31,7 @@ export const BridgeTokens = () => {
     !!fromToken &&
     fromToken.chainId === foreignChainId &&
     isERC20DaiAddress(fromToken);
-  const isNativeHomeToken =
+  const showReverseBridgeWarning =
     !!toToken &&
     !enableReversedBridge &&
     toToken.chainId === foreignChainId &&
@@ -69,7 +69,7 @@ export const BridgeTokens = () => {
             </Text>
           </Flex>
           {isERC20Dai && <DaiWarning />}
-          {isNativeHomeToken && <ReverseWarning />}
+          {showReverseBridgeWarning && <ReverseWarning />}
           <Flex align="flex-end" direction="column">
             <Text color="greyText" fontSize="sm">
               To
@@ -86,7 +86,9 @@ export const BridgeTokens = () => {
         my={4}
       >
         {smallScreen && isERC20Dai && <DaiWarning />}
-        {smallScreen && isNativeHomeToken && <ReverseWarning isSmallScreen />}
+        {smallScreen && showReverseBridgeWarning && (
+          <ReverseWarning isSmallScreen />
+        )}
         {smallScreen && (
           <Flex align="flex-start" direction="column" m={2}>
             <Text color="greyText" fontSize="sm">

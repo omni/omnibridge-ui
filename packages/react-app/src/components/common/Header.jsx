@@ -103,10 +103,10 @@ export const Header = () => {
               </Button>
             </Link>
             <UpdateSettings close={() => setOpen(false)} />
-            <WalletSelector close={() => setOpen(false)} />
           </>
         )}
-        <BridgeDropdown />
+        <WalletSelector close={() => setOpen(false)} />
+        <BridgeDropdown close={() => setOpen(false)} />
       </Stack>
     </Flex>
   );

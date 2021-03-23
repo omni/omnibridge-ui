@@ -1,6 +1,7 @@
 import { useLocalState } from 'hooks/useLocalState';
 import { DEFAULT_BRIDGE_DIRECTION, LOCAL_STORAGE_KEYS } from 'lib/constants';
-import { getRPCKeys } from 'lib/helpers';
+import { fetchQueryParams, getRPCKeys } from 'lib/helpers';
+import { networks } from 'lib/networks';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 
 const {
@@ -13,20 +14,37 @@ const {
 const SettingsContext = React.createContext({});
 
 export const SettingsProvider = ({ children }) => {
-  const [
-    bridgeDirection,
-    setBridgeDirection,
-  ] = useLocalState(DEFAULT_BRIDGE_DIRECTION, BRIDGE_DIRECTION, {
-    isStoredImmediately: true,
-  });
+  const [customChainId, setCustomChainId] = useState(null);
 
-  const [{ homeRPCKey, foreignRPCKey }, setRPCKeys] = useState(
-    getRPCKeys(DEFAULT_BRIDGE_DIRECTION),
+  const [bridgeDirection, setBridgeDirection] = useLocalState(
+    DEFAULT_BRIDGE_DIRECTION,
+    BRIDGE_DIRECTION,
   );
 
   useEffect(() => {
-    setRPCKeys(getRPCKeys(bridgeDirection));
-  }, [bridgeDirection]);
+    const params = fetchQueryParams();
+
+    if (params?.from && params?.to) {
+      const fromChainId = parseInt(params.from, 10);
+      const toChainId = parseInt(params.to, 10);
+
+      const networkEntry = Object.entries(networks).find(
+        ([_, { homeChainId, foreignChainId }]) => {
+          return (
+            (homeChainId === fromChainId && foreignChainId === toChainId) ||
+            (homeChainId === toChainId && foreignChainId === fromChainId)
+          );
+        },
+      );
+
+      if (networkEntry) {
+        setBridgeDirection(networkEntry[0], true);
+        setCustomChainId(fromChainId);
+      }
+    }
+  }, [setBridgeDirection]);
+
+  const { homeRPCKey, foreignRPCKey } = getRPCKeys(bridgeDirection);
 
   const [foreignRPC, setForeignRPC] = useLocalState('', foreignRPCKey);
   const [homeRPC, setHomeRPC] = useLocalState('', homeRPCKey);
@@ -115,6 +133,7 @@ export const SettingsProvider = ({ children }) => {
         setDisableBalanceFetchToken,
         needsSaving,
         save,
+        customChainId,
       }}
     >
       {children}
