@@ -47,14 +47,17 @@ export const useGraphHealth = (description, onlyHome = false) => {
     const load = async () => {
       try {
         setLoading(true);
+        const hChainId = await getEthersProvider(homeChainId);
+        const fChainId = await getEthersProvider(foreignChainId);
+        if (!hChainId || !fChainId) return;
         const [
           { homeHealth, foreignHealth },
           homeBlockNumber,
           foreignBlockNumber,
         ] = await Promise.all([
           getHealthStatus(bridgeDirection),
-          getEthersProvider(homeChainId).getBlockNumber(),
-          getEthersProvider(foreignChainId).getBlockNumber(),
+          hChainId?.getBlockNumber(),
+          fChainId?.getBlockNumber(),
         ]);
         logDebug({
           homeHealth,
@@ -89,6 +92,7 @@ export const useGraphHealth = (description, onlyHome = false) => {
         const timeoutId = setTimeout(() => load(), UPDATE_INTERVAL);
         subscriptions.push(timeoutId);
       } catch (graphHealthError) {
+        console.log('ERROR');
         logError({ graphHealthError });
       } finally {
         setLoading(false);

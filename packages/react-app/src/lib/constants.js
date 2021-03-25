@@ -57,35 +57,48 @@ export const networkCurrencies = {
   },
 };
 
-const INFURA_ID = process.env.REACT_APP_INFURA_ID;
+const {
+  REACT_APP_INFURA_ID: INFURA_ID,
+  REACT_APP_FALLBACK_INFURA_ID: FB_INFURA_ID,
+} = process.env;
 
 export const chainUrls = {
   1: {
-    rpc: `https://mainnet.infura.io/v3/${INFURA_ID}`,
+    rpc: [
+      `https://mainnet.infura.io/v3/${INFURA_ID}`,
+      `https://mainnet.infura.io/v3/${FB_INFURA_ID}`,
+    ],
     explorer: 'https://blockscout.com/eth/mainnet',
     chainId: 1,
     name: networkNames[1],
   },
   42: {
-    rpc: `https://kovan.infura.io/v3/${INFURA_ID}`,
+    rpc: [
+      `https://kovan.infura.io/v3/${INFURA_ID}`,
+      `https://kovan.infura.io/v3/${FB_INFURA_ID}`,
+      `https://kovan.poa.network/`,
+    ],
     explorer: 'https://blockscout.com/eth/kovan',
     chainId: 42,
     name: networkNames[42],
   },
   56: {
-    rpc: 'https://bsc-dataseed.binance.org',
+    rpc: [
+      'https://bsc-dataseed.binance.org',
+      'https://bsc-dataseed1.defibit.io/',
+    ],
     explorer: 'https://bscscan.com',
     chainId: 56,
     name: networkNames[56],
   },
   77: {
-    rpc: 'https://sokol.poa.network',
+    rpc: ['https://sokol.poa.network'],
     explorer: 'https://blockscout.com/poa/sokol',
     chainId: 77,
     name: networkNames[77],
   },
   100: {
-    rpc: 'https://rpc.xdaichain.com',
+    rpc: ['https://rpc.xdaichain.com', 'https://dai.poa.network'],
     explorer: 'https://blockscout.com/xdai/mainnet',
     chainId: 100,
     name: networkNames[100],

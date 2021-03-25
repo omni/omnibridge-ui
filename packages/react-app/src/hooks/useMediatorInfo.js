@@ -19,37 +19,41 @@ export const useMediatorInfo = () => {
 
   useEffect(() => {
     if (!account) return;
-    const ethersProvider = getEthersProvider(homeChainId);
-    const abi = [
-      'function isRewardAddress(address) view returns (bool)',
-      'function getCurrentDay() view returns (uint256)',
-      'function FOREIGN_TO_HOME_FEE() view returns (bytes32)',
-      'function HOME_TO_FOREIGN_FEE() view returns (bytes32)',
-    ];
-    const mediatorContract = new Contract(
-      homeMediatorAddress,
-      abi,
-      ethersProvider,
-    );
+    const setMediatorInfo = async () => {
+      const ethersProvider = await getEthersProvider(homeChainId);
+      const abi = [
+        'function isRewardAddress(address) view returns (bool)',
+        'function getCurrentDay() view returns (uint256)',
+        'function FOREIGN_TO_HOME_FEE() view returns (bytes32)',
+        'function HOME_TO_FOREIGN_FEE() view returns (bytes32)',
+      ];
+      const mediatorContract = new Contract(
+        homeMediatorAddress,
+        abi,
+        ethersProvider,
+      );
 
-    mediatorContract
-      .FOREIGN_TO_HOME_FEE()
-      .then(feeType => setForeignToHomeFeeType(feeType))
-      .catch(feeTypeError => logError({ feeTypeError }));
+      mediatorContract
+        .FOREIGN_TO_HOME_FEE()
+        .then(feeType => setForeignToHomeFeeType(feeType))
+        .catch(feeTypeError => logError({ feeTypeError }));
 
-    mediatorContract
-      .HOME_TO_FOREIGN_FEE()
-      .then(feeType => setHomeToForeignFeeType(feeType))
-      .catch(feeTypeError => logError({ feeTypeError }));
+      mediatorContract
+        .HOME_TO_FOREIGN_FEE()
+        .then(feeType => setHomeToForeignFeeType(feeType))
+        .catch(feeTypeError => logError({ feeTypeError }));
 
-    mediatorContract
-      .getCurrentDay()
-      .then(day => setCurrentDay(day))
-      .catch(currentDayError => logError({ currentDayError }));
-    mediatorContract
-      .isRewardAddress(account)
-      .then(is => setRewardAddress(is))
-      .catch(rewardAddressError => logError({ rewardAddressError }));
+      mediatorContract
+        .getCurrentDay()
+        .then(day => setCurrentDay(day))
+        .catch(currentDayError => logError({ currentDayError }));
+      mediatorContract
+        .isRewardAddress(account)
+        .then(is => setRewardAddress(is))
+        .catch(rewardAddressError => logError({ rewardAddressError }));
+    };
+
+    setMediatorInfo();
   }, [account, homeMediatorAddress, homeChainId]);
 
   return {

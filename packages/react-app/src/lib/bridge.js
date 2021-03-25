@@ -24,7 +24,7 @@ const fetchToTokenAddress = async (
   tokenAddress,
   homeMediatorAddress,
 ) => {
-  const ethersProvider = getEthersProvider(homeChainId);
+  const ethersProvider = await getEthersProvider(homeChainId);
   const abi = [
     'function foreignTokenAddress(address) view returns (address)',
     'function homeTokenAddress(address) view returns (address)',
@@ -90,8 +90,8 @@ const fetchToTokenDetails = async (
     };
   }
 
-  const fromEthersProvider = getEthersProvider(fromChainId);
-  const toEthersProvider = getEthersProvider(toChainId);
+  const fromEthersProvider = await getEthersProvider(fromChainId);
+  const toEthersProvider = await getEthersProvider(toChainId);
   const abi = [
     'function isRegisteredAsNativeToken(address) view returns (bool)',
     'function bridgedTokenAddress(address) view returns (address)',
@@ -258,7 +258,7 @@ export const fetchTokenLimits = async (
     const toMediatorContract = new Contract(
       toToken.mediator,
       abi,
-      getEthersProvider(toToken.chainId),
+      await getEthersProvider(toToken.chainId),
     );
 
     if (toToken.address === ADDRESS_ZERO) {
