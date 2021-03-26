@@ -178,12 +178,7 @@ export const fetchToToken = async (bridgeDirection, fromToken, toChainId) => {
     toChainId,
   );
 
-  return {
-    symbol: fromToken.symbol,
-    decimals: fromToken.decimals,
-    logoURI: '',
-    ...toToken,
-  };
+  return toToken;
 };
 
 const getDefaultTokenLimits = async (
@@ -324,13 +319,4 @@ export const relayTokens = async (ethersProvider, token, receiver, amount) => {
       return mediatorContract.relayTokens(token.address, receiver, amount);
     }
   }
-};
-
-export const transferTokens = async (
-  ethersProvider,
-  token,
-  receiver,
-  amount,
-) => {
-  return relayTokens(ethersProvider, token, receiver, amount);
 };

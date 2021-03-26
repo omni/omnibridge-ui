@@ -28,6 +28,9 @@ export const networkNames = {
 
 export const networkLabels = {
   1: 'Mainnet',
+  3: 'Ropsten',
+  4: 'Rinkeby',
+  5: 'Görli',
   42: 'Kovan',
   56: 'BSC',
   77: 'Sokol',

@@ -36,7 +36,7 @@ export const fetchAllowance = async (
   return BigNumber.from(0);
 };
 
-export const fetchMode = async (bridgeDirection, token) => {
+const fetchMode = async (bridgeDirection, token) => {
   if (isOverridden(bridgeDirection, token)) {
     return getOverriddenMode(bridgeDirection, token);
   }
@@ -66,7 +66,7 @@ export const fetchTokenName = token => {
   return tokenContract.name();
 };
 
-export const fetchTokenDetailsBytes32 = async token => {
+const fetchTokenDetailsBytes32 = async token => {
   const ethersProvider = getEthersProvider(token.chainId);
   const abi = [
     'function decimals() view returns (uint8)',
@@ -86,7 +86,7 @@ export const fetchTokenDetailsBytes32 = async token => {
   };
 };
 
-export const fetchTokenDetailsString = async token => {
+const fetchTokenDetailsString = async token => {
   const ethersProvider = getEthersProvider(token.chainId);
   const abi = [
     'function decimals() view returns (uint8)',
@@ -104,7 +104,7 @@ export const fetchTokenDetailsString = async token => {
   return { name, symbol, decimals };
 };
 
-export const fetchTokenDetailsFromContract = async token => {
+const fetchTokenDetailsFromContract = async token => {
   let details = {};
   try {
     details = await fetchTokenDetailsString(token);

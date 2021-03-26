@@ -9,7 +9,7 @@ import {
   fetchToAmount,
   fetchTokenLimits,
   fetchToToken,
-  transferTokens,
+  relayTokens,
 } from 'lib/bridge';
 import { ADDRESS_ZERO } from 'lib/constants';
 import {
@@ -20,6 +20,7 @@ import {
 } from 'lib/helpers';
 import { fetchTokenDetails } from 'lib/token';
 import React, { useCallback, useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 
 export const BridgeContext = React.createContext({});
 
@@ -108,7 +109,7 @@ export const BridgeProvider = ({ children }) => {
             getBridgeChainId(tokenWithoutMode.chainId),
           ),
         ]);
-        setTokens({ fromToken: token, toToken: gotToToken });
+        setTokens({ fromToken: token, toToken: { ...token, ...gotToToken } });
         return true;
       } catch (tokenDetailsError) {
         toast({
@@ -136,7 +137,7 @@ export const BridgeProvider = ({ children }) => {
   const transfer = useCallback(async () => {
     setLoading(true);
     try {
-      const tx = await transferTokens(
+      const tx = await relayTokens(
         ethersProvider,
         fromToken,
         receiver || account,
@@ -192,13 +193,15 @@ export const BridgeProvider = ({ children }) => {
     toToken,
   ]);
 
+  const location = useLocation();
+
   useEffect(() => {
     setQueryTrigger(true);
-    const queryParams = fetchQueryParams();
+    const queryParams = fetchQueryParams(location.search);
     setUpdateBalance(t => !t);
     setCustomTokenAddress(queryParams?.token || null);
     setQueryTrigger(false);
-  }, []);
+  }, [location]);
 
   useEffect(() => {
     queryTrigger !== null && queryTrigger === false && checkForCustomToken();

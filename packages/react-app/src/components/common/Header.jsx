@@ -14,7 +14,25 @@ import { useWeb3Context } from 'contexts/Web3Context';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { HistoryIcon } from 'icons/HistoryIcon';
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
+
+const HistoryLink = ({ close }) => {
+  const history = useHistory();
+  return (
+    <Button
+      variant="ghost"
+      color="grey"
+      _hover={{ color: 'blue.500', bgColor: 'blackAlpha.100' }}
+      onClick={() => {
+        history.push('/history');
+        close();
+      }}
+      leftIcon={<HistoryIcon />}
+    >
+      <Text color="black"> History</Text>
+    </Button>
+  );
+};
 
 export const Header = () => {
   const { homeChainId, foreignChainId } = useBridgeDirection();
@@ -91,17 +109,7 @@ export const Header = () => {
       >
         {valid && (
           <>
-            <Link to="/history">
-              <Button
-                variant="ghost"
-                color="grey"
-                _hover={{ color: 'blue.500', bgColor: 'blackAlpha.100' }}
-                onClick={() => setOpen(false)}
-                leftIcon={<HistoryIcon />}
-              >
-                <Text color="black"> History</Text>
-              </Button>
-            </Link>
+            <HistoryLink close={() => setOpen(false)} />
             <UpdateSettings close={() => setOpen(false)} />
           </>
         )}

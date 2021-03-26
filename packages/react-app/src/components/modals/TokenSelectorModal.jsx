@@ -41,7 +41,7 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
   // Ref
   const initialRef = useRef();
   // Contexts
-  const { setToken } = useContext(BridgeContext);
+  const { setToken, setLoading: setBridgeLoading } = useContext(BridgeContext);
   const { account, ethersProvider, providerChainId } = useWeb3Context();
   const { disableBalanceFetchToken } = useSettings();
   // State
@@ -121,9 +121,11 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
   }, [isOpen, providerChainId, setDefaultTokenList]);
 
   // Handlers
-  const onClick = token => {
-    setToken(token);
+  const onClick = async token => {
+    setBridgeLoading(true);
     onClose();
+    await setToken(token);
+    setBridgeLoading(false);
   };
 
   const onChange = e => {
