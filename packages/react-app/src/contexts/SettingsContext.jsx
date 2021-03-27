@@ -3,6 +3,7 @@ import { DEFAULT_BRIDGE_DIRECTION, LOCAL_STORAGE_KEYS } from 'lib/constants';
 import { fetchQueryParams, getRPCKeys } from 'lib/helpers';
 import { networks } from 'lib/networks';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 
 const {
   INFINITE_UNLOCK,
@@ -21,8 +22,10 @@ export const SettingsProvider = ({ children }) => {
     BRIDGE_DIRECTION,
   );
 
+  const location = useLocation();
+
   useEffect(() => {
-    const params = fetchQueryParams();
+    const params = fetchQueryParams(location.search);
 
     if (params?.from && params?.to) {
       const fromChainId = parseInt(params.from, 10);
@@ -41,8 +44,10 @@ export const SettingsProvider = ({ children }) => {
         setBridgeDirection(networkEntry[0], true);
         setCustomChainId(fromChainId);
       }
+    } else {
+      setCustomChainId(null);
     }
-  }, [setBridgeDirection]);
+  }, [setBridgeDirection, location]);
 
   const { homeRPCKey, foreignRPCKey } = getRPCKeys(bridgeDirection);
 

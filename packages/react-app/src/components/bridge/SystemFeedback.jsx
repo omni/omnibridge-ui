@@ -64,7 +64,7 @@ export const SystemFeedback = () => {
             </Flex>
             <Flex align="center" justify="space-between">
               <Text color="grey" textAlign="left">
-                Maximum per transaction
+                Max per Tx
               </Text>
               {loading ? (
                 <Spinner size="sm" />
@@ -78,7 +78,7 @@ export const SystemFeedback = () => {
             </Flex>
             <Flex align="center" justify="space-between">
               <Text color="grey" textAlign="left">
-                Minimum per transaction
+                Min per Tx
               </Text>
               {loading ? (
                 <Spinner size="sm" />

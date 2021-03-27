@@ -99,8 +99,7 @@ export const uriToHttp = uri => {
   }
 };
 
-export const fetchQueryParams = () => {
-  const { search } = new URL(window.location);
+export const fetchQueryParams = search => {
   if (!search.trim().length) return null;
   return search
     .replace('?', '')

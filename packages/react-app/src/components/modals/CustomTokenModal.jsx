@@ -17,6 +17,7 @@ import CustomTokenImage from 'assets/custom-token.svg';
 import { BridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { utils } from 'ethers';
+import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { LOCAL_STORAGE_KEYS } from 'lib/constants';
 import { logError, uniqueTokens } from 'lib/helpers';
 import { fetchTokenDetails } from 'lib/token';
@@ -25,7 +26,8 @@ import React, { useContext, useRef, useState } from 'react';
 const { CUSTOM_TOKENS } = LOCAL_STORAGE_KEYS;
 
 export const CustomTokenModal = ({ isOpen, onClose, onBack }) => {
-  const { setToken } = useContext(BridgeContext);
+  const { bridgeDirection } = useBridgeDirection();
+  const { setToken, setLoading } = useContext(BridgeContext);
   const { providerChainId } = useWeb3Context();
   const [customToken, setCustomToken] = useState({
     address: '',
@@ -44,7 +46,8 @@ export const CustomTokenModal = ({ isOpen, onClose, onBack }) => {
     addCustomToken();
   };
 
-  const addCustomToken = () => {
+  const addCustomToken = async () => {
+    setLoading(true);
     let localTokensList = window.localStorage.getItem(CUSTOM_TOKENS);
     let customTokensList = [];
 
@@ -62,7 +65,8 @@ export const CustomTokenModal = ({ isOpen, onClose, onBack }) => {
       CUSTOM_TOKENS,
       JSON.stringify(customTokensList),
     );
-    setToken(customToken);
+    await setToken(customToken);
+    setLoading(false);
   };
 
   const handleChange = async e => {
@@ -70,7 +74,10 @@ export const CustomTokenModal = ({ isOpen, onClose, onBack }) => {
       setAddressInput(e.target.value);
       if (utils.isAddress(e.target.value)) {
         const tokenAddress = e.target.value;
-        fetchTokenDetails({ chainId: providerChainId, address: tokenAddress })
+        fetchTokenDetails(bridgeDirection, {
+          chainId: providerChainId,
+          address: tokenAddress,
+        })
           .then(tokenDetails => {
             setAddressInvalid(false);
             setCustomToken({
