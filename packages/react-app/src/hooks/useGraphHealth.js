@@ -92,7 +92,6 @@ export const useGraphHealth = (description, onlyHome = false) => {
         const timeoutId = setTimeout(() => load(), UPDATE_INTERVAL);
         subscriptions.push(timeoutId);
       } catch (graphHealthError) {
-        console.log('ERROR');
         logError({ graphHealthError });
       } finally {
         setLoading(false);

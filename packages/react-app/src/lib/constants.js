@@ -57,16 +57,13 @@ export const networkCurrencies = {
   },
 };
 
-const {
-  REACT_APP_INFURA_ID: INFURA_ID,
-  REACT_APP_FALLBACK_INFURA_ID: FB_INFURA_ID,
-} = process.env;
+const { REACT_APP_INFURA_ID: INFURA_ID } = process.env;
 
 export const chainUrls = {
   1: {
     rpc: [
       `https://mainnet.infura.io/v3/${INFURA_ID}`,
-      `https://mainnet.infura.io/v3/${FB_INFURA_ID}`,
+      `https://mainnet-nethermind.blockscout.com/`,
     ],
     explorer: 'https://blockscout.com/eth/mainnet',
     chainId: 1,
@@ -75,7 +72,6 @@ export const chainUrls = {
   42: {
     rpc: [
       `https://kovan.infura.io/v3/${INFURA_ID}`,
-      `https://kovan.infura.io/v3/${FB_INFURA_ID}`,
       `https://kovan.poa.network/`,
     ],
     explorer: 'https://blockscout.com/eth/kovan',
