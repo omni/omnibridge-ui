@@ -5,23 +5,23 @@ import { ConnectWeb3 } from 'components/common/ConnectWeb3';
 import { Footer } from 'components/common/Footer';
 import { Header } from 'components/common/Header';
 import { TermsOfServiceModal } from 'components/modals/TermsOfServiceModal';
+import { useSettings } from 'contexts/SettingsContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import React from 'react';
 
 export const Layout = ({ children }) => {
   const { homeChainId, foreignChainId } = useBridgeDirection();
-  const { account, loading, providerChainId, customChainId } = useWeb3Context();
+  const { account, loading, providerChainId } = useWeb3Context();
+  const { customChainId } = useSettings();
 
-  let isCustomChainProvided = false;
-  if (customChainId && providerChainId !== customChainId) {
-    isCustomChainProvided = true;
-  }
+  const isCustomChainProvided =
+    !customChainId || providerChainId === customChainId;
 
   const valid =
     !loading &&
-    !isCustomChainProvided &&
     !!account &&
+    isCustomChainProvided &&
     [homeChainId, foreignChainId].indexOf(providerChainId) >= 0;
 
   return (
