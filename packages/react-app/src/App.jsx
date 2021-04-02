@@ -6,6 +6,7 @@ import { ErrorBoundary } from 'components/common/ErrorBoundary';
 import { Layout } from 'components/common/Layout';
 import { SettingsProvider } from 'contexts/SettingsContext';
 import { Web3Provider } from 'contexts/Web3Context';
+import { createBrowserHistory } from 'history';
 import React from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 
@@ -29,15 +30,15 @@ export const App = () => {
       <CSSReset />
       <Global styles={GlobalStyles} />
       <ErrorBoundary>
-        <SettingsProvider>
-          <Web3Provider>
-            <Router>
+        <Router history={createBrowserHistory()}>
+          <SettingsProvider>
+            <Web3Provider>
               <Layout>
                 <Routes />
               </Layout>
-            </Router>
-          </Web3Provider>
-        </SettingsProvider>
+            </Web3Provider>
+          </SettingsProvider>
+        </Router>
       </ErrorBoundary>
     </ChakraProvider>
   );

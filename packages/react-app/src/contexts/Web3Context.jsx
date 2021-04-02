@@ -83,6 +83,7 @@ export const Web3Provider = ({ children }) => {
   const connectWeb3 = useCallback(async () => {
     try {
       setLoading(true);
+
       const modalProvider = await web3Modal.connect();
 
       await setWeb3Provider(modalProvider, true);

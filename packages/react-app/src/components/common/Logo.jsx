@@ -3,7 +3,8 @@ import BSCLogo from 'assets/bsc-logo.png';
 import EthLogo from 'assets/eth-logo.png';
 import xDAILogo from 'assets/xdai-logo.png';
 import { useWeb3Context } from 'contexts/Web3Context';
-import { getBridgeNetwork, uriToHttp } from 'lib/helpers';
+import { useBridgeDirection } from 'hooks/useBridgeDirection';
+import { uriToHttp } from 'lib/helpers';
 import React, { useState } from 'react';
 
 const BAD_SRCS = {};
@@ -16,13 +17,11 @@ const logos = {
   56: BSCLogo,
 };
 
-/**
- * Renders an image by sequentially trying a list of URIs, and then eventually a fallback triangle alert
- */
 export const Logo = ({ uri, reverseFallback = false }) => {
+  const { getBridgeChainId } = useBridgeDirection();
   const { providerChainId } = useWeb3Context();
   const chainId = reverseFallback
-    ? getBridgeNetwork(providerChainId)
+    ? getBridgeChainId(providerChainId)
     : providerChainId;
   const fallbackLogo = logos[chainId];
   const [, refresh] = useState(0);

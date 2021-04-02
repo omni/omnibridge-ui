@@ -1,20 +1,58 @@
 import { useLocalState } from 'hooks/useLocalState';
-import { LOCAL_STORAGE_KEYS } from 'lib/constants';
+import { DEFAULT_BRIDGE_DIRECTION, LOCAL_STORAGE_KEYS } from 'lib/constants';
+import { fetchQueryParams, getRPCKeys } from 'lib/helpers';
+import { networks } from 'lib/networks';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 
 const {
   INFINITE_UNLOCK,
-  MAINNET_RPC_URL,
-  XDAI_RPC_URL,
   NEVER_SHOW_CLAIMS,
   DISABLE_BALANCE_WHILE_TOKEN_FETCH,
+  BRIDGE_DIRECTION,
 } = LOCAL_STORAGE_KEYS;
 
 const SettingsContext = React.createContext({});
 
 export const SettingsProvider = ({ children }) => {
-  const [mainnetRPC, setMainnetRPC] = useLocalState('', MAINNET_RPC_URL);
-  const [xdaiRPC, setXDaiRPC] = useLocalState('', XDAI_RPC_URL);
+  const [customChainId, setCustomChainId] = useState(null);
+
+  const [bridgeDirection, setBridgeDirection] = useLocalState(
+    DEFAULT_BRIDGE_DIRECTION,
+    BRIDGE_DIRECTION,
+  );
+
+  const location = useLocation();
+
+  useEffect(() => {
+    const params = fetchQueryParams(location.search);
+
+    if (params?.from && params?.to) {
+      const fromChainId = parseInt(params.from, 10);
+      const toChainId = parseInt(params.to, 10);
+
+      const networkEntry = Object.entries(networks).find(
+        ([_, { homeChainId, foreignChainId }]) => {
+          return (
+            (homeChainId === fromChainId && foreignChainId === toChainId) ||
+            (homeChainId === toChainId && foreignChainId === fromChainId)
+          );
+        },
+      );
+
+      if (networkEntry) {
+        setBridgeDirection(networkEntry[0], true);
+        setCustomChainId(fromChainId);
+      }
+    } else {
+      setCustomChainId(null);
+    }
+  }, [setBridgeDirection, location]);
+
+  const { homeRPCKey, foreignRPCKey } = getRPCKeys(bridgeDirection);
+
+  const [foreignRPC, setForeignRPC] = useLocalState('', foreignRPCKey);
+  const [homeRPC, setHomeRPC] = useLocalState('', homeRPCKey);
 
   const [neverShowClaims, setNeverShowClaims] = useLocalState(
     false,
@@ -40,26 +78,28 @@ export const SettingsProvider = ({ children }) => {
 
   const save = useCallback(() => {
     if (needsSaving) {
-      setMainnetRPC(mRPC => mRPC, true);
-      setXDaiRPC(xRPC => xRPC, true);
+      setBridgeDirection(bNet => bNet, true);
+      setForeignRPC(mRPC => mRPC, true);
+      setHomeRPC(xRPC => xRPC, true);
       setNeverShowClaims(nClaims => nClaims, true);
       setInfiniteUnlock(iUnlock => iUnlock, true);
       setDisableBalanceFetchToken(dBalanceToken => dBalanceToken, true);
       setNeedsSaving(false);
     }
   }, [
+    setBridgeDirection,
     setInfiniteUnlock,
     setDisableBalanceFetchToken,
-    setMainnetRPC,
-    setXDaiRPC,
+    setForeignRPC,
+    setHomeRPC,
     setNeverShowClaims,
     needsSaving,
   ]);
 
   useEffect(() => {
     if (
-      window.localStorage.getItem(XDAI_RPC_URL) !== xdaiRPC ||
-      window.localStorage.getItem(MAINNET_RPC_URL) !== mainnetRPC ||
+      window.localStorage.getItem(homeRPCKey) !== homeRPC ||
+      window.localStorage.getItem(foreignRPCKey) !== foreignRPC ||
       window.localStorage.getItem(NEVER_SHOW_CLAIMS) !==
         neverShowClaims.toString() ||
       window.localStorage.getItem(INFINITE_UNLOCK) !==
@@ -68,10 +108,14 @@ export const SettingsProvider = ({ children }) => {
         disableBalanceFetchToken.toString()
     ) {
       setNeedsSaving(true);
+    } else {
+      setNeedsSaving(false);
     }
   }, [
-    mainnetRPC,
-    xdaiRPC,
+    foreignRPCKey,
+    foreignRPC,
+    homeRPCKey,
+    homeRPC,
     neverShowClaims,
     infiniteUnlock,
     disableBalanceFetchToken,
@@ -80,10 +124,12 @@ export const SettingsProvider = ({ children }) => {
   return (
     <SettingsContext.Provider
       value={{
-        mainnetRPC,
-        setMainnetRPC,
-        xdaiRPC,
-        setXDaiRPC,
+        bridgeDirection,
+        setBridgeDirection,
+        foreignRPC,
+        setForeignRPC,
+        homeRPC,
+        setHomeRPC,
         infiniteUnlock,
         setInfiniteUnlock,
         neverShowClaims,
@@ -91,8 +137,8 @@ export const SettingsProvider = ({ children }) => {
         disableBalanceFetchToken,
         setDisableBalanceFetchToken,
         needsSaving,
-        setNeedsSaving,
         save,
+        customChainId,
       }}
     >
       {children}

@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-const useLocalState = (
+export const useLocalState = (
   initialValue,
-  key = 'omnibridge-key',
-  { valueType = 'string', isLazilyStored = false } = {},
+  key,
+  { valueType = 'string', isStoredImmediately = false } = {},
 ) => {
-  const storageValue = window.localStorage.getItem(key);
+  const storageValue = useMemo(() => window.localStorage.getItem(key), [key]);
   const castedValue = useMemo(() => {
     if (valueType === 'number') {
       return parseInt(storageValue, 10);
@@ -19,16 +19,23 @@ const useLocalState = (
     return storageValue;
   }, [storageValue, valueType]);
 
-  const [value, setValue] = useState(castedValue || initialValue);
+  const [value, setValue] = useState(initialValue);
+
+  useEffect(() => {
+    if (key && castedValue) {
+      setValue(castedValue);
+    }
+  }, [key, castedValue]);
 
   const updateValue = useCallback(
-    (val, shouldBeCached = false) => {
+    (val, shouldBeStored = false) => {
       const result = typeof val === 'function' ? val(value) : val;
       JSON.stringify(result) !== JSON.stringify(value) && setValue(result);
-      (!!isLazilyStored || !!shouldBeCached) &&
+      if ((!!isStoredImmediately || !!shouldBeStored) && !!key) {
         window.localStorage.setItem(key, result);
+      }
     },
-    [key, value, isLazilyStored],
+    [key, value, isStoredImmediately],
   );
 
   useEffect(() => {
@@ -36,10 +43,10 @@ const useLocalState = (
   }, [key, value, updateValue]);
 
   useEffect(() => {
-    !storageValue && localStorage.setItem(key, initialValue);
+    if (!!key && !storageValue) {
+      localStorage.setItem(key, initialValue);
+    }
   }, [key, initialValue, storageValue]);
 
   return [value, updateValue, castedValue];
 };
-
-export { useLocalState };

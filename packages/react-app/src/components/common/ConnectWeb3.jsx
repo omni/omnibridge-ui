@@ -8,18 +8,23 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import MetamaskFox from 'assets/metamask-fox.svg';
+import { useSettings } from 'contexts/SettingsContext';
 import { useWeb3Context } from 'contexts/Web3Context';
+import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { WalletFilledIcon } from 'icons/WalletFilledIcon';
-import {
-  FOREIGN_CHAIN_ID,
-  HOME_CHAIN_ID,
-  NON_ETH_CHAIN_IDS,
-} from 'lib/constants';
+import { NON_ETH_CHAIN_IDS } from 'lib/constants';
 import { getNetworkName, getWalletProviderName, logError } from 'lib/helpers';
 import { addChainToMetaMask } from 'lib/metamask';
-import React from 'react';
+import React, { useCallback } from 'react';
 
 export const ConnectWeb3 = () => {
+  const {
+    homeChainId,
+    foreignChainId,
+    label: bridgeLabel,
+    getBridgeChainId,
+  } = useBridgeDirection();
+  const { customChainId } = useSettings();
   const {
     connectWeb3,
     loading,
@@ -29,53 +34,114 @@ export const ConnectWeb3 = () => {
   } = useWeb3Context();
   const toast = useToast();
 
-  const showError = msg => {
-    if (msg) {
-      toast({
-        title: 'Error',
-        description: msg,
-        status: 'error',
-        isClosable: 'true',
-      });
-    }
-  };
-
-  const addChain = async chainId => {
-    await addChainToMetaMask({ chainId }).catch(metamaskError => {
-      logError({ metamaskError });
-      if (metamaskError?.message) {
-        showError(metamaskError.message);
+  const showError = useCallback(
+    msg => {
+      if (msg) {
+        toast({
+          title: 'Error',
+          description: msg,
+          status: 'error',
+          isClosable: 'true',
+        });
       }
-    });
-  };
+    },
+    [toast],
+  );
 
-  const renderConnectChain = chainId => {
-    const networkName = getNetworkName(chainId);
-    const isWalletMetamask =
-      getWalletProviderName(ethersProvider) === 'metamask';
+  const addChain = useCallback(
+    async chainId => {
+      await addChainToMetaMask({ chainId }).catch(metamaskError => {
+        logError({ metamaskError });
+        if (metamaskError?.message) {
+          showError(metamaskError.message);
+        }
+      });
+    },
+    [showError],
+  );
 
-    return isWalletMetamask && NON_ETH_CHAIN_IDS.includes(chainId) ? (
-      <Tooltip label={`Click to switch to ${networkName}`} position="auto">
-        <Badge
-          display="inline-flex"
-          alignItems="center"
-          py={1}
-          px={2}
-          m={1}
-          borderRadius={5}
-          size="1"
-          cursor="pointer"
-          colorScheme="blue"
-          onClick={() => addChain(chainId)}
+  const renderChain = useCallback(
+    (chainId, connect = true) => {
+      const networkName = getNetworkName(chainId);
+      const isWalletMetamask =
+        getWalletProviderName(ethersProvider) === 'metamask';
+
+      return isWalletMetamask &&
+        NON_ETH_CHAIN_IDS.includes(chainId) &&
+        connect ? (
+        <Tooltip label={`Click to switch to ${networkName}`} position="auto">
+          <Badge
+            display="inline-flex"
+            alignItems="center"
+            py={1}
+            px={2}
+            m={1}
+            borderRadius={5}
+            size="1"
+            cursor="pointer"
+            colorScheme="blue"
+            onClick={() => addChain(chainId)}
+          >
+            <Image boxSize={5} src={MetamaskFox} mr={2} />
+            {networkName}
+          </Badge>
+        </Tooltip>
+      ) : (
+        <Text
+          as="span"
+          fontWeight="bold"
+          textTransform="uppercase"
+          fontSize="0.9rem"
+          color="black"
         >
-          <Image boxSize={5} src={MetamaskFox} mr={2} />
+          {' '}
           {networkName}
-        </Badge>
-      </Tooltip>
-    ) : (
-      networkName
+        </Text>
+      );
+    },
+    [addChain, ethersProvider],
+  );
+
+  const renderBridgeLabel = useCallback(
+    () => (
+      <Text
+        as="span"
+        fontWeight="bold"
+        textTransform="uppercase"
+        fontSize="0.9rem"
+      >
+        {bridgeLabel}
+      </Text>
+    ),
+    [bridgeLabel],
+  );
+
+  const renderHelperBox = useCallback(() => {
+    if (
+      customChainId &&
+      [homeChainId, foreignChainId].includes(customChainId)
+    ) {
+      return (
+        <Text color="greyText" mb={4} textAlign="center">
+          Please switch to {renderChain(customChainId)} for bridging your tokens
+          to {renderChain(getBridgeChainId(customChainId), false)}
+        </Text>
+      );
+    }
+    return (
+      <Text color="greyText" mb={4} textAlign="center">
+        To access the {renderBridgeLabel()} OmniBridge, please switch to
+        {renderChain(homeChainId)}or{renderChain(foreignChainId)}
+      </Text>
     );
-  };
+  }, [
+    customChainId,
+    homeChainId,
+    foreignChainId,
+    renderBridgeLabel,
+    renderChain,
+    getBridgeChainId,
+  ]);
 
   return (
     <Flex
@@ -108,7 +174,7 @@ export const ConnectWeb3 = () => {
       ) : (
         <>
           <Text fontSize="xl" fontWeight="bold" mb={4}>
-            {account ? `Switch to a supported network` : 'Connect Wallet'}
+            {account ? `Switch your network` : 'Connect Wallet'}
           </Text>
 
           {!account ? (
@@ -116,11 +182,7 @@ export const ConnectWeb3 = () => {
               To get started, connect your wallet
             </Text>
           ) : (
-            <Text color="greyText" mb={4} textAlign="center">
-              To access OmniBridge, please switch to
-              {renderConnectChain(HOME_CHAIN_ID)}or{' '}
-              {renderConnectChain(FOREIGN_CHAIN_ID)}
-            </Text>
+            renderHelperBox()
           )}
         </>
       )}

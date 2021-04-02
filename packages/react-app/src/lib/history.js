@@ -1,5 +1,4 @@
 import { gql, request } from 'graphql-request';
-import { getBridgeNetwork, getGraphEndpoint } from 'lib/helpers';
 
 import { ADDRESS_ZERO } from './constants';
 
@@ -75,7 +74,7 @@ const executionsQuery = gql`
   }
 `;
 
-export const getExecutions = async (chainId, requests) => {
+export const getExecutions = async (graphEndpoint, requests) => {
   const messageIds = requests.map(r => r.messageId);
   let executions = [];
   let page = 0;
@@ -84,7 +83,7 @@ export const getExecutions = async (chainId, requests) => {
   // eslint-disable-next-line no-constant-condition
   while (true) {
     // eslint-disable-next-line no-await-in-loop
-    const data = await request(getGraphEndpoint(chainId), executionsQuery, {
+    const data = await request(graphEndpoint, executionsQuery, {
       first,
       skip: page * pageSize,
       messageIds,
@@ -99,17 +98,17 @@ export const getExecutions = async (chainId, requests) => {
   return { executions };
 };
 
-export const getRequests = async (user, chainId) => {
+export const getRequests = async (user, graphEndpoint) => {
   const [userRequests, recipientRequests] = await Promise.all([
-    getRequestsWithQuery(user, chainId, requestsUserQuery),
-    getRequestsWithQuery(user, chainId, requestsRecipientQuery),
+    getRequestsWithQuery(user, graphEndpoint, requestsUserQuery),
+    getRequestsWithQuery(user, graphEndpoint, requestsRecipientQuery),
   ]);
   return {
     requests: [...userRequests.requests, ...recipientRequests.requests],
   };
 };
 
-export const getRequestsWithQuery = async (user, chainId, query) => {
+export const getRequestsWithQuery = async (user, graphEndpoint, query) => {
   let requests = [];
   let page = 0;
   const first = pageSize;
@@ -117,7 +116,7 @@ export const getRequestsWithQuery = async (user, chainId, query) => {
   // eslint-disable-next-line no-constant-condition
   while (true) {
     // eslint-disable-next-line no-await-in-loop
-    const data = await request(getGraphEndpoint(chainId), query, {
+    const data = await request(graphEndpoint, query, {
       user,
       first,
       skip: page * pageSize,
@@ -136,8 +135,8 @@ export const combineRequestsWithExecutions = (
   requests,
   executions,
   chainId,
+  bridgeChainId,
 ) => {
-  const bridgeChainId = getBridgeNetwork(chainId);
   return requests.map(req => {
     const execution = executions.find(exec => exec.messageId === req.messageId);
     return {

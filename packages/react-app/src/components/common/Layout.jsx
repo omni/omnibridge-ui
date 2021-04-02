@@ -5,15 +5,25 @@ import { ConnectWeb3 } from 'components/common/ConnectWeb3';
 import { Footer } from 'components/common/Footer';
 import { Header } from 'components/common/Header';
 import { TermsOfServiceModal } from 'components/modals/TermsOfServiceModal';
+import { useSettings } from 'contexts/SettingsContext';
 import { useWeb3Context } from 'contexts/Web3Context';
-import { FOREIGN_CHAIN_ID, HOME_CHAIN_ID } from 'lib/constants';
+import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import React from 'react';
 
 export const Layout = ({ children }) => {
-  const { account, providerChainId } = useWeb3Context();
+  const { homeChainId, foreignChainId } = useBridgeDirection();
+  const { account, loading, providerChainId } = useWeb3Context();
+  const { customChainId } = useSettings();
+
+  const isCustomChainProvided =
+    !customChainId || providerChainId === customChainId;
+
   const valid =
+    !loading &&
     !!account &&
-    [HOME_CHAIN_ID, FOREIGN_CHAIN_ID].indexOf(providerChainId) >= 0;
+    isCustomChainProvided &&
+    [homeChainId, foreignChainId].indexOf(providerChainId) >= 0;
+
   return (
     <Flex
       p={0}

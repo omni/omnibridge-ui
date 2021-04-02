@@ -1,5 +1,5 @@
 import { useWeb3Context } from 'contexts/Web3Context';
-import { FOREIGN_CHAIN_ID, HOME_CHAIN_ID } from 'lib/constants';
+import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import {
   combineRequestsWithExecutions,
   getExecutions,
@@ -9,38 +9,43 @@ import { useEffect, useState } from 'react';
 import { defer } from 'rxjs';
 
 export const useUserHistory = () => {
+  const {
+    homeChainId,
+    foreignChainId,
+    getGraphEndpoint,
+  } = useBridgeDirection();
   const { account } = useWeb3Context();
   const [transfers, setTransfers] = useState();
   const [loading, setLoading] = useState(true);
-  const chainId = HOME_CHAIN_ID;
 
   useEffect(() => {
-    if (!account || !chainId) return () => undefined;
-    const bridgeChainId = FOREIGN_CHAIN_ID;
+    if (!account) return () => undefined;
     async function update() {
       const [
         { requests: homeRequests },
         { requests: foreignRequests },
       ] = await Promise.all([
-        getRequests(account, chainId),
-        getRequests(account, bridgeChainId),
+        getRequests(account, getGraphEndpoint(homeChainId)),
+        getRequests(account, getGraphEndpoint(foreignChainId)),
       ]);
       const [
         { executions: homeExecutions },
         { executions: foreignExecutions },
       ] = await Promise.all([
-        getExecutions(chainId, foreignRequests),
-        getExecutions(bridgeChainId, homeRequests),
+        getExecutions(getGraphEndpoint(homeChainId), foreignRequests),
+        getExecutions(getGraphEndpoint(foreignChainId), homeRequests),
       ]);
       const homeTransfers = combineRequestsWithExecutions(
         homeRequests,
         foreignExecutions,
-        chainId,
+        homeChainId,
+        foreignChainId,
       );
       const foreignTransfers = combineRequestsWithExecutions(
         foreignRequests,
         homeExecutions,
-        bridgeChainId,
+        foreignChainId,
+        homeChainId,
       );
       const allTransfers = [...homeTransfers, ...foreignTransfers].sort(
         (a, b) => b.timestamp - a.timestamp,
@@ -52,7 +57,7 @@ export const useUserHistory = () => {
     setLoading(true);
     const subscription = defer(() => update()).subscribe();
     return () => subscription.unsubscribe();
-  }, [chainId, account]);
+  }, [homeChainId, foreignChainId, account, getGraphEndpoint]);
 
   return { transfers, loading };
 };

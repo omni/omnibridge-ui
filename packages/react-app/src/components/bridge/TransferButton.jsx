@@ -1,14 +1,20 @@
 import { Flex, Image, Text, useDisclosure, useToast } from '@chakra-ui/react';
 import TransferIcon from 'assets/transfer.svg';
 import { ConfirmTransferModal } from 'components/modals/ConfirmTransferModal';
-import { isNativexDaiAddress } from 'components/warnings/ReverseWarning';
 import { BridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { utils } from 'ethers';
-import { formatValue, isxDaiChain } from 'lib/helpers';
+import { useBridgeDirection } from 'hooks/useBridgeDirection';
+import { ADDRESS_ZERO } from 'lib/constants';
+import { formatValue, getNetworkName } from 'lib/helpers';
 import React, { useContext } from 'react';
 
 export const TransferButton = () => {
+  const {
+    homeChainId,
+    foreignChainId,
+    enableReversedBridge,
+  } = useBridgeDirection();
   const { ethersProvider } = useWeb3Context();
   const {
     receiver,
@@ -19,8 +25,12 @@ export const TransferButton = () => {
     tokenLimits,
     allowed,
   } = useContext(BridgeContext);
-  const isxDai = token && token.chainId && isxDaiChain(token.chainId);
-  const isNativexDaiToken = isNativexDaiAddress(toToken);
+  const isHome = token && token.chainId && token.chainId === homeChainId;
+  const showReverseBridgeWarning =
+    !!toToken &&
+    !enableReversedBridge &&
+    toToken.chainId === foreignChainId &&
+    toToken.address === ADDRESS_ZERO;
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
   const showError = msg => {
@@ -54,8 +64,8 @@ export const TransferButton = () => {
       showError('Not enough balance');
     } else if (receiver && !utils.isAddress(receiver)) {
       showError(`Please specify a valid recipient address`);
-    } else if (isNativexDaiToken) {
-      showError(`Token is native ERC20 on xDai chain`);
+    } else if (showReverseBridgeWarning) {
+      showError(`Token is native ERC20 on ${getNetworkName(homeChainId)}`);
     } else {
       return true;
     }
@@ -71,12 +81,12 @@ export const TransferButton = () => {
       as="button"
       align="center"
       mt={{ base: 2, md: 2, lg: 3 }}
-      color={isxDai ? 'purple.300' : 'blue.500'}
+      color={isHome ? 'purple.300' : 'blue.500'}
       _hover={
         !allowed
           ? undefined
           : {
-              color: isxDai ? 'purple.400' : 'blue.600',
+              color: isHome ? 'purple.400' : 'blue.600',
             }
       }
       cursor={!allowed ? 'not-allowed' : 'pointer'}
@@ -102,7 +112,7 @@ export const TransferButton = () => {
         align="center"
       >
         <Text color="white" fontWeight="bold">
-          {isxDai ? 'Request' : 'Transfer'}
+          {isHome ? 'Request' : 'Transfer'}
         </Text>
         <Image src={TransferIcon} ml={2} />
       </Flex>

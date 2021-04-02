@@ -17,18 +17,18 @@ import {
 } from '@chakra-ui/react';
 import SettingsImage from 'assets/settings.svg';
 import { useSettings } from 'contexts/SettingsContext';
+import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { SettingsIcon } from 'icons/SettingsIcon';
-import { FOREIGN_CHAIN_ID, HOME_CHAIN_ID } from 'lib/constants';
 import { getNetworkLabel } from 'lib/helpers';
 import React, { useCallback, useRef } from 'react';
 
 export const UpdateSettings = ({ close }) => {
   const initialRef = useRef();
   const {
-    mainnetRPC,
-    setMainnetRPC,
-    xdaiRPC,
-    setXDaiRPC,
+    homeRPC,
+    setHomeRPC,
+    foreignRPC,
+    setForeignRPC,
     infiniteUnlock,
     setInfiniteUnlock,
     neverShowClaims,
@@ -38,6 +38,7 @@ export const UpdateSettings = ({ close }) => {
     needsSaving,
     save,
   } = useSettings();
+  const { homeChainId, foreignChainId } = useBridgeDirection();
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const onSave = useCallback(() => {
@@ -52,18 +53,15 @@ export const UpdateSettings = ({ close }) => {
 
   return (
     <>
-      <Flex
-        cursor="pointer"
-        align="center"
-        fontWeight="bold"
+      <Button
+        variant="ghost"
         color="grey"
-        transition="0.25s"
-        _hover={{ color: 'blue.500' }}
+        _hover={{ color: 'blue.500', bgColor: 'blackAlpha.100' }}
         onClick={openSettings}
+        leftIcon={<SettingsIcon />}
       >
-        <SettingsIcon mr={2} />
         <Text color="black"> Settings</Text>
-      </Flex>
+      </Button>
       <Modal
         isOpen={isOpen}
         onClose={onClose}
@@ -99,27 +97,27 @@ export const UpdateSettings = ({ close }) => {
                   onChange={e => setInfiniteUnlock(e.target.checked)}
                 />
                 <Text mb={2}>
-                  Custom {getNetworkLabel(FOREIGN_CHAIN_ID)} RPC URL
+                  Custom {getNetworkLabel(foreignChainId)} RPC URL
                 </Text>
                 <InputGroup mb={4} borderColor="#DAE3F0">
                   <Input
                     id="symbol"
                     size="sm"
-                    onChange={e => setMainnetRPC(e.target.value)}
+                    onChange={e => setForeignRPC(e.target.value)}
                     _placeholder={{ color: 'grey' }}
-                    value={mainnetRPC}
+                    value={foreignRPC}
                   />
                 </InputGroup>
                 <Text mb={2}>
-                  Custom {getNetworkLabel(HOME_CHAIN_ID)} RPC URL
+                  Custom {getNetworkLabel(homeChainId)} RPC URL
                 </Text>
                 <InputGroup mb={4} borderColor="#DAE3F0">
                   <Input
                     id="decimals"
                     size="sm"
-                    onChange={e => setXDaiRPC(e.target.value)}
+                    onChange={e => setHomeRPC(e.target.value)}
                     _placeholder={{ color: 'grey' }}
-                    value={xdaiRPC}
+                    value={homeRPC}
                   />
                 </InputGroup>
                 <Text mb={2}>Turn Off Claim Notifications</Text>

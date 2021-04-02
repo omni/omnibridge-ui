@@ -32,29 +32,21 @@ jobs:
         run: yarn react-app:build
         env:
           CI: true
-          REACT_APP_HOME_CHAIN_ID: 100
-          REACT_APP_FOREIGN_CHAIN_ID: 1
-          REACT_APP_ENABLE_REVERSED_BRIDGE: false
-          REACT_APP_DEBUG_LOGS: false
-          REACT_APP_TITLE: OmniBridge - %c
-          REACT_APP_DESCRIPTION: 'The OmniBridge multi-token extension for the Arbitrary Message Bridge between Ethereum and the xDai chain is the simplest way to transfer ANY ERC20/ERC677/ERC827 token to the xDai chain.'
+          REACT_APP_DEFAULT_BRIDGE_DIRECTION: eth-xdai
+          REACT_APP_ENABLE_SOKOL_BRIDGE: false
+          REACT_APP_INFURA_ID: ${{ secrets.INFURA_ID }}
+          REACT_APP_GAS_PRICE_FALLBACK_GWEI: 50
           REACT_APP_GAS_PRICE_SUPPLIER_URL: https://gasprice.poa.network/
           REACT_APP_GAS_PRICE_SPEED_TYPE: fast
           REACT_APP_GAS_PRICE_UPDATE_INTERVAL: 60000
           REACT_APP_ETH_PRICE_API_URL: 'https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=USD'
           REACT_APP_ETH_PRICE_UPDATE_INTERVAL: 15000
+          REACT_APP_TITLE: OmniBridge - %c
+          REACT_APP_DESCRIPTION: 'The Sokol OmniBridge multi-token extension for the Arbitrary Message Bridge between Kovan Testnet and the POA Sokol Testnet is the simplest way to transfer ANY ERC20/ERC677/ERC827 token to and from the POA Sokol Testnet.'
+          REACT_APP_UI_STATUS_UPDATE_INTERVAL: 1000
+          REACT_APP_DEBUG_LOGS: false
           REACT_APP_GRAPH_HEALTH_UPDATE_INTERVAL: 60000
-          REACT_APP_FOREIGN_MEDIATOR_ADDRESS: '0x88ad09518695c6c3712AC10a214bE5109a655671'
-          REACT_APP_HOME_MEDIATOR_ADDRESS: '0xf6A78083ca3e2a662D6dd1703c939c8aCE2e268d'
-          REACT_APP_FOREIGN_AMB_ADDRESS: '0x4C36d2919e407f0Cc2Ee3c993ccF8ac26d9CE64e'
-          REACT_APP_HOME_AMB_ADDRESS: '0x75Df5AF045d91108662D8080fD1FEFAd6aA0bb59'
-          REACT_APP_FOREIGN_GRAPH_NAME: 'raid-guild/mainnet-omnibridge'
-          REACT_APP_HOME_GRAPH_NAME: 'raid-guild/xdai-omnibridge'
-          REACT_APP_HOME_RPC_URL: 'https://rpc.xdaichain.com/'
-          REACT_APP_HOME_EXPLORER_PREFIX: 'https://blockscout.com/xdai/mainnet'
-          REACT_APP_AMB_LIVE_MONITOR_PREFIX: 'https://alm-xdai.herokuapp.com'
-          REACT_APP_FOREIGN_RPC_URL: 'https://mainnet.infura.io/v3/${{ secrets.INFURA_ID }}'
-          REACT_APP_FOREIGN_EXPLORER_PREFIX: 'https://blockscout.com/eth/mainnet'
+          REACT_APP_GRAPH_HEALTH_THRESHOLD_BLOCKS: 10
 
       - name: Deploy to Firebase
         uses: w9jds/firebase-action@master
