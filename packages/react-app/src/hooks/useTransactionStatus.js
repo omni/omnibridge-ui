@@ -5,6 +5,7 @@ import { getMessageFromTxHash, getMessageStatus } from 'lib/amb';
 import { POLLING_INTERVAL } from 'lib/constants';
 import { logError } from 'lib/helpers';
 import { useCallback, useContext, useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
 import { defer } from 'rxjs';
 
 export const useTransactionStatus = () => {
@@ -135,6 +136,15 @@ export const useTransactionStatus = () => {
     getBridgeChainId,
     getGraphEndpoint,
   ]);
+
+  const history = useHistory();
+  useEffect(() => {
+    if (needsConfirmation) {
+      history.replace({
+        search: '',
+      });
+    }
+  }, [history, needsConfirmation]);
 
   useEffect(() => {
     setNeedsConfirmation(needs => providerChainId === homeChainId && needs);
