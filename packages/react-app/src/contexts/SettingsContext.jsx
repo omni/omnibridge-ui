@@ -3,7 +3,7 @@ import { DEFAULT_BRIDGE_DIRECTION, LOCAL_STORAGE_KEYS } from 'lib/constants';
 import { fetchQueryParams, getRPCKeys } from 'lib/helpers';
 import { networks } from 'lib/networks';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 
 const {
   INFINITE_UNLOCK,
@@ -15,39 +15,44 @@ const {
 const SettingsContext = React.createContext({});
 
 export const SettingsProvider = ({ children }) => {
-  const [customChainId, setCustomChainId] = useState(null);
+  const [queryToken, setQueryToken] = useState(null);
 
   const [bridgeDirection, setBridgeDirection] = useLocalState(
     DEFAULT_BRIDGE_DIRECTION,
     BRIDGE_DIRECTION,
   );
 
-  const location = useLocation();
+  const history = useHistory();
 
   useEffect(() => {
-    const params = fetchQueryParams(location.search);
+    const params = fetchQueryParams(window.location.search);
 
-    if (params?.from && params?.to) {
-      const fromChainId = parseInt(params.from, 10);
-      const toChainId = parseInt(params.to, 10);
+    if (params) {
+      history.replace({
+        search: '',
+      });
 
-      const networkEntry = Object.entries(networks).find(
-        ([_, { homeChainId, foreignChainId }]) => {
-          return (
-            (homeChainId === fromChainId && foreignChainId === toChainId) ||
-            (homeChainId === toChainId && foreignChainId === fromChainId)
-          );
-        },
-      );
+      if (params?.from && params?.to && params?.token) {
+        const fromChainId = parseInt(params.from, 10);
+        const toChainId = parseInt(params.to, 10);
+        const tokenAddress = params.token;
 
-      if (networkEntry) {
-        setBridgeDirection(networkEntry[0], true);
-        setCustomChainId(fromChainId);
+        const networkEntry = Object.entries(networks).find(
+          ([_, { homeChainId, foreignChainId }]) => {
+            return (
+              (homeChainId === fromChainId && foreignChainId === toChainId) ||
+              (homeChainId === toChainId && foreignChainId === fromChainId)
+            );
+          },
+        );
+
+        if (networkEntry) {
+          setBridgeDirection(networkEntry[0], true);
+          setQueryToken({ chainId: fromChainId, address: tokenAddress });
+        }
       }
-    } else {
-      setCustomChainId(null);
     }
-  }, [setBridgeDirection, location]);
+  }, [setBridgeDirection, history]);
 
   const { homeRPCKey, foreignRPCKey } = getRPCKeys(bridgeDirection);
 
@@ -138,7 +143,8 @@ export const SettingsProvider = ({ children }) => {
         setDisableBalanceFetchToken,
         needsSaving,
         save,
-        customChainId,
+        queryToken,
+        setQueryToken,
       }}
     >
       {children}

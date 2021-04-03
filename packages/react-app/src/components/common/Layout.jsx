@@ -8,21 +8,30 @@ import { TermsOfServiceModal } from 'components/modals/TermsOfServiceModal';
 import { useSettings } from 'contexts/SettingsContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
-import React from 'react';
+import React, { useMemo } from 'react';
 
 export const Layout = ({ children }) => {
   const { homeChainId, foreignChainId } = useBridgeDirection();
-  const { account, loading, providerChainId } = useWeb3Context();
-  const { customChainId } = useSettings();
+  const { account, providerChainId } = useWeb3Context();
+  const { queryToken } = useSettings();
 
-  const isCustomChainProvided =
-    !customChainId || providerChainId === customChainId;
+  const isQueryChainProvided =
+    queryToken === null || providerChainId === queryToken.chainId;
 
-  const valid =
-    !loading &&
-    !!account &&
-    isCustomChainProvided &&
-    [homeChainId, foreignChainId].indexOf(providerChainId) >= 0;
+  const valid = useMemo(
+    () =>
+      !!account &&
+      !!providerChainId &&
+      isQueryChainProvided &&
+      [homeChainId, foreignChainId].indexOf(providerChainId) >= 0,
+    [
+      account,
+      providerChainId,
+      isQueryChainProvided,
+      homeChainId,
+      foreignChainId,
+    ],
+  );
 
   return (
     <Flex
