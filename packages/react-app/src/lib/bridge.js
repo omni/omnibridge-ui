@@ -142,6 +142,7 @@ export const fetchToAmount = async (
   fromToken,
   toToken,
   fromAmount,
+  feeManagerAddress,
 ) => {
   if (fromAmount.lte(0) || !fromToken || !toToken) return BigNumber.from(0);
   const { homeChainId, homeMediatorAddress } = networks[bridgeDirection];
@@ -158,8 +159,12 @@ export const fetchToAmount = async (
     const abi = [
       'function calculateFee(bytes32, address, uint256) view returns (uint256)',
     ];
-    const mediatorContract = new Contract(mediatorAddress, abi, ethersProvider);
-    const fee = await mediatorContract.calculateFee(
+    const feeManagerContract = new Contract(
+      feeManagerAddress,
+      abi,
+      ethersProvider,
+    );
+    const fee = await feeManagerContract.calculateFee(
       feeType,
       tokenAddress,
       fromAmount,
