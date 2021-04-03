@@ -12,23 +12,17 @@ import { DownArrowIcon } from 'icons/DownArrowIcon';
 import { NetworkIcon } from 'icons/NetworkIcon';
 import { networks } from 'lib/networks';
 import React, { useCallback, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
 
 export const BridgeDropdown = ({ close }) => {
   const { bridgeDirection, setBridgeDirection } = useSettings();
   const placement = useBreakpointValue({ base: 'bottom', md: 'bottom-end' });
 
-  const history = useHistory();
-
   const setItem = useCallback(
     e => {
-      history.replace({
-        search: '',
-      });
       setBridgeDirection(e.target.value, true);
       close();
     },
-    [history, close, setBridgeDirection],
+    [close, setBridgeDirection],
   );
 
   const networkOptions = Object.keys(networks);

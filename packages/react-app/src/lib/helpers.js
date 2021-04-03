@@ -101,7 +101,7 @@ export const uriToHttp = uri => {
 };
 
 export const fetchQueryParams = search => {
-  if (!search.trim().length) return null;
+  if (!search || !search.trim().length) return null;
   return search
     .replace('?', '')
     .split(/&/g)

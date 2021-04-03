@@ -24,7 +24,8 @@ export const ConnectWeb3 = () => {
     label: bridgeLabel,
     getBridgeChainId,
   } = useBridgeDirection();
-  const { customChainId } = useSettings();
+  const { queryToken } = useSettings();
+  const queryChainId = queryToken ? queryToken.chainId : null;
   const {
     connectWeb3,
     loading,
@@ -117,14 +118,11 @@ export const ConnectWeb3 = () => {
   );
 
   const renderHelperBox = useCallback(() => {
-    if (
-      customChainId &&
-      [homeChainId, foreignChainId].includes(customChainId)
-    ) {
+    if (queryChainId && [homeChainId, foreignChainId].includes(queryChainId)) {
       return (
         <Text color="greyText" mb={4} textAlign="center">
-          Please switch to {renderChain(customChainId)} for bridging your tokens
-          to {renderChain(getBridgeChainId(customChainId), false)}
+          Please switch to {renderChain(queryChainId)} for bridging your tokens
+          to {renderChain(getBridgeChainId(queryChainId), false)}
         </Text>
       );
     }
@@ -135,7 +133,7 @@ export const ConnectWeb3 = () => {
       </Text>
     );
   }, [
-    customChainId,
+    queryChainId,
     homeChainId,
     foreignChainId,
     renderBridgeLabel,
