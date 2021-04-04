@@ -41,7 +41,11 @@ export const UnlockButton = () => {
     if (!unlockLoading && !allowed && valid()) {
       approve().catch(error => {
         if (error && error.message) {
-          if (error.data === 'Bad instruction fe') {
+          if (
+            error.data &&
+            (error.data.includes('Bad instruction fe') ||
+              error.data.includes('Reverted'))
+          ) {
             showError(
               <Text>
                 There is problem with the token unlock. Try to revoke previous
@@ -53,7 +57,7 @@ export const UnlockButton = () => {
                 >
                   https://revoke.cash/
                 </Link>{' '}
-                and unlock the tokens again.
+                and try again.
               </Text>,
             );
           } else {
