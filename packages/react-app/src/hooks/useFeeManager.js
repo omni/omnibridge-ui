@@ -19,13 +19,11 @@ export const useFeeManager = () => {
   );
 
   useEffect(() => {
-    if (!account) return;
     if (!feeManagerAddress) return;
     const ethersProvider = getEthersProvider(homeChainId);
     const abi = [
       'function FOREIGN_TO_HOME_FEE() view returns (bytes32)',
       'function HOME_TO_FOREIGN_FEE() view returns (bytes32)',
-      'function isRewardAddress(address) view returns (bool)',
     ];
     const feeManagerContract = new Contract(
       feeManagerAddress,
@@ -42,7 +40,18 @@ export const useFeeManager = () => {
       .HOME_TO_FOREIGN_FEE()
       .then(feeType => setHomeToForeignFeeType(feeType))
       .catch(feeTypeError => logError({ feeTypeError }));
+  }, [feeManagerAddress, homeChainId]);
 
+  useEffect(() => {
+    if (!account) return;
+    if (!feeManagerAddress) return;
+    const ethersProvider = getEthersProvider(homeChainId);
+    const abi = ['function isRewardAddress(address) view returns (bool)'];
+    const feeManagerContract = new Contract(
+      feeManagerAddress,
+      abi,
+      ethersProvider,
+    );
     feeManagerContract
       .isRewardAddress(account)
       .then(is => setRewardAddress(is))

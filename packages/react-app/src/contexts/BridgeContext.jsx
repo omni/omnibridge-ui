@@ -96,6 +96,7 @@ export const BridgeProvider = ({ children }) => {
       isRewardAddress,
       homeToForeignFeeType,
       foreignToHomeFeeType,
+      feeManagerAddress,
     ],
   );
 
