@@ -4,6 +4,7 @@ import { useWeb3Context } from 'contexts/Web3Context';
 import { BigNumber } from 'ethers';
 import { useApproval } from 'hooks/useApproval';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
+import { useFeeManager } from 'hooks/useFeeManager';
 import { useMediatorInfo } from 'hooks/useMediatorInfo';
 import { useTotalConfirms } from 'hooks/useTotalConfirms';
 import {
@@ -45,12 +46,12 @@ export const BridgeProvider = ({ children }) => {
 
   const toast = useToast();
   const totalConfirms = useTotalConfirms();
+  const { currentDay, feeManagerAddress } = useMediatorInfo();
   const {
     isRewardAddress,
-    currentDay,
     homeToForeignFeeType,
     foreignToHomeFeeType,
-  } = useMediatorInfo();
+  } = useFeeManager();
   const {
     allowed,
     updateAllowance,
@@ -74,6 +75,7 @@ export const BridgeProvider = ({ children }) => {
             fromToken,
             toToken,
             amount,
+            feeManagerAddress,
           );
 
       setAmounts({ fromAmount: amount, toAmount: gotToAmount });
@@ -88,6 +90,7 @@ export const BridgeProvider = ({ children }) => {
       isRewardAddress,
       homeToForeignFeeType,
       foreignToHomeFeeType,
+      feeManagerAddress,
     ],
   );
 
@@ -260,6 +263,7 @@ export const BridgeProvider = ({ children }) => {
         setUpdateBalance,
         unlockLoading,
         approvalTxHash,
+        feeManagerAddress,
       }}
     >
       {children}
