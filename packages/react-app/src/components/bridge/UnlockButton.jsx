@@ -1,4 +1,4 @@
-import { Flex, Image, Spinner, Text, useToast } from '@chakra-ui/react';
+import { Flex, Image, Link, Spinner, Text, useToast } from '@chakra-ui/react';
 import UnlockIcon from 'assets/unlock.svg';
 import { TxLink } from 'components/common/TxLink';
 import { BridgeContext } from 'contexts/BridgeContext';
@@ -41,7 +41,28 @@ export const UnlockButton = () => {
     if (!unlockLoading && !allowed && valid()) {
       approve().catch(error => {
         if (error && error.message) {
-          showError(error.message);
+          if (
+            error.data &&
+            (error.data.includes('Bad instruction fe') ||
+              error.data.includes('Reverted'))
+          ) {
+            showError(
+              <Text>
+                There is problem with the token unlock. Try to revoke previous
+                approval if any on{' '}
+                <Link
+                  href="https://revoke.cash"
+                  textDecor="underline"
+                  isExternal
+                >
+                  https://revoke.cash/
+                </Link>{' '}
+                and try again.
+              </Text>,
+            );
+          } else {
+            showError(error.message);
+          }
         } else {
           showError(
             'Impossible to perform the operation. Reload the application and try again.',

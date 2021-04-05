@@ -1,8 +1,10 @@
 import { useToast } from '@chakra-ui/react';
+import { useSettings } from 'contexts/SettingsContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { BigNumber } from 'ethers';
 import { useApproval } from 'hooks/useApproval';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
+import { useFeeManager } from 'hooks/useFeeManager';
 import { useMediatorInfo } from 'hooks/useMediatorInfo';
 import { useTotalConfirms } from 'hooks/useTotalConfirms';
 import {
@@ -12,26 +14,21 @@ import {
   relayTokens,
 } from 'lib/bridge';
 import { ADDRESS_ZERO } from 'lib/constants';
-import {
-  fetchQueryParams,
-  getDefaultToken,
-  logError,
-  parseValue,
-} from 'lib/helpers';
+import { getDefaultToken, logError, parseValue } from 'lib/helpers';
 import { fetchTokenDetails } from 'lib/token';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
 
 export const BridgeContext = React.createContext({});
 
 export const BridgeProvider = ({ children }) => {
+  const { queryToken, setQueryToken } = useSettings();
   const { ethersProvider, account, providerChainId } = useWeb3Context();
-
   const {
     bridgeDirection,
     getBridgeChainId,
     homeChainId,
   } = useBridgeDirection();
+
   const [receiver, setReceiver] = useState('');
   const [amountInput, setAmountInput] = useState('');
   const [{ fromToken, toToken }, setTokens] = useState({});
@@ -39,9 +36,7 @@ export const BridgeProvider = ({ children }) => {
     fromAmount: BigNumber.from(0),
     toAmount: BigNumber.from(0),
   });
-  const [customTokenAddress, setCustomTokenAddress] = useState(null);
   const [toAmountLoading, setToAmountLoading] = useState(false);
-  const [queryTrigger, setQueryTrigger] = useState(null);
   const [loading, setLoading] = useState(false);
   const [updateBalance, setUpdateBalance] = useState(false);
   const [fromBalance, setFromBalance] = useState(BigNumber.from(0));
@@ -51,12 +46,12 @@ export const BridgeProvider = ({ children }) => {
 
   const toast = useToast();
   const totalConfirms = useTotalConfirms();
+  const { currentDay, feeManagerAddress } = useMediatorInfo();
   const {
     isRewardAddress,
-    currentDay,
     homeToForeignFeeType,
     foreignToHomeFeeType,
-  } = useMediatorInfo();
+  } = useFeeManager();
   const {
     allowed,
     updateAllowance,
@@ -80,6 +75,7 @@ export const BridgeProvider = ({ children }) => {
             fromToken,
             toToken,
             amount,
+            feeManagerAddress,
           );
 
       setAmounts({ fromAmount: amount, toAmount: gotToAmount });
@@ -94,12 +90,12 @@ export const BridgeProvider = ({ children }) => {
       isRewardAddress,
       homeToForeignFeeType,
       foreignToHomeFeeType,
+      feeManagerAddress,
     ],
   );
 
   const setToken = useCallback(
-    async tokenWithoutMode => {
-      const isCustomTokenPresent = !queryTrigger && customTokenAddress;
+    async (tokenWithoutMode, isQueryToken = false) => {
       try {
         const [token, gotToToken] = await Promise.all([
           fetchTokenDetails(bridgeDirection, tokenWithoutMode),
@@ -114,24 +110,18 @@ export const BridgeProvider = ({ children }) => {
       } catch (tokenDetailsError) {
         toast({
           title: 'Error',
-          description: !isCustomTokenPresent
+          description: !isQueryToken
             ? 'Cannot fetch token details. Wait for a few minutes and reload the application'
             : 'Token not found.',
           status: 'error',
-          duration: isCustomTokenPresent ? 2000 : null,
-          isClosable: !isCustomTokenPresent,
+          duration: isQueryToken ? 2000 : null,
+          isClosable: !isQueryToken,
         });
         logError({ tokenDetailsError });
         return false;
       }
     },
-    [
-      queryTrigger,
-      customTokenAddress,
-      bridgeDirection,
-      getBridgeChainId,
-      toast,
-    ],
+    [bridgeDirection, getBridgeChainId, toast],
   );
 
   const transfer = useCallback(async () => {
@@ -153,6 +143,7 @@ export const BridgeProvider = ({ children }) => {
         fromAmount: fromAmount.toString(),
         account,
       });
+      throw transferError;
     }
   }, [fromToken, account, receiver, ethersProvider, fromAmount]);
 
@@ -172,20 +163,22 @@ export const BridgeProvider = ({ children }) => {
     [setToken, fromToken, toToken],
   );
 
-  const checkForCustomToken = useCallback(async () => {
+  const updateToken = useCallback(async () => {
     setLoading(true);
-    if (!customTokenAddress) {
+    if (!queryToken) {
       await setDefaultToken(providerChainId);
     } else if (!fromToken || !toToken) {
-      const isCustomTokenSet = await setToken({
-        chainId: providerChainId,
-        address: customTokenAddress,
-      });
-      !isCustomTokenSet && (await setDefaultToken(providerChainId));
+      const isQueryTokenSet = await setToken(queryToken, true);
+      if (!isQueryTokenSet) {
+        await setDefaultToken(providerChainId);
+      }
+      setQueryToken(null);
     }
+    setUpdateBalance(t => !t);
     setLoading(false);
   }, [
-    customTokenAddress,
+    queryToken,
+    setQueryToken,
     providerChainId,
     setDefaultToken,
     setToken,
@@ -193,19 +186,9 @@ export const BridgeProvider = ({ children }) => {
     toToken,
   ]);
 
-  const location = useLocation();
-
   useEffect(() => {
-    setQueryTrigger(true);
-    const queryParams = fetchQueryParams(location.search);
-    setUpdateBalance(t => !t);
-    setCustomTokenAddress(queryParams?.token || null);
-    setQueryTrigger(false);
-  }, [location]);
-
-  useEffect(() => {
-    queryTrigger !== null && queryTrigger === false && checkForCustomToken();
-  }, [queryTrigger, checkForCustomToken]);
+    updateToken();
+  }, [updateToken]);
 
   const updateTokenLimits = useCallback(async () => {
     if (
@@ -280,6 +263,7 @@ export const BridgeProvider = ({ children }) => {
         setUpdateBalance,
         unlockLoading,
         approvalTxHash,
+        feeManagerAddress,
       }}
     >
       {children}

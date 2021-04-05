@@ -64,6 +64,7 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
       });
     }
   };
+
   const onClick = () => {
     transfer().catch(error => {
       if (error && error.message) {

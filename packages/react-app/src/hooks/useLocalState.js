@@ -19,18 +19,14 @@ export const useLocalState = (
     return storageValue;
   }, [storageValue, valueType]);
 
-  const [value, setValue] = useState(initialValue);
-
-  useEffect(() => {
-    if (key && castedValue) {
-      setValue(castedValue);
-    }
-  }, [key, castedValue]);
+  const [value, setValue] = useState(initialValue || castedValue);
 
   const updateValue = useCallback(
     (val, shouldBeStored = false) => {
       const result = typeof val === 'function' ? val(value) : val;
-      JSON.stringify(result) !== JSON.stringify(value) && setValue(result);
+      if (JSON.stringify(result) !== JSON.stringify(value)) {
+        setValue(result);
+      }
       if ((!!isStoredImmediately || !!shouldBeStored) && !!key) {
         window.localStorage.setItem(key, result);
       }

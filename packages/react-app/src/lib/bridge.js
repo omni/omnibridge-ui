@@ -11,8 +11,10 @@ import { fetchTokenDetails, fetchTokenName } from 'lib/token';
 
 import { networks } from './networks';
 
-const getToName = (fromName, toChainId, toAddress) => {
+const getToName = async (fromToken, toChainId, toAddress) => {
+  const { name } = fromToken;
   if (toAddress === ADDRESS_ZERO) {
+    const fromName = name || (await fetchTokenName(fromToken));
     return `${fromName} on ${getNetworkLabel(toChainId)}`;
   }
   return fetchTokenName({ chainId: toChainId, address: toAddress });
@@ -41,11 +43,8 @@ const fetchToTokenAddress = async (
   return mediatorContract.homeTokenAddress(tokenAddress);
 };
 
-const fetchToTokenDetails = async (
-  bridgeDirection,
-  { name: fromName, chainId: fromChainId, address: fromAddress },
-  toChainId,
-) => {
+const fetchToTokenDetails = async (bridgeDirection, fromToken, toChainId) => {
+  const { chainId: fromChainId, address: fromAddress } = fromToken;
   if (
     isOverridden(bridgeDirection, {
       address: fromAddress,
@@ -80,7 +79,7 @@ const fetchToTokenDetails = async (
       fromAddress,
       isHome ? fromMediatorAddress : toMediatorAddress,
     );
-    const toName = await getToName(fromName, toChainId, toAddress);
+    const toName = await getToName(fromToken, toChainId, toAddress);
     return {
       name: toName,
       chainId: toChainId,
@@ -115,7 +114,7 @@ const fetchToTokenDetails = async (
 
     const toAddress = await toMediatorContract.bridgedTokenAddress(fromAddress);
 
-    const toName = await getToName(fromName, toChainId, toAddress);
+    const toName = await getToName(fromToken, toChainId, toAddress);
     return {
       name: toName,
       chainId: toChainId,
@@ -126,7 +125,7 @@ const fetchToTokenDetails = async (
   }
   const toAddress = await fromMediatorContract.nativeTokenAddress(fromAddress);
 
-  const toName = await getToName(fromName, toChainId, toAddress);
+  const toName = await getToName(fromToken, toChainId, toAddress);
   return {
     name: toName,
     chainId: toChainId,
@@ -142,6 +141,7 @@ export const fetchToAmount = async (
   fromToken,
   toToken,
   fromAmount,
+  feeManagerAddress,
 ) => {
   if (fromAmount.lte(0) || !fromToken || !toToken) return BigNumber.from(0);
   const { homeChainId, homeMediatorAddress } = networks[bridgeDirection];
@@ -158,8 +158,12 @@ export const fetchToAmount = async (
     const abi = [
       'function calculateFee(bytes32, address, uint256) view returns (uint256)',
     ];
-    const mediatorContract = new Contract(mediatorAddress, abi, ethersProvider);
-    const fee = await mediatorContract.calculateFee(
+    const feeManagerContract = new Contract(
+      feeManagerAddress,
+      abi,
+      ethersProvider,
+    );
+    const fee = await feeManagerContract.calculateFee(
       feeType,
       tokenAddress,
       fromAmount,
