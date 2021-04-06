@@ -13,26 +13,30 @@ export const useMediatorInfo = () => {
 
   useEffect(() => {
     if (!account) return;
-    const ethersProvider = getEthersProvider(homeChainId);
-    const abi = [
-      'function getCurrentDay() view returns (uint256)',
-      'function feeManager() public view returns (address)',
-    ];
-    const mediatorContract = new Contract(
-      homeMediatorAddress,
-      abi,
-      ethersProvider,
-    );
+    const getMediatorAddress = async () => {
+      const ethersProvider = await getEthersProvider(homeChainId);
+      const abi = [
+        'function getCurrentDay() view returns (uint256)',
+        'function feeManager() public view returns (address)',
+      ];
+      const mediatorContract = new Contract(
+        homeMediatorAddress,
+        abi,
+        ethersProvider,
+      );
 
-    mediatorContract
-      .feeManager()
-      .then(feeManager => setFeeManagerAddress(feeManager))
-      .catch(feeManagerAddressError => logError({ feeManagerAddressError }));
+      mediatorContract
+        .feeManager()
+        .then(feeManager => setFeeManagerAddress(feeManager))
+        .catch(feeManagerAddressError => logError({ feeManagerAddressError }));
 
-    mediatorContract
-      .getCurrentDay()
-      .then(day => setCurrentDay(day))
-      .catch(currentDayError => logError({ currentDayError }));
+      mediatorContract
+        .getCurrentDay()
+        .then(day => setCurrentDay(day))
+        .catch(currentDayError => logError({ currentDayError }));
+    };
+
+    getMediatorAddress();
   }, [account, homeMediatorAddress, homeChainId]);
 
   return {

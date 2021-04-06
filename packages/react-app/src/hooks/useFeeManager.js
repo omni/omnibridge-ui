@@ -20,42 +20,50 @@ export const useFeeManager = () => {
 
   useEffect(() => {
     if (!feeManagerAddress) return;
-    const ethersProvider = getEthersProvider(homeChainId);
-    const abi = [
-      'function FOREIGN_TO_HOME_FEE() view returns (bytes32)',
-      'function HOME_TO_FOREIGN_FEE() view returns (bytes32)',
-    ];
-    const feeManagerContract = new Contract(
-      feeManagerAddress,
-      abi,
-      ethersProvider,
-    );
+    const calculateFees = async () => {
+      const ethersProvider = await getEthersProvider(homeChainId);
+      const abi = [
+        'function FOREIGN_TO_HOME_FEE() view returns (bytes32)',
+        'function HOME_TO_FOREIGN_FEE() view returns (bytes32)',
+      ];
+      const feeManagerContract = new Contract(
+        feeManagerAddress,
+        abi,
+        ethersProvider,
+      );
 
-    feeManagerContract
-      .FOREIGN_TO_HOME_FEE()
-      .then(feeType => setForeignToHomeFeeType(feeType))
-      .catch(feeTypeError => logError({ feeTypeError }));
+      feeManagerContract
+        .FOREIGN_TO_HOME_FEE()
+        .then(feeType => setForeignToHomeFeeType(feeType))
+        .catch(feeTypeError => logError({ feeTypeError }));
 
-    feeManagerContract
-      .HOME_TO_FOREIGN_FEE()
-      .then(feeType => setHomeToForeignFeeType(feeType))
-      .catch(feeTypeError => logError({ feeTypeError }));
+      feeManagerContract
+        .HOME_TO_FOREIGN_FEE()
+        .then(feeType => setHomeToForeignFeeType(feeType))
+        .catch(feeTypeError => logError({ feeTypeError }));
+    };
+
+    calculateFees();
   }, [feeManagerAddress, homeChainId]);
 
   useEffect(() => {
     if (!account) return;
     if (!feeManagerAddress) return;
-    const ethersProvider = getEthersProvider(homeChainId);
-    const abi = ['function isRewardAddress(address) view returns (bool)'];
-    const feeManagerContract = new Contract(
-      feeManagerAddress,
-      abi,
-      ethersProvider,
-    );
-    feeManagerContract
-      .isRewardAddress(account)
-      .then(is => setRewardAddress(is))
-      .catch(rewardAddressError => logError({ rewardAddressError }));
+    const checkRewardAddress = async () => {
+      const ethersProvider = await getEthersProvider(homeChainId);
+      const abi = ['function isRewardAddress(address) view returns (bool)'];
+      const feeManagerContract = new Contract(
+        feeManagerAddress,
+        abi,
+        ethersProvider,
+      );
+      feeManagerContract
+        .isRewardAddress(account)
+        .then(is => setRewardAddress(is))
+        .catch(rewardAddressError => logError({ rewardAddressError }));
+    };
+
+    checkRewardAddress();
   }, [account, feeManagerAddress, homeChainId]);
 
   return {
