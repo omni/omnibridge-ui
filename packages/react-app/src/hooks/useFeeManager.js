@@ -1,15 +1,13 @@
 import { useWeb3Context } from 'contexts/Web3Context';
 import { Contract } from 'ethers';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
-import { useMediatorInfo } from 'hooks/useMediatorInfo';
 import { logError } from 'lib/helpers';
 import { getEthersProvider } from 'lib/providers';
 import { useEffect, useState } from 'react';
 
-export const useFeeManager = () => {
+export const useFeeManager = ({ feeManagerAddress }) => {
   const { homeChainId } = useBridgeDirection();
   const { account } = useWeb3Context();
-  const { feeManagerAddress } = useMediatorInfo();
   const [isRewardAddress, setRewardAddress] = useState(false);
   const [homeToForeignFeeType, setHomeToForeignFeeType] = useState(
     '0x741ede137d0537e88e0ea0ff25b1f22d837903dbbee8980b4a06e8523247ee26',
@@ -20,7 +18,6 @@ export const useFeeManager = () => {
 
   useEffect(() => {
     if (!account) return;
-    if (!feeManagerAddress) return;
     const ethersProvider = getEthersProvider(homeChainId);
     const abi = [
       'function FOREIGN_TO_HOME_FEE() view returns (bytes32)',

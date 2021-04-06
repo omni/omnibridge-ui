@@ -9,7 +9,7 @@ export const useMediatorInfo = () => {
   const { homeChainId, homeMediatorAddress } = useBridgeDirection();
   const { account } = useWeb3Context();
   const [currentDay, setCurrentDay] = useState();
-  const [feeManagerAddress, setFeeManagerAddress] = useState();
+  const [feeManager, setFeeManager] = useState();
 
   useEffect(() => {
     if (!account) return;
@@ -26,7 +26,7 @@ export const useMediatorInfo = () => {
 
     mediatorContract
       .feeManager()
-      .then(feeManager => setFeeManagerAddress(feeManager))
+      .then(feeManagerAddress => setFeeManager(feeManagerAddress))
       .catch(feeManagerAddressError => logError({ feeManagerAddressError }));
 
     mediatorContract
@@ -37,6 +37,6 @@ export const useMediatorInfo = () => {
 
   return {
     currentDay,
-    feeManagerAddress,
+    feeManager,
   };
 };

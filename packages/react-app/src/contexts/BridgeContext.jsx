@@ -51,7 +51,7 @@ export const BridgeProvider = ({ children }) => {
     isRewardAddress,
     homeToForeignFeeType,
     foreignToHomeFeeType,
-  } = useFeeManager();
+  } = useFeeManager(feeManagerAddress);
   const {
     allowed,
     updateAllowance,
