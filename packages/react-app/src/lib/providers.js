@@ -1,7 +1,7 @@
 import { ethers } from 'ethers';
 import memoize from 'fast-memoize';
 import { LOCAL_STORAGE_KEYS } from 'lib/constants';
-import { getRPCUrl } from 'lib/helpers';
+import { getRPCUrl, logError } from 'lib/helpers';
 
 const {
   MAINNET_RPC_URL,
@@ -23,12 +23,28 @@ const memoized = memoize(
   url => new ethers.providers.StaticJsonRpcProvider(url),
 );
 
-export const getEthersProvider = chainId => {
+export const getEthersProvider = async chainId => {
   const localRPCUrl = window.localStorage.getItem(
     RPC_URL[chainId] || RPC_URL[1],
   );
-  const rpcURL = localRPCUrl || getRPCUrl(chainId);
-  return memoized(rpcURL);
+  const rpcURLs = localRPCUrl || getRPCUrl(chainId, true);
+  const provider = (
+    await Promise.all(
+      rpcURLs.map(async url => {
+        const tempProvider = memoized(url);
+        if (!tempProvider) return tempProvider;
+        try {
+          // eslint-disable-next-line no-underscore-dangle
+          await tempProvider._networkPromise;
+          return tempProvider;
+        } catch (err) {
+          logError({ providerSetError: err.message });
+          return null;
+        }
+      }),
+    )
+  ).filter(p => !!p)[0];
+  return provider || null;
 };
 
 export const isEIP1193 = ethersProvider =>
