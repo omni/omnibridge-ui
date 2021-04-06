@@ -154,7 +154,7 @@ export const fetchToAmount = async (
   }
 
   try {
-    const ethersProvider = getEthersProvider(homeChainId);
+    const ethersProvider = await getEthersProvider(homeChainId);
     const abi = [
       'function calculateFee(bytes32, address, uint256) view returns (uint256)',
     ];

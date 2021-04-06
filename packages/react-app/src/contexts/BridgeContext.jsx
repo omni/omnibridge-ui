@@ -4,7 +4,6 @@ import { useWeb3Context } from 'contexts/Web3Context';
 import { BigNumber } from 'ethers';
 import { useApproval } from 'hooks/useApproval';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
-import { useFeeManager } from 'hooks/useFeeManager';
 import { useMediatorInfo } from 'hooks/useMediatorInfo';
 import { useTotalConfirms } from 'hooks/useTotalConfirms';
 import {
@@ -46,12 +45,12 @@ export const BridgeProvider = ({ children }) => {
 
   const toast = useToast();
   const totalConfirms = useTotalConfirms();
-  const { currentDay, feeManagerAddress } = useMediatorInfo();
   const {
     isRewardAddress,
+    currentDay,
     homeToForeignFeeType,
     foreignToHomeFeeType,
-  } = useFeeManager();
+  } = useMediatorInfo();
   const {
     allowed,
     updateAllowance,
@@ -75,7 +74,6 @@ export const BridgeProvider = ({ children }) => {
             fromToken,
             toToken,
             amount,
-            feeManagerAddress,
           );
 
       setAmounts({ fromAmount: amount, toAmount: gotToAmount });
@@ -90,7 +88,6 @@ export const BridgeProvider = ({ children }) => {
       isRewardAddress,
       homeToForeignFeeType,
       foreignToHomeFeeType,
-      feeManagerAddress,
     ],
   );
 
@@ -156,18 +153,32 @@ export const BridgeProvider = ({ children }) => {
         toToken.address !== ADDRESS_ZERO
       ) {
         setTokens({ fromToken: toToken, toToken: fromToken });
-      } else if (!fromToken || fromToken.chainId !== chainId) {
+      } else if (
+        !(
+          fromToken &&
+          toToken &&
+          fromToken.chainId === chainId &&
+          toToken.chainId === getBridgeChainId(chainId)
+        )
+      ) {
         await setToken(getDefaultToken(chainId));
       }
     },
-    [setToken, fromToken, toToken],
+    [setToken, fromToken, toToken, getBridgeChainId],
   );
 
   const updateToken = useCallback(async () => {
     setLoading(true);
     if (!queryToken) {
       await setDefaultToken(providerChainId);
-    } else if (!fromToken || !toToken) {
+    } else if (
+      !(
+        fromToken &&
+        toToken &&
+        fromToken.chainId === providerChainId &&
+        toToken.chainId === getBridgeChainId(providerChainId)
+      )
+    ) {
       const isQueryTokenSet = await setToken(queryToken, true);
       if (!isQueryTokenSet) {
         await setDefaultToken(providerChainId);
@@ -184,6 +195,7 @@ export const BridgeProvider = ({ children }) => {
     setToken,
     fromToken,
     toToken,
+    getBridgeChainId,
   ]);
 
   useEffect(() => {
@@ -263,7 +275,6 @@ export const BridgeProvider = ({ children }) => {
         setUpdateBalance,
         unlockLoading,
         approvalTxHash,
-        feeManagerAddress,
       }}
     >
       {children}
