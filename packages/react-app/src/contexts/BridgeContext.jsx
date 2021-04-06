@@ -75,7 +75,6 @@ export const BridgeProvider = ({ children }) => {
             fromToken,
             toToken,
             amount,
-            feeManagerAddress,
           );
 
       setAmounts({ fromAmount: amount, toAmount: gotToAmount });
