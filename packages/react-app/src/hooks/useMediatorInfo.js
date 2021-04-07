@@ -8,25 +8,23 @@ import { useEffect, useState } from 'react';
 export const useMediatorInfo = () => {
   const { homeChainId, homeMediatorAddress } = useBridgeDirection();
   const { account } = useWeb3Context();
-  const [isRewardAddress, setRewardAddress] = useState(false);
   const [currentDay, setCurrentDay] = useState();
-  const [homeToForeignFeeType, setHomeToForeignFeeType] = useState(
-    '0x741ede137d0537e88e0ea0ff25b1f22d837903dbbee8980b4a06e8523247ee26',
+  const [feeManagerAddress, setFeeManagerAddress] = useState(
+    homeMediatorAddress,
   );
-  const [foreignToHomeFeeType, setForeignToHomeFeeType] = useState(
-    '0x03be2b2875cb41e0e77355e802a16769bb8dfcf825061cde185c73bf94f12625',
-  );
+  const [interfaceMajorVersion, setInterfaceMajorVersion] = useState();
+  const [interfaceMinorVersion, setInterfaceMinorVersion] = useState();
 
   useEffect(() => {
-    if (!account) return;
     const processMediatorData = async () => {
+      if (!account) return;
       const ethersProvider = await getEthersProvider(homeChainId);
       const abi = [
-        'function isRewardAddress(address) view returns (bool)',
         'function getCurrentDay() view returns (uint256)',
-        'function FOREIGN_TO_HOME_FEE() view returns (bytes32)',
-        'function HOME_TO_FOREIGN_FEE() view returns (bytes32)',
+        'function feeManager() public view returns (address)',
+        'function getBridgeInterfacesVersion() external pure override returns (uint64, uint64, uint64)',
       ];
+
       const mediatorContract = new Contract(
         homeMediatorAddress,
         abi,
@@ -34,32 +32,38 @@ export const useMediatorInfo = () => {
       );
 
       mediatorContract
-        .FOREIGN_TO_HOME_FEE()
-        .then(feeType => setForeignToHomeFeeType(feeType))
-        .catch(feeTypeError => logError({ feeTypeError }));
+        .getBridgeInterfacesVersion()
+        .then(version => {
+          setInterfaceMajorVersion(version[0].toNumber());
+          setInterfaceMinorVersion(version[1].toNumber());
+        })
+        .catch(bridgeVersionError => logError({ bridgeVersionError }));
 
-      mediatorContract
-        .HOME_TO_FOREIGN_FEE()
-        .then(feeType => setHomeToForeignFeeType(feeType))
-        .catch(feeTypeError => logError({ feeTypeError }));
+      if (interfaceMajorVersion >= 2 && interfaceMinorVersion >= 1) {
+        mediatorContract
+          .feeManager()
+          .then(feeManager => setFeeManagerAddress(feeManager))
+          .catch(feeManagerAddressError =>
+            logError({ feeManagerAddressError }),
+          );
+      }
 
       mediatorContract
         .getCurrentDay()
         .then(day => setCurrentDay(day))
         .catch(currentDayError => logError({ currentDayError }));
-      mediatorContract
-        .isRewardAddress(account)
-        .then(is => setRewardAddress(is))
-        .catch(rewardAddressError => logError({ rewardAddressError }));
     };
-
     processMediatorData();
-  }, [account, homeMediatorAddress, homeChainId]);
+  }, [
+    account,
+    homeMediatorAddress,
+    homeChainId,
+    interfaceMinorVersion,
+    interfaceMajorVersion,
+  ]);
 
   return {
-    isRewardAddress,
     currentDay,
-    homeToForeignFeeType,
-    foreignToHomeFeeType,
+    feeManagerAddress,
   };
 };
