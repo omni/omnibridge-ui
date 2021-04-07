@@ -9,9 +9,7 @@ export const useMediatorInfo = () => {
   const { homeChainId, homeMediatorAddress } = useBridgeDirection();
   const { account } = useWeb3Context();
   const [currentDay, setCurrentDay] = useState();
-  const [feeManagerAddress, setFeeManagerAddress] = useState(
-    homeMediatorAddress,
-  );
+  const [feeManagerAddress, setFeeManagerAddress] = useState();
   const [interfaceMajorVersion, setInterfaceMajorVersion] = useState();
   const [interfaceMinorVersion, setInterfaceMinorVersion] = useState();
 
@@ -46,6 +44,8 @@ export const useMediatorInfo = () => {
           .catch(feeManagerAddressError =>
             logError({ feeManagerAddressError }),
           );
+      } else {
+        setFeeManagerAddress(homeMediatorAddress);
       }
 
       mediatorContract
