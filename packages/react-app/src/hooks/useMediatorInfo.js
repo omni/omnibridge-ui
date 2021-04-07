@@ -30,9 +30,7 @@ export const useMediatorInfo = () => {
       const setFeeManager = () => {
         mediatorContract
           .feeManager()
-          .then(feeManager => {
-            setFeeManagerAddress(feeManager);
-          })
+          .then(setFeeManagerAddress)
           .catch(feeManagerAddressError =>
             logError({ feeManagerAddressError }),
           );
