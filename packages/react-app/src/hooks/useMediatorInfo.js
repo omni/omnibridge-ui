@@ -10,8 +10,6 @@ export const useMediatorInfo = () => {
   const { account } = useWeb3Context();
   const [currentDay, setCurrentDay] = useState();
   const [feeManagerAddress, setFeeManagerAddress] = useState();
-  const [interfaceMajorVersion, setInterfaceMajorVersion] = useState();
-  const [interfaceMinorVersion, setInterfaceMinorVersion] = useState();
 
   useEffect(() => {
     const processMediatorData = async () => {
@@ -29,24 +27,27 @@ export const useMediatorInfo = () => {
         ethersProvider,
       );
 
-      mediatorContract
-        .getBridgeInterfacesVersion()
-        .then(version => {
-          setInterfaceMajorVersion(version[0].toNumber());
-          setInterfaceMinorVersion(version[1].toNumber());
-        })
-        .catch(bridgeVersionError => logError({ bridgeVersionError }));
-
-      if (interfaceMajorVersion >= 2 && interfaceMinorVersion >= 1) {
+      const setFeeManager = () => {
         mediatorContract
           .feeManager()
-          .then(feeManager => setFeeManagerAddress(feeManager))
+          .then(feeManager => {
+            setFeeManagerAddress(feeManager);
+          })
           .catch(feeManagerAddressError =>
             logError({ feeManagerAddressError }),
           );
-      } else {
-        setFeeManagerAddress(homeMediatorAddress);
-      }
+      };
+
+      mediatorContract
+        .getBridgeInterfacesVersion()
+        .then(version => {
+          if (version[0].toNumber() >= 2 && version[1].toNumber() >= 1) {
+            setFeeManager();
+          } else {
+            setFeeManagerAddress(homeMediatorAddress);
+          }
+        })
+        .catch(bridgeVersionError => logError({ bridgeVersionError }));
 
       mediatorContract
         .getCurrentDay()
@@ -54,13 +55,7 @@ export const useMediatorInfo = () => {
         .catch(currentDayError => logError({ currentDayError }));
     };
     processMediatorData();
-  }, [
-    account,
-    homeMediatorAddress,
-    homeChainId,
-    interfaceMinorVersion,
-    interfaceMajorVersion,
-  ]);
+  }, [account, homeMediatorAddress, homeChainId]);
 
   return {
     currentDay,
