@@ -62,7 +62,6 @@ export const useFeeManager = () => {
         .then(is => setRewardAddress(is))
         .catch(rewardAddressError => logError({ rewardAddressError }));
     };
-
     checkRewardAddress();
   }, [account, feeManagerAddress, homeChainId]);
 
