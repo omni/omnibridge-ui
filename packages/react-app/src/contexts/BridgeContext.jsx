@@ -14,8 +14,8 @@ import {
   relayTokens,
 } from 'lib/bridge';
 import { ADDRESS_ZERO } from 'lib/constants';
+import { getDefaultToken } from 'lib/networks';
 import {
-  getDefaultToken,
   getHelperContract,
   getMediatorAddress,
   getNativeCurrency,
@@ -224,10 +224,10 @@ export const BridgeProvider = ({ children }) => {
           toToken.chainId === getBridgeChainId(chainId)
         )
       ) {
-        await setToken(getDefaultToken(chainId));
+        await setToken(getDefaultToken(bridgeDirection, chainId));
       }
     },
-    [setToken, fromToken, toToken, getBridgeChainId],
+    [setToken, fromToken, toToken, getBridgeChainId, bridgeDirection],
   );
 
   const updateToken = useCallback(async () => {

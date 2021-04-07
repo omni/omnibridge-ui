@@ -23,8 +23,20 @@ export function getDirection(): String {
     }
     return 'mainnet-xdai';
   } else if (network == 'mainnet') {
+    if (
+      address ==
+      Address.fromString('0x69c707d975e8d883920003CC357E556a4732CD03')
+    ) {
+      return 'mainnet-bsc';
+    }
     return 'mainnet-xdai';
   } else if (network == 'bsc') {
+    if (
+      address ==
+      Address.fromString('0xD83893F31AA1B6B9D97C9c70D3492fe38D24d218')
+    ) {
+      return 'mainnet-bsc';
+    }
     return 'bsc-xdai';
   } else if (network == 'poa-sokol' || network == 'kovan') {
     return 'kovan-sokol';

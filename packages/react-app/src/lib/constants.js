@@ -143,39 +143,6 @@ export const chainUrls = {
   },
 };
 
-export const defaultTokens = {
-  1: {
-    address: '0x0Ae055097C6d159879521C384F1D2123D1f195e6',
-    chainId: 1,
-    symbol: 'STAKE',
-    name: 'STAKE',
-  },
-  42: {
-    address: '0xFD2df5dCe4c89B007A43CF88d8161dAf1A17C7AB',
-    chainId: 42,
-    symbol: 'STAKE',
-    name: 'STAKE',
-  },
-  56: {
-    address: '0x24e5CF4a0577563d4e7761D14D53C8D0b504E337',
-    chainId: 56,
-    symbol: 'STAKE',
-    name: 'STAKE on xDai on BSC',
-  },
-  77: {
-    address: '0x408ec1bb883da0ea0fb3c955ea6befcd05aa7c3a',
-    chainId: 77,
-    symbol: 'STAKE',
-    name: 'STAKE on xDai',
-  },
-  100: {
-    address: '0xb7D311E2Eb55F2f68a9440da38e7989210b9A05e',
-    chainId: 100,
-    symbol: 'STAKE',
-    name: 'STAKE on xDai',
-  },
-};
-
 export const defaultTokensUrl = {
   100: 'https://tokens.honeyswap.org',
   1: 'https://tokens.uniswap.org',

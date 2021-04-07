@@ -93,12 +93,22 @@ export function handleNewToken(event: NewTokenRegistered): void {
     token.foreignChainId = 77;
     token.homeName = tokenObject.name;
     token.foreignName = tokenObject.name.slice(0, -11);
-  } else if (network == 'mainnet') {
+  } else if (network == 'mainnet' && direction == 'mainnet-bsc') {
+    token.homeChainId = 56;
+    token.foreignChainId = 100;
+    token.homeName = tokenObject.name;
+    token.foreignName = tokenObject.name.slice(0, -11);
+  } else if (network == 'mainnet' && direction == 'mainnet-xdai') {
     token.homeChainId = 1;
     token.foreignChainId = 100;
     token.homeName = tokenObject.name;
     token.foreignName = tokenObject.name.slice(0, -11);
-  } else if (network == 'bsc') {
+  } else if (network == 'bsc' && direction == 'mainnet-bsc') {
+    token.homeChainId = 56;
+    token.foreignChainId = 1;
+    token.homeName = tokenObject.name;
+    token.foreignName = tokenObject.name.slice(0, -7);
+  } else if (network == 'bsc' && direction == 'bsc-xdai') {
     token.homeChainId = 56;
     token.foreignChainId = 100;
     token.homeName = tokenObject.name;

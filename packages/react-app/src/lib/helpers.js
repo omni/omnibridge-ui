@@ -2,7 +2,6 @@ import { BigNumber, utils } from 'ethers';
 import { getAddress } from 'ethers/lib/utils';
 import {
   chainUrls,
-  defaultTokens,
   defaultTokensUrl,
   LOCAL_STORAGE_KEYS,
   nativeCurrencies,
@@ -13,6 +12,7 @@ import {
 } from 'lib/constants';
 import {
   BSC_XDAI_BRIDGE,
+  ETH_BSC_BRIDGE,
   ETH_XDAI_BRIDGE,
   KOVAN_SOKOL_BRIDGE,
   networks,
@@ -29,15 +29,6 @@ export const getNetworkName = chainId =>
   networkNames[chainId] || 'Unknown Network';
 
 export const getNetworkLabel = chainId => networkLabels[chainId] || 'Unknown';
-
-export const getDefaultToken = chainId => {
-  const label = getNetworkLabel(chainId).toUpperCase();
-  const storageKey = `${label}-FROM-TOKEN`;
-  const tokenString = localStorage.getItem(storageKey);
-  const token = JSON.parse(tokenString);
-  if (token && token.chainId === chainId) return token;
-  return defaultTokens[chainId] || defaultTokens[1];
-};
 
 export const getNetworkCurrency = chainId =>
   networkCurrencies[chainId] || { name: 'Unknown', symbol: 'Unknown' };
@@ -167,6 +158,11 @@ export const getRPCKeys = bridgeDirection => {
       return {
         homeRPCKey: XDAI_RPC_URL,
         foreignRPCKey: BSC_RPC_URL,
+      };
+    case ETH_BSC_BRIDGE:
+      return {
+        homeRPCKey: BSC_RPC_URL,
+        foreignRPCKey: MAINNET_RPC_URL,
       };
     case KOVAN_SOKOL_BRIDGE:
     default:

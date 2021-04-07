@@ -25,7 +25,7 @@
     "deploy-xdai-bsc": "graph deploy maxaleks/xdai-to-bsc-omnibridge --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
     "deploy-bsc-xdai": "graph deploy maxaleks/bsc-to-xdai-omnibridge --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
     "deploy-mainnet-bsc": "graph deploy maxaleks/mainnet-to-bsc-omnibridge --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
-    "deploy-bsc-mainnet": "graph deploy bsc-to-mainnet-omnibridge --ipfs https://api.bscgraph.org/ --node https://api.bscgraph.org/deploy"
+    "deploy-bsc-mainnet": "graph deploy maxaleks/bsc-to-mainnet-omnibridge --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/"
   },
   "devDependencies": {
     "mustache": "^4.2.0"
