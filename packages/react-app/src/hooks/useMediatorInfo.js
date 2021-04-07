@@ -22,7 +22,7 @@ export const useMediatorInfo = () => {
       const abi = [
         'function getCurrentDay() view returns (uint256)',
         'function feeManager() public view returns (address)',
-        'function getBridgeInterfacesVersion() external pure override returns (uint64, uint64, uint64)',
+        'function getBridgeInterfacesVersion() external pure returns (uint64, uint64, uint64)',
       ];
 
       const mediatorContract = new Contract(
