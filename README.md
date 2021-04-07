@@ -223,3 +223,5 @@ Compiles the subgraph to WebAssembly.
 #### `yarn subgraph:deploy-<network>`
 
 Deploys the subgraph for particular network to the official Graph Node.<br/>
+
+-
