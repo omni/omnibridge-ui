@@ -51,7 +51,7 @@ export const BridgeProvider = ({ children }) => {
     isRewardAddress,
     homeToForeignFeeType,
     foreignToHomeFeeType,
-  } = useFeeManager(feeManagerAddress);
+  } = useFeeManager();
   const {
     allowed,
     updateAllowance,
@@ -75,6 +75,7 @@ export const BridgeProvider = ({ children }) => {
             fromToken,
             toToken,
             amount,
+            feeManagerAddress,
           );
 
       setAmounts({ fromAmount: amount, toAmount: gotToAmount });
@@ -89,6 +90,7 @@ export const BridgeProvider = ({ children }) => {
       isRewardAddress,
       homeToForeignFeeType,
       foreignToHomeFeeType,
+      feeManagerAddress,
     ],
   );
 
