@@ -26,7 +26,7 @@ const fetchToTokenAddress = async (
   tokenAddress,
   homeMediatorAddress,
 ) => {
-  const ethersProvider = getEthersProvider(homeChainId);
+  const ethersProvider = await getEthersProvider(homeChainId);
   const abi = [
     'function foreignTokenAddress(address) view returns (address)',
     'function homeTokenAddress(address) view returns (address)',
@@ -89,8 +89,8 @@ const fetchToTokenDetails = async (bridgeDirection, fromToken, toChainId) => {
     };
   }
 
-  const fromEthersProvider = getEthersProvider(fromChainId);
-  const toEthersProvider = getEthersProvider(toChainId);
+  const fromEthersProvider = await getEthersProvider(fromChainId);
+  const toEthersProvider = await getEthersProvider(toChainId);
   const abi = [
     'function isRegisteredAsNativeToken(address) view returns (bool)',
     'function bridgedTokenAddress(address) view returns (address)',
@@ -141,6 +141,7 @@ export const fetchToAmount = async (
   fromToken,
   toToken,
   fromAmount,
+  feeManagerAddress,
 ) => {
   if (fromAmount.lte(0) || !fromToken || !toToken) return BigNumber.from(0);
   const { homeChainId, homeMediatorAddress } = networks[bridgeDirection];
@@ -153,12 +154,16 @@ export const fetchToAmount = async (
   }
 
   try {
-    const ethersProvider = getEthersProvider(homeChainId);
+    const ethersProvider = await getEthersProvider(homeChainId);
     const abi = [
       'function calculateFee(bytes32, address, uint256) view returns (uint256)',
     ];
-    const mediatorContract = new Contract(mediatorAddress, abi, ethersProvider);
-    const fee = await mediatorContract.calculateFee(
+    const feeManagerContract = new Contract(
+      feeManagerAddress,
+      abi,
+      ethersProvider,
+    );
+    const fee = await feeManagerContract.calculateFee(
       feeType,
       tokenAddress,
       fromAmount,
@@ -252,7 +257,7 @@ export const fetchTokenLimits = async (
     const toMediatorContract = new Contract(
       toToken.mediator,
       abi,
-      getEthersProvider(toToken.chainId),
+      await getEthersProvider(toToken.chainId),
     );
 
     if (toToken.address === ADDRESS_ZERO) {
