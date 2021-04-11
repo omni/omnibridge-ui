@@ -2,6 +2,7 @@ import { BigNumber, Contract, utils } from 'ethers';
 
 import { ADDRESS_ZERO, NATIVE_CURRENCY_SYBMOLS } from './constants';
 import {
+  getHelperContract,
   getMediatorAddress,
   getMediatorAddressWithoutOverride,
   logError,
@@ -123,6 +124,7 @@ export const fetchTokenDetails = async (bridgeDirection, token) => {
       decimals: Number(token.decimals),
       mode: 'NATIVE',
       mediator: mediatorAddress,
+      helperContractAddress: getHelperContract(token.symbol),
     };
   }
 

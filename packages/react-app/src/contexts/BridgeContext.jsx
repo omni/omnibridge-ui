@@ -12,8 +12,9 @@ import {
   fetchTokenLimits,
   fetchToToken,
   relayTokens,
+  wrapAndRelayTokens,
 } from 'lib/bridge';
-import { ADDRESS_ZERO } from 'lib/constants';
+import { ADDRESS_ZERO, NATIVE_CURRENCY_SYBMOLS } from 'lib/constants';
 import { getDefaultToken, logError, parseValue } from 'lib/helpers';
 import { fetchTokenDetails } from 'lib/token';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -127,12 +128,19 @@ export const BridgeProvider = ({ children }) => {
   const transfer = useCallback(async () => {
     setLoading(true);
     try {
-      const tx = await relayTokens(
-        ethersProvider,
-        fromToken,
-        receiver || account,
-        fromAmount,
-      );
+      const tx = NATIVE_CURRENCY_SYBMOLS.includes(fromToken.symbol)
+        ? await wrapAndRelayTokens(
+            ethersProvider,
+            fromToken,
+            receiver || account,
+            fromAmount,
+          )
+        : await relayTokens(
+            ethersProvider,
+            fromToken,
+            receiver || account,
+            fromAmount,
+          );
       setTxHash(tx.hash);
     } catch (transferError) {
       setLoading(false);

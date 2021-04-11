@@ -5,6 +5,7 @@ import {
   defaultTokensUrl,
   LOCAL_STORAGE_KEYS,
   nativeCurrencies,
+  nativeCurrencyMediators,
   networkCurrencies,
   networkLabels,
   networkNames,
@@ -168,6 +169,9 @@ export const getRPCKeys = bridgeDirection => {
       };
   }
 };
+
+export const getHelperContract = currencySymbol =>
+  nativeCurrencyMediators[currencySymbol || 'ETH'];
 
 export const getMediatorAddressWithoutOverride = (bridgeDirection, chainId) => {
   if (!bridgeDirection || !chainId) return null;

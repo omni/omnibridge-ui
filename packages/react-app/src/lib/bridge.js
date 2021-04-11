@@ -81,7 +81,9 @@ const fetchToTokenDetails = async (bridgeDirection, fromToken, toChainId) => {
   );
 
   if (NATIVE_CURRENCY_SYBMOLS.includes(fromSybmol)) {
-    const toAddress = nativeCurrencies[fromChainId].destinationTokenAddress;
+    const { destinationTokenAddress: toAddress } = nativeCurrencies[
+      fromChainId
+    ];
     const toName = await getToName(
       { name: `W${fromSybmol}` },
       toChainId,
@@ -346,4 +348,17 @@ export const relayTokens = async (ethersProvider, token, receiver, amount) => {
       return mediatorContract.relayTokens(token.address, receiver, amount);
     }
   }
+};
+
+export const wrapAndRelayTokens = async (
+  ethersProvider,
+  token,
+  receiver,
+  amount,
+) => {
+  const signer = ethersProvider.getSigner();
+  const { helperContractAddress } = token;
+  const abi = ['function wrapAndRelayTokens(address _receiver) public payable'];
+  const helperContract = new Contract(helperContractAddress, abi, signer);
+  return helperContract.wrapAndRelayTokens(receiver, { value: amount });
 };
