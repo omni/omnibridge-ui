@@ -23,8 +23,14 @@ import { useSettings } from 'contexts/SettingsContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { PlusIcon } from 'icons/PlusIcon';
-import { LOCAL_STORAGE_KEYS } from 'lib/constants';
-import { formatValue, logError, uniqueTokens } from 'lib/helpers';
+import { LOCAL_STORAGE_KEYS, NATIVE_CURRENCY_SYBMOLS } from 'lib/constants';
+import {
+  formatValue,
+  getNativeCurrency,
+  logError,
+  removeElement,
+  uniqueTokens,
+} from 'lib/helpers';
 import { fetchTokenBalanceWithProvider } from 'lib/token';
 import { fetchTokenList } from 'lib/tokenList';
 import React, {
@@ -57,17 +63,30 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
       const tokenListWithBalance = await Promise.all(
         tList.map(async token => ({
           ...token,
-          balance: await fetchTokenBalanceWithProvider(
-            ethersProvider,
-            token,
-            account,
-          ),
+          balance: NATIVE_CURRENCY_SYBMOLS.includes(token.symbol)
+            ? await ethersProvider.getBalance(account)
+            : await fetchTokenBalanceWithProvider(
+                ethersProvider,
+                token,
+                account,
+              ),
         })),
       );
 
-      return tokenListWithBalance.sort(
-        ({ balance: balanceA }, { balance: balanceB }) =>
-          balanceB.sub(balanceA).gt(0) ? 1 : -1,
+      const natCurIndex = tokenListWithBalance.findIndex(({ symbol }) =>
+        NATIVE_CURRENCY_SYBMOLS.includes(symbol),
+      );
+
+      const tokenListFin =
+        natCurIndex !== -1
+          ? [
+              tokenListWithBalance[natCurIndex],
+              ...removeElement(tokenListWithBalance, natCurIndex),
+            ]
+          : tokenListWithBalance;
+
+      return tokenListFin.sort(({ balance: balanceA }, { balance: balanceB }) =>
+        balanceB.sub(balanceA).gt(0) ? 1 : -1,
       );
     },
     [account, ethersProvider],
@@ -82,11 +101,15 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
           getGraphEndpoint(chainId),
           getGraphEndpoint(getBridgeChainId(chainId)),
         );
-        const customTokenList = uniqueTokens(
-          baseTokenList.concat(
-            customTokens.filter(token => token.chainId === chainId),
+        const nativeCurrency = getNativeCurrency(chainId);
+        const customTokenList = [
+          nativeCurrency,
+          ...uniqueTokens(
+            baseTokenList.concat(
+              customTokens.filter(token => token.chainId === chainId),
+            ),
           ),
-        );
+        ];
         setTokenList(
           !disableBalanceFetchToken
             ? await fetchTokenListWithBalance(customTokenList)

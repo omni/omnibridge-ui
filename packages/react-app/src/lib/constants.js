@@ -3,6 +3,8 @@ import { BigNumber } from 'ethers';
 import { ETH_XDAI_BRIDGE } from './networks';
 
 export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000';
+export const ETHER_CURRENCY_LOGO =
+  'https://assets.coingecko.com/coins/images/279/small/ethereum.png?1595348880';
 
 export const LARGEST_UINT256 = BigNumber.from(
   '115792089237316195423570985008687907853269984665640564039457584007913129639935',
@@ -14,9 +16,29 @@ export const POLLING_INTERVAL =
 export const DEFAULT_BRIDGE_DIRECTION =
   process.env.REACT_APP_DEFAULT_BRIDGE_DIRECTION || ETH_XDAI_BRIDGE;
 
+export const NATIVE_CURRENCY_SYBMOLS = ['ETH', 'KETH', 'BNB'];
+
 export const NON_ETH_CHAIN_IDS = [56, 77, 100];
 
 export const XDAI_CHAIN_IDS = [77, 100];
+
+export const nativeCurrencies = {
+  1: {
+    decimals: 18,
+    logoURI: ETHER_CURRENCY_LOGO,
+    address: ADDRESS_ZERO,
+    name: 'Ether',
+    symbol: 'ETH',
+  },
+  42: {
+    decimals: 18,
+    logoURI: ETHER_CURRENCY_LOGO,
+    address: ADDRESS_ZERO,
+    name: 'Kovan Ether',
+    symbol: 'KETH',
+  },
+  56: {},
+};
 
 export const networkNames = {
   1: 'ETH Mainnet',
