@@ -23,7 +23,11 @@ import { useSettings } from 'contexts/SettingsContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { PlusIcon } from 'icons/PlusIcon';
-import { LOCAL_STORAGE_KEYS, NATIVE_CURRENCY_SYBMOLS } from 'lib/constants';
+import {
+  LOCAL_STORAGE_KEYS,
+  NATIVE_CURRENCY_CHAIN_IDS,
+  NATIVE_CURRENCY_SYBMOLS,
+} from 'lib/constants';
 import {
   formatValue,
   getNativeCurrency,
@@ -60,6 +64,9 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
   // Callbacks
   const fetchTokenListWithBalance = useCallback(
     async tList => {
+      const tokenValueSortFn = ({ balance: balanceA }, { balance: balanceB }) =>
+        balanceB.sub(balanceA).gt(0) ? 1 : -1;
+
       const tokenListWithBalance = await Promise.all(
         tList.map(async token => ({
           ...token,
@@ -77,17 +84,16 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
         NATIVE_CURRENCY_SYBMOLS.includes(symbol),
       );
 
-      const tokenListFin =
-        natCurIndex !== -1
-          ? [
-              tokenListWithBalance[natCurIndex],
-              ...removeElement(tokenListWithBalance, natCurIndex),
-            ]
-          : tokenListWithBalance;
+      if (natCurIndex !== -1) {
+        return [
+          tokenListWithBalance[natCurIndex],
+          ...removeElement(tokenListWithBalance, natCurIndex).sort(
+            tokenValueSortFn,
+          ),
+        ];
+      }
 
-      return tokenListFin.sort(({ balance: balanceA }, { balance: balanceB }) =>
-        balanceB.sub(balanceA).gt(0) ? 1 : -1,
-      );
+      return tokenListWithBalance.sort(tokenValueSortFn);
     },
     [account, ethersProvider],
   );
@@ -101,15 +107,20 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
           getGraphEndpoint(chainId),
           getGraphEndpoint(getBridgeChainId(chainId)),
         );
-        const nativeCurrency = getNativeCurrency(chainId);
+
+        const nativeCurrency = NATIVE_CURRENCY_CHAIN_IDS.includes(chainId)
+          ? [getNativeCurrency(chainId)]
+          : [];
+
         const customTokenList = [
-          nativeCurrency,
+          ...nativeCurrency,
           ...uniqueTokens(
             baseTokenList.concat(
               customTokens.filter(token => token.chainId === chainId),
             ),
           ),
         ];
+
         setTokenList(
           !disableBalanceFetchToken
             ? await fetchTokenListWithBalance(customTokenList)
@@ -245,7 +256,7 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
                     size="lg"
                     width="100%"
                     borderColor="#DAE3F0"
-                    key={address}
+                    key={address + symbol}
                     onClick={() => onClick(token)}
                     mb={2}
                     px={4}

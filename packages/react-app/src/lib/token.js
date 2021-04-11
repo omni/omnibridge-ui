@@ -118,10 +118,10 @@ export const fetchTokenDetails = async (bridgeDirection, token) => {
   const mediatorAddress = getMediatorAddress(bridgeDirection, token);
 
   if (NATIVE_CURRENCY_SYBMOLS.includes(token.symbol)) {
-    console.log('NATIVE CURRENCY SELECTED');
     return {
       ...token,
       decimals: Number(token.decimals),
+      mode: 'NATIVE',
       mediator: mediatorAddress,
     };
   }
@@ -158,9 +158,12 @@ export const fetchTokenBalance = async (token, account) => {
 
 export const fetchTokenBalanceWithProvider = async (
   ethersProvider,
-  { address },
+  { address, symbol },
   account,
 ) => {
+  if (NATIVE_CURRENCY_SYBMOLS.includes(symbol)) {
+    return ethersProvider.getBalance(account);
+  }
   if (!account || !address || address === ADDRESS_ZERO || !ethersProvider) {
     return BigNumber.from(0);
   }

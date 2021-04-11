@@ -5,6 +5,8 @@ import { ETH_XDAI_BRIDGE } from './networks';
 export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000';
 export const ETHER_CURRENCY_LOGO =
   'https://assets.coingecko.com/coins/images/279/small/ethereum.png?1595348880';
+export const BNB_CURRENCY_LOGO =
+  'https://assets.coingecko.com/coins/images/825/small/binance-coin-logo.png?1547034615';
 
 export const LARGEST_UINT256 = BigNumber.from(
   '115792089237316195423570985008687907853269984665640564039457584007913129639935',
@@ -17,6 +19,7 @@ export const DEFAULT_BRIDGE_DIRECTION =
   process.env.REACT_APP_DEFAULT_BRIDGE_DIRECTION || ETH_XDAI_BRIDGE;
 
 export const NATIVE_CURRENCY_SYBMOLS = ['ETH', 'KETH', 'BNB'];
+export const NATIVE_CURRENCY_CHAIN_IDS = [1, 42, 56];
 
 export const NON_ETH_CHAIN_IDS = [56, 77, 100];
 
@@ -24,20 +27,35 @@ export const XDAI_CHAIN_IDS = [77, 100];
 
 export const nativeCurrencies = {
   1: {
+    chainId: 1,
     decimals: 18,
     logoURI: ETHER_CURRENCY_LOGO,
     address: ADDRESS_ZERO,
     name: 'Ether',
     symbol: 'ETH',
+    destinationTokenAddress: '0x6A023CCd1ff6F2045C3309768eAd9E68F978f6e1',
+    destinationTokenSymbol: 'WETH',
   },
   42: {
+    chainId: 42,
     decimals: 18,
     logoURI: ETHER_CURRENCY_LOGO,
     address: ADDRESS_ZERO,
     name: 'Kovan Ether',
     symbol: 'KETH',
+    destinationTokenAddress: '0x3D14493DF2B479E6BABE82Fc2373F91622bac025',
+    destinationTokenSymbol: 'WKETH',
   },
-  56: {},
+  56: {
+    chainId: 56,
+    decimals: 18,
+    logoURI: BNB_CURRENCY_LOGO,
+    name: 'Binance Coin',
+    address: ADDRESS_ZERO,
+    symbol: 'BNB',
+    destinationTokenAddress: '0xCa8d20f3e0144a72C6B5d576e9Bd3Fd8557E2B04',
+    destinationTokenSymbol: 'WBNB',
+  },
 };
 
 export const networkNames = {

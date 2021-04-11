@@ -1,5 +1,9 @@
 import { BigNumber, Contract } from 'ethers';
-import { ADDRESS_ZERO } from 'lib/constants';
+import {
+  ADDRESS_ZERO,
+  NATIVE_CURRENCY_SYBMOLS,
+  nativeCurrencies,
+} from 'lib/constants';
 import {
   getMediatorAddressWithoutOverride,
   getNetworkLabel,
@@ -44,7 +48,11 @@ const fetchToTokenAddress = async (
 };
 
 const fetchToTokenDetails = async (bridgeDirection, fromToken, toChainId) => {
-  const { chainId: fromChainId, address: fromAddress } = fromToken;
+  const {
+    chainId: fromChainId,
+    address: fromAddress,
+    symbol: fromSybmol,
+  } = fromToken;
   if (
     isOverridden(bridgeDirection, {
       address: fromAddress,
@@ -71,6 +79,22 @@ const fetchToTokenDetails = async (bridgeDirection, fromToken, toChainId) => {
     bridgeDirection,
     toChainId,
   );
+
+  if (NATIVE_CURRENCY_SYBMOLS.includes(fromSybmol)) {
+    const toAddress = nativeCurrencies[fromChainId].destinationTokenAddress;
+    const toName = await getToName(
+      { name: `W${fromSybmol}` },
+      toChainId,
+      toAddress,
+    );
+    return {
+      name: toName,
+      chainId: toChainId,
+      address: toAddress,
+      mode: 'erc677',
+      mediator: toMediatorAddress,
+    };
+  }
 
   if (!enableReversedBridge) {
     const toAddress = await fetchToTokenAddress(
@@ -135,6 +159,15 @@ const fetchToTokenDetails = async (bridgeDirection, fromToken, toChainId) => {
   };
 };
 
+export const fetchToToken = async (bridgeDirection, fromToken, toChainId) => {
+  const toToken = await fetchToTokenDetails(
+    bridgeDirection,
+    fromToken,
+    toChainId,
+  );
+  return toToken;
+};
+
 export const fetchToAmount = async (
   bridgeDirection,
   feeType,
@@ -173,16 +206,6 @@ export const fetchToAmount = async (
     logError({ amountError });
     return fromAmount;
   }
-};
-
-export const fetchToToken = async (bridgeDirection, fromToken, toChainId) => {
-  const toToken = await fetchToTokenDetails(
-    bridgeDirection,
-    fromToken,
-    toChainId,
-  );
-
-  return toToken;
 };
 
 const getDefaultTokenLimits = async (
