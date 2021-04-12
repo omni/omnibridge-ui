@@ -1,30 +1,60 @@
-import { Box, Flex, Spinner, Text, useBreakpointValue } from '@chakra-ui/react';
+import {
+  Box,
+  Flex,
+  Spinner,
+  Switch,
+  Text,
+  useBreakpointValue,
+} from '@chakra-ui/react';
 import { AddToMetamask } from 'components/common/AddToMetamask';
 import { Logo } from 'components/common/Logo';
 import { BridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { BigNumber, utils } from 'ethers';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
-import { formatValue, logError } from 'lib/helpers';
+import { fetchToToken } from 'lib/bridge';
+import {
+  NATIVE_CURRENCY_CHAIN_IDS,
+  NATIVE_CURRENCY_SYBMOLS,
+  WRAPPED_CURRENCY_SYMBOLS,
+} from 'lib/constants';
+import { formatValue, getNativeCurrency, logError } from 'lib/helpers';
+import { ETH_XDAI_BRIDGE } from 'lib/networks';
 import { fetchTokenBalance } from 'lib/token';
 import React, { useContext, useEffect, useState } from 'react';
 import { defer } from 'rxjs';
 
 export const ToToken = () => {
   const { account, providerChainId } = useWeb3Context();
-  const { getBridgeChainId } = useBridgeDirection();
+  const { getBridgeChainId, bridgeDirection } = useBridgeDirection();
   const {
     updateBalance,
+    fromToken,
     toToken: token,
     toAmount: amount,
     toAmountLoading: loading,
     toBalance: balance,
     setToBalance: setBalance,
+    shouldReceiveNativeCur,
+    setShouldReceiveNativeCur,
+    setToToken,
+    setLoading,
   } = useContext(BridgeContext);
   const chainId = getBridgeChainId(providerChainId);
 
   const smallScreen = useBreakpointValue({ base: true, lg: false });
   const [balanceLoading, setBalanceLoading] = useState(false);
+
+  const changeToToken = async () => {
+    setLoading(true);
+    setShouldReceiveNativeCur(!shouldReceiveNativeCur);
+    setToToken(
+      shouldReceiveNativeCur
+        ? await fetchToToken(bridgeDirection, fromToken, chainId)
+        : getNativeCurrency(chainId),
+    );
+    setLoading(false);
+  };
 
   useEffect(() => {
     let subscription;
@@ -102,7 +132,9 @@ export const ToToken = () => {
               <Text fontSize="lg" fontWeight="bold">
                 {token.name}
               </Text>
-              <AddToMetamask token={token} ml="0.5rem" asModal />
+              {!NATIVE_CURRENCY_SYBMOLS.includes(token.symbol) && (
+                <AddToMetamask token={token} ml="0.5rem" asModal />
+              )}
             </Flex>
             <Flex
               flex={1}
@@ -130,8 +162,10 @@ export const ToToken = () => {
             </Flex>
           </Flex>
           <Flex
-            justify="center"
-            direction="column"
+            width="100%"
+            justifyContent="space-between"
+            direction="row"
+            alignItems="center"
             flex={1}
             {...(!smallScreen
               ? {
@@ -154,6 +188,19 @@ export const ToToken = () => {
                 {utils.formatUnits(amount, token.decimals)}
               </Text>
             )}
+            {bridgeDirection !== ETH_XDAI_BRIDGE && // Temporary block and will be removed once the audit is finished.
+              WRAPPED_CURRENCY_SYMBOLS.includes(fromToken.symbol) &&
+              NATIVE_CURRENCY_CHAIN_IDS.includes(chainId) && (
+                <Flex>
+                  <Text>Receive Native Currency</Text>
+                  <Switch
+                    ml={2}
+                    colorScheme="blue"
+                    isChecked={shouldReceiveNativeCur}
+                    onChange={changeToToken}
+                  />
+                </Flex>
+              )}
           </Flex>
         </Flex>
       )}

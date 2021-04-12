@@ -8,7 +8,7 @@ import { SettingsProvider } from 'contexts/SettingsContext';
 import { Web3Provider } from 'contexts/Web3Context';
 import { createBrowserHistory } from 'history';
 import React from 'react';
-import { BrowserRouter as Router } from 'react-router-dom';
+import { Router } from 'react-router-dom';
 
 import { Routes } from './Routes';
 import { theme } from './theme';

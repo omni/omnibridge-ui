@@ -5,6 +5,7 @@ import {
   nativeCurrencies,
 } from 'lib/constants';
 import {
+  getHelperContract,
   getMediatorAddressWithoutOverride,
   getNetworkLabel,
   logError,
@@ -327,14 +328,27 @@ export const fetchTokenLimits = async (
   }
 };
 
-export const relayTokens = async (ethersProvider, token, receiver, amount) => {
+export const relayTokens = async (
+  ethersProvider,
+  token,
+  receiver,
+  amount,
+  shouldSendNativeCurrency,
+) => {
   const signer = ethersProvider.getSigner();
-  const { mode, mediator, address } = token;
+  const { mode, mediator, address, symbol } = token;
+  console.log(token);
   switch (mode) {
     case 'erc677': {
       const abi = ['function transferAndCall(address, uint256, bytes)'];
       const tokenContract = new Contract(address, abi, signer);
-      return tokenContract.transferAndCall(mediator, amount, receiver);
+      const bytesData = shouldSendNativeCurrency
+        ? `${getHelperContract(symbol.replace('W', ''))}${receiver.replace(
+            '0x',
+            '',
+          )}`
+        : receiver;
+      return tokenContract.transferAndCall(mediator, amount, bytesData);
     }
     case 'dedicated-erc20': {
       const abi = ['function relayTokens(address, uint256)'];

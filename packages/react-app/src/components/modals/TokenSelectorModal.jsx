@@ -35,6 +35,7 @@ import {
   removeElement,
   uniqueTokens,
 } from 'lib/helpers';
+import { ETH_XDAI_BRIDGE } from 'lib/networks';
 import { fetchTokenBalanceWithProvider } from 'lib/token';
 import { fetchTokenList } from 'lib/tokenList';
 import React, {
@@ -59,7 +60,11 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
   const [tokenList, setTokenList] = useState([]);
   const [filteredTokenList, setFilteredTokenList] = useState([]);
   const smallScreen = useBreakpointValue({ sm: false, base: true });
-  const { getBridgeChainId, getGraphEndpoint } = useBridgeDirection();
+  const {
+    getBridgeChainId,
+    getGraphEndpoint,
+    bridgeDirection,
+  } = useBridgeDirection();
 
   // Callbacks
   const fetchTokenListWithBalance = useCallback(
@@ -108,9 +113,11 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
           getGraphEndpoint(getBridgeChainId(chainId)),
         );
 
-        const nativeCurrency = NATIVE_CURRENCY_CHAIN_IDS.includes(chainId)
-          ? [getNativeCurrency(chainId)]
-          : [];
+        const nativeCurrency =
+          bridgeDirection !== ETH_XDAI_BRIDGE && // Temporary block untill mainnet audit is done.
+          NATIVE_CURRENCY_CHAIN_IDS.includes(chainId)
+            ? [getNativeCurrency(chainId)]
+            : [];
 
         const customTokenList = [
           ...nativeCurrency,
@@ -133,6 +140,7 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
     },
     [
       getGraphEndpoint,
+      bridgeDirection,
       getBridgeChainId,
       disableBalanceFetchToken,
       fetchTokenListWithBalance,

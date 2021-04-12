@@ -40,6 +40,7 @@ export const BridgeProvider = ({ children }) => {
   const [toAmountLoading, setToAmountLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [updateBalance, setUpdateBalance] = useState(false);
+  const [shouldReceiveNativeCur, setShouldReceiveNativeCur] = useState(false);
   const [fromBalance, setFromBalance] = useState(BigNumber.from(0));
   const [toBalance, setToBalance] = useState(BigNumber.from(0));
   const [txHash, setTxHash] = useState();
@@ -95,6 +96,16 @@ export const BridgeProvider = ({ children }) => {
     ],
   );
 
+  const setToToken = useCallback(
+    newToToken => {
+      setTokens(prevTokens => ({
+        fromToken: prevTokens.fromToken,
+        toToken: { ...newToToken },
+      }));
+    },
+    [setTokens],
+  );
+
   const setToken = useCallback(
     async (tokenWithoutMode, isQueryToken = false) => {
       try {
@@ -140,6 +151,7 @@ export const BridgeProvider = ({ children }) => {
             fromToken,
             receiver || account,
             fromAmount,
+            shouldReceiveNativeCur,
           );
       setTxHash(tx.hash);
     } catch (transferError) {
@@ -153,7 +165,14 @@ export const BridgeProvider = ({ children }) => {
       });
       throw transferError;
     }
-  }, [fromToken, account, receiver, ethersProvider, fromAmount]);
+  }, [
+    fromToken,
+    account,
+    receiver,
+    ethersProvider,
+    fromAmount,
+    shouldReceiveNativeCur,
+  ]);
 
   const setDefaultToken = useCallback(
     async chainId => {
@@ -261,6 +280,7 @@ export const BridgeProvider = ({ children }) => {
         setAmount,
         fromToken,
         toToken,
+        setToToken,
         setToken,
         setDefaultToken,
         allowed,
@@ -284,6 +304,8 @@ export const BridgeProvider = ({ children }) => {
         setReceiver,
         updateBalance,
         setUpdateBalance,
+        shouldReceiveNativeCur,
+        setShouldReceiveNativeCur,
         unlockLoading,
         approvalTxHash,
         feeManagerAddress,
