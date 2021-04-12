@@ -1,8 +1,7 @@
 import { BigNumber, Contract, utils } from 'ethers';
 
-import { ADDRESS_ZERO, NATIVE_CURRENCY_SYMBOLS } from './constants';
+import { ADDRESS_ZERO } from './constants';
 import {
-  getHelperContract,
   getMediatorAddress,
   getMediatorAddressWithoutOverride,
   logError,

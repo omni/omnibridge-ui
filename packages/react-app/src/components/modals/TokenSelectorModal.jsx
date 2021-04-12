@@ -35,7 +35,6 @@ import {
   removeElement,
   uniqueTokens,
 } from 'lib/helpers';
-import { ETH_XDAI_BRIDGE } from 'lib/networks';
 import { fetchTokenBalanceWithProvider } from 'lib/token';
 import { fetchTokenList } from 'lib/tokenList';
 import React, {
@@ -63,7 +62,7 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
   const {
     getBridgeChainId,
     getGraphEndpoint,
-    bridgeDirection,
+    enableForeignCurrencyBridge,
   } = useBridgeDirection();
 
   // Callbacks
@@ -115,7 +114,7 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
         );
 
         const nativeCurrency =
-          bridgeDirection !== ETH_XDAI_BRIDGE && // Temporary block untill mainnet audit is done.
+          enableForeignCurrencyBridge &&
           NATIVE_CURRENCY_CHAIN_IDS.includes(chainId)
             ? [getNativeCurrency(chainId)]
             : [];
@@ -141,10 +140,10 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
     },
     [
       getGraphEndpoint,
-      bridgeDirection,
       getBridgeChainId,
       disableBalanceFetchToken,
       fetchTokenListWithBalance,
+      enableForeignCurrencyBridge,
     ],
   );
 

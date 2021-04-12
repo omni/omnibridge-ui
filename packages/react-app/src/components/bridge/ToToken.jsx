@@ -13,20 +13,19 @@ import { useWeb3Context } from 'contexts/Web3Context';
 import { BigNumber, utils } from 'ethers';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { fetchToToken } from 'lib/bridge';
-import {
-  NATIVE_CURRENCY_CHAIN_IDS,
-  NATIVE_CURRENCY_SYMBOLS,
-  WRAPPED_CURRENCY_SYMBOLS,
-} from 'lib/constants';
+import { ADDRESS_ZERO, NATIVE_CURRENCY_CHAIN_IDS } from 'lib/constants';
 import { formatValue, getNativeCurrency, logError } from 'lib/helpers';
-import { ETH_XDAI_BRIDGE } from 'lib/networks';
 import { fetchTokenBalance } from 'lib/token';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useMemo, useState } from 'react';
 import { defer } from 'rxjs';
 
 export const ToToken = () => {
   const { account, providerChainId } = useWeb3Context();
-  const { getBridgeChainId, bridgeDirection } = useBridgeDirection();
+  const {
+    getBridgeChainId,
+    bridgeDirection,
+    enableForeignCurrencyBridge,
+  } = useBridgeDirection();
   const {
     updateBalance,
     fromToken,
@@ -45,13 +44,23 @@ export const ToToken = () => {
   const smallScreen = useBreakpointValue({ base: true, lg: false });
   const [balanceLoading, setBalanceLoading] = useState(false);
 
+  const nativeCurrency = useMemo(
+    () =>
+      getNativeCurrency(
+        NATIVE_CURRENCY_CHAIN_IDS.includes(providerChainId)
+          ? providerChainId
+          : chainId,
+      ),
+    [chainId, providerChainId],
+  );
+
   const changeToToken = async () => {
     setLoading(true);
     setShouldReceiveNativeCur(!shouldReceiveNativeCur);
     setToToken(
       shouldReceiveNativeCur
         ? await fetchToToken(bridgeDirection, fromToken, chainId)
-        : getNativeCurrency(chainId),
+        : nativeCurrency,
     );
     setLoading(false);
   };
@@ -132,7 +141,7 @@ export const ToToken = () => {
               <Text fontSize="lg" fontWeight="bold">
                 {token.name}
               </Text>
-              {!NATIVE_CURRENCY_SYMBOLS.includes(token.symbol) && (
+              {token.address !== ADDRESS_ZERO && (
                 <AddToMetamask token={token} ml="0.5rem" asModal />
               )}
             </Flex>
@@ -188,11 +197,12 @@ export const ToToken = () => {
                 {utils.formatUnits(amount, token.decimals)}
               </Text>
             )}
-            {bridgeDirection !== ETH_XDAI_BRIDGE && // Temporary block and will be removed once the audit is finished.
-              WRAPPED_CURRENCY_SYMBOLS.includes(fromToken.symbol) &&
-              NATIVE_CURRENCY_CHAIN_IDS.includes(chainId) && (
+            {enableForeignCurrencyBridge &&
+              NATIVE_CURRENCY_CHAIN_IDS.includes(chainId) &&
+              fromToken.address.toLowerCase() ===
+                nativeCurrency.destinationTokenAddress && (
                 <Flex>
-                  <Text>Receive Native Currency</Text>
+                  <Text>Receive {nativeCurrency.symbol}</Text>
                   <Switch
                     ml={2}
                     colorScheme="blue"
