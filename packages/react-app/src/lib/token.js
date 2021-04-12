@@ -1,6 +1,6 @@
 import { BigNumber, Contract, utils } from 'ethers';
 
-import { ADDRESS_ZERO, NATIVE_CURRENCY_SYBMOLS } from './constants';
+import { ADDRESS_ZERO, NATIVE_CURRENCY_SYMBOLS } from './constants';
 import {
   getHelperContract,
   getMediatorAddress,
@@ -117,17 +117,6 @@ const fetchTokenDetailsFromContract = async token => {
 
 export const fetchTokenDetails = async (bridgeDirection, token) => {
   const mediatorAddress = getMediatorAddress(bridgeDirection, token);
-
-  if (NATIVE_CURRENCY_SYBMOLS.includes(token.symbol)) {
-    return {
-      ...token,
-      decimals: Number(token.decimals),
-      mode: 'NATIVE',
-      mediator: mediatorAddress,
-      helperContractAddress: getHelperContract(token.symbol),
-    };
-  }
-
   const [{ name, symbol, decimals }, mode] = await Promise.all([
     fetchTokenDetailsFromContract(token),
     fetchMode(bridgeDirection, token),
@@ -160,10 +149,10 @@ export const fetchTokenBalance = async (token, account) => {
 
 export const fetchTokenBalanceWithProvider = async (
   ethersProvider,
-  { address, symbol },
+  { address },
   account,
 ) => {
-  if (NATIVE_CURRENCY_SYBMOLS.includes(symbol)) {
+  if (address === ADDRESS_ZERO) {
     return ethersProvider.getBalance(account);
   }
   if (!account || !address || address === ADDRESS_ZERO || !ethersProvider) {

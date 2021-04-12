@@ -1,7 +1,7 @@
 import { BigNumber, Contract } from 'ethers';
 import {
   ADDRESS_ZERO,
-  NATIVE_CURRENCY_SYBMOLS,
+  NATIVE_CURRENCY_SYMBOLS,
   nativeCurrencies,
 } from 'lib/constants';
 import {
@@ -81,7 +81,7 @@ const fetchToTokenDetails = async (bridgeDirection, fromToken, toChainId) => {
     toChainId,
   );
 
-  if (NATIVE_CURRENCY_SYBMOLS.includes(fromSybmol)) {
+  if (NATIVE_CURRENCY_SYMBOLS.includes(fromSybmol)) {
     const { destinationTokenAddress: toAddress } = nativeCurrencies[
       fromChainId
     ];
@@ -336,9 +336,15 @@ export const relayTokens = async (
   shouldSendNativeCurrency,
 ) => {
   const signer = ethersProvider.getSigner();
-  const { mode, mediator, address, symbol } = token;
-  console.log(token);
+  const { mode, mediator, address, symbol, helperContractAddress } = token;
   switch (mode) {
+    case 'NATIVE': {
+      const abi = [
+        'function wrapAndRelayTokens(address _receiver) public payable',
+      ];
+      const helperContract = new Contract(helperContractAddress, abi, signer);
+      return helperContract.wrapAndRelayTokens(receiver, { value: amount });
+    }
     case 'erc677': {
       const abi = ['function transferAndCall(address, uint256, bytes)'];
       const tokenContract = new Contract(address, abi, signer);
@@ -362,17 +368,4 @@ export const relayTokens = async (
       return mediatorContract.relayTokens(token.address, receiver, amount);
     }
   }
-};
-
-export const wrapAndRelayTokens = async (
-  ethersProvider,
-  token,
-  receiver,
-  amount,
-) => {
-  const signer = ethersProvider.getSigner();
-  const { helperContractAddress } = token;
-  const abi = ['function wrapAndRelayTokens(address _receiver) public payable'];
-  const helperContract = new Contract(helperContractAddress, abi, signer);
-  return helperContract.wrapAndRelayTokens(receiver, { value: amount });
 };

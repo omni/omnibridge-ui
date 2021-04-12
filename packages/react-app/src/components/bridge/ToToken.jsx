@@ -15,7 +15,7 @@ import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { fetchToToken } from 'lib/bridge';
 import {
   NATIVE_CURRENCY_CHAIN_IDS,
-  NATIVE_CURRENCY_SYBMOLS,
+  NATIVE_CURRENCY_SYMBOLS,
   WRAPPED_CURRENCY_SYMBOLS,
 } from 'lib/constants';
 import { formatValue, getNativeCurrency, logError } from 'lib/helpers';
@@ -132,7 +132,7 @@ export const ToToken = () => {
               <Text fontSize="lg" fontWeight="bold">
                 {token.name}
               </Text>
-              {!NATIVE_CURRENCY_SYBMOLS.includes(token.symbol) && (
+              {!NATIVE_CURRENCY_SYMBOLS.includes(token.symbol) && (
                 <AddToMetamask token={token} ml="0.5rem" asModal />
               )}
             </Flex>

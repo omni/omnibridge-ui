@@ -24,9 +24,9 @@ import { useWeb3Context } from 'contexts/Web3Context';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { PlusIcon } from 'icons/PlusIcon';
 import {
+  ADDRESS_ZERO,
   LOCAL_STORAGE_KEYS,
   NATIVE_CURRENCY_CHAIN_IDS,
-  NATIVE_CURRENCY_SYBMOLS,
 } from 'lib/constants';
 import {
   formatValue,
@@ -75,18 +75,19 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
       const tokenListWithBalance = await Promise.all(
         tList.map(async token => ({
           ...token,
-          balance: NATIVE_CURRENCY_SYBMOLS.includes(token.symbol)
-            ? await ethersProvider.getBalance(account)
-            : await fetchTokenBalanceWithProvider(
-                ethersProvider,
-                token,
-                account,
-              ),
+          balance:
+            token.mode === 'NATIVE'
+              ? await ethersProvider.getBalance(account)
+              : await fetchTokenBalanceWithProvider(
+                  ethersProvider,
+                  token,
+                  account,
+                ),
         })),
       );
 
-      const natCurIndex = tokenListWithBalance.findIndex(({ symbol }) =>
-        NATIVE_CURRENCY_SYBMOLS.includes(symbol),
+      const natCurIndex = tokenListWithBalance.findIndex(
+        ({ address }) => address === ADDRESS_ZERO,
       );
 
       if (natCurIndex !== -1) {

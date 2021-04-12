@@ -12,10 +12,16 @@ import {
   fetchTokenLimits,
   fetchToToken,
   relayTokens,
-  wrapAndRelayTokens,
 } from 'lib/bridge';
-import { ADDRESS_ZERO, NATIVE_CURRENCY_SYBMOLS } from 'lib/constants';
-import { getDefaultToken, logError, parseValue } from 'lib/helpers';
+import { ADDRESS_ZERO } from 'lib/constants';
+import {
+  getDefaultToken,
+  getHelperContract,
+  getMediatorAddress,
+  getNativeCurrency,
+  logError,
+  parseValue,
+} from 'lib/helpers';
 import { fetchTokenDetails } from 'lib/token';
 import React, { useCallback, useEffect, useState } from 'react';
 
@@ -110,7 +116,15 @@ export const BridgeProvider = ({ children }) => {
     async (tokenWithoutMode, isQueryToken = false) => {
       try {
         const [token, gotToToken] = await Promise.all([
-          fetchTokenDetails(bridgeDirection, tokenWithoutMode),
+          tokenWithoutMode?.address === ADDRESS_ZERO
+            ? {
+                ...getNativeCurrency(tokenWithoutMode.chainId),
+                mediator: getMediatorAddress(bridgeDirection, tokenWithoutMode),
+                helperContractAddress: getHelperContract(
+                  tokenWithoutMode.symbol,
+                ),
+              }
+            : fetchTokenDetails(bridgeDirection, tokenWithoutMode),
           fetchToToken(
             bridgeDirection,
             tokenWithoutMode,
@@ -139,20 +153,13 @@ export const BridgeProvider = ({ children }) => {
   const transfer = useCallback(async () => {
     setLoading(true);
     try {
-      const tx = NATIVE_CURRENCY_SYBMOLS.includes(fromToken.symbol)
-        ? await wrapAndRelayTokens(
-            ethersProvider,
-            fromToken,
-            receiver || account,
-            fromAmount,
-          )
-        : await relayTokens(
-            ethersProvider,
-            fromToken,
-            receiver || account,
-            fromAmount,
-            shouldReceiveNativeCur,
-          );
+      const tx = await relayTokens(
+        ethersProvider,
+        fromToken,
+        receiver || account,
+        fromAmount,
+        shouldReceiveNativeCur,
+      );
       setTxHash(tx.hash);
     } catch (transferError) {
       setLoading(false);
