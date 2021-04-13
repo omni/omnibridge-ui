@@ -86,7 +86,7 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
       );
 
       const natCurIndex = tokenListWithBalance.findIndex(
-        ({ address }) => address === ADDRESS_ZERO,
+        ({ address, mode }) => address === ADDRESS_ZERO && mode === 'NATIVE',
       );
 
       if (natCurIndex !== -1) {
