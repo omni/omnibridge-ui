@@ -19,15 +19,12 @@ import TransferImage from 'assets/confirm-transfer.svg';
 import { NeedsTransactions } from 'components/modals/NeedsTransactionsModal';
 import { DaiWarning, isERC20DaiAddress } from 'components/warnings/DaiWarning';
 import { BridgeContext } from 'contexts/BridgeContext';
-import { useWeb3Context } from 'contexts/Web3Context';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
-import { ADDRESS_ZERO } from 'lib/constants';
 import { formatValue, getAccountString, getNetworkLabel } from 'lib/helpers';
 import React, { useContext, useEffect, useState } from 'react';
 
 export const ConfirmTransferModal = ({ isOpen, onClose }) => {
   const { homeChainId, foreignChainId } = useBridgeDirection();
-  const { providerChainId } = useWeb3Context();
   const {
     receiver,
     fromToken,
@@ -51,10 +48,7 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
   const fromAmt = formatValue(fromAmount, fromToken.decimals);
   const fromUnit = fromToken.symbol;
   const toAmt = formatValue(toAmount, toToken.decimals);
-  const toUnit =
-    providerChainId === foreignChainId && toToken.address === ADDRESS_ZERO
-      ? toToken.destinationTokenSymbol
-      : toToken.symbol;
+  const toUnit = toToken.symbol;
 
   const isERC20Dai =
     !!fromToken &&

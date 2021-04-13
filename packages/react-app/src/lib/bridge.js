@@ -48,6 +48,7 @@ const fetchToTokenDetails = async (bridgeDirection, fromToken, toChainId) => {
   const {
     chainId: fromChainId,
     address: fromAddress,
+    mode: fromMode,
     symbol: fromSybmol,
   } = fromToken;
   if (
@@ -77,21 +78,17 @@ const fetchToTokenDetails = async (bridgeDirection, fromToken, toChainId) => {
     toChainId,
   );
 
-  if (fromAddress === ADDRESS_ZERO) {
-    const { destinationTokenAddress: toAddress } = nativeCurrencies[
-      fromChainId
-    ];
-    const toName = await getToName(
-      { name: `W${fromSybmol}` },
-      toChainId,
-      toAddress,
-    );
+  if (fromAddress === ADDRESS_ZERO && fromMode === 'NATIVE') {
+    const { homeTokenAddress: toAddress } = nativeCurrencies[fromChainId];
+    const toSymbol = `W${fromSybmol}`;
+    const toName = await getToName({ name: toSymbol }, toChainId, toAddress);
     return {
       name: toName,
       chainId: toChainId,
       address: toAddress,
       mode: 'erc677',
       mediator: toMediatorAddress,
+      symbol: toSymbol,
     };
   }
 
@@ -329,7 +326,7 @@ export const relayTokens = async (
   token,
   receiver,
   amount,
-  { shouldSendNativeCurrency, foreignChainId },
+  { shouldReceiveNativeCur, foreignChainId },
 ) => {
   const signer = ethersProvider.getSigner();
   const { mode, mediator, address, helperContractAddress } = token;
@@ -344,7 +341,7 @@ export const relayTokens = async (
     case 'erc677': {
       const abi = ['function transferAndCall(address, uint256, bytes)'];
       const tokenContract = new Contract(address, abi, signer);
-      const bytesData = shouldSendNativeCurrency
+      const bytesData = shouldReceiveNativeCur
         ? `${getHelperContract(foreignChainId)}${receiver.replace('0x', '')}`
         : receiver;
       return tokenContract.transferAndCall(mediator, amount, bytesData);

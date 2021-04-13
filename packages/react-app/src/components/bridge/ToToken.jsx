@@ -59,7 +59,10 @@ export const ToToken = () => {
     setShouldReceiveNativeCur(!shouldReceiveNativeCur);
     setToToken(
       shouldReceiveNativeCur
-        ? await fetchToToken(bridgeDirection, fromToken, chainId)
+        ? {
+            symbol: fromToken.symbol,
+            ...(await fetchToToken(bridgeDirection, fromToken, chainId)),
+          }
         : nativeCurrency,
     );
     setLoading(false);
@@ -207,7 +210,7 @@ export const ToToken = () => {
             {enableForeignCurrencyBridge &&
               chainId === foreignChainId &&
               fromToken.address.toLowerCase() ===
-                nativeCurrency.destinationTokenAddress && (
+                nativeCurrency.homeTokenAddress && (
                 <Flex>
                   <Text>Receive {nativeCurrency.symbol}</Text>
                   <Switch

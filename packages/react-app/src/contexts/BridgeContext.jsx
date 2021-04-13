@@ -237,10 +237,6 @@ export const BridgeProvider = ({ children }) => {
     getBridgeChainId,
   ]);
 
-  useEffect(() => {
-    updateToken();
-  }, [updateToken]);
-
   const updateTokenLimits = useCallback(async () => {
     if (
       providerChainId &&
@@ -279,6 +275,19 @@ export const BridgeProvider = ({ children }) => {
   useEffect(() => {
     setUpdateBalance(t => !t);
   }, [txHash]);
+
+  useEffect(() => {
+    if (
+      toToken?.chainId === foreignChainId &&
+      toToken?.address === ADDRESS_ZERO
+    ) {
+      setShouldReceiveNativeCur(true);
+    }
+  }, [toToken, setShouldReceiveNativeCur, foreignChainId]);
+
+  useEffect(() => {
+    updateToken();
+  }, [updateToken]);
 
   return (
     <BridgeContext.Provider
