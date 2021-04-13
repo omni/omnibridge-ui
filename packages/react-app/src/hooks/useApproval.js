@@ -22,7 +22,8 @@ export const useApproval = (fromToken, fromAmount) => {
 
   useEffect(() => {
     setAllowed(
-      (fromToken && fromToken.mode === 'erc677') || allowance.gte(fromAmount),
+      (fromToken && ['NATIVE', 'erc677'].includes(fromToken.mode)) ||
+        allowance.gte(fromAmount),
     );
   }, [fromAmount, allowance, fromToken]);
 

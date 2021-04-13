@@ -1,30 +1,81 @@
-import { Box, Flex, Spinner, Text, useBreakpointValue } from '@chakra-ui/react';
+import {
+  Box,
+  Flex,
+  Spinner,
+  Switch,
+  Text,
+  useBreakpointValue,
+} from '@chakra-ui/react';
 import { AddToMetamask } from 'components/common/AddToMetamask';
 import { Logo } from 'components/common/Logo';
 import { BridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { BigNumber, utils } from 'ethers';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
-import { formatValue, logError } from 'lib/helpers';
+import { fetchToToken } from 'lib/bridge';
+import { formatValue, getNativeCurrency, logError } from 'lib/helpers';
 import { fetchTokenBalance } from 'lib/token';
-import React, { useContext, useEffect, useState } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { defer } from 'rxjs';
 
 export const ToToken = () => {
   const { account, providerChainId } = useWeb3Context();
-  const { getBridgeChainId } = useBridgeDirection();
+  const {
+    getBridgeChainId,
+    bridgeDirection,
+    enableForeignCurrencyBridge,
+    foreignChainId,
+  } = useBridgeDirection();
   const {
     updateBalance,
+    fromToken,
     toToken: token,
     toAmount: amount,
     toAmountLoading: loading,
     toBalance: balance,
     setToBalance: setBalance,
+    shouldReceiveNativeCur,
+    setShouldReceiveNativeCur,
+    setToToken,
+    setLoading,
   } = useContext(BridgeContext);
   const chainId = getBridgeChainId(providerChainId);
 
   const smallScreen = useBreakpointValue({ base: true, lg: false });
   const [balanceLoading, setBalanceLoading] = useState(false);
+
+  const nativeCurrency = useMemo(() => getNativeCurrency(foreignChainId), [
+    foreignChainId,
+  ]);
+
+  const changeToToken = useCallback(async () => {
+    setLoading(true);
+    setShouldReceiveNativeCur(!shouldReceiveNativeCur);
+    setToToken(
+      shouldReceiveNativeCur
+        ? {
+            symbol: fromToken.symbol,
+            ...(await fetchToToken(bridgeDirection, fromToken, chainId)),
+          }
+        : nativeCurrency,
+    );
+    setLoading(false);
+  }, [
+    bridgeDirection,
+    chainId,
+    fromToken,
+    nativeCurrency,
+    setLoading,
+    shouldReceiveNativeCur,
+    setShouldReceiveNativeCur,
+    setToToken,
+  ]);
 
   useEffect(() => {
     let subscription;
@@ -130,8 +181,10 @@ export const ToToken = () => {
             </Flex>
           </Flex>
           <Flex
-            justify="center"
-            direction="column"
+            width="100%"
+            justifyContent="space-between"
+            direction="row"
+            alignItems="center"
             flex={1}
             {...(!smallScreen
               ? {
@@ -154,6 +207,20 @@ export const ToToken = () => {
                 {utils.formatUnits(amount, token.decimals)}
               </Text>
             )}
+            {enableForeignCurrencyBridge &&
+              chainId === foreignChainId &&
+              fromToken.address.toLowerCase() ===
+                nativeCurrency.homeTokenAddress && (
+                <Flex>
+                  <Text>Receive {nativeCurrency.symbol}</Text>
+                  <Switch
+                    ml={2}
+                    colorScheme="blue"
+                    isChecked={shouldReceiveNativeCur}
+                    onChange={changeToToken}
+                  />
+                </Flex>
+              )}
           </Flex>
         </Flex>
       )}
