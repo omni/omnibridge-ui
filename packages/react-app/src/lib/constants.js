@@ -18,9 +18,6 @@ export const POLLING_INTERVAL =
 export const DEFAULT_BRIDGE_DIRECTION =
   process.env.REACT_APP_DEFAULT_BRIDGE_DIRECTION || ETH_XDAI_BRIDGE;
 
-export const NATIVE_CURRENCY_SYMBOLS = ['ETH', 'KETH', 'BNB'];
-export const NATIVE_CURRENCY_CHAIN_IDS = [1, 42, 56];
-
 export const NON_ETH_CHAIN_IDS = [56, 77, 100];
 
 export const XDAI_CHAIN_IDS = [77, 100];
@@ -62,9 +59,9 @@ export const nativeCurrencies = {
 };
 
 export const nativeCurrencyMediators = {
-  [NATIVE_CURRENCY_SYMBOLS[0]]: '',
-  [NATIVE_CURRENCY_SYMBOLS[1]]: '0x227a6f13aa0dba8912d740c0f88fb1304b2597e1'.toLowerCase(),
-  [NATIVE_CURRENCY_SYMBOLS[2]]: '0xefc33f8b2c4d51005585962be7ea20518ea9fd0d'.toLowerCase(),
+  1: '',
+  42: '0x227a6f13aa0dba8912d740c0f88fb1304b2597e1'.toLowerCase(),
+  56: '0xefc33f8b2c4d51005585962be7ea20518ea9fd0d'.toLowerCase(),
 };
 
 export const networkNames = {

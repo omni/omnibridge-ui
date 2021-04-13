@@ -170,8 +170,8 @@ export const getRPCKeys = bridgeDirection => {
   }
 };
 
-export const getHelperContract = currencySymbol =>
-  nativeCurrencyMediators[currencySymbol || 'ETH'];
+export const getHelperContract = chainId =>
+  nativeCurrencyMediators[chainId || 1];
 
 export const getMediatorAddressWithoutOverride = (bridgeDirection, chainId) => {
   if (!bridgeDirection || !chainId) return null;

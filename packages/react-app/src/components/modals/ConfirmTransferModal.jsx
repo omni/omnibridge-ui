@@ -21,7 +21,7 @@ import { DaiWarning, isERC20DaiAddress } from 'components/warnings/DaiWarning';
 import { BridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
-import { NATIVE_CURRENCY_SYMBOLS } from 'lib/constants';
+import { ADDRESS_ZERO } from 'lib/constants';
 import { formatValue, getAccountString, getNetworkLabel } from 'lib/helpers';
 import React, { useContext, useEffect, useState } from 'react';
 
@@ -52,8 +52,7 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
   const fromUnit = fromToken.symbol;
   const toAmt = formatValue(toAmount, toToken.decimals);
   const toUnit =
-    providerChainId === foreignChainId &&
-    NATIVE_CURRENCY_SYMBOLS.includes(toToken.symbol)
+    providerChainId === foreignChainId && toToken.address === ADDRESS_ZERO
       ? toToken.destinationTokenSymbol
       : toToken.symbol;
 

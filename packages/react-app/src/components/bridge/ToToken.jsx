@@ -13,10 +13,15 @@ import { useWeb3Context } from 'contexts/Web3Context';
 import { BigNumber, utils } from 'ethers';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { fetchToToken } from 'lib/bridge';
-import { ADDRESS_ZERO, NATIVE_CURRENCY_CHAIN_IDS } from 'lib/constants';
 import { formatValue, getNativeCurrency, logError } from 'lib/helpers';
 import { fetchTokenBalance } from 'lib/token';
-import React, { useContext, useEffect, useMemo, useState } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { defer } from 'rxjs';
 
 export const ToToken = () => {
@@ -25,6 +30,7 @@ export const ToToken = () => {
     getBridgeChainId,
     bridgeDirection,
     enableForeignCurrencyBridge,
+    foreignChainId,
   } = useBridgeDirection();
   const {
     updateBalance,
@@ -44,17 +50,11 @@ export const ToToken = () => {
   const smallScreen = useBreakpointValue({ base: true, lg: false });
   const [balanceLoading, setBalanceLoading] = useState(false);
 
-  const nativeCurrency = useMemo(
-    () =>
-      getNativeCurrency(
-        NATIVE_CURRENCY_CHAIN_IDS.includes(providerChainId)
-          ? providerChainId
-          : chainId,
-      ),
-    [chainId, providerChainId],
-  );
+  const nativeCurrency = useMemo(() => getNativeCurrency(foreignChainId), [
+    foreignChainId,
+  ]);
 
-  const changeToToken = async () => {
+  const changeToToken = useCallback(async () => {
     setLoading(true);
     setShouldReceiveNativeCur(!shouldReceiveNativeCur);
     setToToken(
@@ -63,7 +63,16 @@ export const ToToken = () => {
         : nativeCurrency,
     );
     setLoading(false);
-  };
+  }, [
+    bridgeDirection,
+    chainId,
+    fromToken,
+    nativeCurrency,
+    setLoading,
+    shouldReceiveNativeCur,
+    setShouldReceiveNativeCur,
+    setToToken,
+  ]);
 
   useEffect(() => {
     let subscription;
@@ -141,9 +150,7 @@ export const ToToken = () => {
               <Text fontSize="lg" fontWeight="bold">
                 {token.name}
               </Text>
-              {token.address !== ADDRESS_ZERO && (
-                <AddToMetamask token={token} ml="0.5rem" asModal />
-              )}
+              <AddToMetamask token={token} ml="0.5rem" asModal />
             </Flex>
             <Flex
               flex={1}
@@ -198,7 +205,7 @@ export const ToToken = () => {
               </Text>
             )}
             {enableForeignCurrencyBridge &&
-              NATIVE_CURRENCY_CHAIN_IDS.includes(chainId) &&
+              chainId === foreignChainId &&
               fromToken.address.toLowerCase() ===
                 nativeCurrency.destinationTokenAddress && (
                 <Flex>

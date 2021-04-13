@@ -23,11 +23,7 @@ import { useSettings } from 'contexts/SettingsContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { PlusIcon } from 'icons/PlusIcon';
-import {
-  ADDRESS_ZERO,
-  LOCAL_STORAGE_KEYS,
-  NATIVE_CURRENCY_CHAIN_IDS,
-} from 'lib/constants';
+import { ADDRESS_ZERO, LOCAL_STORAGE_KEYS } from 'lib/constants';
 import {
   formatValue,
   getNativeCurrency,
@@ -61,6 +57,7 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
   const smallScreen = useBreakpointValue({ sm: false, base: true });
   const {
     getBridgeChainId,
+    foreignChainId,
     getGraphEndpoint,
     enableForeignCurrencyBridge,
   } = useBridgeDirection();
@@ -74,14 +71,11 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
       const tokenListWithBalance = await Promise.all(
         tList.map(async token => ({
           ...token,
-          balance:
-            token.mode === 'NATIVE'
-              ? await ethersProvider.getBalance(account)
-              : await fetchTokenBalanceWithProvider(
-                  ethersProvider,
-                  token,
-                  account,
-                ),
+          balance: await fetchTokenBalanceWithProvider(
+            ethersProvider,
+            token,
+            account,
+          ),
         })),
       );
 
@@ -114,8 +108,7 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
         );
 
         const nativeCurrency =
-          enableForeignCurrencyBridge &&
-          foreignChainId === chainId
+          enableForeignCurrencyBridge && foreignChainId === chainId
             ? [getNativeCurrency(chainId)]
             : [];
 
@@ -144,6 +137,7 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
       disableBalanceFetchToken,
       fetchTokenListWithBalance,
       enableForeignCurrencyBridge,
+      foreignChainId,
     ],
   );
 

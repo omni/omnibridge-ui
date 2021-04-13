@@ -34,6 +34,7 @@ export const BridgeProvider = ({ children }) => {
     bridgeDirection,
     getBridgeChainId,
     homeChainId,
+    foreignChainId,
   } = useBridgeDirection();
 
   const [receiver, setReceiver] = useState('');
@@ -121,7 +122,7 @@ export const BridgeProvider = ({ children }) => {
                 ...getNativeCurrency(tokenWithoutMode.chainId),
                 mediator: getMediatorAddress(bridgeDirection, tokenWithoutMode),
                 helperContractAddress: getHelperContract(
-                  tokenWithoutMode.symbol,
+                  tokenWithoutMode.chainId,
                 ),
               }
             : fetchTokenDetails(bridgeDirection, tokenWithoutMode),
@@ -158,7 +159,7 @@ export const BridgeProvider = ({ children }) => {
         fromToken,
         receiver || account,
         fromAmount,
-        shouldReceiveNativeCur,
+        { shouldReceiveNativeCur, foreignChainId },
       );
       setTxHash(tx.hash);
     } catch (transferError) {
@@ -179,6 +180,7 @@ export const BridgeProvider = ({ children }) => {
     ethersProvider,
     fromAmount,
     shouldReceiveNativeCur,
+    foreignChainId,
   ]);
 
   const setDefaultToken = useCallback(

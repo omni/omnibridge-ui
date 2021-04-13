@@ -1,9 +1,5 @@
 import { BigNumber, Contract } from 'ethers';
-import {
-  ADDRESS_ZERO,
-  NATIVE_CURRENCY_SYMBOLS,
-  nativeCurrencies,
-} from 'lib/constants';
+import { ADDRESS_ZERO, nativeCurrencies } from 'lib/constants';
 import {
   getHelperContract,
   getMediatorAddressWithoutOverride,
@@ -81,7 +77,7 @@ const fetchToTokenDetails = async (bridgeDirection, fromToken, toChainId) => {
     toChainId,
   );
 
-  if (NATIVE_CURRENCY_SYMBOLS.includes(fromSybmol)) {
+  if (fromAddress === ADDRESS_ZERO) {
     const { destinationTokenAddress: toAddress } = nativeCurrencies[
       fromChainId
     ];
@@ -333,10 +329,10 @@ export const relayTokens = async (
   token,
   receiver,
   amount,
-  shouldSendNativeCurrency,
+  { shouldSendNativeCurrency, foreignChainId },
 ) => {
   const signer = ethersProvider.getSigner();
-  const { mode, mediator, address, symbol, helperContractAddress } = token;
+  const { mode, mediator, address, helperContractAddress } = token;
   switch (mode) {
     case 'NATIVE': {
       const abi = [
@@ -349,10 +345,7 @@ export const relayTokens = async (
       const abi = ['function transferAndCall(address, uint256, bytes)'];
       const tokenContract = new Contract(address, abi, signer);
       const bytesData = shouldSendNativeCurrency
-        ? `${getHelperContract(symbol.replace('W', ''))}${receiver.replace(
-            '0x',
-            '',
-          )}`
+        ? `${getHelperContract(foreignChainId)}${receiver.replace('0x', '')}`
         : receiver;
       return tokenContract.transferAndCall(mediator, amount, bytesData);
     }
