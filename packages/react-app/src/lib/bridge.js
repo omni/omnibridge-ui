@@ -99,7 +99,7 @@ const fetchToTokenDetails = async (bridgeDirection, fromToken, toChainId) => {
       fromAddress,
       isHome ? fromMediatorAddress : toMediatorAddress,
     );
-    const toName = await getToName(fromToken, toChainId, toAddress);
+    const toName = await getToName({}, toChainId, toAddress);
     return {
       name: toName,
       chainId: toChainId,
