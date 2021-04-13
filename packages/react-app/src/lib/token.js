@@ -151,7 +151,7 @@ export const fetchTokenBalanceWithProvider = async (
   { address },
   account,
 ) => {
-  if (address === ADDRESS_ZERO) {
+  if (address === ADDRESS_ZERO && mode === 'NATIVE') {
     return ethersProvider.getBalance(account);
   }
   if (!account || !address || address === ADDRESS_ZERO || !ethersProvider) {
