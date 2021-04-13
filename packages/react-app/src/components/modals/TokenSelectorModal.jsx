@@ -115,7 +115,7 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
 
         const nativeCurrency =
           enableForeignCurrencyBridge &&
-          NATIVE_CURRENCY_CHAIN_IDS.includes(chainId)
+          foreignChainId === chainId
             ? [getNativeCurrency(chainId)]
             : [];
 
