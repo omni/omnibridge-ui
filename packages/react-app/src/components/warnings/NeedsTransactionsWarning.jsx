@@ -1,6 +1,7 @@
 import { Alert, AlertIcon, Flex, Link, Text } from '@chakra-ui/react';
 import { utils } from 'ethers';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
+import { networkCurrencies } from 'lib/constants';
 import { getEthereumPrice } from 'lib/ethPrice';
 import { getFastGasPrice } from 'lib/gasPrice';
 import { getNetworkName } from 'lib/helpers';
@@ -32,10 +33,10 @@ export const NeedsTransactionsWarning = ({ noShadow = false }) => {
   if (foreignChainId === 1) {
     txCostText = (
       <>
-        You will need some xDai and approximately {gasCostInETHString} ETH (
-        {gasCostInUSDString} USD) to complete. When claiming, your wallet may
-        show a higher, less accurate estimate (
-        <LearnMoreLink />
+        You will need some {networkCurrencies[homeChainId].symbol} and
+        approximately {gasCostInETHString} ETH ({gasCostInUSDString} USD) to
+        complete. When claiming, your wallet may show a higher, less accurate
+        estimate (<LearnMoreLink />
         ).
       </>
     );
