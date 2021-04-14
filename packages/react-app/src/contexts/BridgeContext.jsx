@@ -189,7 +189,7 @@ export const BridgeProvider = ({ children }) => {
         fromToken &&
         toToken &&
         toToken.chainId === chainId &&
-        toToken.address !== ADDRESS_ZERO
+        (toToken.address !== ADDRESS_ZERO || toToken.mode === 'NATIVE')
       ) {
         setTokens({ fromToken: toToken, toToken: fromToken });
       } else if (
