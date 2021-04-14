@@ -49,7 +49,6 @@ const fetchToTokenDetails = async (bridgeDirection, fromToken, toChainId) => {
     chainId: fromChainId,
     address: fromAddress,
     mode: fromMode,
-    symbol: fromSybmol,
   } = fromToken;
   if (
     isOverridden(bridgeDirection, {
@@ -80,16 +79,10 @@ const fetchToTokenDetails = async (bridgeDirection, fromToken, toChainId) => {
 
   if (fromAddress === ADDRESS_ZERO && fromMode === 'NATIVE') {
     const { homeTokenAddress: toAddress } = nativeCurrencies[fromChainId];
-    const toSymbol = `W${fromSybmol}`;
-    const toName = await getToName({ name: toSymbol }, toChainId, toAddress);
-    return {
-      name: toName,
-      chainId: toChainId,
+    return fetchTokenDetails(bridgeDirection, {
       address: toAddress,
-      mode: 'erc677',
-      mediator: toMediatorAddress,
-      symbol: toSymbol,
-    };
+      chainId: toChainId,
+    });
   }
 
   if (!enableReversedBridge) {
@@ -99,7 +92,7 @@ const fetchToTokenDetails = async (bridgeDirection, fromToken, toChainId) => {
       fromAddress,
       isHome ? fromMediatorAddress : toMediatorAddress,
     );
-    const toName = await getToName({}, toChainId, toAddress);
+    const toName = await getToName(fromToken, toChainId, toAddress);
     return {
       name: toName,
       chainId: toChainId,

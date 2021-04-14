@@ -13,7 +13,12 @@ import { useWeb3Context } from 'contexts/Web3Context';
 import { BigNumber, utils } from 'ethers';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { fetchToToken } from 'lib/bridge';
-import { formatValue, getNativeCurrency, logError } from 'lib/helpers';
+import {
+  formatValue,
+  getNativeCurrency,
+  logError,
+  truncateText,
+} from 'lib/helpers';
 import { fetchTokenBalance } from 'lib/token';
 import React, {
   useCallback,
@@ -60,7 +65,7 @@ export const ToToken = () => {
     setToToken(
       shouldReceiveNativeCur
         ? {
-            symbol: fromToken.symbol,
+            ...fromToken,
             ...(await fetchToToken(bridgeDirection, fromToken, chainId)),
           }
         : nativeCurrency,
@@ -151,7 +156,7 @@ export const ToToken = () => {
                 <Logo uri={token.logoURI} reverseFallback />
               </Flex>
               <Text fontSize="lg" fontWeight="bold">
-                {token.name}
+                {truncateText(token.name, 24)}
               </Text>
               <AddToMetamask token={token} ml="0.5rem" asModal />
             </Flex>

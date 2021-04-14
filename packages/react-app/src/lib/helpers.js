@@ -190,3 +190,12 @@ export const getMediatorAddress = (bridgeDirection, token) => {
   }
   return getMediatorAddressWithoutOverride(bridgeDirection, token.chainId);
 };
+
+export const truncateText = (text, maxLength) => {
+  let truncated = text;
+
+  if (truncated.length > maxLength - 3) {
+    truncated = `${truncated.substr(0, maxLength - 3)}...`;
+  }
+  return truncated;
+};
