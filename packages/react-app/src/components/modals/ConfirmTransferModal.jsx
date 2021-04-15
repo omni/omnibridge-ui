@@ -16,10 +16,12 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import TransferImage from 'assets/confirm-transfer.svg';
+import { MedianGasModal } from 'components/modals/MedianGasModal';
 import { NeedsTransactions } from 'components/modals/NeedsTransactionsModal';
 import { DaiWarning, isERC20DaiAddress } from 'components/warnings/DaiWarning';
 import { BridgeContext } from 'contexts/BridgeContext';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
+import { getGasPrice,getMedianHistoricalEthGasPrice } from 'lib/gasPrice';
 import { formatValue, getAccountString, getNetworkLabel } from 'lib/helpers';
 import React, { useContext, useEffect, useState } from 'react';
 
@@ -49,6 +51,8 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
   const fromUnit = fromToken.symbol;
   const toAmt = formatValue(toAmount, toToken.decimals);
   const toUnit = toToken.symbol;
+  const currentGasPrice = getGasPrice();
+  const medianGasPrice = getMedianHistoricalEthGasPrice();
 
   const isERC20Dai =
     !!fromToken &&
@@ -183,6 +187,9 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
               <Text as="span">{` on ${getNetworkLabel(toToken.chainId)}`}</Text>
             </Box>
             {isHome && <NeedsTransactions />}
+            {foreignChainId === '42' && medianGasPrice > currentGasPrice && (
+              <MedianGasModal />
+            )}
           </ModalBody>
           <ModalFooter p={6}>
             <Flex

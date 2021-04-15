@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { utils } from 'ethers';
 import { GasPriceOracle } from 'gas-price-oracle';
 import { XDAI_CHAIN_IDS } from 'lib/constants';
@@ -110,4 +111,24 @@ export const getGasPrice = chainId => {
 
 export const getFastGasPrice = () => {
   return foreignGasStore.fastGasPriceInBN();
+};
+
+const median = arr => {
+  const mid = Math.floor(arr.length / 2);
+  const nums = [...arr].sort((a, b) => a - b);
+  return arr.length % 2 !== 0 ? nums[mid] : (nums[mid - 1] + nums[mid]) / 2;
+};
+
+export const getMedianHistoricalEthGasPrice = async hours => {
+  // https://ethgas.watch/api/gas/trend?hours=168
+  const response = await axios.get(
+    `https://ethgas.watch/api/gas/trend?hours=${hours}`,
+  );
+
+  if (response.status !== 200) {
+    throw new Error(`Fetch gasPrice from ethgasAPI failed!`);
+  }
+  // Calculate median and return
+  const { normal } = response.data;
+  return median(normal);
 };
