@@ -20,7 +20,13 @@ import {
   getMessageStatus,
 } from 'lib/amb';
 import { POLLING_INTERVAL } from 'lib/constants';
-import { getExplorerUrl, getNetworkName, logError } from 'lib/helpers';
+import {
+  getExplorerUrl,
+  getHelperContract,
+  getNativeCurrency,
+  getNetworkName,
+  logError,
+} from 'lib/helpers';
 import React, { useEffect, useState } from 'react';
 
 const { formatUnits } = utils;
@@ -57,6 +63,7 @@ const getNetworkTag = chainId => networkTags[chainId];
 
 export const HistoryItem = ({
   data: {
+    user,
     chainId,
     timestamp,
     sendingTx,
@@ -73,6 +80,7 @@ export const HistoryItem = ({
     getBridgeChainId,
     getMonitorUrl,
     getGraphEndpoint,
+    enableForeignCurrencyBridge,
   } = useBridgeDirection();
   const { providerChainId, ethersProvider } = useWeb3Context();
   const bridgeChainId = getBridgeChainId(chainId);
@@ -187,6 +195,12 @@ export const HistoryItem = ({
     getGraphEndpoint,
   ]);
 
+  const homeCurrencyHelperContract = getHelperContract(foreignChainId);
+  const { symbol: tokenSymbol } =
+    enableForeignCurrencyBridge && user === homeCurrencyHelperContract
+      ? getNativeCurrency(foreignChainId)
+      : toToken;
+
   return (
     <Flex
       w="100%"
@@ -272,9 +286,10 @@ export const HistoryItem = ({
             Amount
           </Text>
           <Text my="auto" textAlign="center">
-            {`${formatUnits(BigNumber.from(amount), toToken.decimals)} ${
-              toToken.symbol
-            }`}
+            {`${formatUnits(
+              BigNumber.from(amount),
+              toToken.decimals,
+            )} ${tokenSymbol}`}
           </Text>
           <AddToMetamask token={toToken} ml="0.25rem" />
         </Flex>

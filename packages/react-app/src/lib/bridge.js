@@ -1,6 +1,7 @@
 import { BigNumber, Contract } from 'ethers';
-import { ADDRESS_ZERO } from 'lib/constants';
+import { ADDRESS_ZERO, nativeCurrencies } from 'lib/constants';
 import {
+  getHelperContract,
   getMediatorAddressWithoutOverride,
   getNetworkLabel,
   logError,
@@ -44,7 +45,11 @@ const fetchToTokenAddress = async (
 };
 
 const fetchToTokenDetails = async (bridgeDirection, fromToken, toChainId) => {
-  const { chainId: fromChainId, address: fromAddress } = fromToken;
+  const {
+    chainId: fromChainId,
+    address: fromAddress,
+    mode: fromMode,
+  } = fromToken;
   if (
     isOverridden(bridgeDirection, {
       address: fromAddress,
@@ -71,6 +76,14 @@ const fetchToTokenDetails = async (bridgeDirection, fromToken, toChainId) => {
     bridgeDirection,
     toChainId,
   );
+
+  if (fromAddress === ADDRESS_ZERO && fromMode === 'NATIVE') {
+    const { homeTokenAddress: toAddress } = nativeCurrencies[fromChainId];
+    return fetchTokenDetails(bridgeDirection, {
+      address: toAddress,
+      chainId: toChainId,
+    });
+  }
 
   if (!enableReversedBridge) {
     const toAddress = await fetchToTokenAddress(
@@ -135,6 +148,15 @@ const fetchToTokenDetails = async (bridgeDirection, fromToken, toChainId) => {
   };
 };
 
+export const fetchToToken = async (bridgeDirection, fromToken, toChainId) => {
+  const toToken = await fetchToTokenDetails(
+    bridgeDirection,
+    fromToken,
+    toChainId,
+  );
+  return toToken;
+};
+
 export const fetchToAmount = async (
   bridgeDirection,
   feeType,
@@ -173,16 +195,6 @@ export const fetchToAmount = async (
     logError({ amountError });
     return fromAmount;
   }
-};
-
-export const fetchToToken = async (bridgeDirection, fromToken, toChainId) => {
-  const toToken = await fetchToTokenDetails(
-    bridgeDirection,
-    fromToken,
-    toChainId,
-  );
-
-  return toToken;
 };
 
 const getDefaultTokenLimits = async (
@@ -302,14 +314,30 @@ export const fetchTokenLimits = async (
   }
 };
 
-export const relayTokens = async (ethersProvider, token, receiver, amount) => {
+export const relayTokens = async (
+  ethersProvider,
+  token,
+  receiver,
+  amount,
+  { shouldReceiveNativeCur, foreignChainId },
+) => {
   const signer = ethersProvider.getSigner();
-  const { mode, mediator, address } = token;
+  const { mode, mediator, address, helperContractAddress } = token;
   switch (mode) {
+    case 'NATIVE': {
+      const abi = [
+        'function wrapAndRelayTokens(address _receiver) public payable',
+      ];
+      const helperContract = new Contract(helperContractAddress, abi, signer);
+      return helperContract.wrapAndRelayTokens(receiver, { value: amount });
+    }
     case 'erc677': {
       const abi = ['function transferAndCall(address, uint256, bytes)'];
       const tokenContract = new Contract(address, abi, signer);
-      return tokenContract.transferAndCall(mediator, amount, receiver);
+      const bytesData = shouldReceiveNativeCur
+        ? `${getHelperContract(foreignChainId)}${receiver.replace('0x', '')}`
+        : receiver;
+      return tokenContract.transferAndCall(mediator, amount, bytesData);
     }
     case 'dedicated-erc20': {
       const abi = ['function relayTokens(address, uint256)'];
