@@ -51,17 +51,17 @@ export const useGraphHealth = (
     const load = async () => {
       try {
         setLoading(true);
-        const hChainId = await getEthersProvider(homeChainId);
-        const fChainId = await getEthersProvider(foreignChainId);
-        if (!hChainId || !fChainId) return;
+        const homeProvider = await getEthersProvider(homeChainId);
+        const foreignProvider = await getEthersProvider(foreignChainId);
+        if (!homeProvider || !foreignProvider) return;
         const [
           { homeHealth, foreignHealth },
           homeBlockNumber,
           foreignBlockNumber,
         ] = await Promise.all([
           getHealthStatus(bridgeDirection),
-          hChainId?.getBlockNumber(),
-          fChainId?.getBlockNumber(),
+          homeProvider?.getBlockNumber(),
+          foreignProvider?.getBlockNumber(),
         ]);
         logDebug({
           homeHealth,

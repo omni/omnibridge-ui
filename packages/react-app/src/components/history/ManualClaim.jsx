@@ -54,6 +54,7 @@ export const ManualClaim = () => {
       bg="white"
       p="1rem"
       borderRadius="0.5rem"
+      boxShadow="0px 1rem 2rem rgba(204, 218, 238, 0.8)"
       direction={{ base: 'column', lg: 'row' }}
     >
       <Flex

@@ -1,11 +1,10 @@
-import { Checkbox, Flex, Grid, Image, Text } from '@chakra-ui/react';
-import AlertImage from 'assets/alert.svg';
+import { Checkbox, Flex, Grid, Text } from '@chakra-ui/react';
+import { GraphHealthAlert } from 'components/history/GraphHealthAlert';
 import { HistoryItem } from 'components/history/HistoryItem';
 import { HistoryPagination } from 'components/history/HistoryPagination';
 import { ManualClaim } from 'components/history/ManualClaim';
 import { NoHistory } from 'components/history/NoHistory';
 import { LoadingModal } from 'components/modals/LoadingModal';
-import { useGraphHealth } from 'hooks/useGraphHealth';
 import { useUserHistory } from 'hooks/useUserHistory';
 import React, { useState } from 'react';
 import { Redirect } from 'react-router-dom';
@@ -16,12 +15,6 @@ export const BridgeHistory = ({ page }) => {
   const [onlyUnReceived, setOnlyUnReceived] = useState(false);
 
   const { transfers, loading } = useUserHistory();
-  const { foreignHealthy, homeHealthy } = useGraphHealth(
-    'Cannot access history data. Wait for a few minutes and reload the application',
-    {
-      disableAlerts: true,
-    },
-  );
 
   if (loading) {
     return (
@@ -52,6 +45,8 @@ export const BridgeHistory = ({ page }) => {
       px={{ base: 4, sm: 8 }}
       w="100%"
     >
+      <GraphHealthAlert />
+      <ManualClaim />
       <Flex justify="space-between" align="center" mb={4}>
         <Text fontSize="xl" fontWeight="bold">
           History
@@ -67,38 +62,6 @@ export const BridgeHistory = ({ page }) => {
           <Text fontSize="sm">Show only unreceived</Text>
         </Checkbox>
       </Flex>
-
-      {!(foreignHealthy && homeHealthy) && (
-        <Flex w="100%" align="center" mb={4}>
-          <Flex
-            w="100%"
-            borderRadius="0.5rem"
-            border="1px solid #DAE3F0"
-            bg="white"
-          >
-            <Flex
-              bg="#FFF7EF"
-              borderLeftRadius="0.5rem"
-              border="1px solid #FFAA5C"
-              justify="center"
-              align="center"
-              minW="4rem"
-              maxW="4rem"
-              flex={1}
-            >
-              <Image src={AlertImage} />
-            </Flex>
-            <Flex align="center" p={4}>
-              <Text fontSize="0.75rem">
-                The Graph service may not work properly and some transfers may
-                not display. You can use the form below to claim your tokens.
-              </Text>
-            </Flex>
-          </Flex>
-        </Flex>
-      )}
-
-      <ManualClaim />
 
       {displayHistory.length > 0 ? (
         <>

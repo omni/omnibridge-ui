@@ -1,6 +1,7 @@
 import { Flex, Grid, Text, useBreakpointValue } from '@chakra-ui/react';
 import { AdvancedMenu } from 'components/bridge/AdvancedMenu';
 import { FromToken } from 'components/bridge/FromToken';
+import { RPCHealthAlert } from 'components/bridge/RPCHealthAlert';
 import { SystemFeedback } from 'components/bridge/SystemFeedback';
 import { ToToken } from 'components/bridge/ToToken';
 import { TransferButton } from 'components/bridge/TransferButton';
@@ -42,88 +43,95 @@ export const BridgeTokens = () => {
   const txNeedsClaiming = !!txHash && !loading && chainId === foreignChainId;
   return (
     <Flex
-      w={{ base: undefined, lg: 'calc(100% - 4rem)' }}
-      maxW="75rem"
-      background="white"
-      boxShadow="0px 1rem 2rem rgba(204, 218, 238, 0.8)"
-      borderRadius="1rem"
-      direction="column"
       align="center"
-      p={{ base: 4, md: 8 }}
-      mx={{ base: 4, sm: 8 }}
+      justify="center"
+      direction="column"
+      w={{ base: undefined, lg: 'calc(100% - 4rem)' }}
       my="auto"
+      mx={{ base: 4, sm: 8 }}
     >
-      <BridgeLoadingModal />
-      {txNeedsClaiming ? <ClaimTransferModal /> : null}
-      {txNeedsClaiming || neverShowClaims || needsSaving ? null : (
-        <ClaimTokensModal />
-      )}
-      {!smallScreen && (
-        <Flex w="100%" justify="space-between">
-          <Flex align="flex-start" direction="column">
-            <Text color="greyText" fontSize="sm">
-              From
-            </Text>
-            <Text fontWeight="bold" fontSize="lg">
-              {getNetworkName(chainId)}
-            </Text>
-          </Flex>
-          {isERC20Dai && <DaiWarning />}
-          {showReverseBridgeWarning && <ReverseWarning />}
-          <Flex align="flex-end" direction="column">
-            <Text color="greyText" fontSize="sm">
-              To
-            </Text>
-            <Text fontWeight="bold" fontSize="lg" textAlign="right">
-              {getNetworkName(bridgeChainId)}
-            </Text>
-          </Flex>
-        </Flex>
-      )}
-      <Grid
-        templateColumns={{ base: 'initial', lg: '2fr 1fr 2fr' }}
-        width="100%"
-        my={4}
+      <RPCHealthAlert />
+      <Flex
+        maxW="75rem"
+        background="white"
+        boxShadow="0px 1rem 2rem rgba(204, 218, 238, 0.8)"
+        borderRadius="1rem"
+        direction="column"
+        align="center"
+        p={{ base: 4, md: 8 }}
       >
-        {smallScreen && isERC20Dai && <DaiWarning />}
-        {smallScreen && showReverseBridgeWarning && (
-          <ReverseWarning isSmallScreen />
+        <BridgeLoadingModal />
+        {txNeedsClaiming ? <ClaimTransferModal /> : null}
+        {txNeedsClaiming || neverShowClaims || needsSaving ? null : (
+          <ClaimTokensModal />
         )}
-        {smallScreen && (
-          <Flex align="flex-start" direction="column" m={2}>
-            <Text color="greyText" fontSize="sm">
-              From
-            </Text>
-            <Text fontWeight="bold" fontSize="lg">
-              {getNetworkName(chainId)}
-            </Text>
+        {!smallScreen && (
+          <Flex w="100%" justify="space-between">
+            <Flex align="flex-start" direction="column">
+              <Text color="greyText" fontSize="sm">
+                From
+              </Text>
+              <Text fontWeight="bold" fontSize="lg">
+                {getNetworkName(chainId)}
+              </Text>
+            </Flex>
+            {isERC20Dai && <DaiWarning />}
+            {showReverseBridgeWarning && <ReverseWarning />}
+            <Flex align="flex-end" direction="column">
+              <Text color="greyText" fontSize="sm">
+                To
+              </Text>
+              <Text fontWeight="bold" fontSize="lg" textAlign="right">
+                {getNetworkName(bridgeChainId)}
+              </Text>
+            </Flex>
           </Flex>
         )}
-        <FromToken />
-        <Flex
-          direction="column"
-          px={{ base: 2, lg: 4 }}
-          my={{ base: 2, lg: 0 }}
-          align="center"
-          w="100%"
+        <Grid
+          templateColumns={{ base: 'initial', lg: '2fr 1fr 2fr' }}
+          width="100%"
+          my={4}
         >
-          <UnlockButton />
-          <TransferButton />
-        </Flex>
-        {smallScreen && (
-          <Flex align="flex-end" direction="column" m={2}>
-            <Text color="greyText" fontSize="sm">
-              To
-            </Text>
-            <Text fontWeight="bold" fontSize="lg" textAlign="right">
-              {getNetworkName(bridgeChainId)}
-            </Text>
+          {smallScreen && isERC20Dai && <DaiWarning />}
+          {smallScreen && showReverseBridgeWarning && (
+            <ReverseWarning isSmallScreen />
+          )}
+          {smallScreen && (
+            <Flex align="flex-start" direction="column" m={2}>
+              <Text color="greyText" fontSize="sm">
+                From
+              </Text>
+              <Text fontWeight="bold" fontSize="lg">
+                {getNetworkName(chainId)}
+              </Text>
+            </Flex>
+          )}
+          <FromToken />
+          <Flex
+            direction="column"
+            px={{ base: 2, lg: 4 }}
+            my={{ base: 2, lg: 0 }}
+            align="center"
+            w="100%"
+          >
+            <UnlockButton />
+            <TransferButton />
           </Flex>
-        )}
-        <ToToken />
-      </Grid>
-      <AdvancedMenu />
-      <SystemFeedback />
+          {smallScreen && (
+            <Flex align="flex-end" direction="column" m={2}>
+              <Text color="greyText" fontSize="sm">
+                To
+              </Text>
+              <Text fontWeight="bold" fontSize="lg" textAlign="right">
+                {getNetworkName(bridgeChainId)}
+              </Text>
+            </Flex>
+          )}
+          <ToToken />
+        </Grid>
+        <AdvancedMenu />
+        <SystemFeedback />
+      </Flex>
     </Flex>
   );
 };
