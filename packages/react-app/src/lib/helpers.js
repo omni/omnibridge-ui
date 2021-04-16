@@ -4,6 +4,8 @@ import {
   defaultTokens,
   defaultTokensUrl,
   LOCAL_STORAGE_KEYS,
+  nativeCurrencies,
+  nativeCurrencyMediators,
   networkCurrencies,
   networkLabels,
   networkNames,
@@ -23,6 +25,8 @@ export const getDefaultToken = chainId =>
 export const getWalletProviderName = provider =>
   provider?.connection?.url || null;
 
+export const getNativeCurrency = chainId => nativeCurrencies[chainId || 1];
+
 export const getNetworkName = chainId =>
   networkNames[chainId] || 'Unknown Network';
 
@@ -39,6 +43,12 @@ export const getExplorerUrl = chainId =>
 
 export const getTokenListUrl = chainId =>
   defaultTokensUrl[chainId] || defaultTokensUrl[1];
+
+export const removeElement = (array, index) => {
+  const cloneArr = [...array];
+  cloneArr.splice(index, 1);
+  return cloneArr;
+};
 
 export const uniqueTokens = list => {
   const seen = {};
@@ -160,6 +170,9 @@ export const getRPCKeys = bridgeDirection => {
   }
 };
 
+export const getHelperContract = chainId =>
+  nativeCurrencyMediators[chainId || 1];
+
 export const getMediatorAddressWithoutOverride = (bridgeDirection, chainId) => {
   if (!bridgeDirection || !chainId) return null;
   const { homeChainId, homeMediatorAddress, foreignMediatorAddress } = networks[
@@ -176,4 +189,13 @@ export const getMediatorAddress = (bridgeDirection, token) => {
     return getOverriddenMediator(bridgeDirection, token);
   }
   return getMediatorAddressWithoutOverride(bridgeDirection, token.chainId);
+};
+
+export const truncateText = (text, maxLength) => {
+  let truncated = text;
+
+  if (truncated.length > maxLength - 3) {
+    truncated = `${truncated.substr(0, maxLength - 3)}...`;
+  }
+  return truncated;
 };

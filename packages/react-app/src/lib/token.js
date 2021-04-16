@@ -115,12 +115,11 @@ const fetchTokenDetailsFromContract = async token => {
 };
 
 export const fetchTokenDetails = async (bridgeDirection, token) => {
+  const mediatorAddress = getMediatorAddress(bridgeDirection, token);
   const [{ name, symbol, decimals }, mode] = await Promise.all([
     fetchTokenDetailsFromContract(token),
     fetchMode(bridgeDirection, token),
   ]);
-
-  const mediatorAddress = getMediatorAddress(bridgeDirection, token);
 
   return {
     ...token,
@@ -149,9 +148,12 @@ export const fetchTokenBalance = async (token, account) => {
 
 export const fetchTokenBalanceWithProvider = async (
   ethersProvider,
-  { address },
+  { address, mode },
   account,
 ) => {
+  if (address === ADDRESS_ZERO && mode === 'NATIVE') {
+    return ethersProvider.getBalance(account);
+  }
   if (!account || !address || address === ADDRESS_ZERO || !ethersProvider) {
     return BigNumber.from(0);
   }
