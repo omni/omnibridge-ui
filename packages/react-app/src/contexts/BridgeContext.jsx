@@ -159,7 +159,13 @@ export const BridgeProvider = ({ children }) => {
         fromToken,
         receiver || account,
         fromAmount,
-        { shouldReceiveNativeCur, foreignChainId },
+        {
+          shouldReceiveNativeCur:
+            shouldReceiveNativeCur &&
+            toToken?.address === ADDRESS_ZERO &&
+            toToken?.mode === 'NATIVE',
+          foreignChainId,
+        },
       );
       setTxHash(tx.hash);
     } catch (transferError) {
@@ -175,6 +181,7 @@ export const BridgeProvider = ({ children }) => {
     }
   }, [
     fromToken,
+    toToken,
     account,
     receiver,
     ethersProvider,
@@ -279,11 +286,14 @@ export const BridgeProvider = ({ children }) => {
   useEffect(() => {
     if (
       toToken?.chainId === foreignChainId &&
-      toToken?.address === ADDRESS_ZERO
+      toToken?.address === ADDRESS_ZERO &&
+      toToken?.mode === 'NATIVE'
     ) {
       setShouldReceiveNativeCur(true);
+    } else {
+      setShouldReceiveNativeCur(false);
     }
-  }, [toToken, setShouldReceiveNativeCur, foreignChainId]);
+  }, [fromToken, toToken, setShouldReceiveNativeCur, foreignChainId]);
 
   useEffect(() => {
     updateToken();
