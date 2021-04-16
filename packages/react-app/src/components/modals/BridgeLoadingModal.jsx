@@ -31,6 +31,7 @@ export const BridgeLoadingModal = () => {
   );
   useGraphHealth(
     'Cannot collect data to finalize the transfer. Wait for a few minutes, reload the application and look for your unclaimed transactions in the History tab',
+    { disableAlerts: !txHash },
   );
   const {
     loadingText,

@@ -131,12 +131,12 @@ export const AddToMetamaskModal = ({ isOpen, onClose, token: tokenToAdd }) => {
                 <Flex
                   mt={4}
                   w="100%"
-                  borderRadius="4px"
+                  borderRadius="0.25rem"
                   border="1px solid #DAE3F0"
                 >
                   <Flex
                     bg="rgba(255, 102, 92, 0.1)"
-                    borderLeftRadius="4px"
+                    borderLeftRadius="0.25rem"
                     border="1px solid #FF665C"
                     justify="center"
                     align="center"
@@ -146,7 +146,7 @@ export const AddToMetamaskModal = ({ isOpen, onClose, token: tokenToAdd }) => {
                   >
                     <Image src={ErrorImage} />
                   </Flex>
-                  <Flex align="center" fontSize="12px" p={4}>
+                  <Flex align="center" fontSize="0.75rem" p={4}>
                     <Text>
                       <Text as="span">{`Please switch the network in your wallet to `}</Text>
                       <Text as="b">{`${getNetworkName(token.chainId)}`}</Text>

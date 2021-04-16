@@ -60,13 +60,13 @@ export const NeedsConfirmationModal = ({ setNeedsConfirmation }) => {
               <Flex
                 mt={4}
                 w="100%"
-                borderRadius="4px"
+                borderRadius="0.25rem"
                 border="1px solid #DAE3F0"
                 mb={6}
               >
                 <Flex
                   bg="rgba(83, 164, 255, 0.1)"
-                  borderLeftRadius="4px"
+                  borderLeftRadius="0.25rem"
                   border="1px solid #53A4FF"
                   justify="center"
                   align="center"
@@ -76,7 +76,7 @@ export const NeedsConfirmationModal = ({ setNeedsConfirmation }) => {
                 >
                   <Image src={InfoImage} />
                 </Flex>
-                <Flex align="center" fontSize="12px" p={4}>
+                <Flex align="center" fontSize="0.75rem" p={4}>
                   <Text>
                     After you switch networks, you will complete a second
                     transaction on {getNetworkName(foreignChainId)} to claim
