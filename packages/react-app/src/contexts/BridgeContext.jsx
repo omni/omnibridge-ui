@@ -14,7 +14,14 @@ import {
   relayTokens,
 } from 'lib/bridge';
 import { ADDRESS_ZERO } from 'lib/constants';
-import { getDefaultToken, logError, parseValue } from 'lib/helpers';
+import {
+  getDefaultToken,
+  getHelperContract,
+  getMediatorAddress,
+  getNativeCurrency,
+  logError,
+  parseValue,
+} from 'lib/helpers';
 import { fetchTokenDetails } from 'lib/token';
 import React, { useCallback, useEffect, useState } from 'react';
 
@@ -27,6 +34,7 @@ export const BridgeProvider = ({ children }) => {
     bridgeDirection,
     getBridgeChainId,
     homeChainId,
+    foreignChainId,
   } = useBridgeDirection();
 
   const [receiver, setReceiver] = useState('');
@@ -39,6 +47,7 @@ export const BridgeProvider = ({ children }) => {
   const [toAmountLoading, setToAmountLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [updateBalance, setUpdateBalance] = useState(false);
+  const [shouldReceiveNativeCur, setShouldReceiveNativeCur] = useState(false);
   const [fromBalance, setFromBalance] = useState(BigNumber.from(0));
   const [toBalance, setToBalance] = useState(BigNumber.from(0));
   const [txHash, setTxHash] = useState();
@@ -94,11 +103,29 @@ export const BridgeProvider = ({ children }) => {
     ],
   );
 
+  const setToToken = useCallback(
+    newToToken => {
+      setTokens(prevTokens => ({
+        fromToken: prevTokens.fromToken,
+        toToken: { ...newToToken },
+      }));
+    },
+    [setTokens],
+  );
+
   const setToken = useCallback(
     async (tokenWithoutMode, isQueryToken = false) => {
       try {
         const [token, gotToToken] = await Promise.all([
-          fetchTokenDetails(bridgeDirection, tokenWithoutMode),
+          tokenWithoutMode?.address === ADDRESS_ZERO
+            ? {
+                ...getNativeCurrency(tokenWithoutMode.chainId),
+                mediator: getMediatorAddress(bridgeDirection, tokenWithoutMode),
+                helperContractAddress: getHelperContract(
+                  tokenWithoutMode.chainId,
+                ),
+              }
+            : fetchTokenDetails(bridgeDirection, tokenWithoutMode),
           fetchToToken(
             bridgeDirection,
             tokenWithoutMode,
@@ -132,6 +159,13 @@ export const BridgeProvider = ({ children }) => {
         fromToken,
         receiver || account,
         fromAmount,
+        {
+          shouldReceiveNativeCur:
+            shouldReceiveNativeCur &&
+            toToken?.address === ADDRESS_ZERO &&
+            toToken?.mode === 'NATIVE',
+          foreignChainId,
+        },
       );
       setTxHash(tx.hash);
     } catch (transferError) {
@@ -145,7 +179,16 @@ export const BridgeProvider = ({ children }) => {
       });
       throw transferError;
     }
-  }, [fromToken, account, receiver, ethersProvider, fromAmount]);
+  }, [
+    fromToken,
+    toToken,
+    account,
+    receiver,
+    ethersProvider,
+    fromAmount,
+    shouldReceiveNativeCur,
+    foreignChainId,
+  ]);
 
   const setDefaultToken = useCallback(
     async chainId => {
@@ -153,7 +196,7 @@ export const BridgeProvider = ({ children }) => {
         fromToken &&
         toToken &&
         toToken.chainId === chainId &&
-        toToken.address !== ADDRESS_ZERO
+        (toToken.address !== ADDRESS_ZERO || toToken.mode === 'NATIVE')
       ) {
         setTokens({ fromToken: toToken, toToken: fromToken });
       } else if (
@@ -201,10 +244,6 @@ export const BridgeProvider = ({ children }) => {
     getBridgeChainId,
   ]);
 
-  useEffect(() => {
-    updateToken();
-  }, [updateToken]);
-
   const updateTokenLimits = useCallback(async () => {
     if (
       providerChainId &&
@@ -244,6 +283,22 @@ export const BridgeProvider = ({ children }) => {
     setUpdateBalance(t => !t);
   }, [txHash]);
 
+  useEffect(() => {
+    if (
+      toToken?.chainId === foreignChainId &&
+      toToken?.address === ADDRESS_ZERO &&
+      toToken?.mode === 'NATIVE'
+    ) {
+      setShouldReceiveNativeCur(true);
+    } else {
+      setShouldReceiveNativeCur(false);
+    }
+  }, [fromToken, toToken, setShouldReceiveNativeCur, foreignChainId]);
+
+  useEffect(() => {
+    updateToken();
+  }, [updateToken]);
+
   return (
     <BridgeContext.Provider
       value={{
@@ -253,6 +308,7 @@ export const BridgeProvider = ({ children }) => {
         setAmount,
         fromToken,
         toToken,
+        setToToken,
         setToken,
         setDefaultToken,
         allowed,
@@ -276,6 +332,8 @@ export const BridgeProvider = ({ children }) => {
         setReceiver,
         updateBalance,
         setUpdateBalance,
+        shouldReceiveNativeCur,
+        setShouldReceiveNativeCur,
         unlockLoading,
         approvalTxHash,
         feeManagerAddress,
