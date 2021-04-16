@@ -14,7 +14,7 @@ import { SelectTokenModal } from 'components/modals/SelectTokenModal';
 import { BridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { BigNumber, utils } from 'ethers';
-import { formatValue, logError, truncateText } from 'lib/helpers';
+import { formatValue, logError } from 'lib/helpers';
 import { fetchTokenBalance } from 'lib/token';
 import React, { useContext, useEffect, useState } from 'react';
 import { defer } from 'rxjs';
@@ -124,7 +124,7 @@ export const FromToken = () => {
                 <Logo uri={token.logoURI} />
               </Flex>
               <Text fontSize="lg" fontWeight="bold" mx={2}>
-                {truncateText(token.name, 24)}
+                {token.name}
               </Text>
               <Image src={DropDown} cursor="pointer" />
             </Flex>

@@ -52,7 +52,6 @@ const messagesTXQuery = gql`
   query getRequests($txHash: String!) {
     requests: userRequests(where: { txHash_contains: $txHash }, first: 1) {
       user
-      recipient
       amount
       token
       decimals

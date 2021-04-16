@@ -23,14 +23,8 @@ import { useSettings } from 'contexts/SettingsContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { PlusIcon } from 'icons/PlusIcon';
-import { ADDRESS_ZERO, LOCAL_STORAGE_KEYS } from 'lib/constants';
-import {
-  formatValue,
-  getNativeCurrency,
-  logError,
-  removeElement,
-  uniqueTokens,
-} from 'lib/helpers';
+import { LOCAL_STORAGE_KEYS } from 'lib/constants';
+import { formatValue, logError, uniqueTokens } from 'lib/helpers';
 import { fetchTokenBalanceWithProvider } from 'lib/token';
 import { fetchTokenList } from 'lib/tokenList';
 import React, {
@@ -55,19 +49,11 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
   const [tokenList, setTokenList] = useState([]);
   const [filteredTokenList, setFilteredTokenList] = useState([]);
   const smallScreen = useBreakpointValue({ sm: false, base: true });
-  const {
-    getBridgeChainId,
-    foreignChainId,
-    getGraphEndpoint,
-    enableForeignCurrencyBridge,
-  } = useBridgeDirection();
+  const { getBridgeChainId, getGraphEndpoint } = useBridgeDirection();
 
   // Callbacks
   const fetchTokenListWithBalance = useCallback(
     async tList => {
-      const tokenValueSortFn = ({ balance: balanceA }, { balance: balanceB }) =>
-        balanceB.sub(balanceA).gt(0) ? 1 : -1;
-
       const tokenListWithBalance = await Promise.all(
         tList.map(async token => ({
           ...token,
@@ -79,20 +65,10 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
         })),
       );
 
-      const natCurIndex = tokenListWithBalance.findIndex(
-        ({ address, mode }) => address === ADDRESS_ZERO && mode === 'NATIVE',
+      return tokenListWithBalance.sort(
+        ({ balance: balanceA }, { balance: balanceB }) =>
+          balanceB.sub(balanceA).gt(0) ? 1 : -1,
       );
-
-      if (natCurIndex !== -1) {
-        return [
-          tokenListWithBalance[natCurIndex],
-          ...removeElement(tokenListWithBalance, natCurIndex).sort(
-            tokenValueSortFn,
-          ),
-        ];
-      }
-
-      return tokenListWithBalance.sort(tokenValueSortFn);
     },
     [account, ethersProvider],
   );
@@ -106,21 +82,11 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
           getGraphEndpoint(chainId),
           getGraphEndpoint(getBridgeChainId(chainId)),
         );
-
-        const nativeCurrency =
-          enableForeignCurrencyBridge && foreignChainId === chainId
-            ? [getNativeCurrency(chainId)]
-            : [];
-
-        const customTokenList = [
-          ...nativeCurrency,
-          ...uniqueTokens(
-            baseTokenList.concat(
-              customTokens.filter(token => token.chainId === chainId),
-            ),
+        const customTokenList = uniqueTokens(
+          baseTokenList.concat(
+            customTokens.filter(token => token.chainId === chainId),
           ),
-        ];
-
+        );
         setTokenList(
           !disableBalanceFetchToken
             ? await fetchTokenListWithBalance(customTokenList)
@@ -136,8 +102,6 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
       getBridgeChainId,
       disableBalanceFetchToken,
       fetchTokenListWithBalance,
-      enableForeignCurrencyBridge,
-      foreignChainId,
     ],
   );
 
@@ -258,7 +222,7 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
                     size="lg"
                     width="100%"
                     borderColor="#DAE3F0"
-                    key={address + symbol}
+                    key={address}
                     onClick={() => onClick(token)}
                     mb={2}
                     px={4}

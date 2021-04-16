@@ -49,7 +49,6 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
   const fromUnit = fromToken.symbol;
   const toAmt = formatValue(toAmount, toToken.decimals);
   const toUnit = toToken.symbol;
-
   const isERC20Dai =
     !!fromToken &&
     fromToken.chainId === foreignChainId &&

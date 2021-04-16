@@ -25,12 +25,7 @@ import {
   getMessageStatus,
 } from 'lib/amb';
 import { POLLING_INTERVAL } from 'lib/constants';
-import {
-  getHelperContract,
-  getNativeCurrency,
-  getNetworkName,
-  logError,
-} from 'lib/helpers';
+import { getNetworkName, logError } from 'lib/helpers';
 import React, { useContext, useEffect, useState } from 'react';
 
 export const ClaimTransferModal = () => {
@@ -39,7 +34,6 @@ export const ClaimTransferModal = () => {
     foreignChainId,
     foreignAmbAddress,
     getGraphEndpoint,
-    enableForeignCurrencyBridge,
   } = useBridgeDirection();
   const { account, ethersProvider, providerChainId } = useWeb3Context();
   const { txHash, setTxHash } = useContext(BridgeContext);
@@ -83,7 +77,6 @@ export const ClaimTransferModal = () => {
       });
     }
   };
-
   const onClick = async () => {
     if (executed) {
       showError('Message already executed');
@@ -182,14 +175,6 @@ export const ClaimTransferModal = () => {
         txHash={txHash}
       />
     );
-
-  const foreignCurrencyHelperContract = getHelperContract(foreignChainId);
-  const { symbol: tokenSymbol } =
-    enableForeignCurrencyBridge &&
-    message.recipient === foreignCurrencyHelperContract
-      ? getNativeCurrency(foreignChainId)
-      : message;
-
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered>
       <ModalOverlay background="modalBG">
@@ -236,7 +221,9 @@ export const ClaimTransferModal = () => {
                     {`The claim process may take a variable period of time on ${getNetworkName(
                       foreignChainId,
                     )}${' '}
-                    depending on network congestion. Your ${tokenSymbol} balance will increase to reflect${' '}
+                    depending on network congestion. Your ${
+                      message.symbol
+                    } balance will increase to reflect${' '}
                     the completed transfer after the claim is processed`}
                   </Text>
                 </Flex>
