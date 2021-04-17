@@ -23,9 +23,11 @@ import {
   parseValue,
 } from 'lib/helpers';
 import { fetchTokenDetails } from 'lib/token';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 
 export const BridgeContext = React.createContext({});
+
+export const useBridgeContext = () => useContext(BridgeContext);
 
 export const BridgeProvider = ({ children }) => {
   const { queryToken, setQueryToken } = useSettings();

@@ -27,7 +27,7 @@ import {
   getNetworkName,
   logError,
 } from 'lib/helpers';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 const { formatUnits } = utils;
 
@@ -98,20 +98,26 @@ export const HistoryItem = ({
   });
 
   const toast = useToast();
-  const showError = msg => {
-    if (msg) {
-      toast({
-        title: 'Error',
-        description: msg,
-        status: 'error',
-        isClosable: 'true',
-      });
-    }
-  };
-  const claimable = message && message.msgData && message.signatures;
+  const showError = useCallback(
+    msg => {
+      if (msg) {
+        toast({
+          title: 'Error',
+          description: msg,
+          status: 'error',
+          isClosable: 'true',
+        });
+      }
+    },
+    [toast],
+  );
+  const claimable = useMemo(
+    () => message && message.msgData && message.signatures,
+    [message],
+  );
   const [loading, setLoading] = useState(false);
   const [txHash, setTxHash] = useState();
-  const claimTokens = async () => {
+  const claimTokens = useCallback(async () => {
     if (loading) return;
     if (providerChainId === homeChainId) {
       showError(`Please switch wallet to ${getNetworkName(foreignChainId)}`);
@@ -127,7 +133,6 @@ export const HistoryItem = ({
         );
         setTxHash(tx.hash);
       } catch (executeError) {
-        setLoading(false);
         logError({ executeError, chainId: providerChainId, message });
         if (executeError && executeError.message) {
           showError(executeError.message);
@@ -136,9 +141,21 @@ export const HistoryItem = ({
             'Impossible to perform the operation. Reload the application and try again.',
           );
         }
+      } finally {
+        setLoading(false);
       }
     }
-  };
+  }, [
+    loading,
+    providerChainId,
+    homeChainId,
+    foreignChainId,
+    ethersProvider,
+    foreignAmbAddress,
+    claimable,
+    message,
+    showError,
+  ]);
 
   useEffect(() => {
     const subscriptions = [];

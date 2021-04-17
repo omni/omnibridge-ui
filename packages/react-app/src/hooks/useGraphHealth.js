@@ -24,7 +24,11 @@ const THRESHOLD_BLOCKS =
   REACT_APP_GRAPH_HEALTH_THRESHOLD_BLOCKS ||
   DEFAULT_GRAPH_HEALTH_THRESHOLD_BLOCKS;
 
-export const useGraphHealth = (description, onlyHome = false) => {
+export const useGraphHealth = (
+  description,
+  options = { onlyHome: false, disableAlerts: false },
+) => {
+  const { onlyHome, disableAlerts } = options;
   const { bridgeDirection, homeChainId, foreignChainId } = useBridgeDirection();
   const { providerChainId } = useWeb3Context();
 
@@ -47,17 +51,17 @@ export const useGraphHealth = (description, onlyHome = false) => {
     const load = async () => {
       try {
         setLoading(true);
-        const hChainId = await getEthersProvider(homeChainId);
-        const fChainId = await getEthersProvider(foreignChainId);
-        if (!hChainId || !fChainId) return;
+        const homeProvider = await getEthersProvider(homeChainId);
+        const foreignProvider = await getEthersProvider(foreignChainId);
+        if (!homeProvider || !foreignProvider) return;
         const [
           { homeHealth, foreignHealth },
           homeBlockNumber,
           foreignBlockNumber,
         ] = await Promise.all([
           getHealthStatus(bridgeDirection),
-          hChainId?.getBlockNumber(),
-          fChainId?.getBlockNumber(),
+          homeProvider?.getBlockNumber(),
+          foreignProvider?.getBlockNumber(),
         ]);
         logDebug({
           homeHealth,
@@ -118,7 +122,7 @@ export const useGraphHealth = (description, onlyHome = false) => {
         toast.close(toastIdRef.current);
       }
       if (!(homeHealthy && foreignHealthy)) {
-        if (onlyHome && !isHome) return;
+        if ((onlyHome === true && !isHome) || disableAlerts === true) return;
         toastIdRef.current = toast({
           title: 'Subgraph Error',
           description,
@@ -135,6 +139,9 @@ export const useGraphHealth = (description, onlyHome = false) => {
     toast,
     onlyHome,
     isHome,
+    disableAlerts,
     description,
   ]);
+
+  return { homeHealthy, foreignHealthy };
 };

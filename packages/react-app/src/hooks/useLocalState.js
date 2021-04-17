@@ -19,7 +19,7 @@ export const useLocalState = (
     return storageValue;
   }, [storageValue, valueType]);
 
-  const [value, setValue] = useState(initialValue || castedValue);
+  const [value, setValue] = useState(castedValue || initialValue);
 
   const updateValue = useCallback(
     (val, shouldBeStored = false) => {

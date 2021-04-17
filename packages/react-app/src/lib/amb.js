@@ -37,15 +37,17 @@ function packSignatures(array) {
   return `0x${msgLength}${v}${r}${s}`;
 }
 
-export const executeSignatures = async (ethersProvider, address, message) => {
+export const executeSignatures = async (
+  ethersProvider,
+  address,
+  { msgData, signatures },
+) => {
   const abi = [
     'function executeSignatures(bytes messageData, bytes signatures) external',
   ];
-  const signatures = packSignatures(
-    message.signatures.map(s => signatureToVRS(s)),
-  );
+  const signs = packSignatures(signatures.map(s => signatureToVRS(s)));
   const ambContract = new Contract(address, abi, ethersProvider.getSigner());
-  return ambContract.executeSignatures(message.msgData, signatures);
+  return ambContract.executeSignatures(msgData, signs);
 };
 
 const messagesTXQuery = gql`

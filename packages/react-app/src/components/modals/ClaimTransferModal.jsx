@@ -215,13 +215,13 @@ export const ClaimTransferModal = () => {
               <Flex
                 mt={4}
                 w="100%"
-                borderRadius="4px"
+                borderRadius="0.25rem"
                 border="1px solid #DAE3F0"
                 mb={executed ? 6 : 0}
               >
                 <Flex
                   bg="rgba(83, 164, 255, 0.1)"
-                  borderLeftRadius="4px"
+                  borderLeftRadius="0.25rem"
                   border="1px solid #53A4FF"
                   justify="center"
                   align="center"
@@ -231,7 +231,7 @@ export const ClaimTransferModal = () => {
                 >
                   <Image src={InfoImage} />
                 </Flex>
-                <Flex align="center" fontSize="12px" p={4}>
+                <Flex align="center" fontSize="0.75rem" p={4}>
                   <Text>
                     {`The claim process may take a variable period of time on ${getNetworkName(
                       foreignChainId,
@@ -242,10 +242,14 @@ export const ClaimTransferModal = () => {
                 </Flex>
               </Flex>
               {executed && (
-                <Flex w="100%" borderRadius="4px" border="1px solid #DAE3F0">
+                <Flex
+                  w="100%"
+                  borderRadius="0.25rem"
+                  border="1px solid #DAE3F0"
+                >
                   <Flex
                     bg="rgba(255, 102, 92, 0.1)"
-                    borderLeftRadius="4px"
+                    borderLeftRadius="0.25rem"
                     border="1px solid #FF665C"
                     justify="center"
                     align="center"
@@ -255,7 +259,7 @@ export const ClaimTransferModal = () => {
                   >
                     <Image src={ErrorImage} />
                   </Flex>
-                  <Flex align="center" fontSize="12px" p={4}>
+                  <Flex align="center" fontSize="0.75rem" p={4}>
                     <Text>The transfer request was already executed</Text>
                   </Flex>
                 </Flex>

@@ -42,10 +42,10 @@ export const NeedsTransactions = () => {
   }
 
   return (
-    <Flex mt={4} w="100%" borderRadius="4px" border="1px solid #DAE3F0">
+    <Flex mt={4} w="100%" borderRadius="0.25rem" border="1px solid #DAE3F0">
       <Flex
         bg="#FFF7EF"
-        borderLeftRadius="4px"
+        borderLeftRadius="0.25rem"
         border="1px solid #FFAA5C"
         justify="center"
         align="center"
@@ -54,7 +54,7 @@ export const NeedsTransactions = () => {
       >
         <Image src={AlertImage} />
       </Flex>
-      <Flex align="center" fontSize="12px" p={2} pl={4}>
+      <Flex align="center" fontSize="0.75rem" p={2} pl={4}>
         <Text>
           {`The claim process requires 2 transactions, one on ${getNetworkName(
             homeChainId,

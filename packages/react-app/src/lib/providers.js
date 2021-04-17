@@ -24,10 +24,10 @@ const memoized = memoize(
 );
 
 export const getEthersProvider = async chainId => {
-  const localRPCUrl = window.localStorage.getItem(
-    RPC_URL[chainId] || RPC_URL[1],
-  );
-  const rpcURLs = localRPCUrl || getRPCUrl(chainId, true);
+  const localRPCUrl = window.localStorage.getItem(RPC_URL[chainId]);
+  const rpcURLs = localRPCUrl
+    ? [localRPCUrl].concat(getRPCUrl(chainId, true))
+    : getRPCUrl(chainId, true);
   const provider = (
     await Promise.all(
       rpcURLs.map(async url => {
