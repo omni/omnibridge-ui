@@ -121,8 +121,11 @@ const median = arr => {
 
 export const getMedianHistoricalEthGasPrice = async hours => {
   // https://ethgas.watch/api/gas/trend?hours=168
-  const response = await axios.get(
-    `https://ethgas.watch/api/gas/trend?hours=${hours}`,
+  // const response = await axios.get(
+  //   `https://mainnet.blockscout.com/ethgas?hours=${hours}`,
+  // );
+  const response = await fetch(
+    `https://mainnet.blockscout.com/ethgas?hours=${hours}`,
   );
 
   if (response.status !== 200) {

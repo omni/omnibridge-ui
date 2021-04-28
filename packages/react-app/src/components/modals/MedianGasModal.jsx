@@ -4,6 +4,9 @@ import React from 'react';
 
 export const MedianGasModal = props => {
   const { medianPrice, currentGas } = props;
+  console.log('Hello');
+  console.log(medianPrice);
+  console.log(currentGas);
   const percent = medianPrice / currentGas;
 
   return (
