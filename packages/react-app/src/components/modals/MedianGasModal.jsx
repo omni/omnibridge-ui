@@ -4,15 +4,11 @@ import React from 'react';
 
 export const MedianGasModal = props => {
   const { medianPrice, currentGas } = props;
-  console.log('Hello');
-  console.log(medianPrice);
-  console.log(currentGas);
   const percent = currentGas
     .sub(medianPrice)
     .mul(100)
     .div(currentGas)
     .toNumber();
-  console.log(percent);
 
   return (
     <Flex mt={4} w="100%" borderRadius="4px" border="1px solid #DAE3F0">
