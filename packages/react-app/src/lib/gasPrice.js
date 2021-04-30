@@ -99,14 +99,12 @@ class GasPriceStore {
   }
 
   async getMedianHistoricalPrice() {
-    // https://ethgas.watch/api/gas/trend?hours=168
     const response = await axios.get(
       `https://ethgas.watch/api/gas/trend?hours=168`,
     );
     if (response.status !== 200) {
       throw new Error(`Fetch gasPrice from ethgasAPI failed!`);
     }
-    // Calculate median and return
     const { normal } = response.data;
     this.medianHistoricalPrice = median(normal);
     setTimeout(() => this.getMedianHistoricalPrice(), this.updateInterval);
@@ -115,15 +113,6 @@ class GasPriceStore {
 
 const foreignGasStore = new GasPriceStore();
 
-// export const getGasPrice = chainId => {
-//  if (XDAI_CHAIN_IDS.indexOf(chainId) !== -1) {
-//    return utils.parseUnits('1', 'gwei').toHexString();
-//  }
-//  if (chainId === 56) {
-//    return utils.parseUnits('10', 'gwei').toHexString();
-//  }
-//  return foreignGasStore.gasPriceInHex();
-// };
 export const getGasPrice = () => {
   return foreignGasStore.gasPrice;
 };
@@ -138,10 +127,9 @@ const median = arr => {
   return arr.length % 2 !== 0 ? nums[mid] : (nums[mid - 1] + nums[mid]) / 2;
 };
 
-export const getMedianHistoricalEthGasPrice = hours => {
-  // https://ethgas.watch/api/gas/trend?hours=168
-  // return utils.parseUnits(
-  //   foreignGasStore.medianHistoricalPrice.toString(),
-  //   'gwei',
-  return utils.parseUnits('30', 'gwei');
+export const getMedianHistoricalEthGasPrice = () => {
+  return utils.parseUnits(
+    foreignGasStore.medianHistoricalPrice.toString(),
+    'gwei',
+  );
 };

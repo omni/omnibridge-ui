@@ -52,11 +52,7 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
   const toAmt = formatValue(toAmount, toToken.decimals);
   const toUnit = toToken.symbol;
   const currentGasPrice = getGasPrice();
-  const medianGasPrice = getMedianHistoricalEthGasPrice(168);
-  console.log('Median');
-  console.log(medianGasPrice.toNumber());
-  console.log('Current');
-  console.log(currentGasPrice.toNumber());
+  const medianGasPrice = getMedianHistoricalEthGasPrice();
 
   const isERC20Dai =
     !!fromToken &&
@@ -87,8 +83,6 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
     onClose();
   };
 
-  console.log('foreignChainId');
-  console.log(foreignChainId);
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered>
       <ModalOverlay background="modalBG">
@@ -193,7 +187,7 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
               <Text as="span">{` on ${getNetworkLabel(toToken.chainId)}`}</Text>
             </Box>
             {isHome && <NeedsTransactions />}
-            {foreignChainId === 42 && medianGasPrice.lt(currentGasPrice) && (
+            {foreignChainId === 1 && medianGasPrice.lt(currentGasPrice) && (
               <MedianGasModal
                 medianPrice={medianGasPrice}
                 currentGas={currentGasPrice}
