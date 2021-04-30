@@ -1,10 +1,10 @@
 import { Checkbox, Flex, Grid, Text } from '@chakra-ui/react';
-import { GraphHealthAlert } from 'components/history/GraphHealthAlert';
 import { HistoryItem } from 'components/history/HistoryItem';
 import { HistoryPagination } from 'components/history/HistoryPagination';
 import { ManualClaim } from 'components/history/ManualClaim';
 import { NoHistory } from 'components/history/NoHistory';
 import { LoadingModal } from 'components/modals/LoadingModal';
+import { GraphHealthWarning } from 'components/warnings/GraphHealthWarning';
 import { useUserHistory } from 'hooks/useUserHistory';
 import React, { useState } from 'react';
 import { Redirect } from 'react-router-dom';
@@ -45,7 +45,7 @@ export const BridgeHistory = ({ page }) => {
       px={{ base: 4, sm: 8 }}
       w="100%"
     >
-      <GraphHealthAlert />
+      <GraphHealthWarning />
       <ManualClaim />
       <Flex justify="space-between" align="center" mb={4}>
         <Text fontSize="xl" fontWeight="bold">

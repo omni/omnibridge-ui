@@ -27,8 +27,12 @@ const XDaiBridgeLink = () => (
 
 export const DaiWarning = () => {
   return (
-    <Flex align="flex-middle" direction="column">
-      <Alert status="warning" borderRadius={5} mb={5}>
+    <Flex align="center" direction="column" w="100%" mb="4">
+      <Alert
+        status="warning"
+        borderRadius={5}
+        boxShadow="0px 1rem 2rem rgba(204, 218, 238, 0.8)"
+      >
         <AlertIcon minWidth="20px" />
         <Text fontSize="small">
           Bridging DAI token to xDai Chain DOES NOT mint native xDai token. If

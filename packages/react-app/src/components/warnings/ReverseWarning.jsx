@@ -3,11 +3,15 @@ import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { getNetworkName } from 'lib/helpers';
 import React from 'react';
 
-export const ReverseWarning = ({ isSmallScreen }) => {
+export const ReverseWarning = () => {
   const { homeChainId, foreignChainId } = useBridgeDirection();
   return (
-    <Flex align="flex-middle" direction="column" mx={isSmallScreen ? 0 : 2}>
-      <Alert status="warning" borderRadius={5} mb={5}>
+    <Flex align="center" direction="column" w="100%" mb="4">
+      <Alert
+        status="warning"
+        borderRadius={5}
+        boxShadow="0px 1rem 2rem rgba(204, 218, 238, 0.8)"
+      >
         <AlertIcon minWidth="20px" />
         <Text fontSize="small">
           The current version of OmniBridge does not support sending native
