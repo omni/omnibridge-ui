@@ -72,6 +72,7 @@ export const HistoryItem = ({
     toToken,
     message: inputMessage,
   },
+  handleClaimError,
 }) => {
   const {
     homeChainId,
@@ -135,7 +136,7 @@ export const HistoryItem = ({
       } catch (executeError) {
         logError({ executeError, chainId: providerChainId, message });
         if (executeError && executeError.message) {
-          showError(executeError.message);
+          handleClaimError(toToken);
         } else {
           showError(
             'Impossible to perform the operation. Reload the application and try again.',
@@ -154,6 +155,8 @@ export const HistoryItem = ({
     foreignAmbAddress,
     claimable,
     message,
+    handleClaimError,
+    toToken,
     showError,
   ]);
 
