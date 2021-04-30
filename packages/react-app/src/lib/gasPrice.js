@@ -1,6 +1,6 @@
+import axios from 'axios';
 import { utils } from 'ethers';
 import { GasPriceOracle } from 'gas-price-oracle';
-import { XDAI_CHAIN_IDS } from 'lib/constants';
 import { logError } from 'lib/helpers';
 
 const gasPriceOracle = new GasPriceOracle();
@@ -51,6 +51,8 @@ class GasPriceStore {
 
   updateInterval = null;
 
+  medianHistoricalPrice = null;
+
   constructor() {
     this.gasPrice = utils.parseUnits(
       REACT_APP_GAS_PRICE_FALLBACK_GWEI || '0',
@@ -65,6 +67,7 @@ class GasPriceStore {
     this.updateInterval =
       REACT_APP_GAS_PRICE_UPDATE_INTERVAL || DEFAULT_GAS_PRICE_UPDATE_INTERVAL;
     this.updateGasPrice();
+    this.getMedianHistoricalPrice();
   }
 
   async updateGasPrice() {
@@ -94,20 +97,39 @@ class GasPriceStore {
     }
     return utils.parseUnits('50', 'gwei').toHexString();
   }
+
+  async getMedianHistoricalPrice() {
+    const response = await axios.get(
+      `https://ethgas.watch/api/gas/trend?hours=168`,
+    );
+    if (response.status !== 200) {
+      throw new Error(`Fetch gasPrice from ethgasAPI failed!`);
+    }
+    const { normal } = response.data;
+    this.medianHistoricalPrice = median(normal);
+    setTimeout(() => this.getMedianHistoricalPrice(), this.updateInterval);
+  }
 }
 
 const foreignGasStore = new GasPriceStore();
 
-export const getGasPrice = chainId => {
-  if (XDAI_CHAIN_IDS.indexOf(chainId) !== -1) {
-    return utils.parseUnits('1', 'gwei').toHexString();
-  }
-  if (chainId === 56) {
-    return utils.parseUnits('10', 'gwei').toHexString();
-  }
-  return foreignGasStore.gasPriceInHex();
+export const getGasPrice = () => {
+  return foreignGasStore.gasPrice;
 };
 
 export const getFastGasPrice = () => {
   return foreignGasStore.fastGasPriceInBN();
+};
+
+const median = arr => {
+  const mid = Math.floor(arr.length / 2);
+  const nums = [...arr].sort((a, b) => a - b);
+  return arr.length % 2 !== 0 ? nums[mid] : (nums[mid - 1] + nums[mid]) / 2;
+};
+
+export const getMedianHistoricalEthGasPrice = () => {
+  return utils.parseUnits(
+    foreignGasStore.medianHistoricalPrice.toString(),
+    'gwei',
+  );
 };
