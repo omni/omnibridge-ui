@@ -21,6 +21,8 @@ import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { LOCAL_STORAGE_KEYS } from 'lib/constants';
 import { logError, uniqueTokens } from 'lib/helpers';
 import { fetchTokenDetails } from 'lib/token';
+import { isRebasingToken } from 'lib/exceptions';
+import { RebasingTokenWarning } from 'components/warnings/RebasingTokenWarning';
 import React, { useContext, useRef, useState } from 'react';
 
 const { CUSTOM_TOKENS } = LOCAL_STORAGE_KEYS;
@@ -97,6 +99,8 @@ export const CustomTokenModal = ({ isOpen, onClose, onBack }) => {
     }
   };
 
+  const isRebaseToken = isRebasingToken(customToken.chainId, customToken.address);
+
   const initialRef = useRef();
 
   return (
@@ -164,7 +168,8 @@ export const CustomTokenModal = ({ isOpen, onClose, onBack }) => {
               </InputGroup>
             </Flex>
           </ModalBody>
-          <ModalFooter p={6}>
+          <ModalFooter p={6} flexDirection="column">
+            {isRebaseToken && <RebasingTokenWarning token={customToken} />}
             <Flex
               w="100%"
               justify="space-between"
@@ -183,6 +188,7 @@ export const CustomTokenModal = ({ isOpen, onClose, onBack }) => {
               <Button
                 px={12}
                 onClick={onClick}
+                isDisabled={isRebaseToken}
                 colorScheme="blue"
                 mt={{ base: 2, md: 0 }}
               >

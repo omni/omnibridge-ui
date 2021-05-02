@@ -19,10 +19,13 @@ import TransferImage from 'assets/confirm-transfer.svg';
 import { MedianGasModal } from 'components/modals/MedianGasModal';
 import { NeedsTransactions } from 'components/modals/NeedsTransactionsModal';
 import { DaiWarning, isERC20DaiAddress } from 'components/warnings/DaiWarning';
+import { InflationaryTokenWarning } from 'components/warnings/InflationaryTokenWarning';
+import { RebasingTokenWarning } from 'components/warnings/RebasingTokenWarning';
 import { BridgeContext } from 'contexts/BridgeContext';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { getGasPrice, getMedianHistoricalEthGasPrice } from 'lib/gasPrice';
 import { formatValue, getAccountString, getNetworkLabel } from 'lib/helpers';
+import { isInflationaryToken, isRebasingToken } from 'lib/exceptions';
 import React, { useContext, useEffect, useState } from 'react';
 
 export const ConfirmTransferModal = ({ isOpen, onClose }) => {
@@ -45,7 +48,12 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
   }, [fromAmount, toAmount]);
   const smallScreen = useBreakpointValue({ base: true, md: false });
   const toast = useToast();
+  const [isInflationWarningChecked, setInflationWarningChecked] = useState(
+    false,
+  );
+
   if (!fromToken || !toToken) return null;
+
   const isHome = fromToken.chainId === homeChainId;
   const fromAmt = formatValue(fromAmount, fromToken.decimals);
   const fromUnit = fromToken.symbol;
@@ -58,6 +66,12 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
     !!fromToken &&
     fromToken.chainId === foreignChainId &&
     isERC20DaiAddress(fromToken);
+
+  const isInflationToken = isInflationaryToken(
+    fromToken.chainId,
+    fromToken.address,
+  );
+  const isRebaseToken = isRebasingToken(fromToken.chainId, fromToken.address);
 
   const showError = msg => {
     if (msg) {
@@ -93,7 +107,6 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
           mx={{ base: 12, lg: 0 }}
         >
           <ModalHeader p={6}>
-            {isERC20Dai && <DaiWarning />}
             <Text>Confirm Transfer</Text>
           </ModalHeader>
           <ModalCloseButton
@@ -194,7 +207,19 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
               />
             )}
           </ModalBody>
-          <ModalFooter p={6}>
+          <ModalFooter p={6} flexDirection="column">
+            {isERC20Dai && <DaiWarning noShadow />}
+            {isInflationToken && (
+              <InflationaryTokenWarning
+                token={fromToken}
+                isChecked={isInflationWarningChecked}
+                setChecked={setInflationWarningChecked}
+                noShadow
+              />
+            )}
+            {isRebaseToken && (
+              <RebasingTokenWarning token={fromToken} noShadow />
+            )}
             <Flex
               w="100%"
               justify="space-between"
@@ -213,6 +238,10 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
               <Button
                 px={12}
                 onClick={onClick}
+                isDisabled={
+                  isRebaseToken ||
+                  (isInflationToken && !isInflationWarningChecked)
+                }
                 colorScheme="blue"
                 mt={{ base: 2, md: 0 }}
               >
