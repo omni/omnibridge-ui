@@ -21,7 +21,9 @@ export const MedianGasWarning = ({
       >
         <AlertIcon minWidth="20px" />
         <Text fontSize="small">
-          {`The current gas price on the Ethereum Mainnet is ${percent}% above the median for the past 7 days`}
+          {`The current gas price on the Ethereum Mainnet is `}
+          <b>{`${percent}% above the median`}</b>
+          {` for the past 7 days`}
         </Text>
       </Alert>
     </Flex>
