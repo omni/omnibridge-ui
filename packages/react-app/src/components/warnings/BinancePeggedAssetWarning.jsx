@@ -46,21 +46,24 @@ const ComponentFinanceLink = ({ tokenAddress }) => (
   </Link>
 );
 
-export const BinancePeggedAssetWarning = ({ token: { symbol, address } }) => {
+export const BinancePeggedAssetWarning = ({
+  token: { symbol, address },
+  noShadow = false,
+}) => {
   const binancePeggedAssetSymbol = getBinancePeggedAssetSymbol(address);
   return (
     <Flex align="center" direction="column" w="100%" mb="4">
       <Alert
         status="warning"
         borderRadius={5}
-        boxShadow="0px 1rem 2rem rgba(204, 218, 238, 0.8)"
+        boxShadow={noShadow ? 'none' : '0px 1rem 2rem rgba(204, 218, 238, 0.8)'}
       >
         <AlertIcon minWidth="20px" />
         <Text fontSize="small">
           Bridging {symbol} token to Binance Smart Chain DOES NOT unlock
           Binance-Peg {binancePeggedAssetSymbol} token. If you want Binance-Peg{' '}
           {binancePeggedAssetSymbol}, exchange {symbol} on{' '}
-          <ComponentFinanceLink tokenAddress={address} />
+          <ComponentFinanceLink tokenAddress={address} />.
         </Text>
       </Alert>
     </Flex>

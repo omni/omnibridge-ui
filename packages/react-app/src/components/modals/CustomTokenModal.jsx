@@ -14,6 +14,10 @@ import {
   Text,
 } from '@chakra-ui/react';
 import CustomTokenImage from 'assets/custom-token.svg';
+import {
+  isRebasingToken,
+  RebasingTokenWarning,
+} from 'components/warnings/RebasingTokenWarning';
 import { BridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { utils } from 'ethers';
@@ -21,8 +25,6 @@ import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { LOCAL_STORAGE_KEYS } from 'lib/constants';
 import { logError, uniqueTokens } from 'lib/helpers';
 import { fetchTokenDetails } from 'lib/token';
-import { isRebasingToken } from 'lib/exceptions';
-import { RebasingTokenWarning } from 'components/warnings/RebasingTokenWarning';
 import React, { useContext, useRef, useState } from 'react';
 
 const { CUSTOM_TOKENS } = LOCAL_STORAGE_KEYS;
@@ -99,7 +101,7 @@ export const CustomTokenModal = ({ isOpen, onClose, onBack }) => {
     }
   };
 
-  const isRebaseToken = isRebasingToken(customToken.chainId, customToken.address);
+  const isRebaseToken = isRebasingToken(customToken);
 
   const initialRef = useRef();
 

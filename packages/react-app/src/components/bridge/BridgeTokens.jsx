@@ -13,6 +13,14 @@ import {
   isERC20ExchangableBinancePeggedAsset,
 } from 'components/warnings/BinancePeggedAssetWarning';
 import { DaiWarning, isERC20DaiAddress } from 'components/warnings/DaiWarning';
+import {
+  InflationaryTokenWarning,
+  isInflationaryToken,
+} from 'components/warnings/InflationaryTokenWarning';
+import {
+  isRebasingToken,
+  RebasingTokenWarning,
+} from 'components/warnings/RebasingTokenWarning';
 import { ReverseWarning } from 'components/warnings/ReverseWarning';
 import { RPCHealthWarning } from 'components/warnings/RPCHealthWarning';
 import { BridgeContext } from 'contexts/BridgeContext';
@@ -44,15 +52,16 @@ export const BridgeTokens = () => {
     !enableReversedBridge &&
     toToken.chainId === foreignChainId &&
     toToken.address === ADDRESS_ZERO;
-  const smallScreen = useBreakpointValue({ base: true, lg: false });
-  const bridgeChainId = getBridgeChainId(chainId);
-
   const showBinancePeggedAssetWarning =
     !!fromToken &&
     bridgeDirection === BSC_XDAI_BRIDGE &&
     fromToken.chainId === homeChainId &&
     isERC20ExchangableBinancePeggedAsset(fromToken);
+  const isInflationToken = isInflationaryToken(fromToken);
+  const isRebaseToken = isRebasingToken(fromToken);
 
+  const smallScreen = useBreakpointValue({ base: true, lg: false });
+  const bridgeChainId = getBridgeChainId(chainId);
   const txNeedsClaiming = !!txHash && !loading && chainId === foreignChainId;
   return (
     <Flex
@@ -70,6 +79,10 @@ export const BridgeTokens = () => {
       {showBinancePeggedAssetWarning && (
         <BinancePeggedAssetWarning token={fromToken} />
       )}
+      {isInflationToken && (
+        <InflationaryTokenWarning token={fromToken} noCheckbox />
+      )}
+      {isRebaseToken && <RebasingTokenWarning token={fromToken} />}
       <Flex
         maxW="75rem"
         background="white"

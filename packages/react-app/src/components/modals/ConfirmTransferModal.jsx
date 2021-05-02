@@ -16,20 +16,37 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import TransferImage from 'assets/confirm-transfer.svg';
-import { MedianGasModal } from 'components/modals/MedianGasModal';
-import { NeedsTransactions } from 'components/modals/NeedsTransactionsModal';
+import {
+  BinancePeggedAssetWarning,
+  isERC20ExchangableBinancePeggedAsset,
+} from 'components/warnings/BinancePeggedAssetWarning';
 import { DaiWarning, isERC20DaiAddress } from 'components/warnings/DaiWarning';
-import { InflationaryTokenWarning } from 'components/warnings/InflationaryTokenWarning';
-import { RebasingTokenWarning } from 'components/warnings/RebasingTokenWarning';
+import {
+  InflationaryTokenWarning,
+  isInflationaryToken,
+} from 'components/warnings/InflationaryTokenWarning';
+import { MedianGasWarning } from 'components/warnings/MedianGasWarning';
+import { NeedsTransactionsWarning } from 'components/warnings/NeedsTransactionsWarning';
+import {
+  isRebasingToken,
+  RebasingTokenWarning,
+} from 'components/warnings/RebasingTokenWarning';
+import { ReverseWarning } from 'components/warnings/ReverseWarning';
 import { BridgeContext } from 'contexts/BridgeContext';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
+import { ADDRESS_ZERO } from 'lib/constants';
 import { getGasPrice, getMedianHistoricalEthGasPrice } from 'lib/gasPrice';
 import { formatValue, getAccountString, getNetworkLabel } from 'lib/helpers';
-import { isInflationaryToken, isRebasingToken } from 'lib/exceptions';
+import { BSC_XDAI_BRIDGE } from 'lib/networks';
 import React, { useContext, useEffect, useState } from 'react';
 
 export const ConfirmTransferModal = ({ isOpen, onClose }) => {
-  const { homeChainId, foreignChainId } = useBridgeDirection();
+  const {
+    homeChainId,
+    foreignChainId,
+    enableReversedBridge,
+    bridgeDirection,
+  } = useBridgeDirection();
   const {
     receiver,
     fromToken,
@@ -66,12 +83,18 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
     !!fromToken &&
     fromToken.chainId === foreignChainId &&
     isERC20DaiAddress(fromToken);
-
-  const isInflationToken = isInflationaryToken(
-    fromToken.chainId,
-    fromToken.address,
-  );
-  const isRebaseToken = isRebasingToken(fromToken.chainId, fromToken.address);
+  const showReverseBridgeWarning =
+    !!toToken &&
+    !enableReversedBridge &&
+    toToken.chainId === foreignChainId &&
+    toToken.address === ADDRESS_ZERO;
+  const showBinancePeggedAssetWarning =
+    !!fromToken &&
+    bridgeDirection === BSC_XDAI_BRIDGE &&
+    fromToken.chainId === homeChainId &&
+    isERC20ExchangableBinancePeggedAsset(fromToken);
+  const isInflationToken = isInflationaryToken(fromToken);
+  const isRebaseToken = isRebasingToken(fromToken);
 
   const showError = msg => {
     if (msg) {
@@ -199,16 +222,21 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
               <Text as="b">{`${toAmt} ${toUnit}`}</Text>
               <Text as="span">{` on ${getNetworkLabel(toToken.chainId)}`}</Text>
             </Box>
-            {isHome && <NeedsTransactions />}
-            {foreignChainId === 1 && medianGasPrice.lt(currentGasPrice) && (
-              <MedianGasModal
-                medianPrice={medianGasPrice}
-                currentGas={currentGasPrice}
-              />
-            )}
           </ModalBody>
           <ModalFooter p={6} flexDirection="column">
+            {isHome && <NeedsTransactionsWarning noShadow />}
+            {foreignChainId === 1 && medianGasPrice.lt(currentGasPrice) && (
+              <MedianGasWarning
+                medianPrice={medianGasPrice}
+                currentGas={currentGasPrice}
+                noShadow
+              />
+            )}
             {isERC20Dai && <DaiWarning noShadow />}
+            {showReverseBridgeWarning && <ReverseWarning noShadow />}
+            {showBinancePeggedAssetWarning && (
+              <BinancePeggedAssetWarning token={fromToken} noShadow />
+            )}
             {isInflationToken && (
               <InflationaryTokenWarning
                 token={fromToken}
