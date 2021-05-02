@@ -1,7 +1,17 @@
 import axios from 'axios';
-import { utils } from 'ethers';
+import { BigNumber, utils } from 'ethers';
 import { GasPriceOracle } from 'gas-price-oracle';
 import { logError } from 'lib/helpers';
+
+const lowest = arr => {
+  return arr.reduce((low, item) => (low > item ? item : low), arr[0]);
+};
+
+const median = arr => {
+  const mid = Math.floor(arr.length / 2);
+  const nums = [...arr].sort((a, b) => a - b);
+  return arr.length % 2 !== 0 ? nums[mid] : (nums[mid - 1] + nums[mid]) / 2;
+};
 
 const gasPriceOracle = new GasPriceOracle();
 
@@ -43,17 +53,17 @@ const DEFAULT_GAS_PRICE_SPEED_TYPE = 'standard';
 const DEFAULT_GAS_PRICE_UPDATE_INTERVAL = 15000;
 
 class GasPriceStore {
-  gasPrice = null;
+  gasPrice = BigNumber.from('0');
 
-  fastGasPrice = null;
+  fastGasPrice = BigNumber.from('0');
 
-  speedType = null;
+  speedType = DEFAULT_GAS_PRICE_SPEED_TYPE;
 
-  updateInterval = null;
+  updateInterval = DEFAULT_GAS_PRICE_UPDATE_INTERVAL;
 
-  medianHistoricalPrice = null;
+  medianHistoricalPrice = BigNumber.from('0');
 
-  lowestHistoricalPrice = null;
+  lowestHistoricalPrice = BigNumber.from('0');
 
   constructor() {
     this.gasPrice = utils.parseUnits(
@@ -86,20 +96,6 @@ class GasPriceStore {
     setTimeout(() => this.updateGasPrice(), this.updateInterval);
   }
 
-  gasPriceInHex() {
-    if (this.gasPrice.gt(0)) {
-      return this.gasPrice.toHexString();
-    }
-    return undefined;
-  }
-
-  fastGasPriceInBN() {
-    if (this.fastGasPrice.gt(0)) {
-      return this.fastGasPrice;
-    }
-    return utils.parseUnits('50', 'gwei').toHexString();
-  }
-
   async updateHistoricalPrice() {
     const response = await axios.get(
       `https://ethgas.watch/api/gas/trend?hours=168`,
@@ -108,8 +104,14 @@ class GasPriceStore {
       throw new Error(`Fetch gasPrice from ethgasAPI failed!`);
     }
     const { normal } = response.data;
-    this.medianHistoricalPrice = median(normal);
-    this.lowestHistoricalPrice = lowest(normal);
+    this.medianHistoricalPrice = utils.parseUnits(
+      median(normal).toString(),
+      'gwei',
+    );
+    this.lowestHistoricalPrice = utils.parseUnits(
+      lowest(normal).toString(),
+      'gwei',
+    );
     setTimeout(() => this.updateHistoricalPrice(), this.updateInterval);
   }
 }
@@ -121,23 +123,13 @@ export const getGasPrice = () => {
 };
 
 export const getFastGasPrice = () => {
-  return ethGasStore.fastGasPriceInBN();
-};
-
-const lowest = arr => {
-  return arr.reduce((low, item) => (low > item ? item : low), arr[0]);
-};
-
-const median = arr => {
-  const mid = Math.floor(arr.length / 2);
-  const nums = [...arr].sort((a, b) => a - b);
-  return arr.length % 2 !== 0 ? nums[mid] : (nums[mid - 1] + nums[mid]) / 2;
+  return ethGasStore.fastGasPrice;
 };
 
 export const getLowestHistoricalEthGasPrice = () => {
-  return utils.parseUnits(ethGasStore.lowestHistoricalPrice.toString(), 'gwei');
+  return ethGasStore.lowestHistoricalPrice;
 };
 
 export const getMedianHistoricalEthGasPrice = () => {
-  return utils.parseUnits(ethGasStore.medianHistoricalPrice.toString(), 'gwei');
+  return ethGasStore.medianHistoricalPrice;
 };
