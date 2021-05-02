@@ -1,6 +1,7 @@
 import { Flex, Image, Text, useDisclosure, useToast } from '@chakra-ui/react';
 import TransferIcon from 'assets/transfer.svg';
 import { ConfirmTransferModal } from 'components/modals/ConfirmTransferModal';
+import { isRebasingToken } from 'components/warnings/RebasingTokenWarning';
 import { BridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { utils } from 'ethers';
@@ -43,6 +44,8 @@ export const TransferButton = () => {
       });
     }
   };
+  const isRebaseToken = isRebasingToken(token);
+  const buttonEnabled = allowed && !isRebaseToken;
   const valid = () => {
     if (!ethersProvider) {
       showError('Please connect wallet');
@@ -72,7 +75,7 @@ export const TransferButton = () => {
     return false;
   };
   const onClick = () => {
-    if (allowed && valid()) {
+    if (buttonEnabled && valid()) {
       onOpen();
     }
   };
@@ -83,16 +86,16 @@ export const TransferButton = () => {
       mt={{ base: 2, md: 2, lg: 3 }}
       color={isHome ? 'purple.300' : 'blue.500'}
       _hover={
-        !allowed
+        !buttonEnabled
           ? undefined
           : {
               color: isHome ? 'purple.400' : 'blue.600',
             }
       }
-      cursor={!allowed ? 'not-allowed' : 'pointer'}
+      cursor={!buttonEnabled ? 'not-allowed' : 'pointer'}
       transition="0.25s"
       position="relative"
-      opacity={!allowed ? 0.4 : 1}
+      opacity={!buttonEnabled ? 0.4 : 1}
       onClick={onClick}
       borderRadius="0.25rem"
       w={{ base: '10rem', sm: '12rem', lg: 'auto' }}
