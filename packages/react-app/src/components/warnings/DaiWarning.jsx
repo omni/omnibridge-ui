@@ -10,13 +10,10 @@ const ERC20DaiAddress = {
 };
 
 export const isERC20DaiAddress = token => {
-  if (!token) {
-    return false;
-  }
+  if (!token) return false;
 
-  return (
-    token.address.toLowerCase() === ERC20DaiAddress[token.chainId].toLowerCase()
-  );
+  const { chainId, address } = token;
+  return address.toLowerCase() === ERC20DaiAddress[chainId].toLowerCase();
 };
 
 const XDaiBridgeLink = () => (

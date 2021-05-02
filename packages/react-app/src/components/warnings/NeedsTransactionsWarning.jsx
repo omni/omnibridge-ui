@@ -1,5 +1,4 @@
-import { Flex, Image, Link, Text } from '@chakra-ui/react';
-import AlertImage from 'assets/alert.svg';
+import { Alert, AlertIcon, Flex, Link, Text } from '@chakra-ui/react';
 import { utils } from 'ethers';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { getEthereumPrice } from 'lib/ethPrice';
@@ -17,7 +16,7 @@ const LearnMoreLink = () => (
   </Link>
 );
 
-export const NeedsTransactions = () => {
+export const NeedsTransactionsWarning = ({ noShadow = false }) => {
   const { homeChainId, foreignChainId } = useBridgeDirection();
   const GAS_COST = 260000;
 
@@ -42,27 +41,21 @@ export const NeedsTransactions = () => {
   }
 
   return (
-    <Flex mt={4} w="100%" borderRadius="0.25rem" border="1px solid #DAE3F0">
-      <Flex
-        bg="#FFF7EF"
-        borderLeftRadius="0.25rem"
-        border="1px solid #FFAA5C"
-        justify="center"
-        align="center"
-        minW="4rem"
-        flex={1}
+    <Flex align="center" direction="column" w="100%" mb="4">
+      <Alert
+        status="warning"
+        borderRadius={5}
+        boxShadow={noShadow ? 'none' : '0px 1rem 2rem rgba(204, 218, 238, 0.8)'}
       >
-        <Image src={AlertImage} />
-      </Flex>
-      <Flex align="center" fontSize="0.75rem" p={2} pl={4}>
-        <Text>
+        <AlertIcon minWidth="20px" />
+        <Text fontSize="small">
           {`The claim process requires 2 transactions, one on ${getNetworkName(
             homeChainId,
           )} and one
           on ${getNetworkName(foreignChainId)}. `}
           {txCostText}
         </Text>
-      </Flex>
+      </Alert>
     </Flex>
   );
 };

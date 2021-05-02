@@ -1,10 +1,17 @@
 import { Alert, AlertIcon, Flex, Text } from '@chakra-ui/react';
-import { useBridgeDirection } from 'hooks/useBridgeDirection';
-import { getNetworkName } from 'lib/helpers';
 import React from 'react';
 
-export const ReverseWarning = ({ noShadow = false }) => {
-  const { homeChainId, foreignChainId } = useBridgeDirection();
+export const MedianGasWarning = ({
+  medianPrice,
+  currentGas,
+  noShadow = false,
+}) => {
+  const percent = currentGas
+    .sub(medianPrice)
+    .mul(100)
+    .div(currentGas)
+    .toNumber();
+
   return (
     <Flex align="center" direction="column" w="100%" mb="4">
       <Alert
@@ -14,9 +21,7 @@ export const ReverseWarning = ({ noShadow = false }) => {
       >
         <AlertIcon minWidth="20px" />
         <Text fontSize="small">
-          The current version of OmniBridge does not support sending native
-          ERC20 tokens from the {getNetworkName(homeChainId)} to the{' '}
-          {getNetworkName(foreignChainId)}.
+          {`The current gas price on the Ethereum Mainnet is ${percent}% above the median for the past 7 days`}
         </Text>
       </Alert>
     </Flex>

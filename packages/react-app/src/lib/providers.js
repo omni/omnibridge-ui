@@ -43,25 +43,23 @@ export const getEthersProvider = async chainId => {
   const rpcURLs = localRPCUrl
     ? [localRPCUrl].concat(getRPCUrl(chainId, true))
     : getRPCUrl(chainId, true);
-  const provider = (
-    await Promise.any(
-      rpcURLs.map(async url => {
-        const tempProvider = memoized(url);
-        if (!tempProvider) return tempProvider;
-        try {
+  const provider = await Promise.any(
+    rpcURLs.map(async url => {
+      const tempProvider = memoized(url);
+      if (!tempProvider) return tempProvider;
+      try {
+        await promiseWithTimeout(
+          10000,
           // eslint-disable-next-line no-underscore-dangle
-          await promiseWithTimeout(
-            10000,
-            tempProvider._networkPromise,
-            `RPC Timeout: ${url} did not respond in time`,
-          );
-          return tempProvider;
-        } catch (err) {
-          logError({ providerSetError: err.message });
-          return null;
-        }
-      }),
-    )
+          tempProvider._networkPromise,
+          `RPC Timeout: ${url} did not respond in time`,
+        );
+        return tempProvider;
+      } catch (err) {
+        logError({ providerSetError: err.message });
+        return null;
+      }
+    }),
   );
   return provider || null;
 };
