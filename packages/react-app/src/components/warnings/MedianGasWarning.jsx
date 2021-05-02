@@ -3,13 +3,13 @@ import React from 'react';
 
 export const MedianGasWarning = ({
   medianPrice,
-  currentGas,
+  currentPrice,
   noShadow = false,
 }) => {
-  const percent = currentGas
+  const percent = currentPrice
     .sub(medianPrice)
     .mul(100)
-    .div(currentGas)
+    .div(currentPrice)
     .toNumber();
 
   return (

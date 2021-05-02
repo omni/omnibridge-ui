@@ -228,7 +228,7 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
             {foreignChainId === 1 && medianGasPrice.lt(currentGasPrice) && (
               <MedianGasWarning
                 medianPrice={medianGasPrice}
-                currentGas={currentGasPrice}
+                currentPrice={currentGasPrice}
                 noShadow
               />
             )}

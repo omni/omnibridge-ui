@@ -1,4 +1,6 @@
 import {
+  Alert,
+  AlertIcon,
   Button,
   Flex,
   Image,
@@ -19,7 +21,6 @@ import {
   Tr,
   useToast,
 } from '@chakra-ui/react';
-import ErrorImage from 'assets/error.svg';
 import MetamaskFox from 'assets/metamask-fox.svg';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { useCopyToClipboard } from 'hooks/useCopyToClipboard';
@@ -127,31 +128,15 @@ export const AddToMetamaskModal = ({ isOpen, onClose, token: tokenToAdd }) => {
             </Flex>
 
             {needsNetworkChange && (
-              <Flex align="center" direction="column">
-                <Flex
-                  mt={4}
-                  w="100%"
-                  borderRadius="0.25rem"
-                  border="1px solid #DAE3F0"
-                >
-                  <Flex
-                    bg="rgba(255, 102, 92, 0.1)"
-                    borderLeftRadius="0.25rem"
-                    border="1px solid #FF665C"
-                    justify="center"
-                    align="center"
-                    minW="4rem"
-                    maxW="4rem"
-                    flex={1}
-                  >
-                    <Image src={ErrorImage} />
-                  </Flex>
-                  <Flex align="center" fontSize="0.75rem" p={4}>
-                    <Text>
+              <Flex align="center" direction="column" w="100%">
+                <Flex align="center" direction="column" w="100%" mt="4">
+                  <Alert status="warning" borderRadius={5}>
+                    <AlertIcon minWidth="20px" />
+                    <Text fontSize="small">
                       <Text as="span">{`Please switch the network in your wallet to `}</Text>
                       <Text as="b">{`${getNetworkName(token.chainId)}`}</Text>
                     </Text>
-                  </Flex>
+                  </Alert>
                 </Flex>
               </Flex>
             )}
