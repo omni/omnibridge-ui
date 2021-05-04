@@ -1,6 +1,6 @@
 # Omnibridge
 
-The OmniBridge [multi-token extension](https://docs.tokenbridge.net/eth-xdai-amb-bridge/multi-token-extension) for the Arbitrary Message Bridge between Ethereum and the xDai chain is the simplest way to transfer ANY ERC20/ERC677/ERC827 token to the xDai chain.
+The OmniBridge [multi-token extension](https://docs.tokenbridge.net/eth-xdai-amb-bridge/multi-token-extension) for the Arbitrary Message Bridge is the simplest way to transfer ANY ERC20/ERC677/ERC827 token to and from the xDai chain.
 
 ## Project Structure
 
@@ -14,6 +14,7 @@ xdai-omnibridge
 ├── .firebaserc
 ├── .github
 │   └── workflows
+│       ├── production.yml
 │       └── sokol.yml
 ├── .gitignore
 ├── .prettierrc.json
@@ -22,6 +23,7 @@ xdai-omnibridge
 ├── package.json
 ├── packages
 │   ├── react-app
+│   │   ├── jsconfig.json
 │   │   ├── package.json
 │   │   ├── public
 │   │   │   ├── android-chrome-192x192.png
@@ -43,6 +45,7 @@ xdai-omnibridge
 │   │       │   ├── advanced.svg
 │   │       │   ├── alert.svg
 │   │       │   ├── blue-tick.svg
+│   │       │   ├── bsc-logo.png
 │   │       │   ├── change-network.png
 │   │       │   ├── claim.svg
 │   │       │   ├── close.svg
@@ -57,6 +60,7 @@ xdai-omnibridge
 │   │       │   ├── info.svg
 │   │       │   ├── loading.svg
 │   │       │   ├── logo.svg
+│   │       │   ├── metamask-fox.svg
 │   │       │   ├── multiple-claim.svg
 │   │       │   ├── no-history.svg
 │   │       │   ├── right-arrow.svg
@@ -67,50 +71,74 @@ xdai-omnibridge
 │   │       │   ├── up-triangle.svg
 │   │       │   └── xdai-logo.png
 │   │       ├── components
-│   │       │   ├── AdvancedMenu.jsx
-│   │       │   ├── BridgeHistory.jsx
-│   │       │   ├── BridgeLoadingModal.jsx
-│   │       │   ├── BridgeTokens.jsx
-│   │       │   ├── ClaimTokensModal.jsx
-│   │       │   ├── ClaimTransferModal.jsx
-│   │       │   ├── ConfirmTransferModal.jsx
-│   │       │   ├── ConnectWeb3.jsx
-│   │       │   ├── CustomTokenModal.jsx
-│   │       │   ├── DaiWarning.jsx
-│   │       │   ├── ErrorBoundary.jsx
-│   │       │   ├── Footer.jsx
-│   │       │   ├── FromToken.jsx
-│   │       │   ├── Header.jsx
-│   │       │   ├── HistoryItem.jsx
-│   │       │   ├── HistoryPagination.jsx
-│   │       │   ├── Layout.jsx
-│   │       │   ├── LoadingModal.jsx
-│   │       │   ├── Logo.jsx
-│   │       │   ├── NeedsConfirmationModal.jsx
-│   │       │   ├── NeedsTransactions.jsx
-│   │       │   ├── NoHistory.jsx
-│   │       │   ├── ProgressRing.jsx
-│   │       │   ├── ReverseWarning.jsx
-│   │       │   ├── SelectTokenModal.jsx
-│   │       │   ├── SystemFeedback.jsx
-│   │       │   ├── TermsOfServiceModal.jsx
-│   │       │   ├── ToToken.jsx
-│   │       │   ├── TokenSelectorModal.jsx
-│   │       │   ├── TransferButton.jsx
-│   │       │   ├── TxLink.jsx
-│   │       │   ├── UnlockButton.jsx
-│   │       │   ├── UpdateSettings.jsx
-│   │       │   └── WalletSelector.jsx
+│   │       │   ├── bridge
+│   │       │   │   ├── AdvancedMenu.jsx
+│   │       │   │   ├── BridgeTokens.jsx
+│   │       │   │   ├── FromToken.jsx
+│   │       │   │   ├── SystemFeedback.jsx
+│   │       │   │   ├── ToToken.jsx
+│   │       │   │   ├── TransferButton.jsx
+│   │       │   │   └── UnlockButton.jsx
+│   │       │   ├── common
+│   │       │   │   ├── AddToMetamask.jsx
+│   │       │   │   ├── BridgeDropdown.jsx
+│   │       │   │   ├── ConnectWeb3.jsx
+│   │       │   │   ├── ErrorBoundary.jsx
+│   │       │   │   ├── Footer.jsx
+│   │       │   │   ├── Header.jsx
+│   │       │   │   ├── Layout.jsx
+│   │       │   │   ├── Logo.jsx
+│   │       │   │   ├── ProgressRing.jsx
+│   │       │   │   ├── TxLink.jsx
+│   │       │   │   ├── UpdateSettings.jsx
+│   │       │   │   └── WalletSelector.jsx
+│   │       │   ├── history
+│   │       │   │   ├── BridgeHistory.jsx
+│   │       │   │   ├── HistoryItem.jsx
+│   │       │   │   ├── HistoryPagination.jsx
+│   │       │   │   ├── ManualClaim.jsx
+│   │       │   │   └── NoHistory.jsx
+│   │       │   ├── modals
+│   │       │   │   ├── AddToMetamaskModal.jsx
+│   │       │   │   ├── BridgeLoadingModal.jsx
+│   │       │   │   ├── ClaimTokensModal.jsx
+│   │       │   │   ├── ClaimTransferModal.jsx
+│   │       │   │   ├── ConfirmTransferModal.jsx
+│   │       │   │   ├── CustomTokenModal.jsx
+│   │       │   │   ├── LoadingModal.jsx
+│   │       │   │   ├── NeedsConfirmationModal.jsx
+│   │       │   │   ├── SelectTokenModal.jsx
+│   │       │   │   ├── TermsOfServiceModal.jsx
+│   │       │   │   └── TokenSelectorModal.jsx
+│   │       │   └── warnings
+│   │       │       ├── AuspiciousGasWarning.jsx
+│   │       │       ├── BinancePeggedAssetWarning.jsx
+│   │       │       ├── DaiWarning.jsx
+│   │       │       ├── GraphHealthWarning.jsx
+│   │       │       ├── InflationaryTokenWarning.jsx
+│   │       │       ├── MedianGasWarning.jsx
+│   │       │       ├── NeedsTransactionsWarning.jsx
+│   │       │       ├── RPCHealthWarning.jsx
+│   │       │       ├── RebasingTokenWarning.jsx
+│   │       │       └── ReverseWarning.jsx
 │   │       ├── contexts
 │   │       │   ├── BridgeContext.jsx
+│   │       │   ├── SettingsContext.jsx
 │   │       │   └── Web3Context.jsx
 │   │       ├── hooks
-│   │       │   ├── useCurrentDay.js
-│   │       │   ├── useFeeType.js
+│   │       │   ├── useApproval.js
+│   │       │   ├── useBridgeDirection.js
+│   │       │   ├── useClaimableTransfers.js
+│   │       │   ├── useCopyToClipboard.js
+│   │       │   ├── useFeeManager.js
 │   │       │   ├── useGraphHealth.js
-│   │       │   ├── useRewardAddress.js
+│   │       │   ├── useLocalState.js
+│   │       │   ├── useManualClaim.js
+│   │       │   ├── useMediatorInfo.js
+│   │       │   ├── useRPCHealth.js
 │   │       │   ├── useTotalConfirms.js
-│   │       │   └── useTransactionStatus.js
+│   │       │   ├── useTransactionStatus.js
+│   │       │   └── useUserHistory.js
 │   │       ├── icons
 │   │       │   ├── DownArrowIcon.jsx
 │   │       │   ├── ErrorIcon.jsx
@@ -138,6 +166,8 @@ xdai-omnibridge
 │   │       │   ├── graphHealth.js
 │   │       │   ├── helpers.js
 │   │       │   ├── history.js
+│   │       │   ├── metamask.js
+│   │       │   ├── networks.js
 │   │       │   ├── overrides.js
 │   │       │   ├── providers.js
 │   │       │   ├── proxy.js
@@ -149,9 +179,11 @@ xdai-omnibridge
 │   │       └── theme.js
 │   └── subgraph
 │       ├── config
+│       │   ├── bsc-xdai.json
 │       │   ├── kovan.json
 │       │   ├── mainnet.json
 │       │   ├── sokol.json
+│       │   ├── xdai-bsc.json
 │       │   └── xdai.json
 │       ├── package.json
 │       ├── schema.graphql
@@ -165,7 +197,8 @@ xdai-omnibridge
 │       │       ├── amb.ts
 │       │       ├── bridge.ts
 │       │       ├── helpers.ts
-│       │       └── omnibridge.ts
+│       │       ├── omnibridge.ts
+│       │       └── overrides.ts
 │       └── subgraph.template.yaml
 └── yarn.lock
 ```
