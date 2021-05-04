@@ -16,15 +16,37 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import TransferImage from 'assets/confirm-transfer.svg';
-import { NeedsTransactions } from 'components/modals/NeedsTransactionsModal';
+import {
+  BinancePeggedAssetWarning,
+  isERC20ExchangableBinancePeggedAsset,
+} from 'components/warnings/BinancePeggedAssetWarning';
 import { DaiWarning, isERC20DaiAddress } from 'components/warnings/DaiWarning';
+import {
+  InflationaryTokenWarning,
+  isInflationaryToken,
+} from 'components/warnings/InflationaryTokenWarning';
+import { MedianGasWarning } from 'components/warnings/MedianGasWarning';
+import { NeedsTransactionsWarning } from 'components/warnings/NeedsTransactionsWarning';
+import {
+  isRebasingToken,
+  RebasingTokenWarning,
+} from 'components/warnings/RebasingTokenWarning';
+import { ReverseWarning } from 'components/warnings/ReverseWarning';
 import { BridgeContext } from 'contexts/BridgeContext';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
+import { ADDRESS_ZERO } from 'lib/constants';
+import { getGasPrice, getMedianHistoricalEthGasPrice } from 'lib/gasPrice';
 import { formatValue, getAccountString, getNetworkLabel } from 'lib/helpers';
+import { BSC_XDAI_BRIDGE } from 'lib/networks';
 import React, { useContext, useEffect, useState } from 'react';
 
 export const ConfirmTransferModal = ({ isOpen, onClose }) => {
-  const { homeChainId, foreignChainId } = useBridgeDirection();
+  const {
+    homeChainId,
+    foreignChainId,
+    enableReversedBridge,
+    bridgeDirection,
+  } = useBridgeDirection();
   const {
     receiver,
     fromToken,
@@ -43,17 +65,36 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
   }, [fromAmount, toAmount]);
   const smallScreen = useBreakpointValue({ base: true, md: false });
   const toast = useToast();
+  const [isInflationWarningChecked, setInflationWarningChecked] = useState(
+    false,
+  );
+
   if (!fromToken || !toToken) return null;
+
   const isHome = fromToken.chainId === homeChainId;
   const fromAmt = formatValue(fromAmount, fromToken.decimals);
   const fromUnit = fromToken.symbol;
   const toAmt = formatValue(toAmount, toToken.decimals);
   const toUnit = toToken.symbol;
+  const currentGasPrice = getGasPrice();
+  const medianGasPrice = getMedianHistoricalEthGasPrice();
 
   const isERC20Dai =
     !!fromToken &&
     fromToken.chainId === foreignChainId &&
     isERC20DaiAddress(fromToken);
+  const showReverseBridgeWarning =
+    !!toToken &&
+    !enableReversedBridge &&
+    toToken.chainId === foreignChainId &&
+    toToken.address === ADDRESS_ZERO;
+  const showBinancePeggedAssetWarning =
+    !!fromToken &&
+    bridgeDirection === BSC_XDAI_BRIDGE &&
+    fromToken.chainId === homeChainId &&
+    isERC20ExchangableBinancePeggedAsset(fromToken);
+  const isInflationToken = isInflationaryToken(fromToken);
+  const isRebaseToken = isRebasingToken(fromToken);
 
   const showError = msg => {
     if (msg) {
@@ -89,7 +130,6 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
           mx={{ base: 12, lg: 0 }}
         >
           <ModalHeader p={6}>
-            {isERC20Dai && <DaiWarning />}
             <Text>Confirm Transfer</Text>
           </ModalHeader>
           <ModalCloseButton
@@ -182,9 +222,32 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
               <Text as="b">{`${toAmt} ${toUnit}`}</Text>
               <Text as="span">{` on ${getNetworkLabel(toToken.chainId)}`}</Text>
             </Box>
-            {isHome && <NeedsTransactions />}
           </ModalBody>
-          <ModalFooter p={6}>
+          <ModalFooter p={6} flexDirection="column">
+            {isHome && <NeedsTransactionsWarning noShadow />}
+            {foreignChainId === 1 && medianGasPrice.lt(currentGasPrice) && (
+              <MedianGasWarning
+                medianPrice={medianGasPrice}
+                currentPrice={currentGasPrice}
+                noShadow
+              />
+            )}
+            {isERC20Dai && <DaiWarning noShadow />}
+            {showReverseBridgeWarning && <ReverseWarning noShadow />}
+            {showBinancePeggedAssetWarning && (
+              <BinancePeggedAssetWarning token={fromToken} noShadow />
+            )}
+            {isInflationToken && (
+              <InflationaryTokenWarning
+                token={fromToken}
+                isChecked={isInflationWarningChecked}
+                setChecked={setInflationWarningChecked}
+                noShadow
+              />
+            )}
+            {isRebaseToken && (
+              <RebasingTokenWarning token={fromToken} noShadow />
+            )}
             <Flex
               w="100%"
               justify="space-between"
@@ -203,6 +266,10 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
               <Button
                 px={12}
                 onClick={onClick}
+                isDisabled={
+                  isRebaseToken ||
+                  (isInflationToken && !isInflationWarningChecked)
+                }
                 colorScheme="blue"
                 mt={{ base: 2, md: 0 }}
               >

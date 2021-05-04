@@ -1,11 +1,18 @@
 import { Checkbox, Flex, Grid, Text } from '@chakra-ui/react';
-import { GraphHealthAlert } from 'components/history/GraphHealthAlert';
 import { HistoryItem } from 'components/history/HistoryItem';
 import { HistoryPagination } from 'components/history/HistoryPagination';
 import { ManualClaim } from 'components/history/ManualClaim';
 import { NoHistory } from 'components/history/NoHistory';
 import { LoadingModal } from 'components/modals/LoadingModal';
+import { AuspiciousGasWarning } from 'components/warnings/AuspiciousGasWarning';
+import { GraphHealthWarning } from 'components/warnings/GraphHealthWarning';
+import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { useUserHistory } from 'hooks/useUserHistory';
+import {
+  getGasPrice,
+  getLowestHistoricalEthGasPrice,
+  getMedianHistoricalEthGasPrice,
+} from 'lib/gasPrice';
 import React, { useState } from 'react';
 import { Redirect } from 'react-router-dom';
 
@@ -13,6 +20,7 @@ const TOTAL_PER_PAGE = 20;
 
 export const BridgeHistory = ({ page }) => {
   const [onlyUnReceived, setOnlyUnReceived] = useState(false);
+  const { foreignChainId } = useBridgeDirection();
 
   const { transfers, loading } = useUserHistory();
 
@@ -37,6 +45,10 @@ export const BridgeHistory = ({ page }) => {
     return <Redirect to="/history" />;
   }
 
+  const currentGasPrice = getGasPrice();
+  const medianGasPrice = getMedianHistoricalEthGasPrice();
+  const lowestGasPrice = getLowestHistoricalEthGasPrice();
+
   return (
     <Flex
       maxW="75rem"
@@ -45,7 +57,14 @@ export const BridgeHistory = ({ page }) => {
       px={{ base: 4, sm: 8 }}
       w="100%"
     >
-      <GraphHealthAlert />
+      {foreignChainId === 1 && medianGasPrice.gt(currentGasPrice) && (
+        <AuspiciousGasWarning
+          currentPrice={currentGasPrice}
+          medianPrice={medianGasPrice}
+          lowestPrice={lowestGasPrice}
+        />
+      )}
+      <GraphHealthWarning />
       <ManualClaim />
       <Flex justify="space-between" align="center" mb={4}>
         <Text fontSize="xl" fontWeight="bold">
