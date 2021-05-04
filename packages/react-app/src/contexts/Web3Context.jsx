@@ -3,7 +3,7 @@ import { ethers } from 'ethers';
 import { getNetworkName, getRPCUrl, logError } from 'lib/helpers';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import Web3 from 'web3';
-import Web3Modal from 'web3modal';
+import { SafeAppWeb3Modal as Web3Modal } from '@gnosis.pm/safe-apps-web3modal';
 
 export const Web3Context = React.createContext({});
 export const useWeb3Context = () => useContext(Web3Context);
@@ -46,8 +46,9 @@ const web3Modal = new Web3Modal({
 });
 
 export const Web3Provider = ({ children }) => {
-  const [web3State, setWeb3State] = useState({});
-  const { providerChainId, ethersProvider, account } = web3State;
+  const [{ providerChainId, ethersProvider, account }, setWeb3State] = useState(
+    {},
+  );
   const [loading, setLoading] = useState(true);
 
   const setWeb3Provider = useCallback(async (prov, initialCall = false) => {
@@ -61,16 +62,16 @@ export const Web3Provider = ({ children }) => {
         if (initialCall) {
           const signer = provider.getSigner();
           const gotAccount = await signer.getAddress();
-          setWeb3State(_old => ({
+          setWeb3State({
             account: gotAccount,
             ethersProvider: provider,
             providerChainId: chainId,
-          }));
+          });
         } else {
-          setWeb3State(_old => ({
-            ..._old,
+          setWeb3State(_provider => ({
+            ..._provider,
             ethersProvider: provider,
-            providerChainId: Number(prov.chainId),
+            providerChainId: chainId,
           }));
         }
       }
@@ -89,22 +90,23 @@ export const Web3Provider = ({ children }) => {
     try {
       setLoading(true);
 
-      const modalProvider = await web3Modal.connect();
+      const modalProvider = await web3Modal.requestProvider();
 
       await setWeb3Provider(modalProvider, true);
 
-      // Subscribe to accounts change
-      modalProvider.on('accountsChanged', accounts => {
-        setWeb3State(_old => ({
-          ..._old,
-          account: accounts[0],
-        }));
-      });
+      const isGnosisSafe = !!modalProvider.safe;
 
-      // Subscribe to chainId change
-      modalProvider.on('chainChanged', _chainId => {
-        setWeb3Provider(modalProvider);
-      });
+      if (!isGnosisSafe) {
+        modalProvider.on('accountsChanged', accounts => {
+          setWeb3State(_provider => ({
+            ..._provider,
+            account: accounts[0],
+          }));
+        });
+        modalProvider.on('chainChanged', () => {
+          setWeb3Provider(modalProvider);
+        });
+      }
     } catch (error) {
       logError({ web3ModalError: error });
     }
@@ -120,11 +122,13 @@ export const Web3Provider = ({ children }) => {
     if (window.ethereum) {
       window.ethereum.autoRefreshOnNetworkChange = false;
     }
-    if (web3Modal.cachedProvider) {
-      connectWeb3();
-    } else {
-      setLoading(false);
-    }
+    (async function load() {
+      if ((await web3Modal.canAutoConnect()) || web3Modal.cachedProvider) {
+        connectWeb3();
+      } else {
+        setLoading(false);
+      }
+    })();
   }, [connectWeb3]);
 
   return (
