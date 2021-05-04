@@ -130,7 +130,7 @@ export const AddToMetamaskModal = ({ isOpen, onClose, token: tokenToAdd }) => {
             {needsNetworkChange && (
               <Flex align="center" direction="column" w="100%">
                 <Flex align="center" direction="column" w="100%" mt="4">
-                  <Alert status="warning" borderRadius={5}>
+                  <Alert status="info" borderRadius={5}>
                     <AlertIcon minWidth="20px" />
                     <Text fontSize="small">
                       <Text as="span">{`Please switch the network in your wallet to `}</Text>

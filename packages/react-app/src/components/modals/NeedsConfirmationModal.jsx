@@ -59,7 +59,7 @@ export const NeedsConfirmationModal = ({ setNeedsConfirmation }) => {
                 <Text as="b">{`${getNetworkName(foreignChainId)}`}</Text>
               </Box>
               <Flex align="center" direction="column" w="100%" mt="4" mb="6">
-                <Alert status="warning" borderRadius={5}>
+                <Alert status="info" borderRadius={5}>
                   <AlertIcon minWidth="20px" />
                   <Text fontSize="small">
                     After you switch networks, you will complete a second
