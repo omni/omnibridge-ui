@@ -61,7 +61,7 @@ export const AdvancedMenu = () => {
           color="blue.400"
         >
           <AdvancedImage width="1.25rem" />
-          <Text ml={2}>{isGnosisSafe ? 'Clear' : 'Advanced'}</Text>
+          <Text ml={2}>{isMenuOpen ? 'Clear' : 'Advanced'}</Text>
         </Flex>
       </Flex>
     </Flex>
