@@ -13,6 +13,7 @@ import {
   isERC20ExchangableBinancePeggedAsset,
 } from 'components/warnings/BinancePeggedAssetWarning';
 import { DaiWarning, isERC20DaiAddress } from 'components/warnings/DaiWarning';
+import { GnosisSafeWarning } from 'components/warnings/GnosisSafeWarning';
 import {
   InflationaryTokenWarning,
   isInflationaryToken,
@@ -73,6 +74,7 @@ export const BridgeTokens = () => {
       my="auto"
       mx={{ base: 4, sm: 8 }}
     >
+      <GnosisSafeWarning />
       <RPCHealthWarning />
       {isERC20Dai && <DaiWarning />}
       {showReverseBridgeWarning && <ReverseWarning />}
