@@ -1,9 +1,9 @@
+import { SafeAppWeb3Modal as Web3Modal } from '@gnosis.pm/safe-apps-web3modal';
 import WalletConnectProvider from '@walletconnect/web3-provider';
 import { ethers } from 'ethers';
 import { getNetworkName, getRPCUrl, logError } from 'lib/helpers';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import Web3 from 'web3';
-import { SafeAppWeb3Modal as Web3Modal } from '@gnosis.pm/safe-apps-web3modal';
 
 export const Web3Context = React.createContext({});
 export const useWeb3Context = () => useContext(Web3Context);
@@ -49,6 +49,7 @@ export const Web3Provider = ({ children }) => {
   const [{ providerChainId, ethersProvider, account }, setWeb3State] = useState(
     {},
   );
+  const [isGnosisSafe, setGnosisSafe] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const setWeb3Provider = useCallback(async (prov, initialCall = false) => {
@@ -94,9 +95,10 @@ export const Web3Provider = ({ children }) => {
 
       await setWeb3Provider(modalProvider, true);
 
-      const isGnosisSafe = !!modalProvider.safe;
+      const gnosisSafe = !!modalProvider.safe;
+      setGnosisSafe(gnosisSafe);
 
-      if (!isGnosisSafe) {
+      if (!gnosisSafe) {
         modalProvider.on('accountsChanged', accounts => {
           setWeb3State(_provider => ({
             ..._provider,
@@ -115,6 +117,7 @@ export const Web3Provider = ({ children }) => {
 
   const disconnect = useCallback(async () => {
     web3Modal.clearCachedProvider();
+    setGnosisSafe(false);
     setWeb3State({});
   }, []);
 
@@ -134,6 +137,7 @@ export const Web3Provider = ({ children }) => {
   return (
     <Web3Context.Provider
       value={{
+        isGnosisSafe,
         ethersProvider,
         connectWeb3,
         loading,

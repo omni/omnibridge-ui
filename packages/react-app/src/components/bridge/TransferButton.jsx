@@ -7,8 +7,8 @@ import { useWeb3Context } from 'contexts/Web3Context';
 import { utils } from 'ethers';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { ADDRESS_ZERO } from 'lib/constants';
-import { formatValue, getNetworkName } from 'lib/helpers';
-import React, { useContext } from 'react';
+import { formatValue } from 'lib/helpers';
+import React, { useCallback, useContext } from 'react';
 
 export const TransferButton = () => {
   const {
@@ -16,7 +16,7 @@ export const TransferButton = () => {
     foreignChainId,
     enableReversedBridge,
   } = useBridgeDirection();
-  const { ethersProvider } = useWeb3Context();
+  const { isGnosisSafe, ethersProvider } = useWeb3Context();
   const {
     receiver,
     fromAmount: amount,
@@ -27,26 +27,30 @@ export const TransferButton = () => {
     allowed,
   } = useContext(BridgeContext);
   const isHome = token && token.chainId && token.chainId === homeChainId;
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const toast = useToast();
+  const showError = useCallback(
+    msg => {
+      if (msg) {
+        toast({
+          title: 'Error',
+          description: msg,
+          status: 'error',
+          isClosable: 'true',
+        });
+      }
+    },
+    [toast],
+  );
+  const isRebaseToken = isRebasingToken(token);
   const showReverseBridgeWarning =
     !!toToken &&
     !enableReversedBridge &&
     toToken.chainId === foreignChainId &&
     toToken.address === ADDRESS_ZERO;
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const toast = useToast();
-  const showError = msg => {
-    if (msg) {
-      toast({
-        title: 'Error',
-        description: msg,
-        status: 'error',
-        isClosable: 'true',
-      });
-    }
-  };
-  const isRebaseToken = isRebasingToken(token);
-  const buttonEnabled = allowed && !isRebaseToken;
-  const valid = () => {
+  const buttonEnabled = allowed && !isRebaseToken && !showReverseBridgeWarning;
+
+  const valid = useCallback(() => {
     if (!ethersProvider) {
       showError('Please connect wallet');
     } else if (tokenLimits && amount.lt(tokenLimits.minPerTx)) {
@@ -65,20 +69,29 @@ export const TransferButton = () => {
       );
     } else if (balance.lt(amount)) {
       showError('Not enough balance');
-    } else if (receiver && !utils.isAddress(receiver)) {
+    } else if (receiver ? !utils.isAddress(receiver) : isGnosisSafe) {
       showError(`Please specify a valid recipient address`);
-    } else if (showReverseBridgeWarning) {
-      showError(`Token is native ERC20 on ${getNetworkName(homeChainId)}`);
     } else {
       return true;
     }
     return false;
-  };
+  }, [
+    ethersProvider,
+    tokenLimits,
+    token,
+    amount,
+    balance,
+    receiver,
+    isGnosisSafe,
+    showError,
+  ]);
+
   const onClick = () => {
     if (buttonEnabled && valid()) {
       onOpen();
     }
   };
+
   return (
     <Flex
       as="button"

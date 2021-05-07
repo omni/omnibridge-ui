@@ -21,6 +21,7 @@ import {
   isERC20ExchangableBinancePeggedAsset,
 } from 'components/warnings/BinancePeggedAssetWarning';
 import { DaiWarning, isERC20DaiAddress } from 'components/warnings/DaiWarning';
+import { GnosisSafeWarning } from 'components/warnings/GnosisSafeWarning';
 import {
   InflationaryTokenWarning,
   isInflationaryToken,
@@ -32,15 +33,18 @@ import {
   RebasingTokenWarning,
 } from 'components/warnings/RebasingTokenWarning';
 import { ReverseWarning } from 'components/warnings/ReverseWarning';
-import { BridgeContext } from 'contexts/BridgeContext';
+import { useBridgeContext } from 'contexts/BridgeContext';
+import { useWeb3Context } from 'contexts/Web3Context';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { ADDRESS_ZERO } from 'lib/constants';
 import { getGasPrice, getMedianHistoricalEthGasPrice } from 'lib/gasPrice';
 import { formatValue, getAccountString, getNetworkLabel } from 'lib/helpers';
 import { BSC_XDAI_BRIDGE } from 'lib/networks';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 export const ConfirmTransferModal = ({ isOpen, onClose }) => {
+  const { isGnosisSafe, account } = useWeb3Context();
+
   const {
     homeChainId,
     foreignChainId,
@@ -54,7 +58,7 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
     fromAmount,
     toAmount,
     transfer,
-  } = useContext(BridgeContext);
+  } = useBridgeContext();
   const [fee, setFee] = useState(0);
   useEffect(() => {
     if (fromAmount.gt(0)) {
@@ -66,6 +70,9 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
   const smallScreen = useBreakpointValue({ base: true, md: false });
   const toast = useToast();
   const [isInflationWarningChecked, setInflationWarningChecked] = useState(
+    false,
+  );
+  const [isGnosisSafeWarningChecked, setGnosisSafeWarningChecked] = useState(
     false,
   );
 
@@ -119,6 +126,14 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
     });
     onClose();
   };
+
+  const isSameAddress =
+    account && receiver && account.toLowerCase() === receiver.toLowerCase();
+
+  const isDisabled =
+    isRebaseToken ||
+    (isInflationToken && !isInflationWarningChecked) ||
+    (isGnosisSafe && isSameAddress && !isGnosisSafeWarningChecked);
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered>
@@ -248,6 +263,13 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
             {isRebaseToken && (
               <RebasingTokenWarning token={fromToken} noShadow />
             )}
+            {isGnosisSafe && (
+              <GnosisSafeWarning
+                isChecked={isGnosisSafeWarningChecked}
+                setChecked={setGnosisSafeWarningChecked}
+                noShadow
+              />
+            )}
             <Flex
               w="100%"
               justify="space-between"
@@ -266,10 +288,7 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
               <Button
                 px={12}
                 onClick={onClick}
-                isDisabled={
-                  isRebaseToken ||
-                  (isInflationToken && !isInflationWarningChecked)
-                }
+                isDisabled={isDisabled}
                 colorScheme="blue"
                 mt={{ base: 2, md: 0 }}
               >

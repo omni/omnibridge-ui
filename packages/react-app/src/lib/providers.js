@@ -19,6 +19,8 @@ const RPC_URL = {
   100: XDAI_RPC_URL,
 };
 
+const RPC_TIMEOUT = 15000;
+
 const memoized = memoize(
   url => new ethers.providers.StaticJsonRpcProvider(url),
 );
@@ -40,27 +42,29 @@ const promiseWithTimeout = async (timeoutMs, promise, failureMessage) => {
 
 export const getEthersProvider = async chainId => {
   const localRPCUrl = window.localStorage.getItem(RPC_URL[chainId]);
+
   const rpcURLs = localRPCUrl
     ? [localRPCUrl].concat(getRPCUrl(chainId, true))
     : getRPCUrl(chainId, true);
-  const provider = await Promise.any(
-    rpcURLs.map(async url => {
+
+  const rpcPromises = rpcURLs.map(async url => {
+    try {
       const tempProvider = memoized(url);
-      if (!tempProvider) return tempProvider;
-      try {
-        await promiseWithTimeout(
-          10000,
-          // eslint-disable-next-line no-underscore-dangle
-          tempProvider._networkPromise,
-          `RPC Timeout: ${url} did not respond in time`,
-        );
-        return tempProvider;
-      } catch (err) {
-        logError({ providerSetError: err.message });
-        return null;
-      }
-    }),
-  );
+      await promiseWithTimeout(
+        RPC_TIMEOUT,
+        // eslint-disable-next-line no-underscore-dangle
+        tempProvider._networkPromise,
+        `RPC Timeout: ${url} did not respond in time`,
+      );
+      return Promise.resolve(tempProvider);
+    } catch (err) {
+      logError({ providerSetError: err.message });
+      return Promise.reject(err);
+    }
+  });
+
+  const provider = await Promise.any(rpcPromises);
+
   return provider || null;
 };
 
