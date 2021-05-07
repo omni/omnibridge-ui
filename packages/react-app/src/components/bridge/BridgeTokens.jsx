@@ -74,7 +74,7 @@ export const BridgeTokens = () => {
       my="auto"
       mx={{ base: 4, sm: 8 }}
     >
-      <GnosisSafeWarning />
+      <GnosisSafeWarning noCheckbox />
       <RPCHealthWarning />
       {isERC20Dai && <DaiWarning />}
       {showReverseBridgeWarning && <ReverseWarning />}
