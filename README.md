@@ -114,6 +114,7 @@ xdai-omnibridge
 │   │       │       ├── AuspiciousGasWarning.jsx
 │   │       │       ├── BinancePeggedAssetWarning.jsx
 │   │       │       ├── DaiWarning.jsx
+│   │       │       ├── GnosisSafeWarning.jsx
 │   │       │       ├── GraphHealthWarning.jsx
 │   │       │       ├── InflationaryTokenWarning.jsx
 │   │       │       ├── MedianGasWarning.jsx

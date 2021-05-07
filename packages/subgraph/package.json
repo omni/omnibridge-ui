@@ -24,6 +24,6 @@
     "deploy-bsc-xdai": "graph deploy maxaleks/bsc-to-xdai-omnibridge --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/"
   },
   "devDependencies": {
-    "mustache": "^4.0.1"
+    "mustache": "^4.2.0"
   }
 }
