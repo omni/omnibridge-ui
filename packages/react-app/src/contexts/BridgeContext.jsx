@@ -31,7 +31,12 @@ export const useBridgeContext = () => useContext(BridgeContext);
 
 export const BridgeProvider = ({ children }) => {
   const { queryToken, setQueryToken } = useSettings();
-  const { ethersProvider, account, providerChainId } = useWeb3Context();
+  const {
+    isGnosisSafe,
+    ethersProvider,
+    account,
+    providerChainId,
+  } = useWeb3Context();
   const {
     bridgeDirection,
     getBridgeChainId,
@@ -156,6 +161,9 @@ export const BridgeProvider = ({ children }) => {
   const transfer = useCallback(async () => {
     setLoading(true);
     try {
+      if (isGnosisSafe && !receiver) {
+        throw new Error('Must set receiver for Gnosis Safe');
+      }
       const tx = await relayTokens(
         ethersProvider,
         fromToken,
@@ -182,6 +190,7 @@ export const BridgeProvider = ({ children }) => {
       throw transferError;
     }
   }, [
+    isGnosisSafe,
     fromToken,
     toToken,
     account,

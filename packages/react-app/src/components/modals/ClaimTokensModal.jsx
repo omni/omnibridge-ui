@@ -11,18 +11,27 @@ import {
   ModalHeader,
   ModalOverlay,
   Text,
+  VStack,
 } from '@chakra-ui/react';
 import ClaimTokensImage from 'assets/multiple-claim.svg';
 import { LoadingModal } from 'components/modals/LoadingModal';
+import { AuspiciousGasWarning } from 'components/warnings/AuspiciousGasWarning';
 import { useWeb3Context } from 'contexts/Web3Context';
+import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { useClaimableTransfers } from 'hooks/useClaimableTransfers';
 import { LOCAL_STORAGE_KEYS } from 'lib/constants';
+import {
+  getGasPrice,
+  getLowestHistoricalEthGasPrice,
+  getMedianHistoricalEthGasPrice,
+} from 'lib/gasPrice';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 const { DONT_SHOW_CLAIMS } = LOCAL_STORAGE_KEYS;
 
 export const ClaimTokensModal = () => {
+  const { foreignChainId } = useBridgeDirection();
   const { account, providerChainId } = useWeb3Context();
   const { transfers, loading } = useClaimableTransfers();
   const [isOpen, setOpen] = useState(false);
@@ -43,6 +52,9 @@ export const ClaimTokensModal = () => {
   }, [transfers]);
 
   if (loading) return <LoadingModal />;
+  const currentGasPrice = getGasPrice();
+  const medianGasPrice = getMedianHistoricalEthGasPrice();
+  const lowestGasPrice = getLowestHistoricalEthGasPrice();
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered>
@@ -65,13 +77,22 @@ export const ClaimTokensModal = () => {
             p={2}
           />
           <ModalBody px={6} py={0}>
-            <Flex align="center" direction="column">
+            <VStack align="center" direction="column" spacing="4">
               <Box w="100%">
                 <Text as="span">{`You have `}</Text>
                 <Text as="b">{transfers ? transfers.length : 0}</Text>
                 <Text as="span">{` not claimed transactions `}</Text>
               </Box>
-            </Flex>
+              {foreignChainId === 1 && medianGasPrice.gt(currentGasPrice) && (
+                <AuspiciousGasWarning
+                  currentPrice={currentGasPrice}
+                  medianPrice={medianGasPrice}
+                  lowestPrice={lowestGasPrice}
+                  noShadow
+                  noMargin
+                />
+              )}
+            </VStack>
           </ModalBody>
           <ModalFooter p={6}>
             <Flex

@@ -1,6 +1,7 @@
 import { Flex, Image, Link, Spinner, Text, useToast } from '@chakra-ui/react';
 import UnlockIcon from 'assets/unlock.svg';
 import { TxLink } from 'components/common/TxLink';
+import { isRebasingToken } from 'components/warnings/RebasingTokenWarning';
 import { BridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import React, { useContext } from 'react';
@@ -10,11 +11,14 @@ export const UnlockButton = () => {
   const {
     fromAmount: amount,
     fromBalance: balance,
+    fromToken: token,
     allowed,
     approve,
     unlockLoading,
     approvalTxHash,
   } = useContext(BridgeContext);
+  const isRebaseToken = isRebasingToken(token);
+  const buttonDisabled = allowed || isRebaseToken;
   const toast = useToast();
   const showError = msg => {
     if (msg) {
@@ -38,7 +42,7 @@ export const UnlockButton = () => {
     return true;
   };
   const onClick = () => {
-    if (!unlockLoading && !allowed && valid()) {
+    if (!unlockLoading && !buttonDisabled && valid()) {
       approve().catch(error => {
         if (error && error.message) {
           if (
@@ -77,16 +81,16 @@ export const UnlockButton = () => {
       as="button"
       color="cyan.500"
       _hover={
-        allowed
+        buttonDisabled
           ? undefined
           : {
               color: 'cyan.600',
             }
       }
-      cursor={allowed ? 'not-allowed' : 'pointer'}
+      cursor={buttonDisabled ? 'not-allowed' : 'pointer'}
       transition="0.25s"
       position="relative"
-      opacity={allowed ? 0.4 : 1}
+      opacity={buttonDisabled ? 0.4 : 1}
       onClick={onClick}
       borderRadius="0.25rem"
       w={{ base: '10rem', sm: '12rem', lg: 'auto' }}
@@ -111,7 +115,7 @@ export const UnlockButton = () => {
         ) : (
           <>
             <Text color="white" fontWeight="bold">
-              {allowed ? 'Unlocked' : 'Unlock'}
+              {buttonDisabled ? 'Unlocked' : 'Unlock'}
             </Text>
             <Image src={UnlockIcon} ml={2} />
           </>

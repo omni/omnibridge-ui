@@ -1,12 +1,19 @@
 import { Checkbox, Flex, Grid, Text } from '@chakra-ui/react';
-import { GraphHealthAlert } from 'components/history/GraphHealthAlert';
 import { HistoryItem } from 'components/history/HistoryItem';
 import { HistoryPagination } from 'components/history/HistoryPagination';
 import { ManualClaim } from 'components/history/ManualClaim';
 import { NoHistory } from 'components/history/NoHistory';
 import { ClaimErrorModal } from 'components/modals/ClaimErrorModal';
 import { LoadingModal } from 'components/modals/LoadingModal';
+import { AuspiciousGasWarning } from 'components/warnings/AuspiciousGasWarning';
+import { GraphHealthWarning } from 'components/warnings/GraphHealthWarning';
+import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { useUserHistory } from 'hooks/useUserHistory';
+import {
+  getGasPrice,
+  getLowestHistoricalEthGasPrice,
+  getMedianHistoricalEthGasPrice,
+} from 'lib/gasPrice';
 import React, { useCallback, useState } from 'react';
 import { Redirect } from 'react-router-dom';
 
@@ -16,6 +23,8 @@ export const BridgeHistory = ({ page }) => {
   const [onlyUnReceived, setOnlyUnReceived] = useState(false);
   const [claimErrorShow, setClaimErrorShow] = useState(false);
   const [claimErrorToken, setClaimErrorToken] = useState(null);
+  const { foreignChainId } = useBridgeDirection();
+
   const { transfers, loading } = useUserHistory();
 
   const handleClaimError = useCallback(toToken => {
@@ -50,6 +59,10 @@ export const BridgeHistory = ({ page }) => {
     return <Redirect to="/history" />;
   }
 
+  const currentGasPrice = getGasPrice();
+  const medianGasPrice = getMedianHistoricalEthGasPrice();
+  const lowestGasPrice = getLowestHistoricalEthGasPrice();
+
   return (
     <Flex
       maxW="75rem"
@@ -63,8 +76,15 @@ export const BridgeHistory = ({ page }) => {
         claimErrorToken={claimErrorToken}
         onClose={handleModalClose}
       />
-      <GraphHealthAlert />
-      <ManualClaim handleClaimError={handleClaimError} />
+      {foreignChainId === 1 && medianGasPrice.gt(currentGasPrice) && (
+        <AuspiciousGasWarning
+          currentPrice={currentGasPrice}
+          medianPrice={medianGasPrice}
+          lowestPrice={lowestGasPrice}
+        />
+      )}
+      <GraphHealthWarning />
+      <ManualClaim />
       <Flex justify="space-between" align="center" mb={4}>
         <Text fontSize="xl" fontWeight="bold">
           History

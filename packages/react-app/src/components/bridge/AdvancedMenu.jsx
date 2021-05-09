@@ -1,16 +1,25 @@
 import { Flex, Input, Text, useDisclosure } from '@chakra-ui/react';
 import { ReactComponent as AdvancedImage } from 'assets/advanced.svg';
 import { BridgeContext } from 'contexts/BridgeContext';
+import { useWeb3Context } from 'contexts/Web3Context';
 import { utils } from 'ethers';
-import React, { useContext } from 'react';
+import React, { useCallback, useContext } from 'react';
 
 export const AdvancedMenu = () => {
+  const { isGnosisSafe } = useWeb3Context();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { receiver, setReceiver } = useContext(BridgeContext);
-  const close = () => {
-    setReceiver('');
-    onClose();
-  };
+
+  const isMenuOpen = isOpen || isGnosisSafe;
+
+  const onClick = useCallback(() => {
+    if (isMenuOpen) {
+      setReceiver('');
+      if (!isGnosisSafe) onClose();
+    } else {
+      onOpen();
+    }
+  }, [isMenuOpen, setReceiver, isGnosisSafe, onOpen, onClose]);
 
   return (
     <Flex
@@ -31,7 +40,7 @@ export const AdvancedMenu = () => {
         direction="column"
         transition="all 0.25s"
       >
-        {isOpen && (
+        {isMenuOpen && (
           <Input
             borderColor="#DAE3F0"
             bg="white"
@@ -44,7 +53,7 @@ export const AdvancedMenu = () => {
         )}
         <Flex
           w="100%"
-          onClick={isOpen ? close : onOpen}
+          onClick={onClick}
           cursor="pointer"
           align="center"
           justify="center"
@@ -52,7 +61,7 @@ export const AdvancedMenu = () => {
           color="blue.400"
         >
           <AdvancedImage width="1.25rem" />
-          <Text ml={2}>Advanced</Text>
+          <Text ml={2}>{isMenuOpen ? 'Clear' : 'Advanced'}</Text>
         </Flex>
       </Flex>
     </Flex>

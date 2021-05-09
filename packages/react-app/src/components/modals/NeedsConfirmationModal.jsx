@@ -1,4 +1,6 @@
 import {
+  Alert,
+  AlertIcon,
   Box,
   Flex,
   Image,
@@ -11,7 +13,6 @@ import {
   Text,
 } from '@chakra-ui/react';
 import ChangeNetworkImage from 'assets/change-network.png';
-import InfoImage from 'assets/info.svg';
 import { BridgeContext } from 'contexts/BridgeContext';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { getNetworkName } from 'lib/helpers';
@@ -57,32 +58,15 @@ export const NeedsConfirmationModal = ({ setNeedsConfirmation }) => {
                 <Text as="span">{`Please switch the network in your wallet to `}</Text>
                 <Text as="b">{`${getNetworkName(foreignChainId)}`}</Text>
               </Box>
-              <Flex
-                mt={4}
-                w="100%"
-                borderRadius="0.25rem"
-                border="1px solid #DAE3F0"
-                mb={6}
-              >
-                <Flex
-                  bg="rgba(83, 164, 255, 0.1)"
-                  borderLeftRadius="0.25rem"
-                  border="1px solid #53A4FF"
-                  justify="center"
-                  align="center"
-                  minW="4rem"
-                  maxW="4rem"
-                  flex={1}
-                >
-                  <Image src={InfoImage} />
-                </Flex>
-                <Flex align="center" fontSize="0.75rem" p={4}>
-                  <Text>
+              <Flex align="center" direction="column" w="100%" mt="4" mb="6">
+                <Alert status="info" borderRadius={5}>
+                  <AlertIcon minWidth="20px" />
+                  <Text fontSize="small">
                     After you switch networks, you will complete a second
                     transaction on {getNetworkName(foreignChainId)} to claim
                     your {toUnit} tokens.
                   </Text>
-                </Flex>
+                </Alert>
               </Flex>
             </Flex>
           </ModalBody>
