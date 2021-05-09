@@ -36,15 +36,21 @@ export const ManualClaim = ({ handleClaimError }) => {
     if (isInvalid) return;
     setLoading(true);
     try {
-      await claim(txHash);
+      const { alreadyClaimed, data, error } = await claim(txHash);
+      if (error) {
+        throw error;
+      }
+      if (alreadyClaimed && !data) {
+        handleClaimError();
+        return;
+      }
     } catch (manualClaimError) {
       logError({ manualClaimError });
-      handleClaimError();
-      // showError(manualClaimError.message);
+      showError(manualClaimError.message);
     } finally {
       setLoading(false);
     }
-  }, [claim, txHash, isInvalid, handleClaimError]);
+  }, [claim, txHash, isInvalid, showError, handleClaimError]);
 
   return (
     <Flex

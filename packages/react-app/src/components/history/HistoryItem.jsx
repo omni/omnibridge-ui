@@ -127,16 +127,25 @@ export const HistoryItem = ({
     } else {
       try {
         setLoading(true);
-        const tx = await executeSignatures(
+        const { data: tx, alreadyClaimed, error } = await executeSignatures(
           ethersProvider,
           foreignAmbAddress,
           message,
         );
+
+        if (error) {
+          throw error;
+        }
+
+        if (alreadyClaimed && !tx) {
+          handleClaimError(toToken);
+          return;
+        }
         setTxHash(tx.hash);
       } catch (executeError) {
         logError({ executeError, chainId: providerChainId, message });
         if (executeError && executeError.message) {
-          handleClaimError(toToken);
+          showError(executeError.message);
         } else {
           showError(
             'Impossible to perform the operation. Reload the application and try again.',
@@ -313,29 +322,26 @@ export const HistoryItem = ({
           </Text>
           <AddToMetamask token={toToken} ml="0.25rem" />
         </Flex>
-        {receivingTx ? (
+        {/* {receivingTx ? (
           <Flex align="center" justify={{ base: 'center', md: 'flex-end' }}>
             <Image src={BlueTickImage} mr="0.5rem" />
             <Text color="blue.500">Claimed</Text>
           </Flex>
-        ) : (
-          <Flex align="center" justify={{ base: 'center', md: 'flex-end' }}>
-            <TxLink
-              chainId={providerChainId}
-              hash={loading ? txHash : undefined}
+        ) : ( */}
+        <Flex align="center" justify={{ base: 'center', md: 'flex-end' }}>
+          <TxLink chainId={providerChainId} hash={loading ? txHash : undefined}>
+            <Button
+              w="100%"
+              size="sm"
+              colorScheme="blue"
+              onClick={claimTokens}
+              isLoading={loading}
             >
-              <Button
-                w="100%"
-                size="sm"
-                colorScheme="blue"
-                onClick={claimTokens}
-                isLoading={loading}
-              >
-                Claim
-              </Button>
-            </TxLink>
-          </Flex>
-        )}
+              Claim
+            </Button>
+          </TxLink>
+        </Flex>
+        {/* )} */}
       </Grid>
     </Flex>
   );

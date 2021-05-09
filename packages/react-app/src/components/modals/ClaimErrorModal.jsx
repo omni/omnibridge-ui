@@ -14,9 +14,12 @@ import {
 } from '@chakra-ui/react';
 import BlueTickImage from 'assets/blue-tick.svg';
 import { AddToMetamask } from 'components/common/AddToMetamask';
+import { useBridgeDirection } from 'hooks/useBridgeDirection';
+import { getNetworkName } from 'lib/helpers';
 import React from 'react';
 
 const ClaimErrorModal = ({ onClose, claimErrorShow, claimErrorToken }) => {
+  const { foreignChainId } = useBridgeDirection();
   return (
     <Modal isOpen={claimErrorShow} onClose={onClose} isCentered>
       <ModalOverlay background="modalBG">
@@ -42,7 +45,7 @@ const ClaimErrorModal = ({ onClose, claimErrorShow, claimErrorToken }) => {
               <Box w="100%">
                 <Text as="span">
                   The transfer was already executed. Check your balance of this
-                  token in ETH/BSC.
+                  token in <strong>{getNetworkName(foreignChainId)}</strong>.
                 </Text>
                 {claimErrorToken && (
                   <>

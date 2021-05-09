@@ -40,14 +40,27 @@ function packSignatures(array) {
 export const executeSignatures = async (
   ethersProvider,
   address,
-  { msgData, signatures },
+  { msgData, signatures, messageId },
 ) => {
-  const abi = [
-    'function executeSignatures(bytes messageData, bytes signatures) external',
-  ];
-  const signs = packSignatures(signatures.map(s => signatureToVRS(s)));
-  const ambContract = new Contract(address, abi, ethersProvider.getSigner());
-  return ambContract.executeSignatures(msgData, signs);
+  try {
+    const abi = [
+      'function executeSignatures(bytes messageData, bytes signatures) external',
+      'function messageCallStatus(bytes32 _messageId) external view returns (bool)',
+    ];
+    const signs = packSignatures(signatures.map(s => signatureToVRS(s)));
+    const ambContract = new Contract(address, abi, ethersProvider.getSigner());
+    const isExecutedAlready = await ambContract.messageCallStatus(messageId);
+    if (isExecutedAlready) {
+      return { alreadyClaimed: true, error: null, data: null };
+    }
+    return {
+      alreadyClaimed: false,
+      error: null,
+      data: await ambContract.executeSignatures(msgData, signs),
+    };
+  } catch (error) {
+    return { error, alreadyClaimed: false, data: null };
+  }
 };
 
 const messagesTXQuery = gql`

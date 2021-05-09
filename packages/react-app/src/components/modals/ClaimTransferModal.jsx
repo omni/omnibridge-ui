@@ -92,8 +92,23 @@ export const ClaimTransferModal = () => {
     } else if (claimable) {
       try {
         setClaiming(true);
-        await executeSignatures(ethersProvider, foreignAmbAddress, message);
+        const { error, alreadyClaimed, data } = await executeSignatures(
+          ethersProvider,
+          foreignAmbAddress,
+          message,
+        );
         setLoadingText('Waiting for Execution');
+        if (error) {
+          throw error;
+        }
+
+        if (!data && alreadyClaimed) {
+          showError(
+            `The transfer was already executed. Check your balance of this token in ${getNetworkName(
+              foreignChainId,
+            )}</strong>`,
+          );
+        }
       } catch (executeError) {
         setClaiming(false);
         setLoadingText('');
