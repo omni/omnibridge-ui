@@ -115,10 +115,9 @@ export const ClaimTransferModal = () => {
               foreignChainId,
             )}</strong>`,
           );
+          return;
         }
       } catch (executeError) {
-        setClaiming(false);
-        setLoadingText('');
         logError({ executeError, chainId: foreignChainId, message });
         if (executeError && executeError.message) {
           showError(executeError.message);
@@ -127,6 +126,9 @@ export const ClaimTransferModal = () => {
             'Impossible to perform the operation. Reload the application and try again.',
           );
         }
+      } finally {
+        setClaiming(false);
+        setLoadingText('');
       }
     }
   };
