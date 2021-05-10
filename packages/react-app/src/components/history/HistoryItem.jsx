@@ -72,6 +72,7 @@ export const HistoryItem = ({
     toToken,
     message: inputMessage,
   },
+  handleClaimError,
 }) => {
   const {
     homeChainId,
@@ -126,11 +127,20 @@ export const HistoryItem = ({
     } else {
       try {
         setLoading(true);
-        const tx = await executeSignatures(
+        const { data: tx, alreadyClaimed, error } = await executeSignatures(
           ethersProvider,
           foreignAmbAddress,
           message,
         );
+
+        if (error) {
+          throw error;
+        }
+
+        if (alreadyClaimed && !tx) {
+          handleClaimError(toToken);
+          return;
+        }
         setTxHash(tx.hash);
       } catch (executeError) {
         logError({ executeError, chainId: providerChainId, message });
@@ -154,6 +164,8 @@ export const HistoryItem = ({
     foreignAmbAddress,
     claimable,
     message,
+    handleClaimError,
+    toToken,
     showError,
   ]);
 

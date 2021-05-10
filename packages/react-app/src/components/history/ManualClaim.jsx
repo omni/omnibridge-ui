@@ -11,7 +11,7 @@ import { useManualClaim } from 'hooks/useManualClaim';
 import { logError } from 'lib/helpers';
 import React, { useCallback, useState } from 'react';
 
-export const ManualClaim = () => {
+export const ManualClaim = ({ handleClaimError }) => {
   const [txHash, setTxHash] = useState('');
   const [loading, setLoading] = useState(false);
   const isInvalid = !txHash;
@@ -36,14 +36,21 @@ export const ManualClaim = () => {
     if (isInvalid) return;
     setLoading(true);
     try {
-      await claim(txHash);
+      const { alreadyClaimed, data, error } = await claim(txHash);
+      if (error) {
+        throw error;
+      }
+      if (alreadyClaimed && !data) {
+        handleClaimError();
+        return;
+      }
     } catch (manualClaimError) {
       logError({ manualClaimError });
       showError(manualClaimError.message);
     } finally {
       setLoading(false);
     }
-  }, [claim, txHash, isInvalid, showError]);
+  }, [claim, txHash, isInvalid, showError, handleClaimError]);
 
   return (
     <Flex

@@ -3,6 +3,7 @@ import { HistoryItem } from 'components/history/HistoryItem';
 import { HistoryPagination } from 'components/history/HistoryPagination';
 import { ManualClaim } from 'components/history/ManualClaim';
 import { NoHistory } from 'components/history/NoHistory';
+import { ClaimErrorModal } from 'components/modals/ClaimErrorModal';
 import { LoadingModal } from 'components/modals/LoadingModal';
 import { AuspiciousGasWarning } from 'components/warnings/AuspiciousGasWarning';
 import { GraphHealthWarning } from 'components/warnings/GraphHealthWarning';
@@ -13,16 +14,28 @@ import {
   getLowestHistoricalEthGasPrice,
   getMedianHistoricalEthGasPrice,
 } from 'lib/gasPrice';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { Redirect } from 'react-router-dom';
 
 const TOTAL_PER_PAGE = 20;
 
 export const BridgeHistory = ({ page }) => {
   const [onlyUnReceived, setOnlyUnReceived] = useState(false);
+  const [claimErrorShow, setClaimErrorShow] = useState(false);
+  const [claimErrorToken, setClaimErrorToken] = useState(null);
   const { foreignChainId } = useBridgeDirection();
 
   const { transfers, loading } = useUserHistory();
+
+  const handleClaimError = useCallback(toToken => {
+    toToken && setClaimErrorToken(toToken);
+    setClaimErrorShow(true);
+  }, []);
+
+  const handleModalClose = useCallback(() => {
+    setClaimErrorShow(false);
+    claimErrorToken && setClaimErrorToken(null);
+  }, [claimErrorToken]);
 
   if (loading) {
     return (
@@ -31,6 +44,7 @@ export const BridgeHistory = ({ page }) => {
       </Flex>
     );
   }
+
   const filteredTransfers = onlyUnReceived
     ? transfers.filter(i => i.receivingTx === null)
     : transfers;
@@ -57,6 +71,11 @@ export const BridgeHistory = ({ page }) => {
       px={{ base: 4, sm: 8 }}
       w="100%"
     >
+      <ClaimErrorModal
+        claimErrorShow={claimErrorShow}
+        claimErrorToken={claimErrorToken}
+        onClose={handleModalClose}
+      />
       {foreignChainId === 1 && medianGasPrice.gt(currentGasPrice) && (
         <AuspiciousGasWarning
           currentPrice={currentGasPrice}
@@ -65,7 +84,7 @@ export const BridgeHistory = ({ page }) => {
         />
       )}
       <GraphHealthWarning />
-      <ManualClaim />
+      <ManualClaim handleClaimError={handleClaimError} />
       <Flex justify="space-between" align="center" mb={4}>
         <Text fontSize="xl" fontWeight="bold">
           History
@@ -104,7 +123,11 @@ export const BridgeHistory = ({ page }) => {
             <Text textAlign="right">Status</Text>
           </Grid>
           {displayHistory.map(item => (
-            <HistoryItem key={item.sendingTx} data={item} />
+            <HistoryItem
+              key={item.sendingTx}
+              data={item}
+              handleClaimError={handleClaimError}
+            />
           ))}
           {numPages > 1 && (
             <HistoryPagination numPages={numPages} currentPage={page} />
