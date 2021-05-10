@@ -19,52 +19,43 @@ const RPC_URL = {
   100: XDAI_RPC_URL,
 };
 
-const RPC_TIMEOUT = 15000;
+const NETWORK_TIMEOUT = 1000;
 
 const memoized = memoize(
   url => new ethers.providers.StaticJsonRpcProvider(url),
 );
 
-const promiseWithTimeout = async (timeoutMs, promise, failureMessage) => {
-  let timeoutHandle;
-  const timeoutPromise = new Promise((_resolve, reject) => {
-    timeoutHandle = setTimeout(
-      () => reject(new Error(failureMessage)),
-      timeoutMs,
-    );
-  });
-
-  return Promise.race([promise, timeoutPromise]).then(result => {
-    clearTimeout(timeoutHandle);
-    return result;
-  });
+const checkRPCHealth = async url => {
+  if (!url) return null;
+  const tempProvider = memoized(url);
+  if (!tempProvider) return null;
+  try {
+    await Promise.race([
+      // eslint-disable-next-line no-underscore-dangle
+      tempProvider._networkPromise,
+      setTimeout(
+        () => Promise.reject(new Error('Network timeout')).catch(() => null),
+        NETWORK_TIMEOUT,
+      ),
+    ]);
+    return tempProvider;
+  } catch (err) {
+    logError({ providerSetError: err.message });
+    return null;
+  }
 };
 
 export const getEthersProvider = async chainId => {
+  const sessionHealthyURL = `HEALTHY_RPC_URL-${chainId}`;
   const localRPCUrl = window.localStorage.getItem(RPC_URL[chainId]);
+  const currentRPCUrls = getRPCUrl(chainId, true);
+  const rpcURLs =
+    localRPCUrl?.length > 0 ? [localRPCUrl, ...currentRPCUrls] : currentRPCUrls;
 
-  const rpcURLs = localRPCUrl
-    ? [localRPCUrl].concat(getRPCUrl(chainId, true))
-    : getRPCUrl(chainId, true);
-
-  const rpcPromises = rpcURLs.map(async url => {
-    try {
-      const tempProvider = memoized(url);
-      await promiseWithTimeout(
-        RPC_TIMEOUT,
-        // eslint-disable-next-line no-underscore-dangle
-        tempProvider._networkPromise,
-        `RPC Timeout: ${url} did not respond in time`,
-      );
-      return Promise.resolve(tempProvider);
-    } catch (err) {
-      logError({ providerSetError: err.message });
-      return Promise.reject(err);
-    }
-  });
-
-  const provider = await Promise.any(rpcPromises);
-
+  const provider =
+    (await checkRPCHealth(sessionStorage.getItem(sessionHealthyURL))) ||
+    (await Promise.all(rpcURLs.map(checkRPCHealth))).filter(p => !!p)[0];
+  sessionStorage.setItem(sessionHealthyURL, provider.connection.url);
   return provider || null;
 };
 

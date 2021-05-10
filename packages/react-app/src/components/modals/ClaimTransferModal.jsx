@@ -93,17 +93,39 @@ export const ClaimTransferModal = () => {
 
   const onClick = async () => {
     if (executed) {
-      showError('Message already executed');
+      showError(
+        `The transfer was already executed. Check your balance of this token in ${getNetworkName(
+          foreignChainId,
+        )}`,
+      );
     } else if (!message || !message.msgData || !message.signatures) {
       showError('Still Collecting Signatures...');
     } else if (claimable) {
       try {
         setClaiming(true);
-        await executeSignatures(ethersProvider, foreignAmbAddress, message);
+        const { error, alreadyClaimed, data } = await executeSignatures(
+          ethersProvider,
+          foreignAmbAddress,
+          {
+            ...message,
+            messageId: message.msgId,
+          },
+        );
         setLoadingText('Waiting for Execution');
+        if (error) {
+          throw error;
+        }
+
+        if (!data && alreadyClaimed) {
+          showError(
+            `The transfer was already executed. Check your balance of this token in ${getNetworkName(
+              foreignChainId,
+            )}`,
+          );
+          setExecuted(true);
+          return;
+        }
       } catch (executeError) {
-        setClaiming(false);
-        setLoadingText('');
         logError({ executeError, chainId: foreignChainId, message });
         if (executeError && executeError.message) {
           showError(executeError.message);
@@ -112,6 +134,9 @@ export const ClaimTransferModal = () => {
             'Impossible to perform the operation. Reload the application and try again.',
           );
         }
+      } finally {
+        setClaiming(false);
+        setLoadingText('');
       }
     }
   };

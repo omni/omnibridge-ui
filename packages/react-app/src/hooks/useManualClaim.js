@@ -32,11 +32,12 @@ const getMessageData = async (ethersProvider, txHash) => {
     event.data,
     event.topics,
   );
-  return decodedLog.encodedData;
+
+  return { messageId: decodedLog.messageId, msgData: decodedLog.encodedData };
 };
 
 const getMessage = async (homeProvider, homeAmbAddress, txHash) => {
-  const msgData = await getMessageData(homeProvider, txHash);
+  const { messageId, msgData } = await getMessageData(homeProvider, txHash);
   const messageHash = utils.solidityKeccak256(['bytes'], [msgData]);
 
   const abi = [
@@ -61,6 +62,7 @@ const getMessage = async (homeProvider, homeAmbAddress, txHash) => {
   return {
     msgData,
     signatures,
+    messageId,
   };
 };
 
@@ -96,8 +98,7 @@ export function useManualClaim() {
           )}.`,
         );
       }
-      await executeSignatures(ethersProvider, foreignAmbAddress, message);
-      return true;
+      return executeSignatures(ethersProvider, foreignAmbAddress, message);
     },
     [
       homeChainId,
