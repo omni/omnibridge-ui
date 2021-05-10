@@ -7,6 +7,7 @@ import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { useFeeManager } from 'hooks/useFeeManager';
 import { useMediatorInfo } from 'hooks/useMediatorInfo';
 import { useTotalConfirms } from 'hooks/useTotalConfirms';
+import { fetchAmbVersion } from 'lib/amb';
 import {
   fetchToAmount,
   fetchTokenLimits,
@@ -23,7 +24,13 @@ import {
   parseValue,
 } from 'lib/helpers';
 import { fetchTokenDetails } from 'lib/token';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 
 export const BridgeContext = React.createContext({});
 
@@ -42,6 +49,7 @@ export const BridgeProvider = ({ children }) => {
     getBridgeChainId,
     homeChainId,
     foreignChainId,
+    foreignAmbAddress,
   } = useBridgeDirection();
 
   const [receiver, setReceiver] = useState('');
@@ -59,6 +67,7 @@ export const BridgeProvider = ({ children }) => {
   const [toBalance, setToBalance] = useState(BigNumber.from(0));
   const [txHash, setTxHash] = useState();
   const [tokenLimits, setTokenLimits] = useState();
+  const [foreignAmbVersion, setForeignAmbVersion] = useState();
 
   const toast = useToast();
   const totalConfirms = useTotalConfirms();
@@ -108,6 +117,17 @@ export const BridgeProvider = ({ children }) => {
       foreignToHomeFeeType,
       feeManagerAddress,
     ],
+  );
+
+  useMemo(
+    async version => {
+      await fetchAmbVersion(foreignAmbAddress, ethersProvider)
+        .then(res => {
+          setForeignAmbVersion(res);
+        })
+        .catch(versionError => logError({ versionError }));
+    },
+    [foreignAmbAddress, ethersProvider],
   );
 
   const setToToken = useCallback(
@@ -309,7 +329,6 @@ export const BridgeProvider = ({ children }) => {
   useEffect(() => {
     updateToken();
   }, [updateToken]);
-
   return (
     <BridgeContext.Provider
       value={{
@@ -348,6 +367,7 @@ export const BridgeProvider = ({ children }) => {
         unlockLoading,
         approvalTxHash,
         feeManagerAddress,
+        foreignAmbVersion,
       }}
     >
       {children}

@@ -49,7 +49,7 @@ export const ClaimTransferModal = () => {
     enableForeignCurrencyBridge,
   } = useBridgeDirection();
   const { account, ethersProvider, providerChainId } = useWeb3Context();
-  const { txHash, setTxHash } = useContext(BridgeContext);
+  const { txHash, setTxHash, foreignAmbVersion } = useContext(BridgeContext);
   const [isOpen, setOpen] = useState(false);
   const [claiming, setClaiming] = useState(false);
   const [message, setMessage] = useState(false);
@@ -106,6 +106,7 @@ export const ClaimTransferModal = () => {
         const { error, alreadyClaimed, data } = await executeSignatures(
           ethersProvider,
           foreignAmbAddress,
+          foreignAmbVersion,
           {
             ...message,
             messageId: message.msgId,
