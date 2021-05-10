@@ -106,7 +106,10 @@ export const ClaimTransferModal = () => {
         const { error, alreadyClaimed, data } = await executeSignatures(
           ethersProvider,
           foreignAmbAddress,
-          message,
+          {
+            ...message,
+            messageId: message.msgId,
+          },
         );
         setLoadingText('Waiting for Execution');
         if (error) {

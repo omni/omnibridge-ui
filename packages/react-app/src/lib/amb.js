@@ -59,6 +59,9 @@ export const executeSignatures = async (
       data: await ambContract.executeSignatures(msgData, signs),
     };
   } catch (error) {
+    if (error?.code === '-32016') {
+      return { error: null, alreadyClaimed: true, data: null };
+    }
     return { error, alreadyClaimed: false, data: null };
   }
 };
