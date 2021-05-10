@@ -322,26 +322,29 @@ export const HistoryItem = ({
           </Text>
           <AddToMetamask token={toToken} ml="0.25rem" />
         </Flex>
-        {/* {receivingTx ? (
+        {receivingTx ? (
           <Flex align="center" justify={{ base: 'center', md: 'flex-end' }}>
             <Image src={BlueTickImage} mr="0.5rem" />
             <Text color="blue.500">Claimed</Text>
           </Flex>
-        ) : ( */}
-        <Flex align="center" justify={{ base: 'center', md: 'flex-end' }}>
-          <TxLink chainId={providerChainId} hash={loading ? txHash : undefined}>
-            <Button
-              w="100%"
-              size="sm"
-              colorScheme="blue"
-              onClick={claimTokens}
-              isLoading={loading}
+        ) : (
+          <Flex align="center" justify={{ base: 'center', md: 'flex-end' }}>
+            <TxLink
+              chainId={providerChainId}
+              hash={loading ? txHash : undefined}
             >
-              Claim
-            </Button>
-          </TxLink>
-        </Flex>
-        {/* )} */}
+              <Button
+                w="100%"
+                size="sm"
+                colorScheme="blue"
+                onClick={claimTokens}
+                isLoading={loading}
+              >
+                Claim
+              </Button>
+            </TxLink>
+          </Flex>
+        )}
       </Grid>
     </Flex>
   );

@@ -93,7 +93,11 @@ export const ClaimTransferModal = () => {
 
   const onClick = async () => {
     if (executed) {
-      showError('Message already executed');
+      showError(
+        `The transfer was already executed. Check your balance of this token in ${getNetworkName(
+          foreignChainId,
+        )}`,
+      );
     } else if (!message || !message.msgData || !message.signatures) {
       showError('Still Collecting Signatures...');
     } else if (claimable) {
@@ -113,8 +117,9 @@ export const ClaimTransferModal = () => {
           showError(
             `The transfer was already executed. Check your balance of this token in ${getNetworkName(
               foreignChainId,
-            )}</strong>`,
+            )}`,
           );
+          setExecuted(true);
           return;
         }
       } catch (executeError) {

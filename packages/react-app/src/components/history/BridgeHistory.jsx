@@ -84,7 +84,7 @@ export const BridgeHistory = ({ page }) => {
         />
       )}
       <GraphHealthWarning />
-      <ManualClaim />
+      <ManualClaim handleClaimError={handleClaimError} />
       <Flex justify="space-between" align="center" mb={4}>
         <Text fontSize="xl" fontWeight="bold">
           History
