@@ -64,7 +64,7 @@ export const executeSignatures = async (
   ];
   let ambContract = new Contract(address, abi, ethersProvider.getSigner());
   let executeSignaturesFunc = ambContract.executeSignatures;
-  if (version.major > 5 || (version.major === 5 && version.minor > 7)) {
+  if (version.major > 5 || (version.major === 5 && version.minor > 6)) {
     abi = [
       'function safeExecuteSignatures(bytes _data, bytes _signatures) external',
       'function messageCallStatus(bytes32 _messageId) external view returns (bool)',
