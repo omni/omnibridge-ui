@@ -23,13 +23,7 @@ import {
   parseValue,
 } from 'lib/helpers';
 import { fetchTokenDetails } from 'lib/token';
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 
 export const BridgeContext = React.createContext({});
 
@@ -48,7 +42,6 @@ export const BridgeProvider = ({ children }) => {
     getBridgeChainId,
     homeChainId,
     foreignChainId,
-    foreignAmbAddress,
   } = useBridgeDirection();
 
   const [receiver, setReceiver] = useState('');
