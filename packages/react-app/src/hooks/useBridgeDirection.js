@@ -1,9 +1,14 @@
 import { useSettings } from 'contexts/SettingsContext';
+import { useWeb3Context } from 'contexts/Web3Context';
+import { fetchAmbVersion } from 'lib/amb';
+import { logError } from 'lib/helpers';
 import { networks } from 'lib/networks';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 
 export const useBridgeDirection = () => {
   const { bridgeDirection } = useSettings();
+  const { ethersProvider } = useWeb3Context();
+  const [foreignAmbVersion, setForeignAmbVersion] = useState();
   const bridgeConfig = useMemo(
     () => networks[bridgeDirection] || Object.values(networks)[0],
     [bridgeDirection],
@@ -15,7 +20,19 @@ export const useBridgeDirection = () => {
     ambLiveMonitorPrefix,
     homeGraphName,
     foreignGraphName,
+    foreignAmbAddress,
   } = bridgeConfig;
+
+  useMemo(
+    async version => {
+      await fetchAmbVersion(foreignAmbAddress, ethersProvider)
+        .then(res => {
+          setForeignAmbVersion(res);
+        })
+        .catch(versionError => logError({ versionError }));
+    },
+    [foreignAmbAddress, ethersProvider],
+  );
 
   const getBridgeChainId = useCallback(
     chainId => {
@@ -45,6 +62,7 @@ export const useBridgeDirection = () => {
     getBridgeChainId,
     getMonitorUrl,
     getGraphEndpoint,
+    foreignAmbVersion,
     ...bridgeConfig,
   };
 };

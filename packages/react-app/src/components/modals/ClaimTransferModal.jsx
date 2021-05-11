@@ -45,11 +45,12 @@ export const ClaimTransferModal = () => {
     homeChainId,
     foreignChainId,
     foreignAmbAddress,
+    foreignAmbVersion,
     getGraphEndpoint,
     enableForeignCurrencyBridge,
   } = useBridgeDirection();
   const { account, ethersProvider, providerChainId } = useWeb3Context();
-  const { txHash, setTxHash, foreignAmbVersion } = useContext(BridgeContext);
+  const { txHash, setTxHash } = useContext(BridgeContext);
   const [isOpen, setOpen] = useState(false);
   const [claiming, setClaiming] = useState(false);
   const [message, setMessage] = useState(false);
