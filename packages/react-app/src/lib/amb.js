@@ -12,6 +12,9 @@ export const fetchConfirmations = async (address, ethersProvider) => {
 };
 
 export const fetchAmbVersion = async (address, ethersProvider) => {
+  if (!ethersProvider) {
+    return { major: 0, minor: 0, patch: 0 };
+  }
   const abi = [
     'function getBridgeInterfacesVersion() external pure returns (uint64, uint64, uint64)',
   ];
@@ -66,12 +69,12 @@ export const executeSignatures = async (
   let executeSignaturesFunc = ambContract.executeSignatures;
   if (version.major > 5 || (version.major === 5 && version.minor > 6)) {
     abi = [
-      'function safeExecuteSignatures(bytes _data, bytes _signatures) external',
+      'function safeExecuteSignaturesWithAutoGasLimit(bytes _data, bytes _signatures) external',
       'function messageCallStatus(bytes32 _messageId) external view returns (bool)',
     ];
 
     ambContract = new Contract(address, abi, ethersProvider.getSigner());
-    executeSignaturesFunc = ambContract.safeExecuteSignatures;
+    executeSignaturesFunc = ambContract.safeExecuteSignaturesWithAutoGasLimit;
   }
   try {
     const signs = packSignatures(signatures.map(s => signatureToVRS(s)));
