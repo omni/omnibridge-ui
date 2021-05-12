@@ -7,7 +7,7 @@ import { useCallback, useMemo, useState } from 'react';
 
 export const useBridgeDirection = () => {
   const { bridgeDirection } = useSettings();
-  const { ethersProvider } = useWeb3Context();
+  const { ethersProvider, providerChainId } = useWeb3Context();
   const [foreignAmbVersion, setForeignAmbVersion] = useState();
   const bridgeConfig = useMemo(
     () => networks[bridgeDirection] || Object.values(networks)[0],
@@ -27,11 +27,13 @@ export const useBridgeDirection = () => {
     async version => {
       await fetchAmbVersion(foreignAmbAddress, ethersProvider)
         .then(res => {
-          setForeignAmbVersion(res);
+          if (providerChainId === foreignChainId) {
+            setForeignAmbVersion(res);
+          }
         })
         .catch(versionError => logError({ versionError }));
     },
-    [foreignAmbAddress, ethersProvider],
+    [foreignAmbAddress, ethersProvider, providerChainId, foreignChainId],
   );
 
   const getBridgeChainId = useCallback(
