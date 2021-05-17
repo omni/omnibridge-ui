@@ -52,7 +52,7 @@ const ETH_BSC_BRIDGE_CONFIG = {
   label: 'eth⥊bsc',
   homeChainId: 56,
   foreignChainId: 1,
-  enableReversedBridge: false,
+  enableReversedBridge: true,
   foreignMediatorAddress: '0x69c707d975e8d883920003CC357E556a4732CD03'.toLowerCase(),
   homeMediatorAddress: '0xD83893F31AA1B6B9D97C9c70D3492fe38D24d218'.toLowerCase(),
   foreignAmbAddress: '0x07955be2967B655Cf52751fCE7ccC8c61EA594e2'.toLowerCase(),
