@@ -41,6 +41,7 @@ const getMessage = async (homeProvider, homeAmbAddress, txHash) => {
   const messageHash = utils.solidityKeccak256(['bytes'], [msgData]);
 
   const abi = [
+    'function isAlreadyProcessed(uint256 _number) public pure returns (bool)',
     'function requiredSignatures() public view returns (uint256)',
     'function numMessagesSigned(bytes32 _message) public view returns (uint256)',
     'function signature(bytes32 _hash, uint256 _index) public view returns (bytes)',
@@ -50,13 +51,15 @@ const getMessage = async (homeProvider, homeAmbAddress, txHash) => {
     homeAMB.requiredSignatures(),
     homeAMB.numMessagesSigned(messageHash),
   ]);
-  if (numMessagesSigned < requiredSignatures) {
+
+  const isEnoughCollected = await homeAMB.isAlreadyProcessed(numMessagesSigned);
+  if (!isEnoughCollected) {
     throw Error(
       'Transaction to the bridge is found but oracles’ confirmations are not collected yet. Wait for a minute and try again.',
     );
   }
   const signatures = await Promise.all(
-    Array(requiredSignatures)
+    Array(requiredSignatures.toNumber())
       .fill(null)
       .map((_item, index) => homeAMB.signature(messageHash, index)),
   );
