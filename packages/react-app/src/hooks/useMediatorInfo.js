@@ -38,8 +38,9 @@ export const useMediatorInfo = () => {
 
       mediatorContract
         .getBridgeInterfacesVersion()
-        .then(version => {
-          if (version[0].toNumber() >= 2 && version[1].toNumber() >= 1) {
+        .then(versionArray => {
+          const version = versionArray.map(v => v.toNumber()).join('.');
+          if (version >= '2.1.0') {
             setFeeManager();
           } else {
             setFeeManagerAddress(homeMediatorAddress);
