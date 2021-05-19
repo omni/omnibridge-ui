@@ -9,7 +9,7 @@ export const MedianGasWarning = ({
   const percent = currentPrice
     .sub(medianPrice)
     .mul(100)
-    .div(currentPrice)
+    .div(medianPrice)
     .toNumber();
 
   return (

@@ -70,6 +70,11 @@ class GasPriceStore {
       REACT_APP_GAS_PRICE_FALLBACK_GWEI || '0',
       'gwei',
     );
+    this.medianHistoricalPrice = utils.parseUnits(
+      REACT_APP_GAS_PRICE_FALLBACK_GWEI || '0',
+      'gwei',
+    );
+
     this.fastGasPrice = utils.parseUnits(
       REACT_APP_GAS_PRICE_FALLBACK_GWEI || '0',
       'gwei',
