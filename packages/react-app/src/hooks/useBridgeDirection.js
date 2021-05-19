@@ -1,14 +1,15 @@
 import { useSettings } from 'contexts/SettingsContext';
-import { useWeb3Context } from 'contexts/Web3Context';
 import { fetchAmbVersion } from 'lib/amb';
+import { networkLabels } from 'lib/constants';
 import { logError } from 'lib/helpers';
 import { networks } from 'lib/networks';
-import { useCallback, useMemo, useState } from 'react';
+import { getEthersProvider } from 'lib/providers';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 export const useBridgeDirection = () => {
   const { bridgeDirection } = useSettings();
-  const { ethersProvider, providerChainId } = useWeb3Context();
   const [foreignAmbVersion, setForeignAmbVersion] = useState();
+  const [fetchingVersion, setFetchingVersion] = useState(false);
   const bridgeConfig = useMemo(
     () => networks[bridgeDirection] || Object.values(networks)[0],
     [bridgeDirection],
@@ -23,18 +24,27 @@ export const useBridgeDirection = () => {
     foreignAmbAddress,
   } = bridgeConfig;
 
-  useMemo(
-    async version => {
-      await fetchAmbVersion(foreignAmbAddress, ethersProvider)
+  useEffect(() => {
+    const label = networkLabels[foreignChainId];
+    const key = `${label}-AMB-VERSION`;
+    const fetchVersion = async () => {
+      const provider = await getEthersProvider(foreignChainId);
+      await fetchAmbVersion(foreignAmbAddress, provider)
         .then(res => {
-          if (providerChainId === foreignChainId) {
-            setForeignAmbVersion(res);
-          }
+          setForeignAmbVersion(res);
+          sessionStorage.setItem(key, JSON.stringify(res));
         })
         .catch(versionError => logError({ versionError }));
-    },
-    [foreignAmbAddress, ethersProvider, providerChainId, foreignChainId],
-  );
+      setFetchingVersion(false);
+    };
+    const version = sessionStorage.getItem(key);
+    if (!version && !fetchingVersion) {
+      setFetchingVersion(true);
+      fetchVersion();
+    } else {
+      setForeignAmbVersion(JSON.parse(version));
+    }
+  }, [foreignAmbAddress, foreignChainId, fetchingVersion]);
 
   const getBridgeChainId = useCallback(
     chainId => {
