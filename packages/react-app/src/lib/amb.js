@@ -11,6 +11,24 @@ export const fetchConfirmations = async (address, ethersProvider) => {
   return parseInt(requiredConfirmations, 10);
 };
 
+export const fetchAmbVersion = async (address, ethersProvider) => {
+  if (!ethersProvider) {
+    return { major: 0, minor: 0, patch: 0 };
+  }
+  const abi = [
+    'function getBridgeInterfacesVersion() external pure returns (uint64, uint64, uint64)',
+  ];
+  const ambContract = new Contract(address, abi, ethersProvider);
+  const ambVersion = await ambContract
+    .getBridgeInterfacesVersion()
+    .catch(versionError => logError({ versionError }));
+  return {
+    major: ambVersion[0].toNumber(),
+    minor: ambVersion[1].toNumber(),
+    patch: ambVersion[2].toNumber(),
+  };
+};
+
 function strip0x(input) {
   return input.replace(/^0x/, '');
 }
@@ -40,15 +58,26 @@ function packSignatures(array) {
 export const executeSignatures = async (
   ethersProvider,
   address,
+  version,
   { msgData, signatures, messageId },
 ) => {
-  try {
-    const abi = [
-      'function executeSignatures(bytes messageData, bytes signatures) external',
+  let abi = [
+    'function executeSignatures(bytes messageData, bytes signatures) external',
+    'function messageCallStatus(bytes32 _messageId) external view returns (bool)',
+  ];
+  let ambContract = new Contract(address, abi, ethersProvider.getSigner());
+  let executeSignaturesFunc = ambContract.executeSignatures;
+  if (version.major > 5 || (version.major === 5 && version.minor > 6)) {
+    abi = [
+      'function safeExecuteSignaturesWithAutoGasLimit(bytes _data, bytes _signatures) external',
       'function messageCallStatus(bytes32 _messageId) external view returns (bool)',
     ];
+
+    ambContract = new Contract(address, abi, ethersProvider.getSigner());
+    executeSignaturesFunc = ambContract.safeExecuteSignaturesWithAutoGasLimit;
+  }
+  try {
     const signs = packSignatures(signatures.map(s => signatureToVRS(s)));
-    const ambContract = new Contract(address, abi, ethersProvider.getSigner());
     const isExecutedAlready = await ambContract.messageCallStatus(messageId);
     if (isExecutedAlready) {
       return { alreadyClaimed: true, error: null, data: null };
@@ -56,7 +85,7 @@ export const executeSignatures = async (
     return {
       alreadyClaimed: false,
       error: null,
-      data: await ambContract.executeSignatures(msgData, signs),
+      data: await executeSignaturesFunc(msgData, signs),
     };
   } catch (error) {
     if (error?.code === '-32016') {
