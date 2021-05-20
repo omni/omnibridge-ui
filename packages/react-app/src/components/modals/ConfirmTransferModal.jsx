@@ -67,6 +67,7 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
       );
     }
   }, [fromAmount, toAmount]);
+
   const smallScreen = useBreakpointValue({ base: true, md: false });
   const toast = useToast();
   const [isInflationWarningChecked, setInflationWarningChecked] = useState(
