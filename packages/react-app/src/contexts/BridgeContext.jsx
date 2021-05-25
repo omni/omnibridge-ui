@@ -309,7 +309,6 @@ export const BridgeProvider = ({ children }) => {
   useEffect(() => {
     updateToken();
   }, [updateToken]);
-
   return (
     <BridgeContext.Provider
       value={{

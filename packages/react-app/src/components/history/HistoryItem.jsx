@@ -78,6 +78,7 @@ export const HistoryItem = ({
     homeChainId,
     foreignChainId,
     foreignAmbAddress,
+    foreignAmbVersion,
     getBridgeChainId,
     getMonitorUrl,
     getGraphEndpoint,
@@ -130,6 +131,7 @@ export const HistoryItem = ({
         const { data: tx, alreadyClaimed, error } = await executeSignatures(
           ethersProvider,
           foreignAmbAddress,
+          foreignAmbVersion,
           message,
         );
 
@@ -162,6 +164,7 @@ export const HistoryItem = ({
     foreignChainId,
     ethersProvider,
     foreignAmbAddress,
+    foreignAmbVersion,
     claimable,
     message,
     handleClaimError,

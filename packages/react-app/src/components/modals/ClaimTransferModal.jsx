@@ -45,6 +45,7 @@ export const ClaimTransferModal = () => {
     homeChainId,
     foreignChainId,
     foreignAmbAddress,
+    foreignAmbVersion,
     getGraphEndpoint,
     enableForeignCurrencyBridge,
   } = useBridgeDirection();
@@ -106,6 +107,7 @@ export const ClaimTransferModal = () => {
         const { error, alreadyClaimed, data } = await executeSignatures(
           ethersProvider,
           foreignAmbAddress,
+          foreignAmbVersion,
           {
             ...message,
             messageId: message.msgId,

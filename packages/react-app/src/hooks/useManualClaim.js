@@ -76,6 +76,7 @@ export function useManualClaim() {
     homeAmbAddress,
     foreignChainId,
     foreignAmbAddress,
+    foreignAmbVersion,
   } = useBridgeDirection();
   const { providerChainId, ethersProvider } = useWeb3Context();
 
@@ -102,13 +103,19 @@ export function useManualClaim() {
           )}.`,
         );
       }
-      return executeSignatures(ethersProvider, foreignAmbAddress, message);
+      return executeSignatures(
+        ethersProvider,
+        foreignAmbAddress,
+        foreignAmbVersion,
+        message,
+      );
     },
     [
       homeChainId,
       homeAmbAddress,
       foreignChainId,
       foreignAmbAddress,
+      foreignAmbVersion,
       providerChainId,
       ethersProvider,
     ],
