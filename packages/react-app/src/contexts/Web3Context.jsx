@@ -5,6 +5,8 @@ import { getNetworkName, getRPCUrl, logError } from 'lib/helpers';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import Web3 from 'web3';
 
+import imTokenLogo from '../assets/imtoken.svg';
+
 export const Web3Context = React.createContext({});
 export const useWeb3Context = () => useContext(Web3Context);
 
@@ -25,18 +27,34 @@ const updateTitle = chainId => {
   }
 };
 
+const rpc = {
+  1: getRPCUrl(1),
+  42: getRPCUrl(42),
+  100: getRPCUrl(100),
+  77: getRPCUrl(77),
+  56: getRPCUrl(56),
+};
+
+const connector = async (ProviderPackage, options) => {
+  const provider = new ProviderPackage(options);
+  await provider.enable();
+  return provider;
+};
+
 const providerOptions = {
   walletconnect: {
     package: WalletConnectProvider,
-    options: {
-      rpc: {
-        1: getRPCUrl(1),
-        42: getRPCUrl(42),
-        100: getRPCUrl(100),
-        77: getRPCUrl(77),
-        56: getRPCUrl(56),
-      },
+    options: { rpc },
+  },
+  'custom-imToken': {
+    display: {
+      logo: imTokenLogo,
+      name: 'imToken',
+      description: 'Connect to your imToken Wallet',
     },
+    package: WalletConnectProvider,
+    options: { rpc },
+    connector,
   },
 };
 
