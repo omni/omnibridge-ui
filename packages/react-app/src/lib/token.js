@@ -61,9 +61,26 @@ const fetchMode = async (bridgeDirection, token) => {
 
 export const fetchTokenName = async token => {
   const ethersProvider = await getEthersProvider(token.chainId);
-  const abi = ['function name() view returns (string)'];
-  const tokenContract = new Contract(token.address, abi, ethersProvider);
-  return tokenContract.name();
+
+  let tokenName = token.name || '';
+  try {
+    const stringAbi = ['function name() view returns (string)'];
+    const tokenContractString = new Contract(
+      token.address,
+      stringAbi,
+      ethersProvider,
+    );
+    tokenName = await tokenContractString.name();
+  } catch {
+    const bytes32Abi = ['function name() view returns (bytes32)'];
+    const tokenContractBytes32 = new Contract(
+      token.address,
+      bytes32Abi,
+      ethersProvider,
+    );
+    tokenName = utils.parseBytes32String(await tokenContractBytes32.name());
+  }
+  return tokenName;
 };
 
 export const fetchTokenDetailsBytes32 = async token => {
