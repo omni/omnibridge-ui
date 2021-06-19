@@ -1,46 +1,115 @@
 import { BridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
-import { getMessageFromTxHash, getMessageStatus } from 'lib/amb';
 import { POLLING_INTERVAL } from 'lib/constants';
 import { logError } from 'lib/helpers';
+import {
+  getMessage,
+  getMessageData,
+  messageCallStatus,
+  NOT_ENOUGH_COLLECTED_SIGNATURES,
+} from 'lib/message';
+import { getEthersProvider } from 'lib/providers';
 import { useCallback, useContext, useEffect, useState } from 'react';
-import { defer } from 'rxjs';
 
 export const useTransactionStatus = () => {
-  const {
-    homeChainId,
-    getBridgeChainId,
-    getGraphEndpoint,
-  } = useBridgeDirection();
-  const { ethersProvider, providerChainId } = useWeb3Context();
-  const {
-    loading,
-    setLoading,
-    txHash,
-    setTxHash,
-    updateAllowance,
-    totalConfirms,
-  } = useContext(BridgeContext);
+  const { homeChainId, getBridgeChainId, getAMBAddress } = useBridgeDirection();
+  const { ethersProvider, providerChainId: chainId } = useWeb3Context();
+  const isHome = chainId === homeChainId;
+  const bridgeChainId = getBridgeChainId(chainId);
+  const { loading, setLoading, txHash, setTxHash, totalConfirms } = useContext(
+    BridgeContext,
+  );
   const [needsConfirmation, setNeedsConfirmation] = useState(false);
   const [loadingText, setLoadingText] = useState();
-  const [receipt, setReceipt] = useState();
+  const [confirmations, setConfirmations] = useState(0);
+
   const completeReceipt = useCallback(() => {
     setTxHash();
-    updateAllowance();
-    setLoadingText();
-    setReceipt();
     setLoading(false);
-  }, [setLoading, updateAllowance, setTxHash]);
+  }, [setLoading, setTxHash]);
 
   const incompleteReceipt = useCallback(() => {
-    updateAllowance();
-    setLoadingText();
-    setReceipt();
     setLoading(false);
-  }, [setLoading, updateAllowance]);
+  }, [setLoading]);
 
   useEffect(() => {
+    if (!loading) {
+      setLoadingText();
+      setConfirmations(0);
+    }
+  }, [loading]);
+
+  const getStatus = useCallback(async () => {
+    try {
+      const txReceipt = await ethersProvider.getTransactionReceipt(txHash);
+      const numConfirmations = txReceipt ? txReceipt.confirmations : 0;
+      const enoughConfirmations = numConfirmations >= totalConfirms;
+
+      if (txReceipt) {
+        setConfirmations(numConfirmations);
+        if (enoughConfirmations) {
+          if (isHome) {
+            setLoadingText('Collecting Signatures');
+            const message = await getMessage(
+              isHome,
+              ethersProvider,
+              getAMBAddress(chainId),
+              txHash,
+            );
+            if (message && message.signatures) {
+              setNeedsConfirmation(true);
+              incompleteReceipt();
+              return true;
+            }
+          } else {
+            setLoadingText('Waiting for Execution');
+            const bridgeProvider = await getEthersProvider(bridgeChainId);
+            const bridgeAmbAddress = getAMBAddress(bridgeChainId);
+
+            const { messageId } = await getMessageData(
+              isHome,
+              ethersProvider,
+              txHash,
+              txReceipt,
+            );
+            const status = await messageCallStatus(
+              bridgeAmbAddress,
+              bridgeProvider,
+              messageId,
+            );
+            if (status) {
+              completeReceipt();
+              return true;
+            }
+          }
+        }
+      }
+    } catch (txError) {
+      if (!(isHome && txError.message === NOT_ENOUGH_COLLECTED_SIGNATURES)) {
+        completeReceipt();
+        logError({ txError });
+        return true;
+      }
+    }
+    return false;
+  }, [
+    isHome,
+    txHash,
+    ethersProvider,
+    totalConfirms,
+    completeReceipt,
+    incompleteReceipt,
+    chainId,
+    bridgeChainId,
+    getAMBAddress,
+  ]);
+
+  useEffect(() => {
+    if (!loading || !txHash || !ethersProvider) {
+      return () => undefined;
+    }
+
     const subscriptions = [];
     const unsubscribe = () => {
       subscriptions.forEach(s => {
@@ -48,102 +117,36 @@ export const useTransactionStatus = () => {
       });
     };
 
-    if (!txHash || !ethersProvider || !loading) {
-      setReceipt();
-      setLoadingText();
-      return unsubscribe;
-    }
-
-    const chainId = providerChainId;
-    let message = null;
-    let status = false;
-    const isHome = chainId === homeChainId;
     setLoadingText('Waiting for Block Confirmations');
+    let isSubscribed = true;
 
-    const getReceipt = async () => {
-      try {
-        const txReceipt = await ethersProvider.getTransactionReceipt(txHash);
-        if (txReceipt) {
-          setReceipt(txReceipt);
-          if (txReceipt.confirmations >= totalConfirms) {
-            setLoadingText(
-              isHome ? 'Collecting Signatures' : 'Waiting for Execution',
-            );
-          }
-
-          if (txReceipt && (!message || (isHome && !message.signatures))) {
-            message = await getMessageFromTxHash(
-              getGraphEndpoint(chainId),
-              txHash,
-            );
-          }
-
-          if (isHome) {
-            if (message && message.signatures) {
-              setNeedsConfirmation(true);
-              incompleteReceipt();
-              unsubscribe();
-              return;
-            }
-          } else if (message) {
-            status = await getMessageStatus(
-              getGraphEndpoint(getBridgeChainId(chainId)),
-              message.msgId,
-            );
-            if (status) {
-              completeReceipt();
-              unsubscribe();
-              return;
-            }
-          }
-        }
-
-        if (
-          !txReceipt ||
-          !message ||
-          (isHome ? !message.signatures : !status)
-        ) {
-          const timeoutId = setTimeout(() => getReceipt(), POLLING_INTERVAL);
-          subscriptions.push(timeoutId);
-        }
-      } catch (txStatusError) {
-        completeReceipt();
+    const updateStatus = async () => {
+      unsubscribe();
+      const status = !isSubscribed || (await getStatus());
+      if (!status && loading && txHash && ethersProvider) {
         unsubscribe();
-        logError({ txStatusError });
+        const timeoutId = setTimeout(() => updateStatus(), POLLING_INTERVAL);
+        subscriptions.push(timeoutId);
       }
     };
 
-    // unsubscribe from previous polls
-    unsubscribe();
+    updateStatus();
 
-    const deferral = defer(() => getReceipt()).subscribe();
     // unsubscribe when unmount component
     return () => {
+      isSubscribed = false;
       unsubscribe();
-      deferral.unsubscribe();
     };
-  }, [
-    loading,
-    providerChainId,
-    txHash,
-    ethersProvider,
-    totalConfirms,
-    completeReceipt,
-    incompleteReceipt,
-    setReceipt,
-    homeChainId,
-    getBridgeChainId,
-    getGraphEndpoint,
-  ]);
+  }, [loading, txHash, ethersProvider, getStatus]);
 
   useEffect(() => {
-    setNeedsConfirmation(needs => providerChainId === homeChainId && needs);
-  }, [homeChainId, providerChainId]);
+    setNeedsConfirmation(needs => chainId === homeChainId && needs);
+  }, [homeChainId, chainId]);
 
   return {
     loadingText,
     needsConfirmation,
     setNeedsConfirmation,
-    confirmations: receipt ? receipt.confirmations : 0,
+    confirmations,
   };
 };

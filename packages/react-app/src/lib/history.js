@@ -23,8 +23,8 @@ const requestsUserQuery = gql`
       symbol
       message {
         txHash
-        msgId
-        msgData
+        messageId: msgId
+        messageData: msgData
         signatures
       }
     }
@@ -50,8 +50,8 @@ const requestsRecipientQuery = gql`
       symbol
       message {
         txHash
-        msgId
-        msgData
+        messageId: msgId
+        messageData: msgData
         signatures
       }
     }
@@ -158,7 +158,7 @@ export const combineRequestsWithExecutions = (
         symbol: req.symbol,
         chainId: bridgeChainId,
       },
-      message: { ...req.message, messageId: req.messageId },
+      message: req.message,
     };
   });
 };

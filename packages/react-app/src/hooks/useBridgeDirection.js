@@ -21,6 +21,7 @@ export const useBridgeDirection = () => {
     ambLiveMonitorPrefix,
     homeGraphName,
     foreignGraphName,
+    homeAmbAddress,
     foreignAmbAddress,
   } = bridgeConfig;
 
@@ -47,16 +48,12 @@ export const useBridgeDirection = () => {
   }, [foreignAmbAddress, foreignChainId, fetchingVersion]);
 
   const getBridgeChainId = useCallback(
-    chainId => {
-      return chainId === homeChainId ? foreignChainId : homeChainId;
-    },
+    chainId => (chainId === homeChainId ? foreignChainId : homeChainId),
     [homeChainId, foreignChainId],
   );
 
   const getMonitorUrl = useCallback(
-    (chainId, hash) => {
-      return `${ambLiveMonitorPrefix}/${chainId}/${hash}`;
-    },
+    (chainId, hash) => `${ambLiveMonitorPrefix}/${chainId}/${hash}`,
     [ambLiveMonitorPrefix],
   );
 
@@ -69,11 +66,19 @@ export const useBridgeDirection = () => {
     [foreignGraphName, homeChainId, homeGraphName],
   );
 
+  const getAMBAddress = useCallback(
+    chainId => (chainId === homeChainId ? homeAmbAddress : foreignAmbAddress),
+    [homeChainId, homeAmbAddress, foreignAmbAddress],
+  );
+
   return {
     bridgeDirection,
     getBridgeChainId,
     getMonitorUrl,
     getGraphEndpoint,
+    getAMBAddress,
+    homeAmbAddress,
+    foreignAmbAddress,
     foreignAmbVersion,
     ...bridgeConfig,
   };

@@ -5,7 +5,6 @@ import { getHealthStatus } from 'lib/graphHealth';
 import { logDebug, logError } from 'lib/helpers';
 import { getEthersProvider } from 'lib/providers';
 import { useEffect, useRef, useState } from 'react';
-import { defer } from 'rxjs';
 
 const {
   REACT_APP_GRAPH_HEALTH_UPDATE_INTERVAL,
@@ -48,6 +47,7 @@ export const useGraphHealth = (
       });
     };
 
+    let isSubscribed = true;
     const load = async () => {
       try {
         setLoading(true);
@@ -71,27 +71,30 @@ export const useGraphHealth = (
           message: 'updated graph health data',
         });
 
-        setHomeHealthy(
+        const isHomeHealthy =
           homeHealth &&
-            homeHealth.isReachable &&
-            !homeHealth.isFailed &&
-            homeHealth.isSynced &&
-            Math.abs(homeHealth.latestBlockNumber - homeBlockNumber) <
-              THRESHOLD_BLOCKS &&
-            Math.abs(homeHealth.chainHeadBlockNumber - homeBlockNumber) <
-              THRESHOLD_BLOCKS,
-        );
+          homeHealth.isReachable &&
+          !homeHealth.isFailed &&
+          homeHealth.isSynced &&
+          Math.abs(homeHealth.latestBlockNumber - homeBlockNumber) <
+            THRESHOLD_BLOCKS &&
+          Math.abs(homeHealth.chainHeadBlockNumber - homeBlockNumber) <
+            THRESHOLD_BLOCKS;
 
-        setForeignHealthy(
+        const isForeignHealthy =
           foreignHealth &&
-            foreignHealth.isReachable &&
-            !foreignHealth.isFailed &&
-            foreignHealth.isSynced &&
-            Math.abs(foreignHealth.latestBlockNumber - foreignBlockNumber) <
-              THRESHOLD_BLOCKS &&
-            Math.abs(foreignHealth.chainHeadBlockNumber - foreignBlockNumber) <
-              THRESHOLD_BLOCKS,
-        );
+          foreignHealth.isReachable &&
+          !foreignHealth.isFailed &&
+          foreignHealth.isSynced &&
+          Math.abs(foreignHealth.latestBlockNumber - foreignBlockNumber) <
+            THRESHOLD_BLOCKS &&
+          Math.abs(foreignHealth.chainHeadBlockNumber - foreignBlockNumber) <
+            THRESHOLD_BLOCKS;
+
+        if (isSubscribed) {
+          setHomeHealthy(isHomeHealthy);
+          setForeignHealthy(isForeignHealthy);
+        }
 
         const timeoutId = setTimeout(() => load(), UPDATE_INTERVAL);
         subscriptions.push(timeoutId);
@@ -105,11 +108,12 @@ export const useGraphHealth = (
     // unsubscribe from previous polls
     unsubscribe();
 
-    const deferral = defer(() => load()).subscribe();
+    load();
+
     // unsubscribe when unmount component
     return () => {
+      isSubscribed = false;
       unsubscribe();
-      deferral.unsubscribe();
     };
   }, [bridgeDirection, foreignChainId, homeChainId]);
 

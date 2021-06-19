@@ -7,15 +7,15 @@ import {
   Text,
   useToast,
 } from '@chakra-ui/react';
-import { useManualClaim } from 'hooks/useManualClaim';
+import { useClaim } from 'hooks/useClaim';
+import { TOKENS_CLAIMED } from 'lib/amb';
 import { logError } from 'lib/helpers';
 import React, { useCallback, useState } from 'react';
 
 export const ManualClaim = ({ handleClaimError }) => {
   const [txHash, setTxHash] = useState('');
   const [loading, setLoading] = useState(false);
-  const isInvalid = !txHash;
-  const claim = useManualClaim();
+  const claim = useClaim();
 
   const toast = useToast();
   const showError = useCallback(
@@ -33,24 +33,22 @@ export const ManualClaim = ({ handleClaimError }) => {
   );
 
   const claimTokens = useCallback(async () => {
-    if (isInvalid) return;
+    if (!txHash) return;
     setLoading(true);
     try {
-      const { alreadyClaimed, data, error } = await claim(txHash);
-      if (error) {
-        throw error;
-      }
-      if (alreadyClaimed && !data) {
-        handleClaimError();
-        return;
-      }
+      const tx = await claim(txHash);
+      await tx.wait();
     } catch (manualClaimError) {
       logError({ manualClaimError });
-      showError(manualClaimError.message);
+      if (manualClaimError.message === TOKENS_CLAIMED) {
+        handleClaimError();
+      } else {
+        showError(manualClaimError.message);
+      }
     } finally {
       setLoading(false);
     }
-  }, [claim, txHash, isInvalid, showError, handleClaimError]);
+  }, [claim, txHash, showError, handleClaimError]);
 
   return (
     <Flex
@@ -94,7 +92,7 @@ export const ManualClaim = ({ handleClaimError }) => {
             size="sm"
             colorScheme="blue"
             onClick={claimTokens}
-            isDisabled={isInvalid}
+            isDisabled={!txHash}
             isLoading={loading}
           >
             Claim

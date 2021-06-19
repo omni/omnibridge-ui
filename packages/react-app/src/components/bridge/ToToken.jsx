@@ -27,7 +27,6 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import { defer } from 'rxjs';
 
 export const ToToken = () => {
   const { account, providerChainId } = useWeb3Context();
@@ -83,26 +82,28 @@ export const ToToken = () => {
   ]);
 
   useEffect(() => {
-    let subscription;
+    let isSubscribed = true;
     if (token && account && chainId === token.chainId) {
       setBalanceLoading(true);
-      subscription = defer(() =>
-        fetchTokenBalance(token, account).catch(toBalanceError => {
+      fetchTokenBalance(token, account)
+        .catch(toBalanceError => {
           logError({ toBalanceError });
-          setBalance(BigNumber.from(0));
-          setBalanceLoading(false);
-        }),
-      ).subscribe(b => {
-        setBalance(b);
-        setBalanceLoading(false);
-      });
+          if (isSubscribed) {
+            setBalance(BigNumber.from(0));
+            setBalanceLoading(false);
+          }
+        })
+        .then(b => {
+          if (isSubscribed) {
+            setBalance(b);
+            setBalanceLoading(false);
+          }
+        });
     } else {
       setBalance(BigNumber.from(0));
     }
     return () => {
-      if (subscription) {
-        subscription.unsubscribe();
-      }
+      isSubscribed = false;
     };
   }, [updateBalance, token, account, setBalance, setBalanceLoading, chainId]);
 

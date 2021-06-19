@@ -19,210 +19,75 @@ import ClaimTokenImage from 'assets/claim.svg';
 import { LoadingModal } from 'components/modals/LoadingModal';
 import { AuspiciousGasWarning } from 'components/warnings/AuspiciousGasWarning';
 import { BridgeContext } from 'contexts/BridgeContext';
-import { useWeb3Context } from 'contexts/Web3Context';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
-import {
-  executeSignatures,
-  getMessageFromTxHash,
-  getMessageStatus,
-} from 'lib/amb';
-import { POLLING_INTERVAL } from 'lib/constants';
+import { useClaim } from 'hooks/useClaim';
+import { TOKENS_CLAIMED } from 'lib/amb';
 import {
   getGasPrice,
   getLowestHistoricalEthGasPrice,
   getMedianHistoricalEthGasPrice,
 } from 'lib/gasPrice';
-import {
-  getHelperContract,
-  getNativeCurrency,
-  getNetworkName,
-  logError,
-} from 'lib/helpers';
-import React, { useContext, useEffect, useState } from 'react';
+import { getNetworkName, logError } from 'lib/helpers';
+import React, { useCallback, useContext, useState } from 'react';
 
 export const ClaimTransferModal = () => {
-  const {
-    homeChainId,
-    foreignChainId,
-    foreignAmbAddress,
-    foreignAmbVersion,
-    getGraphEndpoint,
-    enableForeignCurrencyBridge,
-  } = useBridgeDirection();
-  const { account, ethersProvider, providerChainId } = useWeb3Context();
+  const { homeChainId, foreignChainId } = useBridgeDirection();
   const { txHash, setTxHash } = useContext(BridgeContext);
-  const [isOpen, setOpen] = useState(false);
+  const [isOpen, setOpen] = useState(true);
   const [claiming, setClaiming] = useState(false);
-  const [message, setMessage] = useState(false);
-  const [executed, setExecuted] = useState(false);
   const [loadingText, setLoadingText] = useState('');
+  const [executed, setExecuted] = useState(false);
 
   const onClose = () => {
     setOpen(false);
   };
 
-  useEffect(() => {
-    setOpen(!!message);
-    if (
-      message &&
-      message.user &&
-      message.user.toLowerCase() !== account.toLowerCase()
-    ) {
-      setTxHash();
-    }
-  }, [message, account, setTxHash]);
-
-  const claimable =
-    !claiming &&
-    message &&
-    message.msgData &&
-    message.signatures &&
-    !executed &&
-    providerChainId === foreignChainId;
-
   const toast = useToast();
-  const showError = errorMsg => {
-    if (errorMsg) {
-      toast({
-        title: 'Error',
-        description: errorMsg,
-        status: 'error',
-        isClosable: 'true',
-      });
-    }
-  };
-
-  const onClick = async () => {
-    if (executed) {
-      showError(
-        `The transfer was already executed. Check your balance of this token in ${getNetworkName(
-          foreignChainId,
-        )}`,
-      );
-    } else if (!message || !message.msgData || !message.signatures) {
-      showError('Still Collecting Signatures...');
-    } else if (claimable) {
-      try {
-        setClaiming(true);
-        const { error, alreadyClaimed, data } = await executeSignatures(
-          ethersProvider,
-          foreignAmbAddress,
-          foreignAmbVersion,
-          {
-            ...message,
-            messageId: message.msgId,
-          },
-        );
-        setLoadingText('Waiting for Execution');
-        if (error) {
-          throw error;
-        }
-
-        if (!data && alreadyClaimed) {
-          showError(
-            `The transfer was already executed. Check your balance of this token in ${getNetworkName(
-              foreignChainId,
-            )}`,
-          );
-          setExecuted(true);
-          return;
-        }
-      } catch (executeError) {
-        logError({ executeError, chainId: foreignChainId, message });
-        if (executeError && executeError.message) {
-          showError(executeError.message);
-        } else {
-          showError(
-            'Impossible to perform the operation. Reload the application and try again.',
-          );
-        }
-      } finally {
-        setClaiming(false);
-        setLoadingText('');
+  const showError = useCallback(
+    errorMsg => {
+      if (errorMsg) {
+        toast({
+          title: 'Error',
+          description: errorMsg,
+          status: 'error',
+          isClosable: 'true',
+        });
       }
-    }
-  };
+    },
+    [toast],
+  );
 
-  useEffect(() => {
-    const subscriptions = [];
-    const unsubscribe = () => {
-      subscriptions.forEach(s => {
-        clearTimeout(s);
-      });
-    };
+  const claim = useClaim();
 
-    let status = false;
-
-    const getStatus = async () => {
-      try {
-        if (!message || !message.signatures) {
-          unsubscribe();
-          const msg = await getMessageFromTxHash(
-            getGraphEndpoint(homeChainId),
-            txHash,
-          );
-          setMessage(msg);
-          return;
-        }
-
-        status = await getMessageStatus(
-          getGraphEndpoint(foreignChainId),
-          message.msgId,
-        );
-        if (status) {
-          unsubscribe();
-          if (claiming) {
-            onClose();
-            setClaiming(false);
-          }
-          setLoadingText('');
-          setTxHash();
-          setExecuted(true);
-          return;
-        }
-
-        if (!status) {
-          const timeoutId = setTimeout(() => getStatus(), POLLING_INTERVAL);
-          subscriptions.push(timeoutId);
-        }
-      } catch (statusError) {
-        setClaiming(false);
-        setLoadingText('');
-        setTxHash();
-        logError({ statusError });
+  const claimTokens = useCallback(async () => {
+    try {
+      setClaiming(true);
+      const tx = await claim(txHash);
+      setLoadingText('Waiting for Execution');
+      await tx.wait();
+      setTxHash();
+    } catch (claimError) {
+      logError({ claimError });
+      if (claimError.message === TOKENS_CLAIMED) {
+        setExecuted(true);
+      } else {
+        showError(claimError.message);
       }
-    };
-    // unsubscribe from previous polls
-    unsubscribe();
+    } finally {
+      setClaiming(false);
+      setLoadingText('');
+    }
+  }, [claim, txHash, showError, setTxHash]);
 
-    getStatus();
-    // unsubscribe when unmount component
-    return unsubscribe;
-  }, [
-    message,
-    claiming,
-    txHash,
-    setTxHash,
-    foreignChainId,
-    homeChainId,
-    getGraphEndpoint,
-  ]);
-
-  if (!message || claiming)
+  if (claiming)
     return (
       <LoadingModal
-        loadingText={message ? loadingText : ''}
+        loadingText={loadingText}
         chainId={homeChainId}
         txHash={txHash}
       />
     );
 
-  const foreignCurrencyHelperContract = getHelperContract(foreignChainId);
-  const { symbol: tokenSymbol } =
-    enableForeignCurrencyBridge &&
-    message.recipient === foreignCurrencyHelperContract
-      ? getNativeCurrency(foreignChainId)
-      : message;
   const currentGasPrice = getGasPrice();
   const medianGasPrice = getMedianHistoricalEthGasPrice();
   const lowestGasPrice = getLowestHistoricalEthGasPrice();
@@ -265,7 +130,7 @@ export const ClaimTransferModal = () => {
                     {`The claim process may take a variable period of time on ${getNetworkName(
                       foreignChainId,
                     )}${' '}
-                    depending on network congestion. Your ${tokenSymbol} balance will increase to reflect${' '}
+                    depending on network congestion. Your token balance will increase to reflect${' '}
                     the completed transfer after the claim is processed`}
                   </Text>
                 </Alert>
@@ -275,7 +140,8 @@ export const ClaimTransferModal = () => {
                   <Alert status="error" borderRadius={5}>
                     <AlertIcon minWidth="20px" />
                     <Text fontSize="small">
-                      The transfer request was already executed
+                      The tokens were already claimed. Check your token balance
+                      in <strong>{getNetworkName(foreignChainId)}</strong>.
                     </Text>
                   </Alert>
                 </Flex>
@@ -300,10 +166,11 @@ export const ClaimTransferModal = () => {
               </Button>
               <Button
                 px={12}
-                onClick={onClick}
+                onClick={claimTokens}
                 colorScheme="blue"
                 mt={{ base: 2, md: 0 }}
                 isLoading={claiming}
+                isDisabled={executed}
               >
                 Claim
               </Button>

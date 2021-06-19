@@ -44,8 +44,9 @@ const ClaimErrorModal = ({ onClose, claimErrorShow, claimErrorToken }) => {
             <Flex align="center" direction="column">
               <Box w="100%">
                 <Text as="span">
-                  The transfer was already executed. Check your balance of this
-                  token in <strong>{getNetworkName(foreignChainId)}</strong>.
+                  The tokens were already claimed. Check your
+                  {claimErrorToken ? ` ${claimErrorToken.symbol} ` : ' '}token
+                  balance in <strong>{getNetworkName(foreignChainId)}</strong>.
                 </Text>
                 {claimErrorToken && (
                   <>

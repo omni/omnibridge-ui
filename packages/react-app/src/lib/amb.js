@@ -1,6 +1,7 @@
 import { Contract, utils } from 'ethers';
-import { gql, request } from 'graphql-request';
 import { logError } from 'lib/helpers';
+
+export const TOKENS_CLAIMED = 'Tokens already claimed';
 
 export const fetchConfirmations = async (address, ethersProvider) => {
   const abi = ['function requiredBlockConfirmations() view returns (uint256)'];
@@ -59,91 +60,28 @@ export const executeSignatures = async (
   ethersProvider,
   address,
   version,
-  { msgData, signatures, messageId },
+  { messageData, signatures },
 ) => {
-  let abi = [
+  const abi = [
     'function executeSignatures(bytes messageData, bytes signatures) external',
-    'function messageCallStatus(bytes32 _messageId) external view returns (bool)',
+    'function safeExecuteSignaturesWithAutoGasLimit(bytes _data, bytes _signatures) external',
   ];
-  let ambContract = new Contract(address, abi, ethersProvider.getSigner());
+  const ambContract = new Contract(address, abi, ethersProvider.getSigner());
+
   let executeSignaturesFunc = ambContract.executeSignatures;
   if (version.major > 5 || (version.major === 5 && version.minor > 6)) {
-    abi = [
-      'function safeExecuteSignaturesWithAutoGasLimit(bytes _data, bytes _signatures) external',
-      'function messageCallStatus(bytes32 _messageId) external view returns (bool)',
-    ];
-
-    ambContract = new Contract(address, abi, ethersProvider.getSigner());
     executeSignaturesFunc = ambContract.safeExecuteSignaturesWithAutoGasLimit;
   }
+
   try {
     const signs = packSignatures(signatures.map(s => signatureToVRS(s)));
-    const isExecutedAlready = await ambContract.messageCallStatus(messageId);
-    if (isExecutedAlready) {
-      return { alreadyClaimed: true, error: null, data: null };
-    }
-    return {
-      alreadyClaimed: false,
-      error: null,
-      data: await executeSignaturesFunc(msgData, signs),
-    };
+    const tx = await executeSignaturesFunc(messageData, signs);
+    return tx;
   } catch (error) {
-    if (error?.code === '-32016') {
-      return { error: null, alreadyClaimed: true, data: null };
-    }
-    return { error, alreadyClaimed: false, data: null };
-  }
-};
-
-const messagesTXQuery = gql`
-  query getRequests($txHash: String!) {
-    requests: userRequests(where: { txHash_contains: $txHash }, first: 1) {
-      user
-      recipient
-      amount
-      token
-      decimals
-      symbol
-      message {
-        msgId
-        msgData
-        signatures
-      }
+    if (error?.code.toString() === '-32016') {
+      throw new Error(TOKENS_CLAIMED);
+    } else {
+      throw error;
     }
   }
-`;
-
-export const getMessageFromTxHash = async (graphEndpoint, txHash) => {
-  const data = await request(graphEndpoint, messagesTXQuery, {
-    txHash,
-  });
-
-  return data &&
-    data.requests &&
-    data.requests.length > 0 &&
-    data.requests[0].message
-    ? {
-        ...data.requests[0].message,
-        ...data.requests[0],
-      }
-    : null;
-};
-
-const executionsQuery = gql`
-  query getExecution($messageId: String!) {
-    executions(where: { messageId_contains: $messageId }, first: 1) {
-      txHash
-      id
-    }
-  }
-`;
-
-export const getMessageStatus = async (graphEndpoint, messageId) => {
-  const data = await request(graphEndpoint, executionsQuery, {
-    messageId,
-  });
-
-  return data && data.executions && data.executions.length > 0
-    ? data.executions[0]
-    : null;
 };

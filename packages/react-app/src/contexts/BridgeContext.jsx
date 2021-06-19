@@ -44,6 +44,8 @@ export const BridgeProvider = ({ children }) => {
     foreignChainId,
   } = useBridgeDirection();
 
+  const isHome = providerChainId === homeChainId;
+
   const [receiver, setReceiver] = useState('');
   const [amountInput, setAmountInput] = useState('');
   const [{ fromToken, toToken }, setTokens] = useState({});
@@ -68,24 +70,19 @@ export const BridgeProvider = ({ children }) => {
     homeToForeignFeeType,
     foreignToHomeFeeType,
   } = useFeeManager();
-  const {
-    allowed,
-    updateAllowance,
-    unlockLoading,
-    approvalTxHash,
-    approve,
-  } = useApproval(fromToken, fromAmount);
+  const { allowed, unlockLoading, approvalTxHash, approve } = useApproval(
+    fromToken,
+    fromAmount,
+    txHash,
+  );
 
-  const setAmount = useCallback(
-    async inputAmount => {
-      if (!fromToken || !toToken) return;
-      setToAmountLoading(true);
-      const amount = parseValue(inputAmount, fromToken.decimals);
-      const isHome = providerChainId === homeChainId;
-      const feeType = !isHome ? foreignToHomeFeeType : homeToForeignFeeType;
-      const gotToAmount = isRewardAddress
+  const feeType = isHome ? homeToForeignFeeType : foreignToHomeFeeType;
+
+  const getToAmount = useCallback(
+    async amount => {
+      return isRewardAddress
         ? amount
-        : await fetchToAmount(
+        : fetchToAmount(
             bridgeDirection,
             feeType,
             fromToken,
@@ -93,21 +90,28 @@ export const BridgeProvider = ({ children }) => {
             amount,
             feeManagerAddress,
           );
+    },
+    [
+      bridgeDirection,
+      fromToken,
+      toToken,
+      isRewardAddress,
+      feeManagerAddress,
+      feeType,
+    ],
+  );
+
+  const setAmount = useCallback(
+    async inputAmount => {
+      if (!fromToken || !toToken) return;
+      setToAmountLoading(true);
+      const amount = parseValue(inputAmount, fromToken.decimals);
+      const gotToAmount = await getToAmount(amount);
 
       setAmounts({ fromAmount: amount, toAmount: gotToAmount });
       setToAmountLoading(false);
     },
-    [
-      homeChainId,
-      bridgeDirection,
-      fromToken,
-      toToken,
-      providerChainId,
-      isRewardAddress,
-      homeToForeignFeeType,
-      foreignToHomeFeeType,
-      feeManagerAddress,
-    ],
+    [fromToken, toToken, getToAmount],
   );
 
   const setToToken = useCallback(
@@ -337,7 +341,6 @@ export const BridgeProvider = ({ children }) => {
         setToBalance,
         tokenLimits,
         updateTokenLimits,
-        updateAllowance,
         receiver,
         setReceiver,
         updateBalance,

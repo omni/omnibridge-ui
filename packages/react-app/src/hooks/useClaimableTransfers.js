@@ -7,7 +7,6 @@ import {
   getRequests,
 } from 'lib/history';
 import { useContext, useEffect, useState } from 'react';
-import { defer } from 'rxjs';
 
 export const useClaimableTransfers = () => {
   const {
@@ -22,6 +21,7 @@ export const useClaimableTransfers = () => {
 
   useEffect(() => {
     if (!account) return () => undefined;
+    let isSubscribed = true;
     async function update() {
       setLoading(true);
       setTransfers();
@@ -41,11 +41,15 @@ export const useClaimableTransfers = () => {
       )
         .sort((a, b) => b.timestamp - a.timestamp)
         .filter(t => !t.receivingTx);
-      setTransfers(xDaiTransfers);
-      setLoading(false);
+      if (isSubscribed) {
+        setTransfers(xDaiTransfers);
+        setLoading(false);
+      }
     }
-    const subscription = defer(() => update()).subscribe();
-    return () => subscription.unsubscribe();
+    update();
+    return () => {
+      isSubscribed = false;
+    };
   }, [account, txHash, homeChainId, foreignChainId, getGraphEndpoint]);
 
   return { transfers, loading };
