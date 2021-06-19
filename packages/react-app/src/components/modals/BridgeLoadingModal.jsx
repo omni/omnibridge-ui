@@ -13,9 +13,7 @@ import LoadingImage from 'assets/loading.svg';
 import { ProgressRing } from 'components/common/ProgressRing';
 import { NeedsConfirmationModal } from 'components/modals/NeedsConfirmationModal';
 import { BridgeContext } from 'contexts/BridgeContext';
-import { useWeb3Context } from 'contexts/Web3Context';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
-import { useGraphHealth } from 'hooks/useGraphHealth';
 import { useTransactionStatus } from 'hooks/useTransactionStatus';
 import React, { useContext } from 'react';
 
@@ -26,15 +24,9 @@ const getTransactionString = hash => {
 };
 
 export const BridgeLoadingModal = () => {
-  const { providerChainId } = useWeb3Context();
-  const { getMonitorUrl, homeChainId } = useBridgeDirection();
+  const { getMonitorUrl } = useBridgeDirection();
   const { loading, fromToken, txHash, totalConfirms } = useContext(
     BridgeContext,
-  );
-  const isHome = providerChainId === homeChainId;
-  useGraphHealth(
-    'Cannot collect data to finalize the transfer. Wait for a few minutes, reload the application and look for your unclaimed transactions in the History tab',
-    { disableAlerts: !txHash || !isHome },
   );
   const {
     loadingText,
