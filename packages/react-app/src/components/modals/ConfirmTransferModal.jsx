@@ -45,20 +45,10 @@ import React, { useEffect, useState } from 'react';
 export const ConfirmTransferModal = ({ isOpen, onClose }) => {
   const { isGnosisSafe, account } = useWeb3Context();
 
-  const {
-    homeChainId,
-    foreignChainId,
-    enableReversedBridge,
-    bridgeDirection,
-  } = useBridgeDirection();
-  const {
-    receiver,
-    fromToken,
-    toToken,
-    fromAmount,
-    toAmount,
-    transfer,
-  } = useBridgeContext();
+  const { homeChainId, foreignChainId, enableReversedBridge, bridgeDirection } =
+    useBridgeDirection();
+  const { receiver, fromToken, toToken, fromAmount, toAmount, transfer } =
+    useBridgeContext();
   const [fee, setFee] = useState(0);
   useEffect(() => {
     if (fromAmount.gt(0)) {
@@ -70,12 +60,10 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
 
   const smallScreen = useBreakpointValue({ base: true, md: false });
   const toast = useToast();
-  const [isInflationWarningChecked, setInflationWarningChecked] = useState(
-    false,
-  );
-  const [isGnosisSafeWarningChecked, setGnosisSafeWarningChecked] = useState(
-    false,
-  );
+  const [isInflationWarningChecked, setInflationWarningChecked] =
+    useState(false);
+  const [isGnosisSafeWarningChecked, setGnosisSafeWarningChecked] =
+    useState(false);
 
   if (!fromToken || !toToken) return null;
 
@@ -223,9 +211,9 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
             <Box w="100%" fontSize="sm" color={isHome ? 'black' : 'grey'}>
               <Text as="span">{`Please confirm that you would like to send `}</Text>
               <Text as="b">{`${fromAmt} ${fromUnit}`}</Text>
-              <Text as="span">{` from ${getNetworkLabel(
-                fromToken.chainId,
-              )}`}</Text>
+              <Text as="span">
+                {` from ${getNetworkLabel(fromToken.chainId)}`}
+              </Text>
               {receiver ? (
                 <>
                   <Text as="span">{` and `}</Text>

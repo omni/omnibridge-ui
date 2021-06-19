@@ -4,13 +4,12 @@ import { ChakraProvider, CSSReset } from '@chakra-ui/react';
 import { css, Global } from '@emotion/react';
 import { ErrorBoundary } from 'components/common/ErrorBoundary';
 import { Layout } from 'components/common/Layout';
+import { Routes } from 'components/common/Routes';
 import { SettingsProvider } from 'contexts/SettingsContext';
 import { Web3Provider } from 'contexts/Web3Context';
 import React from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
-
-import { Routes } from './Routes';
-import { theme } from './theme';
+import { theme } from 'theme';
 
 const GlobalStyles = css`
   /*
@@ -23,22 +22,20 @@ const GlobalStyles = css`
   }
 `;
 
-export const App = () => {
-  return (
-    <ChakraProvider theme={theme}>
-      <CSSReset />
-      <Global styles={GlobalStyles} />
-      <ErrorBoundary>
-        <Router>
-          <SettingsProvider>
-            <Web3Provider>
-              <Layout>
-                <Routes />
-              </Layout>
-            </Web3Provider>
-          </SettingsProvider>
-        </Router>
-      </ErrorBoundary>
-    </ChakraProvider>
-  );
-};
+export const App = () => (
+  <ChakraProvider theme={theme}>
+    <CSSReset />
+    <Global styles={GlobalStyles} />
+    <ErrorBoundary>
+      <Router>
+        <SettingsProvider>
+          <Web3Provider>
+            <Layout>
+              <Routes />
+            </Layout>
+          </Web3Provider>
+        </SettingsProvider>
+      </Router>
+    </ErrorBoundary>
+  </ChakraProvider>
+);

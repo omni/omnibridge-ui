@@ -14,9 +14,11 @@ import { formatValue } from 'lib/helpers';
 import React, { useCallback, useContext, useState } from 'react';
 
 export const SystemFeedback = () => {
-  const { fromToken: token, tokenLimits, updateTokenLimits } = useContext(
-    BridgeContext,
-  );
+  const {
+    fromToken: token,
+    tokenLimits,
+    updateTokenLimits,
+  } = useContext(BridgeContext);
 
   const [loading, setLoading] = useState(false);
 

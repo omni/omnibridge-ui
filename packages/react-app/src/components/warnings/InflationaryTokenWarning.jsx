@@ -44,37 +44,35 @@ export const InflationaryTokenWarning = ({
   setChecked,
   noShadow = false,
   noCheckbox = false,
-}) => {
-  return (
-    <Flex align="center" direction="column" w="100%" mb="4">
-      <Alert
-        status="warning"
-        borderRadius={5}
-        mb={noCheckbox ? '0' : '4'}
-        boxShadow={noShadow ? 'none' : '0px 1rem 2rem rgba(204, 218, 238, 0.8)'}
+}) => (
+  <Flex align="center" direction="column" w="100%" mb="4">
+    <Alert
+      status="warning"
+      borderRadius={5}
+      mb={noCheckbox ? '0' : '4'}
+      boxShadow={noShadow ? 'none' : '0px 1rem 2rem rgba(204, 218, 238, 0.8)'}
+    >
+      <AlertIcon minWidth="20px" />
+      <Text fontSize="small">
+        {token.symbol} is an inflationary token. Any accumulated gains WILL NOT
+        be added to your balance upon exit. Please see{' '}
+        <ExceptionsLink msg="the documentation" /> before bridging.
+      </Text>
+    </Alert>
+    {!noCheckbox && (
+      <Checkbox
+        w="100%"
+        isChecked={isChecked}
+        onChange={e => setChecked(e.target.checked)}
+        borderColor="grey"
+        borderRadius="4px"
+        size="lg"
+        variant="solid"
       >
-        <AlertIcon minWidth="20px" />
-        <Text fontSize="small">
-          {token.symbol} is an inflationary token. Any accumulated gains WILL
-          NOT be added to your balance upon exit. Please see{' '}
-          <ExceptionsLink msg="the documentation" /> before bridging.
+        <Text fontSize="sm">
+          I agree to proceed and understand I will not receive inflation.
         </Text>
-      </Alert>
-      {!noCheckbox && (
-        <Checkbox
-          w="100%"
-          isChecked={isChecked}
-          onChange={e => setChecked(e.target.checked)}
-          borderColor="grey"
-          borderRadius="4px"
-          size="lg"
-          variant="solid"
-        >
-          <Text fontSize="sm">
-            I agree to proceed and understand I will not receive inflation.
-          </Text>
-        </Checkbox>
-      )}
-    </Flex>
-  );
-};
+      </Checkbox>
+    )}
+  </Flex>
+);

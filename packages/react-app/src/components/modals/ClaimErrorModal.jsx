@@ -45,8 +45,9 @@ const ClaimErrorModal = ({ onClose, claimErrorShow, claimErrorToken }) => {
               <Box w="100%">
                 <Text as="span">
                   The tokens were already claimed. Check your
-                  {claimErrorToken ? ` ${claimErrorToken.symbol} ` : ' '}token
-                  balance in <strong>{getNetworkName(foreignChainId)}</strong>.
+                  {claimErrorToken ? ` ${claimErrorToken.symbol} ` : ' '}
+                  token balance in
+                  <strong>{getNetworkName(foreignChainId)}</strong>.
                 </Text>
                 {claimErrorToken && (
                   <>

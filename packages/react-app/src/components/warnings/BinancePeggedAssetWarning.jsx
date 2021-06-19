@@ -62,8 +62,8 @@ export const BinancePeggedAssetWarning = ({
         <Text fontSize="small">
           Bridging {symbol} token to Binance Smart Chain DOES NOT unlock
           Binance-Peg {binancePeggedAssetSymbol} token. If you want Binance-Peg{' '}
-          {binancePeggedAssetSymbol}, exchange {symbol} on{' '}
-          <ComponentFinanceLink tokenAddress={address} />.
+          {binancePeggedAssetSymbol}, exchange
+          {symbol} on <ComponentFinanceLink tokenAddress={address} />.
         </Text>
       </Alert>
     </Flex>

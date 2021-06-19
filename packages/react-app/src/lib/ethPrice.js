@@ -20,14 +20,12 @@ const ethPriceFromApi = async fetchFn => {
   return null;
 };
 
-const {
-  REACT_APP_ETH_PRICE_API_URL,
-  REACT_APP_ETH_PRICE_UPDATE_INTERVAL,
-} = process.env;
+const { REACT_APP_ETH_PRICE_API_URL, REACT_APP_ETH_PRICE_UPDATE_INTERVAL } =
+  process.env;
 
 const DEFAULT_ETH_PRICE_API_URL =
   'https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=USD';
-const DEFAULT_ETH_PRICE_UPDATE_INTERVAL = 15000;
+const DEFAULT_ETH_PRICE_UPDATE_INTERVAL = 60000;
 
 class EthPriceStore {
   ethPrice = null;
@@ -57,6 +55,4 @@ class EthPriceStore {
 
 const ethPriceStore = new EthPriceStore();
 
-export const getEthereumPrice = () => {
-  return ethPriceStore.ethPriceInUSD();
-};
+export const getEthereumPrice = () => ethPriceStore.ethPriceInUSD();

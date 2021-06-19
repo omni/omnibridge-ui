@@ -34,7 +34,8 @@ export const NeedsTransactionsWarning = ({ noShadow = false }) => {
       <>
         You will need some xDai and approximately {gasCostInETHString} ETH (
         {gasCostInUSDString} USD) to complete. When claiming, your wallet may
-        show a higher, less accurate estimate (<LearnMoreLink />
+        show a higher, less accurate estimate (
+        <LearnMoreLink />
         ).
       </>
     );

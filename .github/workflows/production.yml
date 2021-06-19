@@ -40,9 +40,9 @@ jobs:
           REACT_APP_GAS_PRICE_SPEED_TYPE: fast
           REACT_APP_GAS_PRICE_UPDATE_INTERVAL: 60000
           REACT_APP_ETH_PRICE_API_URL: 'https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=USD'
-          REACT_APP_ETH_PRICE_UPDATE_INTERVAL: 15000
+          REACT_APP_ETH_PRICE_UPDATE_INTERVAL: 60000
           REACT_APP_TITLE: OmniBridge - %c
-          REACT_APP_DESCRIPTION: 'The OmniBridge multi-token extension for the Arbitrary Message Bridge is the simplest way to transfer ANY ERC20/ERC677/ERC827 token to and from the xDai chain.'
+          REACT_APP_DESCRIPTION: 'The OmniBridge multi-token extension is the simplest way to transfer ANY ERC20/ERC677/ERC827 token to and from the xDai chain.'
           REACT_APP_UI_STATUS_UPDATE_INTERVAL: 5000
           REACT_APP_DEBUG_LOGS: false
           REACT_APP_GRAPH_HEALTH_UPDATE_INTERVAL: 60000

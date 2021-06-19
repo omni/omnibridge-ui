@@ -136,8 +136,8 @@ export const combineRequestsWithExecutions = (
   executions,
   chainId,
   bridgeChainId,
-) => {
-  return requests.map(req => {
+) =>
+  requests.map(req => {
     const execution = executions.find(exec => exec.messageId === req.messageId);
     return {
       user: req.user,
@@ -161,4 +161,3 @@ export const combineRequestsWithExecutions = (
       message: req.message,
     };
   });
-};

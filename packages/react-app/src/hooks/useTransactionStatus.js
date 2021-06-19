@@ -17,9 +17,8 @@ export const useTransactionStatus = () => {
   const { ethersProvider, providerChainId: chainId } = useWeb3Context();
   const isHome = chainId === homeChainId;
   const bridgeChainId = getBridgeChainId(chainId);
-  const { loading, setLoading, txHash, setTxHash, totalConfirms } = useContext(
-    BridgeContext,
-  );
+  const { loading, setLoading, txHash, setTxHash, totalConfirms } =
+    useContext(BridgeContext);
   const [needsConfirmation, setNeedsConfirmation] = useState(false);
   const [loadingText, setLoadingText] = useState();
   const [confirmations, setConfirmations] = useState(0);

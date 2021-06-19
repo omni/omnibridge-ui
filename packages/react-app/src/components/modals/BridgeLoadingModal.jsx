@@ -25,9 +25,8 @@ const getTransactionString = hash => {
 
 export const BridgeLoadingModal = () => {
   const { getMonitorUrl } = useBridgeDirection();
-  const { loading, fromToken, txHash, totalConfirms } = useContext(
-    BridgeContext,
-  );
+  const { loading, fromToken, txHash, totalConfirms } =
+    useContext(BridgeContext);
   const {
     loadingText,
     needsConfirmation,

@@ -1,11 +1,9 @@
 import { SafeAppWeb3Modal as Web3Modal } from '@gnosis.pm/safe-apps-web3modal';
 import WalletConnectProvider from '@walletconnect/web3-provider';
+import imTokenLogo from 'assets/imtoken.svg';
 import { ethers } from 'ethers';
 import { getNetworkName, getRPCUrl, logError } from 'lib/helpers';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
-import Web3 from 'web3';
-
-import imTokenLogo from '../assets/imtoken.svg';
 
 export const Web3Context = React.createContext({});
 export const useWeb3Context = () => useContext(Web3Context);
@@ -73,10 +71,7 @@ export const Web3Provider = ({ children }) => {
   const setWeb3Provider = useCallback(async (prov, initialCall = false) => {
     try {
       if (prov) {
-        const web3Provider = new Web3(prov);
-        const provider = new ethers.providers.Web3Provider(
-          web3Provider.currentProvider,
-        );
+        const provider = new ethers.providers.Web3Provider(prov);
         const chainId = Number(prov.chainId);
         if (initialCall) {
           const signer = provider.getSigner();
@@ -113,7 +108,7 @@ export const Web3Provider = ({ children }) => {
 
       await setWeb3Provider(modalProvider, true);
 
-      const gnosisSafe = !!modalProvider.safe;
+      const gnosisSafe = await web3Modal.isSafeApp();
       setGnosisSafe(gnosisSafe);
 
       if (!gnosisSafe) {
@@ -144,7 +139,7 @@ export const Web3Provider = ({ children }) => {
       window.ethereum.autoRefreshOnNetworkChange = false;
     }
     (async function load() {
-      if ((await web3Modal.canAutoConnect()) || web3Modal.cachedProvider) {
+      if ((await web3Modal.isSafeApp()) || web3Modal.cachedProvider) {
         connectWeb3();
       } else {
         setLoading(false);

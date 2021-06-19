@@ -6,11 +6,8 @@ import { useEffect, useState } from 'react';
 import { useBridgeDirection } from './useBridgeDirection';
 
 export const useTotalConfirms = () => {
-  const {
-    homeChainId,
-    homeAmbAddress,
-    foreignAmbAddress,
-  } = useBridgeDirection();
+  const { homeChainId, homeAmbAddress, foreignAmbAddress } =
+    useBridgeDirection();
   const { providerChainId, ethersProvider } = useWeb3Context();
   const [totalConfirms, setTotalConfirms] = useState(8);
 

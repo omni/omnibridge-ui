@@ -11,11 +11,8 @@ import { formatValue } from 'lib/helpers';
 import React, { useCallback, useContext } from 'react';
 
 export const TransferButton = () => {
-  const {
-    homeChainId,
-    foreignChainId,
-    enableReversedBridge,
-  } = useBridgeDirection();
+  const { homeChainId, foreignChainId, enableReversedBridge } =
+    useBridgeDirection();
   const { isGnosisSafe, ethersProvider } = useWeb3Context();
   const {
     receiver,

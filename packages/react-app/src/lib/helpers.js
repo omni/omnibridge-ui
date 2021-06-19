@@ -175,9 +175,8 @@ export const getHelperContract = chainId =>
 
 export const getMediatorAddressWithoutOverride = (bridgeDirection, chainId) => {
   if (!bridgeDirection || !chainId) return null;
-  const { homeChainId, homeMediatorAddress, foreignMediatorAddress } = networks[
-    bridgeDirection
-  ];
+  const { homeChainId, homeMediatorAddress, foreignMediatorAddress } =
+    networks[bridgeDirection];
   return homeChainId === chainId
     ? homeMediatorAddress.toLowerCase()
     : foreignMediatorAddress.toLowerCase();

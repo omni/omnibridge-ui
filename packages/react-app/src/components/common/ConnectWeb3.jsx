@@ -26,13 +26,8 @@ export const ConnectWeb3 = () => {
   } = useBridgeDirection();
   const { queryToken } = useSettings();
   const queryChainId = queryToken ? queryToken.chainId : null;
-  const {
-    connectWeb3,
-    loading,
-    account,
-    disconnect,
-    ethersProvider,
-  } = useWeb3Context();
+  const { connectWeb3, loading, account, disconnect, ethersProvider } =
+    useWeb3Context();
   const toast = useToast();
 
   const showError = useCallback(
@@ -129,7 +124,9 @@ export const ConnectWeb3 = () => {
     return (
       <Text color="greyText" mb={4} textAlign="center">
         To access the {renderBridgeLabel()} OmniBridge, please switch to
-        {renderChain(homeChainId)}or{renderChain(foreignChainId)}
+        {renderChain(homeChainId)}
+        or
+        {renderChain(foreignChainId)}
       </Text>
     );
   }, [
