@@ -23,6 +23,11 @@
       "name": "DATA",
       "address": "0x2eeeDdeECe91c9F4c5bA4C8E1d784A0234C6d015",
       "startBlock": "12004477"
+    },
+    {
+      "name": "AGVE",
+      "address": "0x5689C65cfe5E8BF1A5F836c956DeA1b3B8BE00Bb",
+      "startBlock": "12624668"
     }
   ]
 }
