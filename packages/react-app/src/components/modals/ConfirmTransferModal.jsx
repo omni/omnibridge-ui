@@ -211,9 +211,9 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
             <Box w="100%" fontSize="sm" color={isHome ? 'black' : 'grey'}>
               <Text as="span">{`Please confirm that you would like to send `}</Text>
               <Text as="b">{`${fromAmt} ${fromUnit}`}</Text>
-              <Text as="span">
-                {` from ${getNetworkLabel(fromToken.chainId)}`}
-              </Text>
+              <Text as="span">{` from ${getNetworkLabel(
+                fromToken.chainId,
+              )}`}</Text>
               {receiver ? (
                 <>
                   <Text as="span">{` and `}</Text>

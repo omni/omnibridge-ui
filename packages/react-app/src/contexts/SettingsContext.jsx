@@ -65,7 +65,9 @@ export const SettingsProvider = ({ children }) => {
   const [infiniteUnlock, setInfiniteUnlock] = useLocalState(
     false,
     INFINITE_UNLOCK,
-    { valueType: 'boolean' },
+    {
+      valueType: 'boolean',
+    },
   );
 
   const [disableBalanceFetchToken, setDisableBalanceFetchToken] = useLocalState(

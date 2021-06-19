@@ -1,8 +1,4 @@
-import {
-  BSC_XDAI_BRIDGE,
-  ETH_XDAI_BRIDGE,
-  KOVAN_SOKOL_BRIDGE,
-} from 'lib/networks';
+import { BSC_XDAI_BRIDGE, ETH_XDAI_BRIDGE, KOVAN_SOKOL_BRIDGE } from 'lib/networks';
 
 const OWLTokenOverride = {
   100: {
