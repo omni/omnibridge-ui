@@ -8,6 +8,12 @@ export const theme = {
       ...chakraTheme.styles.global,
     },
   },
+  breakpoints: {
+    ...chakraTheme.breakpoints,
+    xl: '70em',
+    '2xl': '80em',
+    '3xl': '96em',
+  },
   colors: {
     ...chakraTheme.colors,
     blue: {

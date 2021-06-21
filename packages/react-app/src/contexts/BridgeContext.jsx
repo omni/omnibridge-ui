@@ -14,8 +14,8 @@ import {
   relayTokens,
 } from 'lib/bridge';
 import { ADDRESS_ZERO } from 'lib/constants';
-import { getDefaultToken } from 'lib/networks';
 import {
+  getDefaultToken,
   getHelperContract,
   getMediatorAddress,
   getNativeCurrency,
@@ -32,18 +32,10 @@ export const useBridgeContext = () => useContext(BridgeContext);
 
 export const BridgeProvider = ({ children }) => {
   const { queryToken, setQueryToken } = useSettings();
-  const {
-    isGnosisSafe,
-    ethersProvider,
-    account,
-    providerChainId,
-  } = useWeb3Context();
-  const {
-    bridgeDirection,
-    getBridgeChainId,
-    homeChainId,
-    foreignChainId,
-  } = useBridgeDirection();
+  const { isGnosisSafe, ethersProvider, account, providerChainId } =
+    useWeb3Context();
+  const { bridgeDirection, getBridgeChainId, homeChainId, foreignChainId } =
+    useBridgeDirection();
 
   const isHome = providerChainId === homeChainId;
 
@@ -65,11 +57,8 @@ export const BridgeProvider = ({ children }) => {
   const toast = useToast();
   const totalConfirms = useTotalConfirms();
   const { currentDay, feeManagerAddress } = useMediatorInfo();
-  const {
-    isRewardAddress,
-    homeToForeignFeeType,
-    foreignToHomeFeeType,
-  } = useFeeManager();
+  const { isRewardAddress, homeToForeignFeeType, foreignToHomeFeeType } =
+    useFeeManager();
   const { allowed, unlockLoading, approvalTxHash, approve } = useApproval(
     fromToken,
     fromAmount,
@@ -144,7 +133,7 @@ export const BridgeProvider = ({ children }) => {
         ]);
         setTokens({ fromToken: token, toToken: { ...token, ...gotToToken } });
         const label = getNetworkLabel(token.chainId).toUpperCase();
-        const storageKey = `${label}-FROM-TOKEN`;
+        const storageKey = `${bridgeDirection.toUpperCase()}-${label}-FROM-TOKEN`;
         localStorage.setItem(storageKey, JSON.stringify(token));
         return true;
       } catch (tokenDetailsError) {

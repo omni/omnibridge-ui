@@ -48,9 +48,10 @@ export const ToToken = () => {
   const smallScreen = useBreakpointValue({ base: true, lg: false });
   const [balanceLoading, setBalanceLoading] = useState(false);
 
-  const nativeCurrency = useMemo(() => getNativeCurrency(foreignChainId), [
-    foreignChainId,
-  ]);
+  const nativeCurrency = useMemo(
+    () => getNativeCurrency(foreignChainId),
+    [foreignChainId],
+  );
 
   const changeToToken = useCallback(async () => {
     setLoading(true);
@@ -126,9 +127,9 @@ export const ToToken = () => {
           h={{ base: 'auto', lg: '100%' }}
           w="100%"
           direction="column"
-          py={4}
+          py={{ base: 4, lg: 2, xl: 3, '2xl': 4 }}
           pr={4}
-          pl={{ base: 4, lg: 12 }}
+          pl={{ base: 4, lg: 8, xl: 10, '2xl': 12 }}
         >
           <Flex
             justify="space-between"
@@ -167,11 +168,12 @@ export const ToToken = () => {
                 <Spinner size="sm" color="grey" />
               ) : (
                 <Flex
+                  justify="flex-end"
+                  align="center"
+                  fontSize={{ base: 'md', lg: 'sm', '2xl': 'md' }}
                   {...(smallScreen
                     ? {}
                     : { position: 'absolute', bottom: '4px', right: 0 })}
-                  justify="flex-end"
-                  align="center"
                 >
                   <Text color="grey" textAlign="right">
                     {`Balance: ${formatValue(balance, token.decimals)}`}
@@ -182,18 +184,17 @@ export const ToToken = () => {
           </Flex>
           <Flex
             width="100%"
-            justifyContent="space-between"
-            direction="row"
-            alignItems="center"
+            justify="space-between"
+            align={{ base: 'center', lg: 'flex-end', xl: 'center' }}
             flex={1}
             {...(!smallScreen
               ? {
                   position: 'absolute',
                   left: 0,
                   bottom: 0,
-                  pl: 12,
+                  pl: { base: 4, lg: 8, xl: 10, '2xl': 12 },
                   pr: 4,
-                  pb: 4,
+                  pb: { base: 4, lg: 2, xl: 3, '2xl': 4 },
                 }
               : {})}
             h="52px"

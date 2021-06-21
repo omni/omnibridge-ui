@@ -33,7 +33,7 @@ jobs:
         env:
           CI: true
           REACT_APP_DEFAULT_BRIDGE_DIRECTION: eth-xdai
-          REACT_APP_ENABLED_BRIDGES: 'eth-xdai bsc-xdai eth-bsx'
+          REACT_APP_ENABLED_BRIDGES: 'eth-xdai bsc-xdai eth-bsc'
           REACT_APP_INFURA_ID: ${{ secrets.INFURA_ID }}
           REACT_APP_GAS_PRICE_FALLBACK_GWEI: 50
           REACT_APP_GAS_PRICE_SUPPLIER_URL: https://gasprice.poa.network/

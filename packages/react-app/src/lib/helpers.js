@@ -12,6 +12,7 @@ import {
 } from 'lib/constants';
 import {
   BSC_XDAI_BRIDGE,
+  defaultTokens,
   ETH_BSC_BRIDGE,
   ETH_XDAI_BRIDGE,
   KOVAN_SOKOL_BRIDGE,
@@ -66,9 +67,7 @@ export const uniqueTokens = list => {
 export const formatValue = (num, dec) => {
   const str = utils.formatUnits(num, dec);
   if (str.length > 50) {
-    const expStr = Number(str)
-      .toExponential()
-      .replace(/e\+?/, ' x 10^');
+    const expStr = Number(str).toExponential().replace(/e\+?/, ' x 10^');
     const split = expStr.split(' x 10^');
     const first = Number(split[0]).toLocaleString('en', {
       maximumFractionDigits: 4,
@@ -178,9 +177,8 @@ export const getHelperContract = chainId =>
 
 export const getMediatorAddressWithoutOverride = (bridgeDirection, chainId) => {
   if (!bridgeDirection || !chainId) return null;
-  const { homeChainId, homeMediatorAddress, foreignMediatorAddress } = networks[
-    bridgeDirection
-  ];
+  const { homeChainId, homeMediatorAddress, foreignMediatorAddress } =
+    networks[bridgeDirection];
   return homeChainId === chainId
     ? homeMediatorAddress.toLowerCase()
     : foreignMediatorAddress.toLowerCase();
@@ -201,4 +199,13 @@ export const truncateText = (text, maxLength) => {
     truncated = `${truncated.substr(0, maxLength - 3)}...`;
   }
   return truncated;
+};
+
+export const getDefaultToken = (bridgeDirection, chainId) => {
+  const label = getNetworkLabel(chainId).toUpperCase();
+  const storageKey = `${bridgeDirection.toUpperCase()}-${label}-FROM-TOKEN`;
+  const tokenString = localStorage.getItem(storageKey);
+  const token = JSON.parse(tokenString);
+  if (token && token.chainId === chainId) return token;
+  return defaultTokens[bridgeDirection][chainId];
 };

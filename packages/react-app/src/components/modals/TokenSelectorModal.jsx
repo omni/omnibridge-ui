@@ -238,14 +238,8 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
             )}
             {!loading &&
               filteredTokenList.map(token => {
-                const {
-                  decimals,
-                  balance,
-                  name,
-                  address,
-                  logoURI,
-                  symbol,
-                } = token;
+                const { decimals, balance, name, address, logoURI, symbol } =
+                  token;
                 return (
                   <Button
                     variant="outline"

@@ -105,9 +105,9 @@ export const FromToken = () => {
           h={{ base: 'auto', lg: '100%' }}
           w="100%"
           direction="column"
-          py={4}
+          py={{ base: 4, lg: 2, xl: 3, '2xl': 4 }}
           pl={4}
-          pr={{ base: 4, lg: 12 }}
+          pr={{ base: 4, lg: 8, xl: 10, '2xl': 12 }}
         >
           <Flex
             justify="space-between"
@@ -152,6 +152,7 @@ export const FromToken = () => {
                 <Text
                   color="grey"
                   textAlign="right"
+                  fontSize={{ base: 'md', lg: 'sm', '2xl': 'md' }}
                   {...(smallScreen
                     ? {}
                     : { position: 'absolute', bottom: '4px', right: 0 })}
@@ -170,9 +171,9 @@ export const FromToken = () => {
                   position: 'absolute',
                   left: 0,
                   bottom: 0,
+                  pr: { base: 4, lg: 8, xl: 10, '2xl': 12 },
                   pl: 4,
-                  pr: 12,
-                  pb: 4,
+                  pb: { base: 4, lg: 2, xl: 3, '2xl': 4 },
                 }
               : {})}
           >

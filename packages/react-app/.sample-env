@@ -1,5 +1,5 @@
 REACT_APP_DEFAULT_BRIDGE_DIRECTION=kovan-sokol
-REACT_APP_ENABLED_BRIDGES=eth-xdai bsc-xdai eth-bsx kovan-sokol
+REACT_APP_ENABLED_BRIDGES=eth-xdai bsc-xdai eth-bsc kovan-sokol
 REACT_APP_INFURA_ID=<INFURA_ID>
 REACT_APP_GAS_PRICE_SUPPLIER_URL=https://gasprice.poa.network/
 REACT_APP_GAS_PRICE_SPEED_TYPE=standard

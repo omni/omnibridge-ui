@@ -45,20 +45,10 @@ import React, { useEffect, useState } from 'react';
 export const ConfirmTransferModal = ({ isOpen, onClose }) => {
   const { isGnosisSafe, account } = useWeb3Context();
 
-  const {
-    homeChainId,
-    foreignChainId,
-    enableReversedBridge,
-    bridgeDirection,
-  } = useBridgeDirection();
-  const {
-    receiver,
-    fromToken,
-    toToken,
-    fromAmount,
-    toAmount,
-    transfer,
-  } = useBridgeContext();
+  const { homeChainId, foreignChainId, enableReversedBridge, bridgeDirection } =
+    useBridgeDirection();
+  const { receiver, fromToken, toToken, fromAmount, toAmount, transfer } =
+    useBridgeContext();
   const [fee, setFee] = useState(0);
   useEffect(() => {
     if (fromAmount.gt(0)) {
@@ -70,12 +60,10 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
 
   const smallScreen = useBreakpointValue({ base: true, md: false });
   const toast = useToast();
-  const [isInflationWarningChecked, setInflationWarningChecked] = useState(
-    false,
-  );
-  const [isGnosisSafeWarningChecked, setGnosisSafeWarningChecked] = useState(
-    false,
-  );
+  const [isInflationWarningChecked, setInflationWarningChecked] =
+    useState(false);
+  const [isGnosisSafeWarningChecked, setGnosisSafeWarningChecked] =
+    useState(false);
 
   if (!fromToken || !toToken) return null;
 
