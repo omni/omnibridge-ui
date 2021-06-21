@@ -1,5 +1,5 @@
 {
-  "name": "@omnibridge/react-app",
+  "name": "@omnibridge/dapp",
   "version": "1.0.0",
   "browserslist": {
     "production": [
@@ -29,13 +29,13 @@
     "fast-memoize": "^2.5.2",
     "focus-visible": "^5.2.0",
     "framer-motion": "^4.1.17",
-    "gas-price-oracle": "^0.2.2",
+    "gas-price-oracle": "^0.3.3",
     "graphql-request": "^3.4.0",
-    "query-string": "^7.0.0",
+    "query-string": "^7.0.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-router-dom": "^5.2.0",
-    "react-scripts": "4.0.3",
+    "react-scripts": "^4.0.3",
     "web3modal": "^1.9.3"
   },
   "devDependencies": {

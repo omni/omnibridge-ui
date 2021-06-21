@@ -1,5 +1,5 @@
 {
-  "name": "omnibridge",
+  "name": "@omnibridge/ui",
   "version": "1.0.0",
   "keywords": [
     "ethereum",
@@ -28,11 +28,11 @@
     "subgraph:deploy-mainnet-bsc": "yarn workspace @omnibridge/subgraph deploy-mainnet-bsc",
     "subgraph:prepare-bsc-mainnet": "yarn workspace @omnibridge/subgraph prepare-bsc-mainnet",
     "subgraph:deploy-bsc-mainnet": "yarn workspace @omnibridge/subgraph deploy-bsc-mainnet",
-    "react-app:build": "yarn workspace @omnibridge/react-app build",
-    "react-app:eject": "yarn workspace @omnibridge/react-app eject",
-    "react-app:start": "yarn workspace @omnibridge/react-app start",
-    "react-app:test": "yarn workspace @omnibridge/react-app test",
-    "react-app:lint": "yarn workspace @omnibridge/react-app lint",
+    "dapp:build": "yarn workspace @omnibridge/dapp build",
+    "dapp:eject": "yarn workspace @omnibridge/dapp eject",
+    "dapp:start": "yarn workspace @omnibridge/dapp start",
+    "dapp:test": "yarn workspace @omnibridge/dapp test",
+    "dapp:lint": "yarn workspace @omnibridge/dapp lint",
     "lint": "eslint --ignore-path .gitignore \"./packages/**/*.{ts,tsx,js,jsx}\"",
     "format": "prettier --ignore-path .gitignore --write \"{*,**/*}.{ts,tsx,js,jsx,json,md}\"",
     "prepare": "husky install"
