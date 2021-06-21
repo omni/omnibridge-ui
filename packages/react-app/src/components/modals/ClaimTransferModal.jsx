@@ -34,8 +34,11 @@ import React, { useCallback, useEffect, useState } from 'react';
 
 export const ClaimTransferModal = ({ message, setMessage }) => {
   const { ethersProvider } = useWeb3Context();
-  const { homeChainId, foreignChainId, foreignAmbAddress } =
-    useBridgeDirection();
+  const {
+    homeChainId,
+    foreignChainId,
+    foreignAmbAddress,
+  } = useBridgeDirection();
   const { txHash, setTxHash } = useBridgeContext();
   const [isOpen, setOpen] = useState(true);
   const [claiming, setClaiming] = useState(false);

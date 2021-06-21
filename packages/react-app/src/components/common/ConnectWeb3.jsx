@@ -26,8 +26,13 @@ export const ConnectWeb3 = () => {
   } = useBridgeDirection();
   const { queryToken } = useSettings();
   const queryChainId = queryToken ? queryToken.chainId : null;
-  const { connectWeb3, loading, account, disconnect, ethersProvider } =
-    useWeb3Context();
+  const {
+    connectWeb3,
+    loading,
+    account,
+    disconnect,
+    ethersProvider,
+  } = useWeb3Context();
   const toast = useToast();
 
   const showError = useCallback(
