@@ -20,9 +20,6 @@ import {
 
 import { getOverriddenMediator, isOverridden } from './overrides';
 
-export const getDefaultToken = chainId =>
-  defaultTokens[chainId] || defaultTokens[1];
-
 export const getWalletProviderName = provider =>
   provider?.connection?.url || null;
 
@@ -32,6 +29,15 @@ export const getNetworkName = chainId =>
   networkNames[chainId] || 'Unknown Network';
 
 export const getNetworkLabel = chainId => networkLabels[chainId] || 'Unknown';
+
+export const getDefaultToken = chainId => {
+  const label = getNetworkLabel(chainId).toUpperCase();
+  const storageKey = `${label}-FROM-TOKEN`;
+  const tokenString = localStorage.getItem(storageKey);
+  const token = JSON.parse(tokenString);
+  if (token && token.chainId === chainId) return token;
+  return defaultTokens[chainId] || defaultTokens[1];
+};
 
 export const getNetworkCurrency = chainId =>
   networkCurrencies[chainId] || { name: 'Unknown', symbol: 'Unknown' };
