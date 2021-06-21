@@ -1,4 +1,5 @@
 import { BigNumber, utils } from 'ethers';
+import { getAddress } from 'ethers/lib/utils';
 import {
   chainUrls,
   defaultTokens,
@@ -121,12 +122,10 @@ export const fetchQueryParams = search => {
     }, {});
 };
 
-export const getAccountString = account => {
+export const getAccountString = address => {
+  const account = getAddress(address);
   const len = account.length;
-  return `${account.substr(0, 6)}...${account.substr(
-    len - 4,
-    len - 1,
-  )}`.toUpperCase();
+  return `0x${account.substr(2, 4)}...${account.substr(len - 4, len - 1)}`;
 };
 
 export const logError = error => {

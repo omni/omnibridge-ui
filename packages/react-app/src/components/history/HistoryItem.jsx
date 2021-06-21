@@ -233,13 +233,15 @@ export const HistoryItem = ({
           <Text display={{ base: 'inline-block', md: 'none' }} color="greyText">
             Amount
           </Text>
-          <Text my="auto" textAlign="center">
-            {`${formatUnits(
-              BigNumber.from(amount),
-              toToken.decimals,
-            )} ${tokenSymbol}`}
-          </Text>
-          <AddToMetamask token={toToken} ml="0.25rem" />
+          <Flex>
+            <Text my="auto" textAlign="center">
+              {`${formatUnits(
+                BigNumber.from(amount),
+                toToken.decimals,
+              )} ${tokenSymbol}`}
+            </Text>
+            <AddToMetamask token={toToken} ml="0.25rem" />
+          </Flex>
         </Flex>
         {claimed ? (
           <Flex align="center" justify={{ base: 'center', md: 'flex-end' }}>

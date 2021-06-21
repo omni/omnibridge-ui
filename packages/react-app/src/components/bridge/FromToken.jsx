@@ -170,6 +170,7 @@ export const FromToken = () => {
           <Flex
             align="flex-end"
             flex={1}
+            w="100%"
             {...(!smallScreen
               ? {
                   position: 'absolute',
