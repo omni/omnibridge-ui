@@ -13,9 +13,9 @@ export const useAmbVersion = (foreignChainId, foreignAmbAddress) => {
     const fetchVersion = async () => {
       const provider = await getEthersProvider(foreignChainId);
       await fetchAmbVersion(foreignAmbAddress, provider)
-        .then(res => {
-          setForeignAmbVersion(res);
-          sessionStorage.setItem(key, JSON.stringify(res));
+        .then(versionString => {
+          setForeignAmbVersion(versionString);
+          sessionStorage.setItem(key, versionString);
         })
         .catch(versionError => logError({ versionError }));
       setFetching(false);
@@ -25,7 +25,7 @@ export const useAmbVersion = (foreignChainId, foreignAmbAddress) => {
       setFetching(true);
       fetchVersion();
     } else {
-      setForeignAmbVersion(JSON.parse(version));
+      setForeignAmbVersion(version);
     }
   }, [foreignAmbAddress, foreignChainId, fetching]);
 

@@ -25,11 +25,7 @@ export const fetchAmbVersion = async (address, ethersProvider) => {
   const ambVersion = await ambContract
     .getBridgeInterfacesVersion()
     .catch(versionError => logError({ versionError }));
-  return {
-    major: ambVersion[0].toNumber(),
-    minor: ambVersion[1].toNumber(),
-    patch: ambVersion[2].toNumber(),
-  };
+  return ambVersion.map(v => v.toNumber()).join('.');
 };
 
 function strip0x(input) {
@@ -71,7 +67,7 @@ export const executeSignatures = async (
   const ambContract = new Contract(address, abi, ethersProvider.getSigner());
 
   let executeSignaturesFunc = ambContract.executeSignatures;
-  if (version.major > 5 || (version.major === 5 && version.minor > 6)) {
+  if (version > '5.6.0') {
     executeSignaturesFunc = ambContract.safeExecuteSignaturesWithAutoGasLimit;
   }
 
