@@ -1,4 +1,4 @@
-import { BridgeContext } from 'contexts/BridgeContext';
+import { useBridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { POLLING_INTERVAL } from 'lib/constants';
@@ -10,7 +10,7 @@ import {
   NOT_ENOUGH_COLLECTED_SIGNATURES,
 } from 'lib/message';
 import { getEthersProvider } from 'lib/providers';
-import { useCallback, useContext, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 export const useTransactionStatus = setMessage => {
   const { homeChainId, getBridgeChainId, getAMBAddress } = useBridgeDirection();
@@ -18,7 +18,7 @@ export const useTransactionStatus = setMessage => {
   const isHome = chainId === homeChainId;
   const bridgeChainId = getBridgeChainId(chainId);
   const { loading, setLoading, txHash, setTxHash, totalConfirms } =
-    useContext(BridgeContext);
+    useBridgeContext();
   const [needsConfirmation, setNeedsConfirmation] = useState(false);
   const [loadingText, setLoadingText] = useState();
   const [confirmations, setConfirmations] = useState(0);

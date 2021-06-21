@@ -18,7 +18,7 @@ import {
 } from '@chakra-ui/react';
 import SearchIcon from 'assets/search.svg';
 import { Logo } from 'components/common/Logo';
-import { BridgeContext } from 'contexts/BridgeContext';
+import { useBridgeContext } from 'contexts/BridgeContext';
 import { useSettings } from 'contexts/SettingsContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
@@ -33,13 +33,7 @@ import {
 } from 'lib/helpers';
 import { fetchTokenBalanceWithProvider } from 'lib/token';
 import { fetchTokenList } from 'lib/tokenList';
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 const { CUSTOM_TOKENS } = LOCAL_STORAGE_KEYS;
 
@@ -47,7 +41,7 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
   // Ref
   const initialRef = useRef();
   // Contexts
-  const { setToken, setLoading: setBridgeLoading } = useContext(BridgeContext);
+  const { setToken, setLoading: setBridgeLoading } = useBridgeContext();
   const { account, ethersProvider, providerChainId } = useWeb3Context();
   const { disableBalanceFetchToken } = useSettings();
   // State

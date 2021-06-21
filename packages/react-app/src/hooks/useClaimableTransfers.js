@@ -1,4 +1,4 @@
-import { BridgeContext } from 'contexts/BridgeContext';
+import { useBridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import {
@@ -6,13 +6,13 @@ import {
   getExecutions,
   getRequests,
 } from 'lib/history';
-import { useContext, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export const useClaimableTransfers = () => {
   const { homeChainId, foreignChainId, getGraphEndpoint } =
     useBridgeDirection();
   const { account } = useWeb3Context();
-  const { txHash } = useContext(BridgeContext);
+  const { txHash } = useBridgeContext();
   const [transfers, setTransfers] = useState();
   const [loading, setLoading] = useState(false);
 

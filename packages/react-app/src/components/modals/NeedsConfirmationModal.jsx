@@ -13,17 +13,17 @@ import {
   Text,
 } from '@chakra-ui/react';
 import ChangeNetworkImage from 'assets/change-network.png';
-import { BridgeContext } from 'contexts/BridgeContext';
+import { useBridgeContext } from 'contexts/BridgeContext';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { getNetworkName } from 'lib/helpers';
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 
 export const NeedsConfirmationModal = ({
   setNeedsConfirmation,
   setMessage,
 }) => {
   const { foreignChainId } = useBridgeDirection();
-  const { fromToken, toToken, setTxHash } = useContext(BridgeContext);
+  const { fromToken, toToken, setTxHash } = useBridgeContext();
   const toUnit =
     (toToken !== undefined && toToken.symbol) ||
     (fromToken !== undefined && fromToken.symbol);

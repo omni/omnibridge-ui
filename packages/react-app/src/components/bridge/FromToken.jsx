@@ -11,18 +11,12 @@ import {
 import DropDown from 'assets/drop-down.svg';
 import { Logo } from 'components/common/Logo';
 import { SelectTokenModal } from 'components/modals/SelectTokenModal';
-import { BridgeContext } from 'contexts/BridgeContext';
+import { useBridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { BigNumber, utils } from 'ethers';
 import { formatValue, logError, truncateText } from 'lib/helpers';
 import { fetchTokenBalance } from 'lib/token';
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 const useDelay = (fn, ms) => {
   const timer = useRef(0);
@@ -48,7 +42,7 @@ export const FromToken = () => {
     setAmount,
     amountInput: input,
     setAmountInput: setInput,
-  } = useContext(BridgeContext);
+  } = useBridgeContext();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const smallScreen = useBreakpointValue({ base: true, lg: false });
