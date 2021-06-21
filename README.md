@@ -6,7 +6,7 @@ The OmniBridge [multi-token extension](https://docs.tokenbridge.net/eth-xdai-amb
 
 In the project directory, you can run:
 
-### UI App
+### React App
 
 #### `yarn dapp:start`
 
