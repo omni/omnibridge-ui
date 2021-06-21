@@ -18,7 +18,8 @@ import {
 import ClaimTokenImage from 'assets/claim.svg';
 import { LoadingModal } from 'components/modals/LoadingModal';
 import { AuspiciousGasWarning } from 'components/warnings/AuspiciousGasWarning';
-import { BridgeContext } from 'contexts/BridgeContext';
+import { useBridgeContext } from 'contexts/BridgeContext';
+import { useWeb3Context } from 'contexts/Web3Context';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { useClaim } from 'hooks/useClaim';
 import { TOKENS_CLAIMED } from 'lib/amb';
@@ -28,17 +29,22 @@ import {
   getMedianHistoricalEthGasPrice,
 } from 'lib/gasPrice';
 import { getNetworkName, logError } from 'lib/helpers';
-import React, { useCallback, useContext, useState } from 'react';
+import { messageCallStatus } from 'lib/message';
+import React, { useCallback, useEffect, useState } from 'react';
 
-export const ClaimTransferModal = () => {
-  const { homeChainId, foreignChainId } = useBridgeDirection();
-  const { txHash, setTxHash } = useContext(BridgeContext);
+export const ClaimTransferModal = ({ message, setMessage }) => {
+  const { ethersProvider } = useWeb3Context();
+  const { homeChainId, foreignChainId, foreignAmbAddress } =
+    useBridgeDirection();
+  const { txHash, setTxHash } = useBridgeContext();
   const [isOpen, setOpen] = useState(true);
   const [claiming, setClaiming] = useState(false);
   const [loadingText, setLoadingText] = useState('');
   const [executed, setExecuted] = useState(false);
 
   const onClose = () => {
+    setTxHash();
+    setMessage();
     setOpen(false);
   };
 
@@ -57,12 +63,25 @@ export const ClaimTransferModal = () => {
     [toast],
   );
 
+  useEffect(() => {
+    if (message && message.messageId) {
+      const { messageId } = message;
+      messageCallStatus(foreignAmbAddress, ethersProvider, messageId).then(
+        status => {
+          if (status) {
+            setExecuted(true);
+          }
+        },
+      );
+    }
+  }, [message, foreignAmbAddress, ethersProvider]);
+
   const claim = useClaim();
 
   const claimTokens = useCallback(async () => {
     try {
       setClaiming(true);
-      const tx = await claim(txHash);
+      const tx = await claim(txHash, message);
       setLoadingText('Waiting for Execution');
       await tx.wait();
       setTxHash();
@@ -77,7 +96,7 @@ export const ClaimTransferModal = () => {
       setClaiming(false);
       setLoadingText('');
     }
-  }, [claim, txHash, showError, setTxHash]);
+  }, [claim, txHash, showError, setTxHash, message]);
 
   if (claiming)
     return (

@@ -18,7 +18,10 @@ import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { getNetworkName } from 'lib/helpers';
 import React, { useContext, useState } from 'react';
 
-export const NeedsConfirmationModal = ({ setNeedsConfirmation }) => {
+export const NeedsConfirmationModal = ({
+  setNeedsConfirmation,
+  setMessage,
+}) => {
   const { foreignChainId } = useBridgeDirection();
   const { fromToken, toToken, setTxHash } = useContext(BridgeContext);
   const toUnit =
@@ -29,6 +32,7 @@ export const NeedsConfirmationModal = ({ setNeedsConfirmation }) => {
   const onClose = () => {
     setNeedsConfirmation(false);
     setTxHash();
+    setMessage();
     setOpen(false);
   };
 

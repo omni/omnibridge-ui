@@ -1,7 +1,7 @@
 import { ethers } from 'ethers';
 import memoize from 'fast-memoize';
 import { LOCAL_STORAGE_KEYS } from 'lib/constants';
-import { getRPCUrl, logError } from 'lib/helpers';
+import { getNetworkLabel, getRPCUrl, logError } from 'lib/helpers';
 
 const {
   MAINNET_RPC_URL,
@@ -46,7 +46,8 @@ const checkRPCHealth = async url => {
 };
 
 export const getEthersProvider = async chainId => {
-  const sessionHealthyURL = `HEALTHY_RPC_URL-${chainId}`;
+  const label = getNetworkLabel(chainId).toUpperCase();
+  const sessionHealthyURL = `HEALTHY-RPC-URL-${label}`;
   const localRPCUrl = window.localStorage.getItem(RPC_URL[chainId]);
   const currentRPCUrls = getRPCUrl(chainId, true);
   const rpcURLs =

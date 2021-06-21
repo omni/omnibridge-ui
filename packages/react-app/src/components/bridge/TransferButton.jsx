@@ -2,13 +2,13 @@ import { Flex, Image, Text, useDisclosure, useToast } from '@chakra-ui/react';
 import TransferIcon from 'assets/transfer.svg';
 import { ConfirmTransferModal } from 'components/modals/ConfirmTransferModal';
 import { isRebasingToken } from 'components/warnings/RebasingTokenWarning';
-import { BridgeContext } from 'contexts/BridgeContext';
+import { useBridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { utils } from 'ethers';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { ADDRESS_ZERO } from 'lib/constants';
 import { formatValue } from 'lib/helpers';
-import React, { useCallback, useContext } from 'react';
+import React, { useCallback } from 'react';
 
 export const TransferButton = () => {
   const { homeChainId, foreignChainId, enableReversedBridge } =
@@ -22,7 +22,8 @@ export const TransferButton = () => {
     fromBalance: balance,
     tokenLimits,
     allowed,
-  } = useContext(BridgeContext);
+    toAmountLoading,
+  } = useBridgeContext();
   const isHome = token && token.chainId && token.chainId === homeChainId;
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
@@ -45,7 +46,8 @@ export const TransferButton = () => {
     !enableReversedBridge &&
     toToken.chainId === foreignChainId &&
     toToken.address === ADDRESS_ZERO;
-  const buttonEnabled = allowed && !isRebaseToken && !showReverseBridgeWarning;
+  const buttonEnabled =
+    allowed && !isRebaseToken && !showReverseBridgeWarning && !toAmountLoading;
 
   const valid = useCallback(() => {
     if (!ethersProvider) {

@@ -13,7 +13,6 @@ import {
   Text,
 } from '@chakra-ui/react';
 import BlueTickImage from 'assets/blue-tick.svg';
-import { AddToMetamask } from 'components/common/AddToMetamask';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { getNetworkName } from 'lib/helpers';
 import React from 'react';
@@ -46,20 +45,9 @@ const ClaimErrorModal = ({ onClose, claimErrorShow, claimErrorToken }) => {
                 <Text as="span">
                   The tokens were already claimed. Check your
                   {claimErrorToken ? ` ${claimErrorToken.symbol} ` : ' '}
-                  token balance in
+                  token balance in{' '}
                   <strong>{getNetworkName(foreignChainId)}</strong>.
                 </Text>
-                {claimErrorToken && (
-                  <>
-                    {' '}
-                    <Text as="span">Add the token </Text>
-                    <AddToMetamask
-                      token={claimErrorToken}
-                      display="inline-block"
-                    />{' '}
-                    <Text as="span">in your wallet if needed.</Text>
-                  </>
-                )}
               </Box>
             </Flex>
           </ModalBody>

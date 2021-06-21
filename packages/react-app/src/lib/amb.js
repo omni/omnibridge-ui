@@ -1,6 +1,8 @@
 import { Contract, utils } from 'ethers';
 import { logError } from 'lib/helpers';
 
+import { NOT_ENOUGH_COLLECTED_SIGNATURES } from './message';
+
 export const TOKENS_CLAIMED = 'Tokens already claimed';
 
 export const fetchConfirmations = async (address, ethersProvider) => {
@@ -73,12 +75,16 @@ export const executeSignatures = async (
     executeSignaturesFunc = ambContract.safeExecuteSignaturesWithAutoGasLimit;
   }
 
+  if (!signatures || signatures.length === 0) {
+    throw new Error(NOT_ENOUGH_COLLECTED_SIGNATURES);
+  }
+
   try {
     const signs = packSignatures(signatures.map(s => signatureToVRS(s)));
     const tx = await executeSignaturesFunc(messageData, signs);
     return tx;
   } catch (error) {
-    if (error?.code.toString() === '-32016') {
+    if (error && error.code && error.code.toString() === '-32016') {
       throw new Error(TOKENS_CLAIMED);
     } else {
       throw error;

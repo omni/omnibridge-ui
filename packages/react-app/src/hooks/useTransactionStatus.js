@@ -12,7 +12,7 @@ import {
 import { getEthersProvider } from 'lib/providers';
 import { useCallback, useContext, useEffect, useState } from 'react';
 
-export const useTransactionStatus = () => {
+export const useTransactionStatus = setMessage => {
   const { homeChainId, getBridgeChainId, getAMBAddress } = useBridgeDirection();
   const { ethersProvider, providerChainId: chainId } = useWeb3Context();
   const isHome = chainId === homeChainId;
@@ -59,6 +59,7 @@ export const useTransactionStatus = () => {
             if (message && message.signatures) {
               setNeedsConfirmation(true);
               incompleteReceipt();
+              setMessage(message);
               return true;
             }
           } else {
@@ -85,11 +86,16 @@ export const useTransactionStatus = () => {
         }
       }
     } catch (txError) {
-      if (!(isHome && txError.message === NOT_ENOUGH_COLLECTED_SIGNATURES)) {
-        completeReceipt();
-        logError({ txError });
-        return true;
+      if (
+        isHome &&
+        txError &&
+        txError.message === NOT_ENOUGH_COLLECTED_SIGNATURES
+      ) {
+        return false;
       }
+      completeReceipt();
+      logError({ txError });
+      return true;
     }
     return false;
   }, [
@@ -102,6 +108,7 @@ export const useTransactionStatus = () => {
     chainId,
     bridgeChainId,
     getAMBAddress,
+    setMessage,
   ]);
 
   useEffect(() => {

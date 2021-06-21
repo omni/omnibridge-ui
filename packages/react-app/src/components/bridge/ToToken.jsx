@@ -37,7 +37,7 @@ export const ToToken = () => {
     foreignChainId,
   } = useBridgeDirection();
   const {
-    updateBalance,
+    txHash,
     fromToken,
     toToken: token,
     toAmount: amount,
@@ -106,7 +106,7 @@ export const ToToken = () => {
     return () => {
       isSubscribed = false;
     };
-  }, [updateBalance, token, account, setBalance, setBalanceLoading, chainId]);
+  }, [txHash, token, account, setBalance, setBalanceLoading, chainId]);
 
   return (
     <Flex

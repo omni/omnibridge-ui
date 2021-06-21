@@ -41,7 +41,7 @@ const useDelay = (fn, ms) => {
 export const FromToken = () => {
   const { account, providerChainId: chainId } = useWeb3Context();
   const {
-    updateBalance,
+    txHash,
     fromToken: token,
     fromBalance: balance,
     setFromBalance: setBalance,
@@ -82,7 +82,7 @@ export const FromToken = () => {
     return () => {
       isSubscribed = false;
     };
-  }, [updateBalance, token, account, setBalance, setBalanceLoading, chainId]);
+  }, [txHash, token, account, setBalance, setBalanceLoading, chainId]);
 
   return (
     <Flex

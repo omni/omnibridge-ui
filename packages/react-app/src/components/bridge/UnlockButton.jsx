@@ -2,9 +2,9 @@ import { Flex, Image, Link, Spinner, Text, useToast } from '@chakra-ui/react';
 import UnlockIcon from 'assets/unlock.svg';
 import { TxLink } from 'components/common/TxLink';
 import { isRebasingToken } from 'components/warnings/RebasingTokenWarning';
-import { BridgeContext } from 'contexts/BridgeContext';
+import { useBridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
-import React, { useContext } from 'react';
+import React from 'react';
 
 export const UnlockButton = () => {
   const { providerChainId } = useWeb3Context();
@@ -12,13 +12,14 @@ export const UnlockButton = () => {
     fromAmount: amount,
     fromBalance: balance,
     fromToken: token,
+    toAmountLoading,
     allowed,
     approve,
     unlockLoading,
     approvalTxHash,
-  } = useContext(BridgeContext);
+  } = useBridgeContext();
   const isRebaseToken = isRebasingToken(token);
-  const buttonDisabled = allowed || isRebaseToken;
+  const buttonDisabled = allowed || isRebaseToken || toAmountLoading;
   const toast = useToast();
   const showError = msg => {
     if (msg) {

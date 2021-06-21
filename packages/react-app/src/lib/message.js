@@ -97,3 +97,10 @@ export const messageCallStatus = async (
   const claimed = await ambContract.messageCallStatus(messageId);
   return claimed;
 };
+
+export const requiredSignatures = async (homeAmbAddress, homeProvider) => {
+  const abi = ['function requiredSignatures() public view returns (uint256)'];
+  const ambContract = new Contract(homeAmbAddress, abi, homeProvider);
+  const numRequired = await ambContract.requiredSignatures();
+  return numRequired;
+};

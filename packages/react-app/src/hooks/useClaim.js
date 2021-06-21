@@ -13,6 +13,7 @@ export function useClaim() {
     foreignChainId,
     foreignAmbAddress,
     foreignAmbVersion,
+    homeRequiredSignatures,
   } = useBridgeDirection();
   const { providerChainId, ethersProvider } = useWeb3Context();
 
@@ -25,7 +26,12 @@ export function useClaim() {
           )}.`,
         );
       }
-      let message = txMessage;
+      let message =
+        txMessage &&
+        txMessage.signatures &&
+        txMessage.signatures.length >= homeRequiredSignatures
+          ? txMessage
+          : null;
       if (!message) {
         const homeProvider = await getEthersProvider(homeChainId);
         message = await getMessage(true, homeProvider, homeAmbAddress, txHash);
@@ -53,6 +59,7 @@ export function useClaim() {
       foreignAmbVersion,
       providerChainId,
       ethersProvider,
+      homeRequiredSignatures,
     ],
   );
 }

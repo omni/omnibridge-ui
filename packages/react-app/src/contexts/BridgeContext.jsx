@@ -47,7 +47,6 @@ export const BridgeProvider = ({ children }) => {
   });
   const [toAmountLoading, setToAmountLoading] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [updateBalance, setUpdateBalance] = useState(false);
   const [shouldReceiveNativeCur, setShouldReceiveNativeCur] = useState(false);
   const [fromBalance, setFromBalance] = useState(BigNumber.from(0));
   const [toBalance, setToBalance] = useState(BigNumber.from(0));
@@ -234,7 +233,6 @@ export const BridgeProvider = ({ children }) => {
       }
       setQueryToken(null);
     }
-    setUpdateBalance(t => !t);
     setLoading(false);
   }, [
     queryToken,
@@ -283,10 +281,6 @@ export const BridgeProvider = ({ children }) => {
   }, [updateTokenLimits]);
 
   useEffect(() => {
-    setUpdateBalance(t => !t);
-  }, [txHash]);
-
-  useEffect(() => {
     if (
       toToken?.chainId === foreignChainId &&
       toToken?.address === ADDRESS_ZERO &&
@@ -331,8 +325,6 @@ export const BridgeProvider = ({ children }) => {
         updateTokenLimits,
         receiver,
         setReceiver,
-        updateBalance,
-        setUpdateBalance,
         shouldReceiveNativeCur,
         setShouldReceiveNativeCur,
         unlockLoading,
