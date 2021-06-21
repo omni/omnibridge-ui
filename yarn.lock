@@ -2486,25 +2486,25 @@
     "@ethersproject/properties" "^5.3.0"
     "@ethersproject/strings" "^5.3.0"
 
-"@gnosis.pm/safe-apps-provider@0.5.0":
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/@gnosis.pm/safe-apps-provider/-/safe-apps-provider-0.5.0.tgz#e0121553ef22c1458eb95cf0afed14e8c2570ae3"
-  integrity sha512-c4OuKV+cIW2aDmv0DZfLOelmyNNZz5Dr3OG5TvnCfmYhZtHyOd1x6bd2xnROCuiZU+QAUGJsm65mBe6iy8NAVQ==
+"@gnosis.pm/safe-apps-provider@0.6.0":
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/@gnosis.pm/safe-apps-provider/-/safe-apps-provider-0.6.0.tgz#07cc78df57ca4d0fa9c24c4040ea6322ac759a23"
+  integrity sha512-xtB3lbEqJocYUhg6CVXJVBIah6hZCfRSUXw1e7VHe7QkZlwNIhuom4bF5ZIQlmNPzXF/XjC/Bl4//1R88rjs+w==
   dependencies:
-    "@gnosis.pm/safe-apps-sdk" "3.0.0"
+    "@gnosis.pm/safe-apps-sdk" "4.0.0"
     events "^3.3.0"
 
-"@gnosis.pm/safe-apps-sdk@3.0.0":
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/@gnosis.pm/safe-apps-sdk/-/safe-apps-sdk-3.0.0.tgz#0f90185c3693f2683322d275e796e61ff99ce87d"
-  integrity sha512-dLCSlniYnxEqCglx4XdhByvi7KKuSYRWJKm1lVXAc4oJqwwVkoCwp0bFIejLZ/dnf7cQSBUUVsTGWhvSda511w==
+"@gnosis.pm/safe-apps-sdk@4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@gnosis.pm/safe-apps-sdk/-/safe-apps-sdk-4.0.0.tgz#2fa53ba3e6a88c606787cc7c4d7836181e256024"
+  integrity sha512-D+jFrRnhzmDbuA3D6tLH615WXdOtBEsv3qCAbBfXFDUiDbXFPVZbMdgnWUowA8he6PBbBYTn7LbSJaq/K5T3ZA==
 
-"@gnosis.pm/safe-apps-web3modal@^0.5.0":
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/@gnosis.pm/safe-apps-web3modal/-/safe-apps-web3modal-0.5.0.tgz#c00d6d941e9b42303aebf203a51ed8801568f1cf"
-  integrity sha512-fauF+BHWP77oGWCSe44de7TH2z6OmJHaHcgbrau5bayXqH52E4yDcX5k5lla2bTV07QU/9UwLiQUvS3OWPNaaQ==
+"@gnosis.pm/safe-apps-web3modal@^0.6.0":
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/@gnosis.pm/safe-apps-web3modal/-/safe-apps-web3modal-0.6.0.tgz#0940908087d1a6d3aa40f8de50f3dad43a822fe8"
+  integrity sha512-GRySH+t6RXGlqkNmI0J3vJUwW6DyTGPKVfL3kGt4y07hLFUUhbuB3HzR+hkOSWywMysiUO5JsmSUUpPBqLD7iw==
   dependencies:
-    "@gnosis.pm/safe-apps-provider" "0.5.0"
+    "@gnosis.pm/safe-apps-provider" "0.6.0"
 
 "@graphprotocol/graph-cli@^0.20.1":
   version "0.20.1"
@@ -4109,18 +4109,7 @@ asn1@~0.2.3:
   dependencies:
     safer-buffer "~2.1.0"
 
-"assemblyscript@git+https://github.com/AssemblyScript/assemblyscript.git#36040d5b5312f19a025782b5e36663823494c2f3":
-  version "0.6.0"
-  resolved "git+https://github.com/AssemblyScript/assemblyscript.git#36040d5b5312f19a025782b5e36663823494c2f3"
-  dependencies:
-    "@protobufjs/utf8" "^1.1.0"
-    binaryen "77.0.0-nightly.20190407"
-    glob "^7.1.3"
-    long "^4.0.0"
-    opencollective-postinstall "^2.0.0"
-    source-map-support "^0.5.11"
-
-"assemblyscript@git+https://github.com/AssemblyScript/assemblyscript.git#v0.6":
+"assemblyscript@git+https://github.com/AssemblyScript/assemblyscript.git#v0.6", "assemblyscript@https://github.com/AssemblyScript/assemblyscript#36040d5b5312f19a025782b5e36663823494c2f3":
   version "0.6.0"
   resolved "git+https://github.com/AssemblyScript/assemblyscript.git#3ed76a97f05335504166fce1653da75f4face28f"
   dependencies:
