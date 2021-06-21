@@ -4,19 +4,6 @@ import { gql, request } from 'graphql-request';
 
 import { getTokenListUrl, uniqueTokens } from './helpers';
 
-export const fetchTokenList = async (
-  chainId,
-  homeEndpoint,
-  foreignEndpoint,
-) => {
-  const [defaultTokens, subgraphTokens] = await Promise.all([
-    fetchDefaultTokens(chainId),
-    fetchTokensFromSubgraph(homeEndpoint, foreignEndpoint),
-  ]);
-  const tokens = uniqueTokens(defaultTokens.concat(subgraphTokens));
-  return tokens;
-};
-
 const tokenListValidator = new Ajv({ allErrors: true }).compile(schema);
 
 const fetchDefaultTokens = async chainId => {
@@ -70,3 +57,24 @@ const fetchTokensFromSubgraph = async (homeEndpoint, foreignEndpoint) => {
     foreignData && foreignData.tokens ? foreignData.tokens : [];
   return homeTokens.concat(foreignTokens);
 };
+
+export function memoize(method) {
+  const cache = {};
+
+  return async function memoized(...args) {
+    const argString = JSON.stringify(args);
+    cache[argString] = cache[argString] || (await method(...args));
+    return cache[argString];
+  };
+}
+
+export const fetchTokenList = memoize(
+  async (chainId, homeEndpoint, foreignEndpoint) => {
+    const [defaultTokens, subgraphTokens] = await Promise.all([
+      fetchDefaultTokens(chainId),
+      fetchTokensFromSubgraph(homeEndpoint, foreignEndpoint),
+    ]);
+    const tokens = uniqueTokens(defaultTokens.concat(subgraphTokens));
+    return tokens;
+  },
+);
