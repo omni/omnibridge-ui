@@ -8,7 +8,7 @@ import {
 } from '@chakra-ui/react';
 import { AddToMetamask } from 'components/common/AddToMetamask';
 import { Logo } from 'components/common/Logo';
-import { BridgeContext } from 'contexts/BridgeContext';
+import { useBridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { BigNumber, utils } from 'ethers';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
@@ -20,14 +20,7 @@ import {
   truncateText,
 } from 'lib/helpers';
 import { fetchTokenBalance } from 'lib/token';
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
-import { defer } from 'rxjs';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 export const ToToken = () => {
   const { account, providerChainId } = useWeb3Context();
@@ -38,7 +31,7 @@ export const ToToken = () => {
     foreignChainId,
   } = useBridgeDirection();
   const {
-    updateBalance,
+    txHash,
     fromToken,
     toToken: token,
     toAmount: amount,
@@ -49,7 +42,7 @@ export const ToToken = () => {
     setShouldReceiveNativeCur,
     setToToken,
     setLoading,
-  } = useContext(BridgeContext);
+  } = useBridgeContext();
   const chainId = getBridgeChainId(providerChainId);
 
   const smallScreen = useBreakpointValue({ base: true, lg: false });
@@ -83,28 +76,30 @@ export const ToToken = () => {
   ]);
 
   useEffect(() => {
-    let subscription;
+    let isSubscribed = true;
     if (token && account && chainId === token.chainId) {
       setBalanceLoading(true);
-      subscription = defer(() =>
-        fetchTokenBalance(token, account).catch(toBalanceError => {
+      fetchTokenBalance(token, account)
+        .catch(toBalanceError => {
           logError({ toBalanceError });
-          setBalance(BigNumber.from(0));
-          setBalanceLoading(false);
-        }),
-      ).subscribe(b => {
-        setBalance(b);
-        setBalanceLoading(false);
-      });
+          if (isSubscribed) {
+            setBalance(BigNumber.from(0));
+            setBalanceLoading(false);
+          }
+        })
+        .then(b => {
+          if (isSubscribed) {
+            setBalance(b);
+            setBalanceLoading(false);
+          }
+        });
     } else {
       setBalance(BigNumber.from(0));
     }
     return () => {
-      if (subscription) {
-        subscription.unsubscribe();
-      }
+      isSubscribed = false;
     };
-  }, [updateBalance, token, account, setBalance, setBalanceLoading, chainId]);
+  }, [txHash, token, account, setBalance, setBalanceLoading, chainId]);
 
   return (
     <Flex
@@ -217,7 +212,10 @@ export const ToToken = () => {
               fromToken.address.toLowerCase() ===
                 nativeCurrency.homeTokenAddress && (
                 <Flex>
-                  <Text>Receive {nativeCurrency.symbol}</Text>
+                  <Text>
+                    Receive
+                    {nativeCurrency.symbol}
+                  </Text>
                   <Switch
                     ml={2}
                     colorScheme="blue"

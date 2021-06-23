@@ -1,4 +1,5 @@
 import { BigNumber, utils } from 'ethers';
+import { getAddress } from 'ethers/lib/utils';
 import {
   chainUrls,
   defaultTokens,
@@ -19,9 +20,6 @@ import {
 
 import { getOverriddenMediator, isOverridden } from './overrides';
 
-export const getDefaultToken = chainId =>
-  defaultTokens[chainId] || defaultTokens[1];
-
 export const getWalletProviderName = provider =>
   provider?.connection?.url || null;
 
@@ -31,6 +29,15 @@ export const getNetworkName = chainId =>
   networkNames[chainId] || 'Unknown Network';
 
 export const getNetworkLabel = chainId => networkLabels[chainId] || 'Unknown';
+
+export const getDefaultToken = chainId => {
+  const label = getNetworkLabel(chainId).toUpperCase();
+  const storageKey = `${label}-FROM-TOKEN`;
+  const tokenString = localStorage.getItem(storageKey);
+  const token = JSON.parse(tokenString);
+  if (token && token.chainId === chainId) return token;
+  return defaultTokens[chainId] || defaultTokens[1];
+};
 
 export const getNetworkCurrency = chainId =>
   networkCurrencies[chainId] || { name: 'Unknown', symbol: 'Unknown' };
@@ -68,7 +75,9 @@ export const uniqueTokens = list => {
 export const formatValue = (num, dec) => {
   const str = utils.formatUnits(num, dec);
   if (str.length > 50) {
-    const expStr = Number(str).toExponential().replace(/e\+?/, ' x 10^');
+    const expStr = Number(str)
+      .toExponential()
+      .replace(/e\+?/, ' x 10^');
     const split = expStr.split(' x 10^');
     const first = Number(split[0]).toLocaleString('en', {
       maximumFractionDigits: 4,
@@ -121,12 +130,10 @@ export const fetchQueryParams = search => {
     }, {});
 };
 
-export const getAccountString = account => {
+export const getAccountString = address => {
+  const account = getAddress(address);
   const len = account.length;
-  return `${account.substr(0, 6)}...${account.substr(
-    len - 4,
-    len - 1,
-  )}`.toUpperCase();
+  return `0x${account.substr(2, 4)}...${account.substr(len - 4, len - 1)}`;
 };
 
 export const logError = error => {

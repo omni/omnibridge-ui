@@ -11,62 +11,72 @@ import {
 import DropDown from 'assets/drop-down.svg';
 import { Logo } from 'components/common/Logo';
 import { SelectTokenModal } from 'components/modals/SelectTokenModal';
-import { BridgeContext } from 'contexts/BridgeContext';
+import { useBridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { BigNumber, utils } from 'ethers';
 import { formatValue, logError, truncateText } from 'lib/helpers';
 import { fetchTokenBalance } from 'lib/token';
-import React, { useContext, useEffect, useState } from 'react';
-import { defer } from 'rxjs';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+
+const useDelay = (fn, ms) => {
+  const timer = useRef(0);
+
+  const delayCallBack = useCallback(
+    (...args) => {
+      clearTimeout(timer.current);
+      timer.current = setTimeout(fn.bind(this, ...args), ms || 0);
+    },
+    [fn, ms],
+  );
+
+  return delayCallBack;
+};
 
 export const FromToken = () => {
   const { account, providerChainId: chainId } = useWeb3Context();
   const {
-    updateBalance,
+    txHash,
     fromToken: token,
     fromBalance: balance,
     setFromBalance: setBalance,
     setAmount,
     amountInput: input,
     setAmountInput: setInput,
-  } = useContext(BridgeContext);
+  } = useBridgeContext();
 
   const { isOpen, onOpen, onClose } = useDisclosure();
   const smallScreen = useBreakpointValue({ base: true, lg: false });
   const [balanceLoading, setBalanceLoading] = useState(false);
+  const updateAmount = useCallback(() => {
+    setAmount(input);
+  }, [input, setAmount]);
+  const delayedSetAmount = useDelay(updateAmount, 500);
 
   useEffect(() => {
-    let subscription;
+    let isSubscribed = true;
     if (token && account && chainId === token.chainId) {
       setBalanceLoading(true);
-      subscription = defer(() =>
-        fetchTokenBalance(token, account).catch(fromBalanceError => {
+      fetchTokenBalance(token, account)
+        .catch(fromBalanceError => {
           logError({ fromBalanceError });
-          setBalance(BigNumber.from(0));
-          setBalanceLoading(false);
-        }),
-      ).subscribe(b => {
-        setBalance(b);
-        setBalanceLoading(false);
-      });
+          if (isSubscribed) {
+            setBalance(BigNumber.from(0));
+            setBalanceLoading(false);
+          }
+        })
+        .then(b => {
+          if (isSubscribed) {
+            setBalance(b);
+            setBalanceLoading(false);
+          }
+        });
     } else {
       setBalance(BigNumber.from(0));
     }
     return () => {
-      if (subscription) {
-        subscription.unsubscribe();
-      }
+      isSubscribed = false;
     };
-  }, [updateBalance, token, account, setBalance, setBalanceLoading, chainId]);
-
-  useEffect(() => {
-    const subscription = defer(() => {
-      setAmount(input);
-    }).subscribe();
-    return () => {
-      subscription.unsubscribe();
-    };
-  }, [input, setAmount]);
+  }, [txHash, token, account, setBalance, setBalanceLoading, chainId]);
 
   return (
     <Flex
@@ -154,6 +164,7 @@ export const FromToken = () => {
           <Flex
             align="flex-end"
             flex={1}
+            w="100%"
             {...(!smallScreen
               ? {
                   position: 'absolute',
@@ -173,9 +184,8 @@ export const FromToken = () => {
               placeholder="0.0"
               textAlign="left"
               fontWeight="bold"
-              onChange={e => {
-                setInput(e.target.value);
-              }}
+              onChange={e => setInput(e.target.value)}
+              onKeyUp={delayedSetAmount}
               fontSize="2xl"
             />
             <Button
@@ -187,7 +197,9 @@ export const FromToken = () => {
               fontWeight="normal"
               _hover={{ bg: 'blue.100' }}
               onClick={() => {
-                setInput(utils.formatUnits(balance, token.decimals));
+                const amountInput = utils.formatUnits(balance, token.decimals);
+                setAmount(amountInput);
+                setInput(amountInput);
               }}
             >
               Max

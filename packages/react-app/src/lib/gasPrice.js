@@ -3,9 +3,8 @@ import { BigNumber, utils } from 'ethers';
 import { GasPriceOracle } from 'gas-price-oracle';
 import { logError } from 'lib/helpers';
 
-const lowest = arr => {
-  return arr.reduce((low, item) => (low > item ? item : low), arr[0]);
-};
+const lowest = arr =>
+  arr.reduce((low, item) => (low > item ? item : low), arr[0]);
 
 const median = arr => {
   const mid = Math.floor(arr.length / 2);
@@ -50,7 +49,7 @@ const {
 } = process.env;
 
 const DEFAULT_GAS_PRICE_SPEED_TYPE = 'standard';
-const DEFAULT_GAS_PRICE_UPDATE_INTERVAL = 15000;
+const DEFAULT_GAS_PRICE_UPDATE_INTERVAL = 60000;
 
 class GasPriceStore {
   gasPrice = BigNumber.from('0');
@@ -123,18 +122,12 @@ class GasPriceStore {
 
 const ethGasStore = new GasPriceStore();
 
-export const getGasPrice = () => {
-  return ethGasStore.gasPrice;
-};
+export const getGasPrice = () => ethGasStore.gasPrice;
 
-export const getFastGasPrice = () => {
-  return ethGasStore.fastGasPrice;
-};
+export const getFastGasPrice = () => ethGasStore.fastGasPrice;
 
-export const getLowestHistoricalEthGasPrice = () => {
-  return ethGasStore.lowestHistoricalPrice;
-};
+export const getLowestHistoricalEthGasPrice = () =>
+  ethGasStore.lowestHistoricalPrice;
 
-export const getMedianHistoricalEthGasPrice = () => {
-  return ethGasStore.medianHistoricalPrice;
-};
+export const getMedianHistoricalEthGasPrice = () =>
+  ethGasStore.medianHistoricalPrice;

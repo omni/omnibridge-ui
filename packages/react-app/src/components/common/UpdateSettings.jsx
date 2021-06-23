@@ -59,8 +59,10 @@ export const UpdateSettings = ({ close }) => {
         _hover={{ color: 'blue.500', bgColor: 'blackAlpha.100' }}
         onClick={openSettings}
         leftIcon={<SettingsIcon />}
+        px={2}
+        fontSize="sm"
       >
-        <Text color="black"> Settings</Text>
+        <Text color="black">Settings</Text>
       </Button>
       <Modal
         isOpen={isOpen}

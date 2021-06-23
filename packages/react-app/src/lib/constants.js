@@ -1,6 +1,5 @@
 import { BigNumber } from 'ethers';
-
-import { ETH_XDAI_BRIDGE } from './networks';
+import { ETH_XDAI_BRIDGE } from 'lib/networks';
 
 export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000';
 export const ETHER_CURRENCY_LOGO =
@@ -13,7 +12,7 @@ export const LARGEST_UINT256 = BigNumber.from(
 );
 
 export const POLLING_INTERVAL =
-  process.env.REACT_APP_UI_STATUS_UPDATE_INTERVAL || 1000;
+  process.env.REACT_APP_UI_STATUS_UPDATE_INTERVAL || 5000;
 
 export const DEFAULT_BRIDGE_DIRECTION =
   process.env.REACT_APP_DEFAULT_BRIDGE_DIRECTION || ETH_XDAI_BRIDGE;

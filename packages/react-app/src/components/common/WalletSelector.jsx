@@ -22,20 +22,19 @@ export const WalletSelector = ({ close }) => {
     <Flex>
       <Popover placement={placement}>
         <PopoverTrigger>
-          <Button colorScheme="blue">
-            <WalletIcon mr={2} />
-            <Text> {getAccountString(account)} </Text>
+          <Button colorScheme="blue" px={3} leftIcon={<WalletIcon />}>
+            <Text fontSize="sm"> {getAccountString(account)} </Text>
             <Flex
               justify="center"
               align="center"
               bg="white"
               borderRadius="6px"
-              px="0.75rem"
+              px={{ base: 3, md: 2, lg: 3 }}
               height="2rem"
               fontSize="sm"
               color="blue.500"
               fontWeight="600"
-              ml={4}
+              ml={3}
             >
               {getNetworkLabel(providerChainId)}
             </Flex>

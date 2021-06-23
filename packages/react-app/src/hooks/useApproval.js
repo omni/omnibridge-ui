@@ -7,18 +7,18 @@ import { useCallback, useEffect, useState } from 'react';
 
 const { INFINITE_UNLOCK } = LOCAL_STORAGE_KEYS;
 
-export const useApproval = (fromToken, fromAmount) => {
+export const useApproval = (fromToken, fromAmount, txHash) => {
   const { account, ethersProvider, providerChainId } = useWeb3Context();
   const [allowance, setAllowance] = useState(BigNumber.from(0));
-  const [trigger, shouldTrigger] = useState(false);
-  const updateAllowance = () => shouldTrigger(u => !u);
   const [allowed, setAllowed] = useState(true);
 
   useEffect(() => {
     if (fromToken && providerChainId === fromToken.chainId) {
       fetchAllowance(fromToken, account, ethersProvider).then(setAllowance);
+    } else {
+      setAllowance(BigNumber.from(0));
     }
-  }, [ethersProvider, account, fromToken, providerChainId, trigger]);
+  }, [ethersProvider, account, fromToken, providerChainId, txHash]);
 
   useEffect(() => {
     setAllowed(
@@ -55,5 +55,5 @@ export const useApproval = (fromToken, fromAmount) => {
     }
   }, [fromAmount, fromToken, ethersProvider, account]);
 
-  return { allowed, updateAllowance, unlockLoading, approvalTxHash, approve };
+  return { allowed, unlockLoading, approvalTxHash, approve };
 };

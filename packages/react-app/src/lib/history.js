@@ -23,8 +23,8 @@ const requestsUserQuery = gql`
       symbol
       message {
         txHash
-        msgId
-        msgData
+        messageId: msgId
+        messageData: msgData
         signatures
       }
     }
@@ -50,8 +50,8 @@ const requestsRecipientQuery = gql`
       symbol
       message {
         txHash
-        msgId
-        msgData
+        messageId: msgId
+        messageData: msgData
         signatures
       }
     }
@@ -136,8 +136,8 @@ export const combineRequestsWithExecutions = (
   executions,
   chainId,
   bridgeChainId,
-) => {
-  return requests.map(req => {
+) =>
+  requests.map(req => {
     const execution = executions.find(exec => exec.messageId === req.messageId);
     return {
       user: req.user,
@@ -158,7 +158,6 @@ export const combineRequestsWithExecutions = (
         symbol: req.symbol,
         chainId: bridgeChainId,
       },
-      message: { ...req.message, messageId: req.messageId },
+      message: req.message,
     };
   });
-};

@@ -6,8 +6,6 @@ import { ToToken } from 'components/bridge/ToToken';
 import { TransferButton } from 'components/bridge/TransferButton';
 import { UnlockButton } from 'components/bridge/UnlockButton';
 import { BridgeLoadingModal } from 'components/modals/BridgeLoadingModal';
-import { ClaimTokensModal } from 'components/modals/ClaimTokensModal';
-import { ClaimTransferModal } from 'components/modals/ClaimTransferModal';
 import {
   BinancePeggedAssetWarning,
   isERC20ExchangableBinancePeggedAsset,
@@ -24,14 +22,13 @@ import {
 } from 'components/warnings/RebasingTokenWarning';
 import { ReverseWarning } from 'components/warnings/ReverseWarning';
 import { RPCHealthWarning } from 'components/warnings/RPCHealthWarning';
-import { BridgeContext } from 'contexts/BridgeContext';
-import { useSettings } from 'contexts/SettingsContext';
+import { useBridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { ADDRESS_ZERO } from 'lib/constants';
 import { getNetworkName } from 'lib/helpers';
 import { BSC_XDAI_BRIDGE } from 'lib/networks';
-import React, { useContext } from 'react';
+import React from 'react';
 
 export const BridgeTokens = () => {
   const { providerChainId: chainId } = useWeb3Context();
@@ -42,8 +39,7 @@ export const BridgeTokens = () => {
     enableReversedBridge,
     bridgeDirection,
   } = useBridgeDirection();
-  const { fromToken, toToken, txHash, loading } = useContext(BridgeContext);
-  const { neverShowClaims, needsSaving } = useSettings();
+  const { fromToken, toToken } = useBridgeContext();
   const isERC20Dai =
     !!fromToken &&
     fromToken.chainId === foreignChainId &&
@@ -63,7 +59,6 @@ export const BridgeTokens = () => {
 
   const smallScreen = useBreakpointValue({ base: true, lg: false });
   const bridgeChainId = getBridgeChainId(chainId);
-  const txNeedsClaiming = !!txHash && !loading && chainId === foreignChainId;
   return (
     <Flex
       align="center"
@@ -95,10 +90,6 @@ export const BridgeTokens = () => {
         p={{ base: 4, md: 8 }}
       >
         <BridgeLoadingModal />
-        {txNeedsClaiming ? <ClaimTransferModal /> : null}
-        {txNeedsClaiming || neverShowClaims || needsSaving ? null : (
-          <ClaimTokensModal />
-        )}
         {!smallScreen && (
           <Flex w="100%" justify="space-between">
             <Flex align="flex-start" direction="column">

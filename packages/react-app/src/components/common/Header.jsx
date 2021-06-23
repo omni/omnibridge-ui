@@ -28,6 +28,8 @@ const HistoryLink = ({ close }) => {
         close();
       }}
       leftIcon={<HistoryIcon />}
+      px={2}
+      fontSize="sm"
     >
       <Text color="black"> History</Text>
     </Button>
@@ -106,6 +108,7 @@ export const Header = () => {
         h={{ base: '100%', md: 'auto' }}
         align="center"
         justify="center"
+        spacing={{ base: 2, md: 0, lg: 2 }}
       >
         {valid && (
           <>

@@ -1,4 +1,4 @@
-import { BridgeContext } from 'contexts/BridgeContext';
+import { useBridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import {
@@ -6,8 +6,7 @@ import {
   getExecutions,
   getRequests,
 } from 'lib/history';
-import { useContext, useEffect, useState } from 'react';
-import { defer } from 'rxjs';
+import { useEffect, useState } from 'react';
 
 export const useClaimableTransfers = () => {
   const {
@@ -16,12 +15,13 @@ export const useClaimableTransfers = () => {
     getGraphEndpoint,
   } = useBridgeDirection();
   const { account } = useWeb3Context();
-  const { txHash } = useContext(BridgeContext);
+  const { txHash } = useBridgeContext();
   const [transfers, setTransfers] = useState();
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!account) return () => undefined;
+    let isSubscribed = true;
     async function update() {
       setLoading(true);
       setTransfers();
@@ -41,11 +41,15 @@ export const useClaimableTransfers = () => {
       )
         .sort((a, b) => b.timestamp - a.timestamp)
         .filter(t => !t.receivingTx);
-      setTransfers(xDaiTransfers);
-      setLoading(false);
+      if (isSubscribed) {
+        setTransfers(xDaiTransfers);
+        setLoading(false);
+      }
     }
-    const subscription = defer(() => update()).subscribe();
-    return () => subscription.unsubscribe();
+    update();
+    return () => {
+      isSubscribed = false;
+    };
   }, [account, txHash, homeChainId, foreignChainId, getGraphEndpoint]);
 
   return { transfers, loading };

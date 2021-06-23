@@ -18,20 +18,20 @@ import {
   isRebasingToken,
   RebasingTokenWarning,
 } from 'components/warnings/RebasingTokenWarning';
-import { BridgeContext } from 'contexts/BridgeContext';
+import { useBridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { utils } from 'ethers';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { LOCAL_STORAGE_KEYS } from 'lib/constants';
 import { logError, uniqueTokens } from 'lib/helpers';
 import { fetchTokenDetails } from 'lib/token';
-import React, { useContext, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 
 const { CUSTOM_TOKENS } = LOCAL_STORAGE_KEYS;
 
 export const CustomTokenModal = ({ isOpen, onClose, onBack }) => {
   const { bridgeDirection } = useBridgeDirection();
-  const { setToken, setLoading } = useContext(BridgeContext);
+  const { setToken, setLoading } = useBridgeContext();
   const { providerChainId } = useWeb3Context();
   const [customToken, setCustomToken] = useState({
     address: '',

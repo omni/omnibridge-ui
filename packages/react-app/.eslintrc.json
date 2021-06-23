@@ -1,6 +1,6 @@
 {
   "root": true,
-  "extends": ["airbnb", "prettier/react", "prettier", "react-app"],
+  "extends": ["airbnb", "prettier", "react-app", "plugin:import/recommended"],
   "parserOptions": {
     "ecmaVersion": 6,
     "sourceType": "module"
@@ -15,19 +15,15 @@
     }
   },
   "rules": {
-    // Prefer non-default exports
     "import/no-default-export": "error",
     "import/prefer-default-export": "off",
-
-    // Auto-sort imports
+    "import/no-relative-packages": "warn",
     "sort-imports": "off",
     "import/order": "off",
-    "simple-import-sort/sort": "error",
-
-    // Allow props spreading
+    "simple-import-sort/imports": "warn",
+    "simple-import-sort/exports": "warn",
     "react/jsx-props-no-spreading": "off",
-
-    // disable prop-types
-    "react/prop-types": "off"
+    "react/prop-types": "off",
+    "arrow-body-style": "warn"
   }
 }

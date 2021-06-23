@@ -9,14 +9,16 @@ import {
   Text,
 } from '@chakra-ui/react';
 import Details from 'assets/details.svg';
-import { BridgeContext } from 'contexts/BridgeContext';
+import { useBridgeContext } from 'contexts/BridgeContext';
 import { formatValue } from 'lib/helpers';
-import React, { useCallback, useContext, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 
 export const SystemFeedback = () => {
-  const { fromToken: token, tokenLimits, updateTokenLimits } = useContext(
-    BridgeContext,
-  );
+  const {
+    fromToken: token,
+    tokenLimits,
+    updateTokenLimits,
+  } = useBridgeContext();
 
   const [loading, setLoading] = useState(false);
 

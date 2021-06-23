@@ -38,12 +38,9 @@ export const SettingsProvider = ({ children }) => {
         const tokenAddress = params.token;
 
         const networkEntry = Object.entries(networks).find(
-          ([_, { homeChainId, foreignChainId }]) => {
-            return (
-              (homeChainId === fromChainId && foreignChainId === toChainId) ||
-              (homeChainId === toChainId && foreignChainId === fromChainId)
-            );
-          },
+          ([_, { homeChainId, foreignChainId }]) =>
+            (homeChainId === fromChainId && foreignChainId === toChainId) ||
+            (homeChainId === toChainId && foreignChainId === fromChainId),
         );
 
         if (networkEntry) {
@@ -68,7 +65,9 @@ export const SettingsProvider = ({ children }) => {
   const [infiniteUnlock, setInfiniteUnlock] = useLocalState(
     false,
     INFINITE_UNLOCK,
-    { valueType: 'boolean' },
+    {
+      valueType: 'boolean',
+    },
   );
 
   const [disableBalanceFetchToken, setDisableBalanceFetchToken] = useLocalState(

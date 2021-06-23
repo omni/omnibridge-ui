@@ -1,14 +1,14 @@
 import { Flex, Input, Text, useDisclosure } from '@chakra-ui/react';
 import { ReactComponent as AdvancedImage } from 'assets/advanced.svg';
-import { BridgeContext } from 'contexts/BridgeContext';
+import { useBridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { utils } from 'ethers';
-import React, { useCallback, useContext } from 'react';
+import React, { useCallback } from 'react';
 
 export const AdvancedMenu = () => {
   const { isGnosisSafe } = useWeb3Context();
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { receiver, setReceiver } = useContext(BridgeContext);
+  const { receiver, setReceiver } = useBridgeContext();
 
   const isMenuOpen = isOpen || isGnosisSafe;
 

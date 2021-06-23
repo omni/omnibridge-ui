@@ -19,6 +19,7 @@ import {
   getHelperContract,
   getMediatorAddress,
   getNativeCurrency,
+  getNetworkLabel,
   logError,
   parseValue,
 } from 'lib/helpers';
@@ -44,6 +45,8 @@ export const BridgeProvider = ({ children }) => {
     foreignChainId,
   } = useBridgeDirection();
 
+  const isHome = providerChainId === homeChainId;
+
   const [receiver, setReceiver] = useState('');
   const [amountInput, setAmountInput] = useState('');
   const [{ fromToken, toToken }, setTokens] = useState({});
@@ -53,7 +56,6 @@ export const BridgeProvider = ({ children }) => {
   });
   const [toAmountLoading, setToAmountLoading] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [updateBalance, setUpdateBalance] = useState(false);
   const [shouldReceiveNativeCur, setShouldReceiveNativeCur] = useState(false);
   const [fromBalance, setFromBalance] = useState(BigNumber.from(0));
   const [toBalance, setToBalance] = useState(BigNumber.from(0));
@@ -68,46 +70,47 @@ export const BridgeProvider = ({ children }) => {
     homeToForeignFeeType,
     foreignToHomeFeeType,
   } = useFeeManager();
-  const {
-    allowed,
-    updateAllowance,
-    unlockLoading,
-    approvalTxHash,
-    approve,
-  } = useApproval(fromToken, fromAmount);
+  const { allowed, unlockLoading, approvalTxHash, approve } = useApproval(
+    fromToken,
+    fromAmount,
+    txHash,
+  );
 
-  const setAmount = useCallback(
-    async inputAmount => {
-      if (!fromToken || !toToken) return;
-      setToAmountLoading(true);
-      const amount = parseValue(inputAmount, fromToken.decimals);
-      const isHome = providerChainId === homeChainId;
-      const feeType = !isHome ? foreignToHomeFeeType : homeToForeignFeeType;
-      const gotToAmount = isRewardAddress
+  const feeType = isHome ? homeToForeignFeeType : foreignToHomeFeeType;
+
+  const getToAmount = useCallback(
+    async amount =>
+      isRewardAddress
         ? amount
-        : await fetchToAmount(
+        : fetchToAmount(
             bridgeDirection,
             feeType,
             fromToken,
             toToken,
             amount,
             feeManagerAddress,
-          );
+          ),
+    [
+      bridgeDirection,
+      fromToken,
+      toToken,
+      isRewardAddress,
+      feeManagerAddress,
+      feeType,
+    ],
+  );
+
+  const setAmount = useCallback(
+    async inputAmount => {
+      if (!fromToken || !toToken) return;
+      setToAmountLoading(true);
+      const amount = parseValue(inputAmount, fromToken.decimals);
+      const gotToAmount = await getToAmount(amount);
 
       setAmounts({ fromAmount: amount, toAmount: gotToAmount });
       setToAmountLoading(false);
     },
-    [
-      homeChainId,
-      bridgeDirection,
-      fromToken,
-      toToken,
-      providerChainId,
-      isRewardAddress,
-      homeToForeignFeeType,
-      foreignToHomeFeeType,
-      feeManagerAddress,
-    ],
+    [fromToken, toToken, getToAmount],
   );
 
   const setToToken = useCallback(
@@ -140,6 +143,9 @@ export const BridgeProvider = ({ children }) => {
           ),
         ]);
         setTokens({ fromToken: token, toToken: { ...token, ...gotToToken } });
+        const label = getNetworkLabel(token.chainId).toUpperCase();
+        const storageKey = `${label}-FROM-TOKEN`;
+        localStorage.setItem(storageKey, JSON.stringify(token));
         return true;
       } catch (tokenDetailsError) {
         toast({
@@ -242,7 +248,6 @@ export const BridgeProvider = ({ children }) => {
       }
       setQueryToken(null);
     }
-    setUpdateBalance(t => !t);
     setLoading(false);
   }, [
     queryToken,
@@ -291,10 +296,6 @@ export const BridgeProvider = ({ children }) => {
   }, [updateTokenLimits]);
 
   useEffect(() => {
-    setUpdateBalance(t => !t);
-  }, [txHash]);
-
-  useEffect(() => {
     if (
       toToken?.chainId === foreignChainId &&
       toToken?.address === ADDRESS_ZERO &&
@@ -337,11 +338,8 @@ export const BridgeProvider = ({ children }) => {
         setToBalance,
         tokenLimits,
         updateTokenLimits,
-        updateAllowance,
         receiver,
         setReceiver,
-        updateBalance,
-        setUpdateBalance,
         shouldReceiveNativeCur,
         setShouldReceiveNativeCur,
         unlockLoading,

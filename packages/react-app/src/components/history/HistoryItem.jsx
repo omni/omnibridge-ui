@@ -14,20 +14,15 @@ import { TxLink } from 'components/common/TxLink';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { BigNumber, utils } from 'ethers';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
-import {
-  executeSignatures,
-  getMessageFromTxHash,
-  getMessageStatus,
-} from 'lib/amb';
-import { POLLING_INTERVAL } from 'lib/constants';
+import { useClaim } from 'hooks/useClaim';
+import { TOKENS_CLAIMED } from 'lib/amb';
 import {
   getExplorerUrl,
   getHelperContract,
   getNativeCurrency,
-  getNetworkName,
   logError,
 } from 'lib/helpers';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useState } from 'react';
 
 const { formatUnits } = utils;
 
@@ -70,24 +65,18 @@ export const HistoryItem = ({
     receivingTx: inputReceivingTx,
     amount,
     toToken,
-    message: inputMessage,
+    message,
   },
   handleClaimError,
 }) => {
   const {
-    homeChainId,
     foreignChainId,
-    foreignAmbAddress,
-    foreignAmbVersion,
     getBridgeChainId,
     getMonitorUrl,
-    getGraphEndpoint,
     enableForeignCurrencyBridge,
   } = useBridgeDirection();
-  const { providerChainId, ethersProvider } = useWeb3Context();
+  const { providerChainId } = useWeb3Context();
   const bridgeChainId = getBridgeChainId(chainId);
-  const [receivingTx, setReceiving] = useState(inputReceivingTx);
-  const [message, setMessage] = useState(inputMessage);
 
   const timestampString = new Date(
     parseInt(timestamp, 10) * 1000,
@@ -113,118 +102,45 @@ export const HistoryItem = ({
     },
     [toast],
   );
-  const claimable = useMemo(
-    () => message && message.msgData && message.signatures,
-    [message],
-  );
-  const [loading, setLoading] = useState(false);
+
+  const [claimed, setClaimed] = useState(!!inputReceivingTx);
+  const [claiming, setClaiming] = useState(false);
   const [txHash, setTxHash] = useState();
+  let receivingTx = inputReceivingTx;
+  if (claimed && txHash) {
+    receivingTx = txHash;
+  }
+
+  const claim = useClaim();
+  const showAlreadyClaimedModal = useCallback(() => {
+    handleClaimError(toToken);
+  }, [toToken, handleClaimError]);
+
   const claimTokens = useCallback(async () => {
-    if (loading) return;
-    if (providerChainId === homeChainId) {
-      showError(`Please switch wallet to ${getNetworkName(foreignChainId)}`);
-    } else if (!claimable) {
-      showError('Still Collecting Signatures...');
-    } else {
-      try {
-        setLoading(true);
-        const { data: tx, alreadyClaimed, error } = await executeSignatures(
-          ethersProvider,
-          foreignAmbAddress,
-          foreignAmbVersion,
-          message,
-        );
-
-        if (error) {
-          throw error;
-        }
-
-        if (alreadyClaimed && !tx) {
-          handleClaimError(toToken);
-          return;
-        }
-        setTxHash(tx.hash);
-      } catch (executeError) {
-        logError({ executeError, chainId: providerChainId, message });
-        if (executeError && executeError.message) {
-          showError(executeError.message);
-        } else {
-          showError(
-            'Impossible to perform the operation. Reload the application and try again.',
-          );
-        }
-      } finally {
-        setLoading(false);
+    try {
+      setClaiming(true);
+      const tx = await claim(sendingTx, message);
+      setTxHash(tx.hash);
+      await tx.wait();
+      setClaimed(true);
+      setTxHash();
+    } catch (claimError) {
+      logError({ claimError });
+      if (claimError.message === TOKENS_CLAIMED) {
+        showAlreadyClaimedModal();
+      } else {
+        showError(claimError.message);
       }
+    } finally {
+      setClaiming(false);
     }
   }, [
-    loading,
-    providerChainId,
-    homeChainId,
-    foreignChainId,
-    ethersProvider,
-    foreignAmbAddress,
-    foreignAmbVersion,
-    claimable,
-    message,
-    handleClaimError,
-    toToken,
-    showError,
-  ]);
-
-  useEffect(() => {
-    const subscriptions = [];
-    const unsubscribe = () => {
-      subscriptions.forEach(s => {
-        clearTimeout(s);
-      });
-    };
-
-    if (receivingTx || !message || !message.msgId) return unsubscribe;
-    let execution = null;
-    let request = null;
-    const { msgId } = message;
-
-    const getStatus = async () => {
-      try {
-        [execution, request] = await Promise.all([
-          !receivingTx
-            ? getMessageStatus(getGraphEndpoint(bridgeChainId), msgId)
-            : null,
-          !message.signatures
-            ? getMessageFromTxHash(getGraphEndpoint(chainId), sendingTx)
-            : null,
-        ]);
-        if (execution) {
-          setReceiving(execution.txHash);
-          setLoading(false);
-          setTxHash();
-        }
-        if (request) {
-          setMessage(request);
-        }
-
-        if (!(receivingTx && message)) {
-          const timeoutId = setTimeout(() => getStatus(), POLLING_INTERVAL);
-          subscriptions.push(timeoutId);
-        }
-      } catch (messageError) {
-        logError({ messageError });
-      }
-    };
-    // unsubscribe from previous polls
-    unsubscribe();
-
-    getStatus();
-    // unsubscribe when unmount component
-    return unsubscribe;
-  }, [
-    chainId,
-    receivingTx,
-    bridgeChainId,
-    message,
+    claim,
     sendingTx,
-    getGraphEndpoint,
+    message,
+    showError,
+    setTxHash,
+    showAlreadyClaimedModal,
   ]);
 
   const homeCurrencyHelperContract = getHelperContract(foreignChainId);
@@ -317,15 +233,17 @@ export const HistoryItem = ({
           <Text display={{ base: 'inline-block', md: 'none' }} color="greyText">
             Amount
           </Text>
-          <Text my="auto" textAlign="center">
-            {`${formatUnits(
-              BigNumber.from(amount),
-              toToken.decimals,
-            )} ${tokenSymbol}`}
-          </Text>
-          <AddToMetamask token={toToken} ml="0.25rem" />
+          <Flex>
+            <Text my="auto" textAlign="center">
+              {`${formatUnits(
+                BigNumber.from(amount),
+                toToken.decimals,
+              )} ${tokenSymbol}`}
+            </Text>
+            <AddToMetamask token={toToken} ml="0.25rem" />
+          </Flex>
         </Flex>
-        {receivingTx ? (
+        {claimed ? (
           <Flex align="center" justify={{ base: 'center', md: 'flex-end' }}>
             <Image src={BlueTickImage} mr="0.5rem" />
             <Text color="blue.500">Claimed</Text>
@@ -334,14 +252,14 @@ export const HistoryItem = ({
           <Flex align="center" justify={{ base: 'center', md: 'flex-end' }}>
             <TxLink
               chainId={providerChainId}
-              hash={loading ? txHash : undefined}
+              hash={claiming ? txHash : undefined}
             >
               <Button
                 w="100%"
                 size="sm"
                 colorScheme="blue"
                 onClick={claimTokens}
-                isLoading={loading}
+                isLoading={claiming}
               >
                 Claim
               </Button>

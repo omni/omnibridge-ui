@@ -2,11 +2,10 @@ import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { logDebug, logError } from 'lib/helpers';
 import { getEthersProvider } from 'lib/providers';
 import { useEffect, useState } from 'react';
-import { defer } from 'rxjs';
 
 const { REACT_APP_RPC_HEALTH_UPDATE_INTERVAL } = process.env;
 
-const DEFAULT_RPC_HEALTH_UPDATE_INTERVAL = 15000;
+const DEFAULT_RPC_HEALTH_UPDATE_INTERVAL = 60000;
 
 const UPDATE_INTERVAL =
   REACT_APP_RPC_HEALTH_UPDATE_INTERVAL || DEFAULT_RPC_HEALTH_UPDATE_INTERVAL;
@@ -27,16 +26,21 @@ export const useRPCHealth = () => {
       });
     };
 
+    let isSubscribed = true;
+
     const load = async () => {
       try {
         const homeProvider = await getEthersProvider(homeChainId);
         const homeHealth = homeProvider !== null;
         const foreignProvider = await getEthersProvider(foreignChainId);
         const foreignHealth = foreignProvider !== null;
-        setHealthStatus({
-          homeHealthy: homeHealth,
-          foreignHealthy: foreignHealth,
-        });
+
+        if (isSubscribed) {
+          setHealthStatus({
+            homeHealthy: homeHealth,
+            foreignHealthy: foreignHealth,
+          });
+        }
         logDebug({
           homeHealth,
           foreignHealth,
@@ -53,11 +57,11 @@ export const useRPCHealth = () => {
     // unsubscribe from previous polls
     unsubscribe();
 
-    const deferral = defer(() => load()).subscribe();
+    load();
     // unsubscribe when unmount component
     return () => {
+      isSubscribed = false;
       unsubscribe();
-      deferral.unsubscribe();
     };
   }, [foreignChainId, homeChainId]);
 
