@@ -54,6 +54,13 @@ function packSignatures(array) {
   return `0x${msgLength}${v}${r}${s}`;
 }
 
+const REVERT_ERROR_CODES = [
+  '-32000',
+  '-32016',
+  'UNPREDICTABLE_GAS_LIMIT',
+  'CALL_EXCEPTION',
+];
+
 export const executeSignatures = async (
   ethersProvider,
   address,
@@ -80,7 +87,10 @@ export const executeSignatures = async (
     const tx = await executeSignaturesFunc(messageData, signs);
     return tx;
   } catch (error) {
-    if (error && error.code && error.code.toString() === '-32016') {
+    if (
+      REVERT_ERROR_CODES.includes(error?.code) ||
+      REVERT_ERROR_CODES.includes(error?.error?.code)
+    ) {
       throw new Error(TOKENS_CLAIMED);
     } else {
       throw error;

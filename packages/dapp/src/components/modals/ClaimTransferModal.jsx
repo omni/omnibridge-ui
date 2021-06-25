@@ -84,7 +84,7 @@ export const ClaimTransferModal = ({ message, setMessage }) => {
       const tx = await claim(txHash, message);
       setLoadingText('Waiting for Execution');
       await tx.wait();
-      setTxHash();
+      onClose();
     } catch (claimError) {
       logError({ claimError });
       if (claimError.message === TOKENS_CLAIMED) {

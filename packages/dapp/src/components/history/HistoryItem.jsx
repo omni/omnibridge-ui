@@ -10,8 +10,6 @@ import {
 import BlueTickImage from 'assets/blue-tick.svg';
 import RightArrowImage from 'assets/right-arrow.svg';
 import { AddToMetamask } from 'components/common/AddToMetamask';
-import { TxLink } from 'components/common/TxLink';
-import { useWeb3Context } from 'contexts/Web3Context';
 import { BigNumber, utils } from 'ethers';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { useClaim } from 'hooks/useClaim';
@@ -75,7 +73,6 @@ export const HistoryItem = ({
     getMonitorUrl,
     enableForeignCurrencyBridge,
   } = useBridgeDirection();
-  const { providerChainId } = useWeb3Context();
   const bridgeChainId = getBridgeChainId(chainId);
 
   const timestampString = new Date(
@@ -123,7 +120,6 @@ export const HistoryItem = ({
       setTxHash(tx.hash);
       await tx.wait();
       setClaimed(true);
-      setTxHash();
     } catch (claimError) {
       logError({ claimError });
       if (claimError.message === TOKENS_CLAIMED) {
@@ -250,20 +246,15 @@ export const HistoryItem = ({
           </Flex>
         ) : (
           <Flex align="center" justify={{ base: 'center', md: 'flex-end' }}>
-            <TxLink
-              chainId={providerChainId}
-              hash={claiming ? txHash : undefined}
+            <Button
+              w="100%"
+              size="sm"
+              colorScheme="blue"
+              onClick={claimTokens}
+              isLoading={claiming}
             >
-              <Button
-                w="100%"
-                size="sm"
-                colorScheme="blue"
-                onClick={claimTokens}
-                isLoading={claiming}
-              >
-                Claim
-              </Button>
-            </TxLink>
+              Claim
+            </Button>
           </Flex>
         )}
       </Grid>
