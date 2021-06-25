@@ -29,11 +29,11 @@ jobs:
           CI: true
 
       - name: Build
-        run: yarn react-app:build
+        run: yarn dapp:build
         env:
           CI: true
           REACT_APP_DEFAULT_BRIDGE_DIRECTION: kovan-sokol
-          REACT_APP_ENABLE_SOKOL_BRIDGE: true
+          REACT_APP_ENABLED_BRIDGES: 'eth-xdai bsc-xdai eth-bsc kovan-sokol'
           REACT_APP_INFURA_ID: ${{ secrets.PERSONAL_INFURA_ID }}
           REACT_APP_GAS_PRICE_FALLBACK_GWEI: 5
           REACT_APP_GAS_PRICE_SUPPLIER_URL: https://gasprice.poa.network/

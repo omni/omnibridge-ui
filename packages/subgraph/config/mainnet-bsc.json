@@ -1,0 +1,6 @@
+{
+  "network": "mainnet",
+  "startBlock": "11375600",
+  "omnibridge": "0x69c707d975e8d883920003CC357E556a4732CD03",
+  "amb": "0x07955be2967B655Cf52751fCE7ccC8c61EA594e2"
+}
