@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "public": "packages/react-app/build",
+    "public": "packages/dapp/build",
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
       {
