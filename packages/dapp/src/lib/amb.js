@@ -88,8 +88,10 @@ export const executeSignatures = async (
     return tx;
   } catch (error) {
     if (
-      REVERT_ERROR_CODES.includes(error?.code) ||
-      REVERT_ERROR_CODES.includes(error?.error?.code)
+      REVERT_ERROR_CODES.includes(error?.code && error?.code.toString()) ||
+      REVERT_ERROR_CODES.includes(
+        error?.error?.code && error?.error?.code.toString(),
+      )
     ) {
       throw new Error(TOKENS_CLAIMED);
     } else {
