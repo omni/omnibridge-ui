@@ -61,6 +61,12 @@ const REVERT_ERROR_CODES = [
   'CALL_EXCEPTION',
 ];
 
+export const isRevertedError = error =>
+  REVERT_ERROR_CODES.includes(error?.code && error?.code.toString()) ||
+  REVERT_ERROR_CODES.includes(
+    error?.error?.code && error?.error?.code.toString(),
+  );
+
 export const executeSignatures = async (
   ethersProvider,
   address,
@@ -87,12 +93,7 @@ export const executeSignatures = async (
     const tx = await executeSignaturesFunc(messageData, signs);
     return tx;
   } catch (error) {
-    if (
-      REVERT_ERROR_CODES.includes(error?.code && error?.code.toString()) ||
-      REVERT_ERROR_CODES.includes(
-        error?.error?.code && error?.error?.code.toString(),
-      )
-    ) {
+    if (isRevertedError(error)) {
       throw new Error(TOKENS_CLAIMED);
     } else {
       throw error;

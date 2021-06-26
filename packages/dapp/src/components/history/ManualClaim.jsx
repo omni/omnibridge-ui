@@ -8,7 +8,7 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import { useClaim } from 'hooks/useClaim';
-import { TOKENS_CLAIMED } from 'lib/amb';
+import { isRevertedError, TOKENS_CLAIMED } from 'lib/amb';
 import { logError } from 'lib/helpers';
 import React, { useCallback, useState } from 'react';
 
@@ -40,7 +40,10 @@ export const ManualClaim = ({ handleClaimError }) => {
       await tx.wait();
     } catch (manualClaimError) {
       logError({ manualClaimError });
-      if (manualClaimError.message === TOKENS_CLAIMED) {
+      if (
+        manualClaimError.message === TOKENS_CLAIMED ||
+        isRevertedError(manualClaimError)
+      ) {
         handleClaimError();
       } else {
         showError(manualClaimError.message);

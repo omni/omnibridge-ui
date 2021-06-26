@@ -22,7 +22,7 @@ import { useBridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { useClaim } from 'hooks/useClaim';
-import { TOKENS_CLAIMED } from 'lib/amb';
+import { isRevertedError, TOKENS_CLAIMED } from 'lib/amb';
 import {
   getGasPrice,
   getLowestHistoricalEthGasPrice,
@@ -87,7 +87,10 @@ export const ClaimTransferModal = ({ message, setMessage }) => {
       onClose();
     } catch (claimError) {
       logError({ claimError });
-      if (claimError.message === TOKENS_CLAIMED) {
+      if (
+        claimError.message === TOKENS_CLAIMED ||
+        isRevertedError(claimError)
+      ) {
         setExecuted(true);
       } else {
         showError(claimError.message);

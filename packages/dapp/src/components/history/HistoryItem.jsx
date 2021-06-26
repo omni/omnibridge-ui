@@ -13,7 +13,7 @@ import { AddToMetamask } from 'components/common/AddToMetamask';
 import { BigNumber, utils } from 'ethers';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { useClaim } from 'hooks/useClaim';
-import { TOKENS_CLAIMED } from 'lib/amb';
+import { isRevertedError, TOKENS_CLAIMED } from 'lib/amb';
 import {
   getExplorerUrl,
   getHelperContract,
@@ -122,7 +122,10 @@ export const HistoryItem = ({
       setClaimed(true);
     } catch (claimError) {
       logError({ claimError });
-      if (claimError.message === TOKENS_CLAIMED) {
+      if (
+        claimError.message === TOKENS_CLAIMED ||
+        isRevertedError(claimError)
+      ) {
         showAlreadyClaimedModal();
       } else {
         showError(claimError.message);
