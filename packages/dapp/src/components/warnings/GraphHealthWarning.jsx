@@ -23,7 +23,7 @@ export const GraphHealthWarning = () => {
           The Graph service may not work properly and some transfers may not
           display. You can use the form below to claim your tokens. If your
           transfer is still displayed as unclaimed double check its status in
-          AMB Live Monitoring app by pressing a link in the Sending Tx column.
+          AMB Live Monitoring app by clicking the link in the Sending Tx column.
         </Text>
       </Alert>
     </Flex>
