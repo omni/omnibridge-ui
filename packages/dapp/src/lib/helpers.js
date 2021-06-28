@@ -209,3 +209,22 @@ export const getDefaultToken = (bridgeDirection, chainId) => {
   if (token && token.chainId === chainId) return token;
   return defaultTokens[bridgeDirection][chainId];
 };
+
+const IMPOSSIBLE_ERROR =
+  'Unable to perform the operation. Reload the application and try again.';
+
+const TRANSACTION_REPLACED_ERROR =
+  'Transaction was replaced by another. Reload the application and find the transaction in the history page.';
+
+export const handleWalletError = (error, showError) => {
+  if (error?.message && error?.message.length <= 120) {
+    showError(error.message);
+  } else if (
+    error?.message &&
+    error?.message.toLowerCase().includes('transaction was replaced')
+  ) {
+    showError(TRANSACTION_REPLACED_ERROR);
+  } else {
+    showError(IMPOSSIBLE_ERROR);
+  }
+};

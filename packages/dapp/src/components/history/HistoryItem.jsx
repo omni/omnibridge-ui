@@ -18,6 +18,7 @@ import {
   getExplorerUrl,
   getHelperContract,
   getNativeCurrency,
+  handleWalletError,
   logError,
 } from 'lib/helpers';
 import React, { useCallback, useState } from 'react';
@@ -128,7 +129,7 @@ export const HistoryItem = ({
       ) {
         showAlreadyClaimedModal();
       } else {
-        showError(claimError.message);
+        handleWalletError(claimError, showError);
       }
     } finally {
       setClaiming(false);

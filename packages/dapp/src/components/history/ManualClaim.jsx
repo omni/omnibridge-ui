@@ -9,7 +9,7 @@ import {
 } from '@chakra-ui/react';
 import { useClaim } from 'hooks/useClaim';
 import { isRevertedError, TOKENS_CLAIMED } from 'lib/amb';
-import { logError } from 'lib/helpers';
+import { handleWalletError, logError } from 'lib/helpers';
 import React, { useCallback, useState } from 'react';
 
 export const ManualClaim = ({ handleClaimError }) => {
@@ -46,7 +46,7 @@ export const ManualClaim = ({ handleClaimError }) => {
       ) {
         handleClaimError();
       } else {
-        showError(manualClaimError.message);
+        handleWalletError(manualClaimError, showError);
       }
     } finally {
       setLoading(false);

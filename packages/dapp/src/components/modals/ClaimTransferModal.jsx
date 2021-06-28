@@ -28,7 +28,7 @@ import {
   getLowestHistoricalEthGasPrice,
   getMedianHistoricalEthGasPrice,
 } from 'lib/gasPrice';
-import { getNetworkName, logError } from 'lib/helpers';
+import { getNetworkName, handleWalletError, logError } from 'lib/helpers';
 import { messageCallStatus } from 'lib/message';
 import React, { useCallback, useEffect, useState } from 'react';
 
@@ -93,7 +93,7 @@ export const ClaimTransferModal = ({ message, setMessage }) => {
       ) {
         setExecuted(true);
       } else {
-        showError(claimError.message);
+        handleWalletError(claimError, showError);
       }
     } finally {
       setClaiming(false);
