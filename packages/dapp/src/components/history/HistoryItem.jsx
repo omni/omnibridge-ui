@@ -1,3 +1,4 @@
+import { CheckIcon, CloseIcon } from '@chakra-ui/icons';
 import {
   Button,
   Flex,
@@ -7,7 +8,6 @@ import {
   Text,
   useToast,
 } from '@chakra-ui/react';
-import BlueTickImage from 'assets/blue-tick.svg';
 import RightArrowImage from 'assets/right-arrow.svg';
 import { AddToMetamask } from 'components/common/AddToMetamask';
 import { BigNumber, utils } from 'ethers';
@@ -65,6 +65,7 @@ export const HistoryItem = ({
     amount,
     toToken,
     message,
+    status,
   },
   handleClaimError,
 }) => {
@@ -108,6 +109,7 @@ export const HistoryItem = ({
   if (claimed && txHash) {
     receivingTx = txHash;
   }
+  const failed = !!inputReceivingTx && status === false;
 
   const claim = useClaim();
   const showAlreadyClaimedModal = useCallback(() => {
@@ -245,8 +247,14 @@ export const HistoryItem = ({
         </Flex>
         {claimed ? (
           <Flex align="center" justify={{ base: 'center', md: 'flex-end' }}>
-            <Image src={BlueTickImage} mr="0.5rem" />
-            <Text color="blue.500">Claimed</Text>
+            {failed ? (
+              <CloseIcon color="red.500" boxSize="0.75rem" pb="0.1rem" />
+            ) : (
+              <CheckIcon color="blue.500" boxSize="0.75rem" />
+            )}
+            <Text ml="0.25rem" color={failed ? 'red.500' : 'blue.500'}>
+              {failed ? 'Failed' : 'Claimed'}
+            </Text>
           </Flex>
         ) : (
           <Flex align="center" justify={{ base: 'center', md: 'flex-end' }}>
