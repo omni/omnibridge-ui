@@ -38,9 +38,14 @@ import { useWeb3Context } from 'contexts/Web3Context';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { ADDRESS_ZERO } from 'lib/constants';
 import { getGasPrice, getMedianHistoricalEthGasPrice } from 'lib/gasPrice';
-import { formatValue, getAccountString, getNetworkLabel } from 'lib/helpers';
+import {
+  formatValue,
+  getAccountString,
+  getNetworkLabel,
+  handleWalletError,
+} from 'lib/helpers';
 import { BSC_XDAI_BRIDGE } from 'lib/networks';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 export const ConfirmTransferModal = ({ isOpen, onClose }) => {
   const { isGnosisSafe, account } = useWeb3Context();
@@ -59,11 +64,30 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
   }, [fromAmount, toAmount]);
 
   const smallScreen = useBreakpointValue({ base: true, md: false });
-  const toast = useToast();
   const [isInflationWarningChecked, setInflationWarningChecked] =
     useState(false);
   const [isGnosisSafeWarningChecked, setGnosisSafeWarningChecked] =
     useState(false);
+
+  const toast = useToast();
+  const showError = useCallback(
+    msg => {
+      if (msg) {
+        toast({
+          title: 'Error',
+          description: msg,
+          status: 'error',
+          isClosable: 'true',
+        });
+      }
+    },
+    [toast],
+  );
+
+  const onClick = useCallback(() => {
+    transfer().catch(error => handleWalletError(error, showError));
+    onClose();
+  }, [onClose, showError, transfer]);
 
   if (!fromToken || !toToken) return null;
 
@@ -91,30 +115,6 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
     isERC20ExchangableBinancePeggedAsset(fromToken);
   const isInflationToken = isInflationaryToken(fromToken);
   const isRebaseToken = isRebasingToken(fromToken);
-
-  const showError = msg => {
-    if (msg) {
-      toast({
-        title: 'Error',
-        description: msg,
-        status: 'error',
-        isClosable: 'true',
-      });
-    }
-  };
-
-  const onClick = () => {
-    transfer().catch(error => {
-      if (error && error.message) {
-        showError(error.message);
-      } else {
-        showError(
-          'Impossible to perform the operation. Reload the application and try again.',
-        );
-      }
-    });
-    onClose();
-  };
 
   const isSameAddress =
     account && receiver && account.toLowerCase() === receiver.toLowerCase();

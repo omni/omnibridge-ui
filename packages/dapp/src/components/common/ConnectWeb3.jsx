@@ -13,7 +13,12 @@ import { useWeb3Context } from 'contexts/Web3Context';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { WalletFilledIcon } from 'icons/WalletFilledIcon';
 import { NON_ETH_CHAIN_IDS } from 'lib/constants';
-import { getNetworkName, getWalletProviderName, logError } from 'lib/helpers';
+import {
+  getNetworkName,
+  getWalletProviderName,
+  handleWalletError,
+  logError,
+} from 'lib/helpers';
 import { addChainToMetaMask } from 'lib/metamask';
 import React, { useCallback } from 'react';
 
@@ -48,9 +53,7 @@ export const ConnectWeb3 = () => {
     async chainId => {
       await addChainToMetaMask({ chainId }).catch(metamaskError => {
         logError({ metamaskError });
-        if (metamaskError?.message) {
-          showError(metamaskError.message);
-        }
+        handleWalletError(metamaskError, showError);
       });
     },
     [showError],

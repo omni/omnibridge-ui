@@ -4,7 +4,9 @@ import { TxLink } from 'components/common/TxLink';
 import { isRebasingToken } from 'components/warnings/RebasingTokenWarning';
 import { useBridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
-import React from 'react';
+import { isRevertedError } from 'lib/amb';
+import { handleWalletError } from 'lib/helpers';
+import React, { useCallback } from 'react';
 
 export const UnlockButton = () => {
   const { providerChainId } = useWeb3Context();
@@ -21,17 +23,20 @@ export const UnlockButton = () => {
   const isRebaseToken = isRebasingToken(token);
   const buttonDisabled = allowed || isRebaseToken || toAmountLoading;
   const toast = useToast();
-  const showError = msg => {
-    if (msg) {
-      toast({
-        title: 'Error',
-        description: msg,
-        status: 'error',
-        isClosable: 'true',
-      });
-    }
-  };
-  const valid = () => {
+  const showError = useCallback(
+    msg => {
+      if (msg) {
+        toast({
+          title: 'Error',
+          description: msg,
+          status: 'error',
+          isClosable: 'true',
+        });
+      }
+    },
+    [toast],
+  );
+  const valid = useCallback(() => {
     if (amount.lte(0)) {
       showError('Please specify amount');
       return false;
@@ -41,15 +46,16 @@ export const UnlockButton = () => {
       return false;
     }
     return true;
-  };
-  const onClick = () => {
+  }, [amount, balance, showError]);
+  const onClick = useCallback(() => {
     if (!unlockLoading && !buttonDisabled && valid()) {
       approve().catch(error => {
         if (error && error.message) {
           if (
-            error.data &&
-            (error.data.includes('Bad instruction fe') ||
-              error.data.includes('Reverted'))
+            isRevertedError(error) ||
+            (error.data &&
+              (error.data.includes('Bad instruction fe') ||
+                error.data.includes('Reverted')))
           ) {
             showError(
               <Text>
@@ -66,7 +72,7 @@ export const UnlockButton = () => {
               </Text>,
             );
           } else {
-            showError(error.message);
+            handleWalletError(error, showError);
           }
         } else {
           showError(
@@ -75,7 +81,8 @@ export const UnlockButton = () => {
         }
       });
     }
-  };
+  }, [unlockLoading, buttonDisabled, valid, showError, approve]);
+
   return (
     <Flex
       align="center"

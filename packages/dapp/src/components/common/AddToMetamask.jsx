@@ -5,7 +5,7 @@ import { useWeb3Context } from 'contexts/Web3Context';
 import { ADDRESS_ZERO } from 'lib/constants';
 import { getNetworkName, getWalletProviderName, logError } from 'lib/helpers';
 import { addTokenToMetamask } from 'lib/metamask';
-import React from 'react';
+import React, { useCallback } from 'react';
 
 export const AddToMetamask = ({ token, asModal = false, ...props }) => {
   const { providerChainId, ethersProvider } = useWeb3Context();
@@ -13,30 +13,21 @@ export const AddToMetamask = ({ token, asModal = false, ...props }) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const isWalletMetamask = getWalletProviderName(ethersProvider) === 'metamask';
 
-  if (!window.ethereum || token.address === ADDRESS_ZERO || !isWalletMetamask) {
-    return null;
-  }
+  const showError = useCallback(
+    msg => {
+      if (msg) {
+        toast({
+          title: 'Error: Unable to add token',
+          description: msg,
+          status: 'error',
+          isClosable: 'true',
+        });
+      }
+    },
+    [toast],
+  );
 
-  const showError = msg => {
-    if (msg) {
-      toast({
-        title: 'Error: Unable to add token',
-        description: msg,
-        status: 'error',
-        isClosable: 'true',
-      });
-    }
-  };
-
-  const onClick = () => {
-    if (asModal) {
-      onOpen();
-    } else {
-      addToken();
-    }
-  };
-
-  const addToken = async () => {
+  const addToken = useCallback(async () => {
     if (providerChainId !== token.chainId) {
       showError(`Please switch wallet to ${getNetworkName(token.chainId)}`);
     } else {
@@ -49,7 +40,19 @@ export const AddToMetamask = ({ token, asModal = false, ...props }) => {
         }
       });
     }
-  };
+  }, [showError, token, providerChainId]);
+
+  const onClick = useCallback(() => {
+    if (asModal) {
+      onOpen();
+    } else {
+      addToken();
+    }
+  }, [onOpen, asModal, addToken]);
+
+  if (!window.ethereum || token.address === ADDRESS_ZERO || !isWalletMetamask) {
+    return null;
+  }
 
   return (
     <>

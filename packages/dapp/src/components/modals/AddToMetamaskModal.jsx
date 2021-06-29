@@ -26,7 +26,7 @@ import { useWeb3Context } from 'contexts/Web3Context';
 import { useCopyToClipboard } from 'hooks/useCopyToClipboard';
 import { getAccountString, getNetworkName, logError } from 'lib/helpers';
 import { addTokenToMetamask } from 'lib/metamask';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 
 export const AddToMetamaskModal = ({ isOpen, onClose, token: tokenToAdd }) => {
   const [token] = useState(tokenToAdd);
@@ -36,18 +36,21 @@ export const AddToMetamaskModal = ({ isOpen, onClose, token: tokenToAdd }) => {
   const [copied, handleCopy] = useCopyToClipboard();
   const toast = useToast();
 
-  const showError = msg => {
-    if (msg) {
-      toast({
-        title: 'Error: Unable to add token',
-        description: msg,
-        status: 'error',
-        isClosable: 'true',
-      });
-    }
-  };
+  const showError = useCallback(
+    msg => {
+      if (msg) {
+        toast({
+          title: 'Error: Unable to add token',
+          description: msg,
+          status: 'error',
+          isClosable: 'true',
+        });
+      }
+    },
+    [toast],
+  );
 
-  const onClick = async () => {
+  const onClick = useCallback(async () => {
     setLoading(true);
     try {
       const added = await addTokenToMetamask(token);
@@ -64,7 +67,7 @@ export const AddToMetamaskModal = ({ isOpen, onClose, token: tokenToAdd }) => {
       }
     }
     setLoading(false);
-  };
+  }, [showError, onClose, token]);
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered>

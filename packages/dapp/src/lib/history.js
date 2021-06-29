@@ -70,6 +70,7 @@ const executionsQuery = gql`
       txHash
       messageId
       token
+      status
     }
   }
 `;
@@ -144,7 +145,8 @@ export const combineRequestsWithExecutions = (
       chainId,
       timestamp: req.timestamp,
       sendingTx: req.txHash,
-      receivingTx: execution ? execution.txHash : null,
+      receivingTx: execution?.txHash,
+      status: execution?.status,
       amount: req.amount,
       fromToken: {
         address: req.token,

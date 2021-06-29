@@ -22,13 +22,13 @@ import { useBridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { useClaim } from 'hooks/useClaim';
-import { TOKENS_CLAIMED } from 'lib/amb';
+import { isRevertedError, TOKENS_CLAIMED } from 'lib/amb';
 import {
   getGasPrice,
   getLowestHistoricalEthGasPrice,
   getMedianHistoricalEthGasPrice,
 } from 'lib/gasPrice';
-import { getNetworkName, logError } from 'lib/helpers';
+import { getNetworkName, handleWalletError, logError } from 'lib/helpers';
 import { messageCallStatus } from 'lib/message';
 import React, { useCallback, useEffect, useState } from 'react';
 
@@ -42,11 +42,11 @@ export const ClaimTransferModal = ({ message, setMessage }) => {
   const [loadingText, setLoadingText] = useState('');
   const [executed, setExecuted] = useState(false);
 
-  const onClose = () => {
+  const onClose = useCallback(() => {
     setTxHash();
     setMessage();
     setOpen(false);
-  };
+  }, [setTxHash, setMessage]);
 
   const toast = useToast();
   const showError = useCallback(
@@ -84,19 +84,22 @@ export const ClaimTransferModal = ({ message, setMessage }) => {
       const tx = await claim(txHash, message);
       setLoadingText('Waiting for Execution');
       await tx.wait();
-      setTxHash();
+      onClose();
     } catch (claimError) {
       logError({ claimError });
-      if (claimError.message === TOKENS_CLAIMED) {
+      if (
+        claimError.message === TOKENS_CLAIMED ||
+        isRevertedError(claimError)
+      ) {
         setExecuted(true);
       } else {
-        showError(claimError.message);
+        handleWalletError(claimError, showError);
       }
     } finally {
       setClaiming(false);
       setLoadingText('');
     }
-  }, [claim, txHash, showError, setTxHash, message]);
+  }, [claim, txHash, showError, onClose, message]);
 
   if (claiming)
     return (
