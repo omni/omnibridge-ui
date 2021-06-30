@@ -1,6 +1,4 @@
-import { Flex, Image } from '@chakra-ui/react';
-import DownTriangle from 'assets/down-triangle.svg';
-import UpTriangle from 'assets/up-triangle.svg';
+import { Flex } from '@chakra-ui/react';
 import { ConnectWeb3 } from 'components/common/ConnectWeb3';
 import { Footer } from 'components/common/Footer';
 import { Header } from 'components/common/Header';
@@ -43,30 +41,13 @@ export const Layout = ({ children }) => {
       minH="100vh"
       align="center"
       direction="column"
-      background="background"
       position="relative"
     >
-      <Image
-        src={DownTriangle}
-        position="absolute"
-        right="min(-15rem, -20%)"
-        w="60rem"
-        minWidth="30rem"
-        opacity={0.99}
-      />
-      <Image
-        src={UpTriangle}
-        position="absolute"
-        left="min(-27rem, -20%)"
-        w="81rem"
-        minWidth="60rem"
-        opacity={0.99}
-      />
       <Header />
       <Flex
         flex={1}
         align="center"
-        justify="flex-start"
+        justify="center"
         direction="column"
         w="100%"
         h="100%"

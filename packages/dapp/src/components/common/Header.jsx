@@ -68,8 +68,7 @@ export const Header = () => {
       <Flex justify="space-between" h={20} align="center">
         <Link to="/">
           <Flex justify="space-around" align="center">
-            <Image src={Logo} mr={4} />
-            <Text fontWeight="bold">OmniBridge</Text>
+            <Image src={Logo} mr={4} alt="Mask Bridge" />
           </Flex>
         </Link>
         <Button

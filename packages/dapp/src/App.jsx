@@ -11,6 +11,8 @@ import React from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { theme } from 'theme';
 
+import bridge from './assets/brige.svg';
+
 const GlobalStyles = css`
   /*
     This will hide the focus indicator if the element receives focus via the mouse,
@@ -19,6 +21,26 @@ const GlobalStyles = css`
   .js-focus-visible :focus:not([data-focus-visible-added]) {
     outline: none;
     box-shadow: none;
+  }
+  body {
+    background: linear-gradient(180deg, #dee7f7 0%, #ffffff 100%);
+  }
+  body::before {
+    pointer-events: none;
+    content: '';
+    background-image: url(${bridge});
+    background-repeat: no-repeat;
+    background-position: center center;
+    opacity: 0.3;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+  }
+  #root {
+    position: relative;
+    z-index: 2;
   }
 `;
 

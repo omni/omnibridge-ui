@@ -1,10 +1,7 @@
 import { Box, Flex, HStack, Text, useBreakpointValue } from '@chakra-ui/react';
 import { GithubIcon } from 'icons/GithubIcon';
-import { OmniBridgeIcon } from 'icons/OmniBridgeIcon';
-import { RaidGuildIcon } from 'icons/RaidGuildIcon';
 import { TelegramIcon } from 'icons/TelegramIcon';
 import { TwitterIcon } from 'icons/TwitterIcon';
-import { XDaiIcon } from 'icons/XDaiIcon';
 import React from 'react';
 import { Link } from 'react-router-dom';
 
@@ -23,38 +20,13 @@ export const Footer = () => {
     >
       {!smallScreen && (
         <Link to="/" display={{ base: 'none', sm: 'block' }}>
-          <Flex
-            justify="space-around"
-            align="center"
-            _hover={{ color: 'blue.500' }}
-            transition="0.25s"
-          >
-            <OmniBridgeIcon w={6} />
-          </Flex>
+          <Text color="darkblue">&copy; 2021 Mask Network</Text>
         </Link>
       )}
       <HStack spacing={4}>
-        <Box _hover={{ color: 'blue.500' }}>
-          <a
-            href="https://xdaichain.com"
-            rel="noreferrer noopener"
-            target="_blank"
-          >
-            <XDaiIcon />
-          </a>
-        </Box>
         <Box _hover={{ color: 'blue.500' }} transition="0.25s">
           <a
-            href="https://twitter.com/xdaichain"
-            rel="noreferrer noopener"
-            target="_blank"
-          >
-            <TwitterIcon />
-          </a>
-        </Box>
-        <Box _hover={{ color: 'blue.500' }} transition="0.25s">
-          <a
-            href="https://t.me/xdaistable"
+            href="https://t.me/maskbook_group"
             rel="noreferrer noopener"
             target="_blank"
           >
@@ -63,28 +35,22 @@ export const Footer = () => {
         </Box>
         <Box _hover={{ color: 'blue.500' }} transition="0.25s">
           <a
-            href="https://github.com/xdaichain"
+            href="https://github.com/DimensionDev/Maskbook"
             rel="noreferrer noopener"
             target="_blank"
           >
             <GithubIcon />
           </a>
         </Box>
-        <Box w="1px" h={5} background="grey" />
-        <a
-          href="https://raidguild.org"
-          rel="noreferrer noopener"
-          target="_blank"
-        >
-          <Flex
-            align="center"
-            _hover={{ color: 'blue.500' }}
-            transition="0.25s"
+        <Box _hover={{ color: 'blue.500' }} transition="0.25s">
+          <a
+            href="https://github.com/DimensionDev/Maskbook"
+            rel="noreferrer noopener"
+            target="_blank"
           >
-            <Text>Built by</Text>
-            <RaidGuildIcon boxSize={16} ml={2} />
-          </Flex>
-        </a>
+            <TwitterIcon />
+          </a>
+        </Box>
       </HStack>
     </Flex>
   );

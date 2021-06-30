@@ -145,11 +145,10 @@ export const ConnectWeb3 = () => {
     <Flex
       background="white"
       boxShadow="0px 1rem 2rem rgba(204, 218, 238, 0.8)"
-      borderRadius="1rem"
+      borderRadius="8px"
       direction="column"
       align="center"
       w="calc(100% - 2rem)"
-      mt="5rem"
       p="2rem"
       maxW="27.5rem"
       mx={4}
@@ -185,7 +184,7 @@ export const ConnectWeb3 = () => {
         </>
       )}
       {account && !loading ? (
-        <Button onClick={disconnect} colorScheme="blue" px={12}>
+        <Button onClick={disconnect} colorScheme="blue" px={12} rounded="lg">
           Disconnect
         </Button>
       ) : (
@@ -194,6 +193,7 @@ export const ConnectWeb3 = () => {
           colorScheme="blue"
           px={12}
           isLoading={loading}
+          rounded={20}
         >
           Connect
         </Button>
