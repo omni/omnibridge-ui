@@ -184,7 +184,12 @@ export const ConnectWeb3 = () => {
         </>
       )}
       {account && !loading ? (
-        <Button onClick={disconnect} colorScheme="blue" px={12} rounded="lg">
+        <Button
+          onClick={disconnect}
+          colorScheme="blue"
+          px={12}
+          borderRadius={20}
+        >
           Disconnect
         </Button>
       ) : (
@@ -193,7 +198,7 @@ export const ConnectWeb3 = () => {
           colorScheme="blue"
           px={12}
           isLoading={loading}
-          rounded={20}
+          borderRadius={20}
         >
           Connect
         </Button>

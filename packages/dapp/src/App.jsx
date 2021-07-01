@@ -49,7 +49,7 @@ export const App = () => (
     <CSSReset />
     <Global styles={GlobalStyles} />
     <ErrorBoundary>
-      <Router>
+      <Router basename="/maskbridge/">
         <SettingsProvider>
           <Web3Provider>
             <Layout>
