@@ -8,7 +8,7 @@ import { Routes } from 'components/common/Routes';
 import { SettingsProvider } from 'contexts/SettingsContext';
 import { Web3Provider } from 'contexts/Web3Context';
 import React from 'react';
-import { BrowserRouter as Router } from 'react-router-dom';
+import { HashRouter as Router } from 'react-router-dom';
 import { theme } from 'theme';
 
 import bridge from './assets/brige.svg';
@@ -49,7 +49,7 @@ export const App = () => (
     <CSSReset />
     <Global styles={GlobalStyles} />
     <ErrorBoundary>
-      <Router basename="/maskbridge/">
+      <Router>
         <SettingsProvider>
           <Web3Provider>
             <Layout>
