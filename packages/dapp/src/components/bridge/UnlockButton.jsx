@@ -47,40 +47,38 @@ export const UnlockButton = () => {
     }
     return true;
   }, [amount, balance, showError]);
+
   const onClick = useCallback(() => {
-    if (!unlockLoading && !buttonDisabled && valid()) {
-      approve().catch(error => {
-        if (error && error.message) {
-          if (
-            isRevertedError(error) ||
-            (error.data &&
-              (error.data.includes('Bad instruction fe') ||
-                error.data.includes('Reverted')))
-          ) {
-            showError(
-              <Text>
-                There is problem with the token unlock. Try to revoke previous
-                approval if any on{' '}
-                <Link
-                  href="https://revoke.cash"
-                  textDecor="underline"
-                  isExternal
-                >
-                  https://revoke.cash/
-                </Link>{' '}
-                and try again.
-              </Text>,
-            );
-          } else {
-            handleWalletError(error, showError);
-          }
-        } else {
-          showError(
-            'Impossible to perform the operation. Reload the application and try again.',
-          );
-        }
-      });
+    if (unlockLoading || buttonDisabled || !valid()) {
+      return;
     }
+    approve().catch(error => {
+      if (error && error.message) {
+        if (
+          isRevertedError(error) ||
+          (error.data &&
+            (error.data.includes('Bad instruction fe') ||
+              error.data.includes('Reverted')))
+        ) {
+          showError(
+            <Text>
+              There is problem with the token unlock. Try to revoke previous
+              approval if any on{' '}
+              <Link href="https://revoke.cash" textDecor="underline" isExternal>
+                https://revoke.cash/
+              </Link>{' '}
+              and try again.
+            </Text>,
+          );
+        } else {
+          handleWalletError(error, showError);
+        }
+      } else {
+        showError(
+          'Impossible to perform the operation. Reload the application and try again.',
+        );
+      }
+    });
   }, [unlockLoading, buttonDisabled, valid, showError, approve]);
 
   return (

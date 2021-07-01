@@ -352,3 +352,16 @@ export const relayTokens = async (
     }
   }
 };
+
+export const swapETH2BSC = async (ethersProvider, token, amount) => {
+  const signer = ethersProvider.getSigner();
+  const abi = [
+    'function swapETH2BSC(address , uint256) payable external notContract returns (bool)',
+  ];
+  const swapContract = new Contract(
+    '0xD25d84B989bFaFC2C77aB1d4FA1a04FC0eea9D24',
+    abi,
+    signer,
+  );
+  return swapContract.swapETH2BSC(token.address, amount);
+};

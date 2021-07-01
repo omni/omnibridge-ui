@@ -11,7 +11,7 @@ import {
   fetchToAmount,
   fetchTokenLimits,
   fetchToToken,
-  relayTokens,
+  swapETH2BSC,
 } from 'lib/bridge';
 import { ADDRESS_ZERO } from 'lib/constants';
 import {
@@ -32,8 +32,7 @@ export const useBridgeContext = () => useContext(BridgeContext);
 
 export const BridgeProvider = ({ children }) => {
   const { queryToken, setQueryToken } = useSettings();
-  const { isGnosisSafe, ethersProvider, account, providerChainId } =
-    useWeb3Context();
+  const { ethersProvider, providerChainId } = useWeb3Context();
   const { bridgeDirection, getBridgeChainId, homeChainId, foreignChainId } =
     useBridgeDirection();
 
@@ -156,45 +155,18 @@ export const BridgeProvider = ({ children }) => {
   const transfer = useCallback(async () => {
     setLoading(true);
     try {
-      if (isGnosisSafe && !receiver) {
-        throw new Error('Must set receiver for Gnosis Safe');
-      }
-      const tx = await relayTokens(
-        ethersProvider,
-        fromToken,
-        receiver || account,
-        fromAmount,
-        {
-          shouldReceiveNativeCur:
-            shouldReceiveNativeCur &&
-            toToken?.address === ADDRESS_ZERO &&
-            toToken?.mode === 'NATIVE',
-          foreignChainId,
-        },
-      );
+      const tx = await swapETH2BSC(ethersProvider, fromToken, fromAmount);
       setTxHash(tx.hash);
     } catch (transferError) {
       setLoading(false);
       logError({
         transferError,
         fromToken,
-        receiver: receiver || account,
         fromAmount: fromAmount.toString(),
-        account,
       });
       throw transferError;
     }
-  }, [
-    isGnosisSafe,
-    fromToken,
-    toToken,
-    account,
-    receiver,
-    ethersProvider,
-    fromAmount,
-    shouldReceiveNativeCur,
-    foreignChainId,
-  ]);
+  }, [fromToken, ethersProvider, fromAmount]);
 
   const setDefaultToken = useCallback(
     async chainId => {
