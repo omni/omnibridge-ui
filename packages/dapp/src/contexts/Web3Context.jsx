@@ -1,6 +1,5 @@
 import { SafeAppWeb3Modal as Web3Modal } from '@gnosis.pm/safe-apps-web3modal';
 import WalletConnectProvider from '@walletconnect/web3-provider';
-import imTokenLogo from 'assets/imtoken.svg';
 import { ethers } from 'ethers';
 import { getNetworkName, getRPCUrl, logError } from 'lib/helpers';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
@@ -33,26 +32,10 @@ const rpc = {
   56: getRPCUrl(56),
 };
 
-const connector = async (ProviderPackage, options) => {
-  const provider = new ProviderPackage(options);
-  await provider.enable();
-  return provider;
-};
-
 const providerOptions = {
   walletconnect: {
     package: WalletConnectProvider,
     options: { rpc },
-  },
-  'custom-imToken': {
-    display: {
-      logo: imTokenLogo,
-      name: 'imToken',
-      description: 'Connect to your imToken Wallet',
-    },
-    package: WalletConnectProvider,
-    options: { rpc },
-    connector,
   },
 };
 

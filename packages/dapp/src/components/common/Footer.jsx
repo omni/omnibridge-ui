@@ -1,5 +1,6 @@
 import { Box, Flex, HStack, Text, useBreakpointValue } from '@chakra-ui/react';
 import { GithubIcon } from 'icons/GithubIcon';
+import { MediumIcon } from 'icons/MediumIcon';
 import { TelegramIcon } from 'icons/TelegramIcon';
 import { TwitterIcon } from 'icons/TwitterIcon';
 import React from 'react';
@@ -26,6 +27,15 @@ export const Footer = () => {
       <HStack spacing={4}>
         <Box _hover={{ color: 'blue.500' }} transition="0.25s">
           <a
+            href="https://masknetwork.medium.com/"
+            rel="noreferrer noopener"
+            target="_blank"
+          >
+            <MediumIcon />
+          </a>
+        </Box>
+        <Box _hover={{ color: 'blue.500' }} transition="0.25s">
+          <a
             href="https://t.me/maskbook_group"
             rel="noreferrer noopener"
             target="_blank"
@@ -44,7 +54,7 @@ export const Footer = () => {
         </Box>
         <Box _hover={{ color: 'blue.500' }} transition="0.25s">
           <a
-            href="https://github.com/DimensionDev/Maskbook"
+            href="https://twitter.com/realmaskbook"
             rel="noreferrer noopener"
             target="_blank"
           >

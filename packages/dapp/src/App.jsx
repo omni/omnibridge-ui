@@ -31,6 +31,7 @@ const GlobalStyles = css`
     background-image: url(${bridge});
     background-repeat: no-repeat;
     background-position: center center;
+    background-size: 800px;
     opacity: 0.3;
     position: absolute;
     inset: 0;

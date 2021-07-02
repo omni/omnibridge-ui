@@ -109,7 +109,7 @@ export const FromToken = () => {
             mb={2}
             direction={{ base: 'column', sm: 'row' }}
           >
-            <Flex align="center" cursor="pointer" zIndex={1} background="white">
+            <Flex align="center" zIndex={1} background="white">
               <Flex
                 justify="center"
                 align="center"
