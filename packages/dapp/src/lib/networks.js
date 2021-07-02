@@ -135,17 +135,17 @@ export const defaultTokens = {
     },
   },
   [ETH_BSC_BRIDGE]: {
-    56: {
-      address: '0xe55e614862694214f0339adb551393cb56149323',
-      chainId: 56,
-      symbol: 'STAKE',
-      name: 'STAKE on BSC',
-    },
     1: {
-      address: '0x0Ae055097C6d159879521C384F1D2123D1f195e6',
+      address: '0x69af81e73A73B40adF4f3d4223Cd9b1ECE623074',
       chainId: 1,
-      symbol: 'STAKE',
-      name: 'STAKE',
+      symbol: 'Mask',
+      name: 'Mask Network',
+    },
+    56: {
+      address: '0x2eD9a5C8C13b93955103B9a7C167B67Ef4d568a3',
+      chainId: 56,
+      symbol: 'Mask',
+      name: 'Mask on BSC',
     },
   },
 };

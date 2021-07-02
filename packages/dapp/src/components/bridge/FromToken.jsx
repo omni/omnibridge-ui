@@ -1,16 +1,12 @@
 import {
   Button,
   Flex,
-  Image,
   Input,
   Spinner,
   Text,
   useBreakpointValue,
-  useDisclosure,
 } from '@chakra-ui/react';
-import DropDown from 'assets/drop-down.svg';
 import { Logo } from 'components/common/Logo';
-import { SelectTokenModal } from 'components/modals/SelectTokenModal';
 import { useBridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { BigNumber, utils } from 'ethers';
@@ -44,7 +40,6 @@ export const FromToken = () => {
     setAmountInput: setInput,
   } = useBridgeContext();
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
   const smallScreen = useBreakpointValue({ base: true, lg: false });
   const [balanceLoading, setBalanceLoading] = useState(false);
   const updateAmount = useCallback(() => {
@@ -89,7 +84,6 @@ export const FromToken = () => {
       minH={smallScreen ? '5rem' : 8}
       minW={smallScreen ? '15rem' : undefined}
     >
-      <SelectTokenModal onClose={onClose} isOpen={isOpen} />
       {!smallScreen && (
         <svg width="100%" viewBox="0 0 381 94" fill="none">
           <path
@@ -115,13 +109,7 @@ export const FromToken = () => {
             mb={2}
             direction={{ base: 'column', sm: 'row' }}
           >
-            <Flex
-              align="center"
-              cursor="pointer"
-              onClick={onOpen}
-              zIndex={1}
-              background="white"
-            >
+            <Flex align="center" cursor="pointer" zIndex={1} background="white">
               <Flex
                 justify="center"
                 align="center"
@@ -136,7 +124,6 @@ export const FromToken = () => {
               <Text fontSize="lg" fontWeight="bold" mx={2}>
                 {truncateText(token.name, 24)}
               </Text>
-              <Image src={DropDown} cursor="pointer" />
             </Flex>
             <Flex
               flex={1}
