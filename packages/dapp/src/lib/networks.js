@@ -1,7 +1,7 @@
 export const ETH_XDAI_BRIDGE = 'eth-xdai';
+export const ETH_BSC_BRIDGE = 'eth-bsc';
 export const BSC_XDAI_BRIDGE = 'bsc-xdai';
 export const KOVAN_SOKOL_BRIDGE = 'kovan-sokol';
-export const ETH_BSC_BRIDGE = 'eth-bsc';
 
 const ETH_XDAI_BRIDGE_CONFIG = {
   label: 'eth⥊xdai',
@@ -92,48 +92,6 @@ const getNetworkConfig = bridges => {
 export const networks = getNetworkConfig(ENABLED_BRIDGES);
 
 export const defaultTokens = {
-  [ETH_XDAI_BRIDGE]: {
-    1: {
-      address: '0x0Ae055097C6d159879521C384F1D2123D1f195e6',
-      chainId: 1,
-      symbol: 'STAKE',
-      name: 'STAKE',
-    },
-    100: {
-      address: '0xb7D311E2Eb55F2f68a9440da38e7989210b9A05e',
-      chainId: 100,
-      symbol: 'STAKE',
-      name: 'STAKE on xDai',
-    },
-  },
-  [KOVAN_SOKOL_BRIDGE]: {
-    42: {
-      address: '0xFD2df5dCe4c89B007A43CF88d8161dAf1A17C7AB',
-      chainId: 42,
-      symbol: 'STAKE',
-      name: 'STAKE',
-    },
-    77: {
-      address: '0x408ec1bb883da0ea0fb3c955ea6befcd05aa7c3a',
-      chainId: 77,
-      symbol: 'STAKE',
-      name: 'STAKE on xDai',
-    },
-  },
-  [BSC_XDAI_BRIDGE]: {
-    56: {
-      address: '0x24e5CF4a0577563d4e7761D14D53C8D0b504E337',
-      chainId: 56,
-      symbol: 'STAKE',
-      name: 'STAKE on xDai on BSC',
-    },
-    100: {
-      address: '0xb7D311E2Eb55F2f68a9440da38e7989210b9A05e',
-      chainId: 100,
-      symbol: 'STAKE',
-      name: 'STAKE on xDai',
-    },
-  },
   [ETH_BSC_BRIDGE]: {
     1: {
       address: '0x69af81e73A73B40adF4f3d4223Cd9b1ECE623074',
