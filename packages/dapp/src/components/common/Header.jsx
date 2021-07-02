@@ -8,7 +8,6 @@ import {
 } from '@chakra-ui/react';
 import Logo from 'assets/logo.svg';
 import { BridgeDropdown } from 'components/common/BridgeDropdown';
-import { UpdateSettings } from 'components/common/UpdateSettings';
 import { WalletSelector } from 'components/common/WalletSelector';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
@@ -112,7 +111,6 @@ export const Header = () => {
         {valid && (
           <>
             <HistoryLink close={() => setOpen(false)} />
-            <UpdateSettings close={() => setOpen(false)} />
           </>
         )}
         <WalletSelector close={() => setOpen(false)} />
