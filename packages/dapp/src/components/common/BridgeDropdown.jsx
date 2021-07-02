@@ -13,7 +13,7 @@ import { NetworkIcon } from 'icons/NetworkIcon';
 import { networks } from 'lib/networks';
 import React, { useCallback, useEffect } from 'react';
 
-export const BridgeDropdown = ({ close }) => {
+export const BridgeDropdown = ({ close = () => {} }) => {
   const { bridgeDirection, setBridgeDirection } = useSettings();
   const placement = useBreakpointValue({ base: 'bottom', md: 'bottom-end' });
 

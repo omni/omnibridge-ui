@@ -3,6 +3,7 @@ import { FromToken } from 'components/bridge/FromToken';
 import { ToToken } from 'components/bridge/ToToken';
 import { TransferButton } from 'components/bridge/TransferButton';
 import { UnlockButton } from 'components/bridge/UnlockButton';
+import { BridgeDropdown } from 'components/common/BridgeDropdown';
 import { BridgeLoadingModal } from 'components/modals/BridgeLoadingModal';
 import {
   BinancePeggedAssetWarning,
@@ -78,6 +79,9 @@ export const BridgeTokens = () => {
         <InflationaryTokenWarning token={fromToken} noCheckbox />
       )}
       {isRebaseToken && <RebasingTokenWarning token={fromToken} />}
+      <Flex w="100%" justifyContent="flex-end">
+        <BridgeDropdown />
+      </Flex>
       <Flex
         maxW="75rem"
         background="white"

@@ -7,7 +7,6 @@ import {
   useBreakpointValue,
 } from '@chakra-ui/react';
 import Logo from 'assets/logo.svg';
-import { BridgeDropdown } from 'components/common/BridgeDropdown';
 import { WalletSelector } from 'components/common/WalletSelector';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
@@ -114,7 +113,6 @@ export const Header = () => {
           </>
         )}
         <WalletSelector close={() => setOpen(false)} />
-        <BridgeDropdown close={() => setOpen(false)} />
       </Stack>
     </Flex>
   );
