@@ -7,7 +7,7 @@ export const RINKEBY_BSCTEST_BRIDGE = 'rinkey-bsctest';
 const RINKEBY_BSCTEST_BRIDGE_CONFIG = {
   label: 'rinkey⥊bsctest',
   homeChainId: 4,
-  foreignChainId: 56,
+  foreignChainId: 97,
   enableReversedBridge: false,
   enableForeignCurrencyBridge: false,
   homeMediatorAddress:
