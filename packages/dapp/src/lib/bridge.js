@@ -1,6 +1,7 @@
 import { BigNumber, Contract } from 'ethers';
 import { ADDRESS_ZERO, nativeCurrencies } from 'lib/constants';
 import {
+  delay,
   getHelperContract,
   getMediatorAddressWithoutOverride,
   getNetworkLabel,
@@ -165,36 +166,8 @@ export const fetchToAmount = async (
   fromAmount,
   feeManagerAddress,
 ) => {
-  if (fromAmount.lte(0) || !fromToken || !toToken) return BigNumber.from(0);
-  const { homeChainId, homeMediatorAddress } = networks[bridgeDirection];
-
-  const isHome = homeChainId === toToken.chainId;
-  const tokenAddress = isHome ? toToken.address : fromToken.address;
-  const mediatorAddress = isHome ? toToken.mediator : fromToken.mediator;
-  if (mediatorAddress !== homeMediatorAddress) {
-    return fromAmount;
-  }
-
-  try {
-    const ethersProvider = await getEthersProvider(homeChainId);
-    const abi = [
-      'function calculateFee(bytes32, address, uint256) view returns (uint256)',
-    ];
-    const feeManagerContract = new Contract(
-      feeManagerAddress,
-      abi,
-      ethersProvider,
-    );
-    const fee = await feeManagerContract.calculateFee(
-      feeType,
-      tokenAddress,
-      fromAmount,
-    );
-    return fromAmount.sub(fee);
-  } catch (amountError) {
-    logError({ amountError });
-    return fromAmount;
-  }
+  await delay(1000);
+  return fromAmount;
 };
 
 const getDefaultTokenLimits = async (

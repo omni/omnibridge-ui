@@ -21,6 +21,9 @@ import {
 
 import { getOverriddenMediator, isOverridden } from './overrides';
 
+export const delay = duration =>
+  new Promise(resolve => setTimeout(resolve, duration));
+
 export const getWalletProviderName = provider =>
   provider?.connection?.url || null;
 
