@@ -81,9 +81,9 @@ const ETH_BSC_BRIDGE_CONFIG = {
   enableReversedBridge: true,
   enableForeignCurrencyBridge: true,
   foreignMediatorAddress:
-    '0xD25d84B989bFaFC2C77aB1d4FA1a04FC0eea9D24'.toLowerCase(), // the Mask Bridge Agent Address
+    '0xD25d84B989bFaFC2C77aB1d4FA1a04FC0eea9D24'.toLowerCase(), // the Mask Bridge Agent Address on ETH
   homeMediatorAddress:
-    '0x05ee315E407C21a594f807D61d6CC11306D1F149'.toLowerCase(),
+    '0x05ee315E407C21a594f807D61d6CC11306D1F149'.toLowerCase(), // the Mask Brdige Agent Address on BSC
   foreignAmbAddress: '0x07955be2967B655Cf52751fCE7ccC8c61EA594e2'.toLowerCase(),
   homeAmbAddress: '0x6943A218d58135793F1FE619414eD476C37ad65a'.toLowerCase(),
   foreignGraphName: 'maxaleks/mainnet-to-bsc-omnibridge',

@@ -1,150 +1,25 @@
 import { BigNumber, Contract } from 'ethers';
-import { ADDRESS_ZERO, nativeCurrencies } from 'lib/constants';
-import {
-  delay,
-  getHelperContract,
-  getMediatorAddressWithoutOverride,
-  getNetworkLabel,
-} from 'lib/helpers';
-import { getOverriddenToToken, isOverridden } from 'lib/overrides';
-import { getEthersProvider } from 'lib/providers';
-import { fetchTokenDetails, fetchTokenName } from 'lib/token';
+import { delay, getHelperContract } from 'lib/helpers';
 
-import { networks } from './networks';
-
-const getToName = async (fromToken, toChainId, toAddress) => {
-  const { name } = fromToken;
-  if (toAddress === ADDRESS_ZERO) {
-    const fromName = name || (await fetchTokenName(fromToken));
-    return `${fromName} on ${getNetworkLabel(toChainId)}`;
-  }
-  return fetchTokenName({ chainId: toChainId, address: toAddress });
-};
-
-const fetchToTokenAddress = async (
-  isHome,
-  homeChainId,
-  tokenAddress,
-  homeMediatorAddress,
-) => {
-  const ethersProvider = await getEthersProvider(homeChainId);
-  const abi = [
-    'function foreignTokenAddress(address) view returns (address)',
-    'function homeTokenAddress(address) view returns (address)',
-  ];
-  const mediatorContract = new Contract(
-    homeMediatorAddress,
-    abi,
-    ethersProvider,
-  );
-
-  if (isHome) {
-    return mediatorContract.foreignTokenAddress(tokenAddress);
-  }
-  return mediatorContract.homeTokenAddress(tokenAddress);
-};
+import { defaultTokens, networks } from './networks';
 
 const fetchToTokenDetails = async (bridgeDirection, fromToken, toChainId) => {
   const {
-    chainId: fromChainId,
-    address: fromAddress,
-    mode: fromMode,
-  } = fromToken;
-  if (
-    isOverridden(bridgeDirection, {
-      address: fromAddress,
-      chainId: fromChainId,
-    })
-  ) {
-    return fetchTokenDetails(bridgeDirection, {
-      address: getOverriddenToToken(bridgeDirection, {
-        address: fromAddress,
-        chainId: fromChainId,
-      }),
-      chainId: toChainId,
-    });
-  }
+    homeChainId,
+    foreignChainId,
+    foreignMediatorAddress,
+    homeMediatorAddress,
+  } = networks[bridgeDirection];
+  const isHome = fromToken.chainId === homeChainId;
+  const { address } =
+    defaultTokens[bridgeDirection][isHome ? homeChainId : foreignChainId];
 
-  const { homeChainId, enableReversedBridge } = networks[bridgeDirection];
-
-  const isHome = homeChainId === fromChainId;
-  const fromMediatorAddress = getMediatorAddressWithoutOverride(
-    bridgeDirection,
-    fromChainId,
-  );
-  const toMediatorAddress = getMediatorAddressWithoutOverride(
-    bridgeDirection,
-    toChainId,
-  );
-
-  if (fromAddress === ADDRESS_ZERO && fromMode === 'NATIVE') {
-    const { homeTokenAddress: toAddress } = nativeCurrencies[fromChainId];
-    return fetchTokenDetails(bridgeDirection, {
-      address: toAddress,
-      chainId: toChainId,
-    });
-  }
-
-  if (!enableReversedBridge) {
-    const toAddress = await fetchToTokenAddress(
-      isHome,
-      homeChainId,
-      fromAddress,
-      isHome ? fromMediatorAddress : toMediatorAddress,
-    );
-    const toName = await getToName(fromToken, toChainId, toAddress);
-    return {
-      name: toName,
-      chainId: toChainId,
-      address: toAddress,
-      mode: isHome ? 'erc20' : 'erc677',
-      mediator: toMediatorAddress,
-    };
-  }
-
-  const fromEthersProvider = await getEthersProvider(fromChainId);
-  const toEthersProvider = await getEthersProvider(toChainId);
-  const abi = [
-    'function isRegisteredAsNativeToken(address) view returns (bool)',
-    'function bridgedTokenAddress(address) view returns (address)',
-    'function nativeTokenAddress(address) view returns (address)',
-  ];
-  const fromMediatorContract = new Contract(
-    fromMediatorAddress,
-    abi,
-    fromEthersProvider,
-  );
-  const isNativeToken = await fromMediatorContract.isRegisteredAsNativeToken(
-    fromAddress,
-  );
-
-  if (isNativeToken) {
-    const toMediatorContract = new Contract(
-      toMediatorAddress,
-      abi,
-      toEthersProvider,
-    );
-
-    const toAddress = await toMediatorContract.bridgedTokenAddress(fromAddress);
-
-    const toName = await getToName(fromToken, toChainId, toAddress);
-    return {
-      name: toName,
-      chainId: toChainId,
-      address: toAddress,
-      mode: 'erc677',
-      mediator: toMediatorAddress,
-    };
-  }
-  const toAddress = await fromMediatorContract.nativeTokenAddress(fromAddress);
-
-  const toName = await getToName(fromToken, toChainId, toAddress);
   return {
-    name: toName,
+    name: 'Mask Network',
     chainId: toChainId,
-    address: toAddress,
+    address,
     mode: 'erc20',
-    mediator: toMediatorAddress,
+    mediator: isHome ? homeMediatorAddress : foreignMediatorAddress,
   };
 };
 
