@@ -11,7 +11,7 @@ import {
   fetchToAmount,
   fetchTokenLimits,
   fetchToToken,
-  swapETH2BSC,
+  relayTokens,
 } from 'lib/bridge';
 import { ADDRESS_ZERO } from 'lib/constants';
 import {
@@ -32,7 +32,7 @@ export const useBridgeContext = () => useContext(BridgeContext);
 
 export const BridgeProvider = ({ children }) => {
   const { queryToken, setQueryToken } = useSettings();
-  const { ethersProvider, providerChainId } = useWeb3Context();
+  const { ethersProvider, account, providerChainId } = useWeb3Context();
   const { bridgeDirection, getBridgeChainId, homeChainId, foreignChainId } =
     useBridgeDirection();
 
@@ -155,7 +155,20 @@ export const BridgeProvider = ({ children }) => {
   const transfer = useCallback(async () => {
     setLoading(true);
     try {
-      const tx = await swapETH2BSC(ethersProvider, fromToken, fromAmount);
+      const tx = await relayTokens(
+        ethersProvider,
+        bridgeDirection,
+        fromToken,
+        receiver || account,
+        fromAmount,
+        {
+          shouldReceiveNativeCur:
+            shouldReceiveNativeCur &&
+            toToken?.address === ADDRESS_ZERO &&
+            toToken?.mode === 'NATIVE',
+          foreignChainId,
+        },
+      );
       setTxHash(tx.hash);
     } catch (transferError) {
       setLoading(false);
@@ -166,7 +179,17 @@ export const BridgeProvider = ({ children }) => {
       });
       throw transferError;
     }
-  }, [fromToken, ethersProvider, fromAmount]);
+  }, [
+    fromToken,
+    toToken,
+    account,
+    receiver,
+    ethersProvider,
+    fromAmount,
+    shouldReceiveNativeCur,
+    foreignChainId,
+    bridgeDirection,
+  ]);
 
   const setDefaultToken = useCallback(
     async chainId => {
