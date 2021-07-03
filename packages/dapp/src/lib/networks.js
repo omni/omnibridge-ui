@@ -66,8 +66,8 @@ const ETH_BSC_BRIDGE_CONFIG = {
     '0xD83893F31AA1B6B9D97C9c70D3492fe38D24d218'.toLowerCase(),
   foreignAmbAddress: '0x07955be2967B655Cf52751fCE7ccC8c61EA594e2'.toLowerCase(),
   homeAmbAddress: '0x6943A218d58135793F1FE619414eD476C37ad65a'.toLowerCase(),
-  foreignGraphName: 'maxaleks/mainnet-to-bsc-omnibridge',
-  homeGraphName: 'maxaleks/bsc-to-mainnet-omnibridge',
+  foreignGraphName: 'dan13ram/mainnet-to-bsc-omnibridge',
+  homeGraphName: 'dan13ram/bsc-to-mainnet-omnibridge',
   ambLiveMonitorPrefix: 'http://alm-bsc.herokuapp.com',
 };
 

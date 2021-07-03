@@ -84,10 +84,10 @@ export function updateHomeTokenInfo(
   let token = TokenEntity.load(tokenAddress.toHexString());
   if (token == null) {
     let token = new TokenEntity(tokenAddress.toHexString());
-    token.homeAddress = tokenAddress;
 
     token.symbol = tokenObject.symbol;
     token.decimals = tokenObject.decimals;
+    token.homeAddress = tokenAddress;
 
     let network = dataSource.network();
     if (network == 'xdai') {
