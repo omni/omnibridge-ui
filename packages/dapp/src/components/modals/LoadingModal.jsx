@@ -6,11 +6,10 @@ import {
   ModalBody,
   ModalContent,
   ModalOverlay,
+  Spinner,
   Text,
 } from '@chakra-ui/react';
-import BlueTickImage from 'assets/blue-tick.svg';
 import LoadingImage from 'assets/loading.svg';
-import { ProgressRing } from 'components/common/ProgressRing';
 import { useBridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
@@ -42,45 +41,41 @@ export const LoadingModal = ({ loadingText, txHash, chainId }) => {
               mx={{ base: 12, lg: 0 }}
               maxW={{ base: '20rem', md: '25rem' }}
             >
-              <ModalBody p={4}>
+              <ModalBody px={4} py={8}>
                 <Flex
                   align={{ base: 'center', md: 'stretch' }}
                   direction={{ base: 'column', md: 'row' }}
                 >
                   <Flex
-                    height="5rem"
-                    width="5rem"
+                    h="3.25rem"
+                    w="3.25rem"
                     align="center"
                     justify="center"
                     border="5px solid #eef4fd"
                     borderRadius="50%"
+                    ml={2}
                     mr={4}
+                    mb={{ base: 2, md: 0 }}
                     position="relative"
                   >
-                    <Image src={BlueTickImage} />
-                    <Flex
+                    <Spinner
                       position="absolute"
-                      justify="center"
-                      align="center"
                       color="blue.500"
-                    >
-                      <ProgressRing
-                        radius={47.5}
-                        stroke={5}
-                        progress={1}
-                        totalProgress={1}
-                      />
-                    </Flex>
+                      thickness="5px"
+                      h="3.25rem"
+                      w="3.25rem"
+                      speed="0.75s"
+                    />
                   </Flex>
                   <Flex
                     flex={1}
                     direction="column"
-                    align="center"
+                    align={{ base: 'center', md: 'flex-start' }}
                     justify="center"
                     mt={{ base: 2, md: 0 }}
                   >
-                    <Text width="100%">{`${loadingText}...`}</Text>
-                    <Text width="100%" color="grey">
+                    <Text textAlign="center">{`${loadingText}...`}</Text>
+                    <Text textAlign="center" color="grey">
                       {'Monitor at ALM '}
                       <Link
                         href={getMonitorUrl(chainId || providerChainId, txHash)}

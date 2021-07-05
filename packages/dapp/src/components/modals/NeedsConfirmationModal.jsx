@@ -15,6 +15,7 @@ import {
 import ChangeNetworkImage from 'assets/change-network.png';
 import { useBridgeContext } from 'contexts/BridgeContext';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
+import { useRenderChain } from 'hooks/useRenderChain';
 import { getNetworkName } from 'lib/helpers';
 import React, { useState } from 'react';
 
@@ -35,6 +36,8 @@ export const NeedsConfirmationModal = ({
     setMessage();
     setOpen(false);
   };
+
+  const renderChain = useRenderChain();
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered>
@@ -59,8 +62,10 @@ export const NeedsConfirmationModal = ({
           <ModalBody px={6} py={0}>
             <Flex align="center" direction="column">
               <Box w="100%" fontSize="sm" color="black">
-                <Text as="span">{`Please switch the network in your wallet to `}</Text>
-                <Text as="b">{`${getNetworkName(foreignChainId)}`}</Text>
+                <Text as="span">
+                  Please switch the network in your wallet to
+                </Text>
+                {renderChain(foreignChainId)}
               </Box>
               <Flex align="center" direction="column" w="100%" mt="4" mb="6">
                 <Alert status="info" borderRadius={5}>

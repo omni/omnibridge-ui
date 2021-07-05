@@ -151,12 +151,15 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
   }, [isOpen, providerChainId, setDefaultTokenList]);
 
   // Handlers
-  const onClick = async token => {
-    setBridgeLoading(true);
-    onClose();
-    await setToken(token);
-    setBridgeLoading(false);
-  };
+  const onClick = useCallback(
+    async token => {
+      setBridgeLoading(true);
+      onClose();
+      await setToken(token);
+      setBridgeLoading(false);
+    },
+    [setBridgeLoading, onClose, setToken],
+  );
 
   const onChange = e => {
     const newFilteredTokenList = tokenList.filter(token => {
