@@ -51,7 +51,7 @@ export const NeedsTransactionsWarning = ({ noShadow = false }) => {
       >
         <AlertIcon minWidth="20px" />
         <Text fontSize="small">
-          {`The claim process requires 2 transactions, one on ${getNetworkName(
+          {`The transfer process requires 2 transactions, one on ${getNetworkName(
             homeChainId,
           )} and one
           on ${getNetworkName(foreignChainId)}. `}

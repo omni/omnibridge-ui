@@ -102,16 +102,12 @@ export const HistoryItem = ({
     [toast],
   );
 
-  const [claimed, setClaimed] = useState(!!inputReceivingTx);
+  const { claim, executing, executionTx } = useClaim();
   const [claiming, setClaiming] = useState(false);
-  const [txHash, setTxHash] = useState();
-  let receivingTx = inputReceivingTx;
-  if (claimed && txHash) {
-    receivingTx = txHash;
-  }
+  const receivingTx = executionTx || inputReceivingTx;
+  const claimed = !!receivingTx;
   const failed = !!inputReceivingTx && status === false;
 
-  const claim = useClaim();
   const showAlreadyClaimedModal = useCallback(() => {
     handleClaimError(toToken);
   }, [toToken, handleClaimError]);
@@ -119,10 +115,7 @@ export const HistoryItem = ({
   const claimTokens = useCallback(async () => {
     try {
       setClaiming(true);
-      const tx = await claim(sendingTx, message);
-      setTxHash(tx.hash);
-      await tx.wait();
-      setClaimed(true);
+      await claim(sendingTx, message);
     } catch (claimError) {
       logError({ claimError });
       if (
@@ -136,14 +129,7 @@ export const HistoryItem = ({
     } finally {
       setClaiming(false);
     }
-  }, [
-    claim,
-    sendingTx,
-    message,
-    showError,
-    setTxHash,
-    showAlreadyClaimedModal,
-  ]);
+  }, [claim, sendingTx, message, showError, showAlreadyClaimedModal]);
 
   const homeCurrencyHelperContract = getHelperContract(foreignChainId);
   const { symbol: tokenSymbol } =
@@ -263,7 +249,7 @@ export const HistoryItem = ({
               size="sm"
               colorScheme="blue"
               onClick={claimTokens}
-              isLoading={claiming}
+              isLoading={claiming || executing}
             >
               Claim
             </Button>
