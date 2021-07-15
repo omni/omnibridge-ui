@@ -33,6 +33,7 @@ export const addChainToMetaMask = async ethereumChain => {
         },
       ],
     });
+    return true;
   } catch (switchError) {
     // This error code indicates that the chain has not been added to MetaMask.
     if (switchError.code === 4902) {
@@ -53,6 +54,7 @@ export const addChainToMetaMask = async ethereumChain => {
             },
           ],
         });
+        return true;
       } catch (addError) {
         logError({ addError });
       }
@@ -60,4 +62,5 @@ export const addChainToMetaMask = async ethereumChain => {
       logError({ switchError });
     }
   }
+  return false;
 };
