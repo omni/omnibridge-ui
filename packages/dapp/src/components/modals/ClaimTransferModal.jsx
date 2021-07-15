@@ -39,7 +39,6 @@ export const ClaimTransferModal = ({ message, setMessage }) => {
   const { txHash, setTxHash } = useBridgeContext();
   const [isOpen, setOpen] = useState(true);
   const [claiming, setClaiming] = useState(false);
-  const [loadingText, setLoadingText] = useState('');
   const [executed, setExecuted] = useState(false);
 
   const onClose = useCallback(() => {
@@ -76,15 +75,12 @@ export const ClaimTransferModal = ({ message, setMessage }) => {
     }
   }, [message, foreignAmbAddress, ethersProvider]);
 
-  const claim = useClaim();
+  const { claim, executing, executionTx } = useClaim();
 
   const claimTokens = useCallback(async () => {
     try {
       setClaiming(true);
-      const tx = await claim(txHash, message);
-      setLoadingText('Waiting for Execution');
-      await tx.wait();
-      onClose();
+      await claim(txHash, message);
     } catch (claimError) {
       logError({ claimError });
       if (
@@ -97,14 +93,19 @@ export const ClaimTransferModal = ({ message, setMessage }) => {
       }
     } finally {
       setClaiming(false);
-      setLoadingText('');
     }
-  }, [claim, txHash, showError, onClose, message]);
+  }, [claim, txHash, showError, message]);
 
-  if (claiming)
+  useEffect(() => {
+    if (!executing && !claiming && executionTx) {
+      onClose();
+    }
+  }, [executing, claiming, executionTx, onClose]);
+
+  if (claiming || executing)
     return (
       <LoadingModal
-        loadingText={loadingText}
+        loadingText="Waiting for Execution"
         chainId={homeChainId}
         txHash={txHash}
       />
@@ -191,7 +192,7 @@ export const ClaimTransferModal = ({ message, setMessage }) => {
                 onClick={claimTokens}
                 colorScheme="blue"
                 mt={{ base: 2, md: 0 }}
-                isLoading={claiming}
+                isLoading={claiming || executing}
                 isDisabled={executed}
               >
                 Claim

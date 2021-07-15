@@ -15,7 +15,7 @@ import React, { useCallback, useState } from 'react';
 export const ManualClaim = ({ handleClaimError }) => {
   const [txHash, setTxHash] = useState('');
   const [loading, setLoading] = useState(false);
-  const claim = useClaim();
+  const { claim, executing } = useClaim();
 
   const toast = useToast();
   const showError = useCallback(
@@ -36,12 +36,11 @@ export const ManualClaim = ({ handleClaimError }) => {
     if (!txHash) return;
     setLoading(true);
     try {
-      const tx = await claim(txHash);
-      await tx.wait();
+      await claim(txHash);
     } catch (manualClaimError) {
       logError({ manualClaimError });
       if (
-        manualClaimError.message === TOKENS_CLAIMED ||
+        manualClaimError?.message === TOKENS_CLAIMED ||
         isRevertedError(manualClaimError)
       ) {
         handleClaimError();
@@ -96,7 +95,7 @@ export const ManualClaim = ({ handleClaimError }) => {
             colorScheme="blue"
             onClick={claimTokens}
             isDisabled={!txHash}
-            isLoading={loading}
+            isLoading={loading || executing}
           >
             Claim
           </Button>

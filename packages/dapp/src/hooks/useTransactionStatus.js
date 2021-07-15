@@ -26,10 +26,14 @@ export const useTransactionStatus = setMessage => {
   const completeReceipt = useCallback(() => {
     setTxHash();
     setLoading(false);
+    setLoadingText();
+    setConfirmations(0);
   }, [setLoading, setTxHash]);
 
   const incompleteReceipt = useCallback(() => {
     setLoading(false);
+    setLoadingText();
+    setConfirmations(0);
   }, [setLoading]);
 
   useEffect(() => {
