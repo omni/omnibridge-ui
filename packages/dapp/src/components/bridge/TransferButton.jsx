@@ -11,8 +11,7 @@ import { formatValue } from 'lib/helpers';
 import React, { useCallback } from 'react';
 
 export const TransferButton = () => {
-  const { homeChainId, foreignChainId, enableReversedBridge } =
-    useBridgeDirection();
+  const { foreignChainId, enableReversedBridge } = useBridgeDirection();
   const { isGnosisSafe, ethersProvider } = useWeb3Context();
   const {
     receiver,
@@ -23,8 +22,8 @@ export const TransferButton = () => {
     tokenLimits,
     allowed,
     toAmountLoading,
+    needsClaiming,
   } = useBridgeContext();
-  const isHome = token && token.chainId && token.chainId === homeChainId;
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
   const showError = useCallback(
@@ -96,12 +95,12 @@ export const TransferButton = () => {
       as="button"
       align="center"
       mt={{ base: 2, md: 2, lg: 3 }}
-      color={isHome ? 'purple.300' : 'blue.500'}
+      color={needsClaiming ? 'purple.300' : 'blue.500'}
       _hover={
         !buttonEnabled
           ? undefined
           : {
-              color: isHome ? 'purple.400' : 'blue.600',
+              color: needsClaiming ? 'purple.400' : 'blue.600',
             }
       }
       cursor={!buttonEnabled ? 'not-allowed' : 'pointer'}
@@ -127,7 +126,7 @@ export const TransferButton = () => {
         align="center"
       >
         <Text color="white" fontWeight="bold">
-          {isHome ? 'Request' : 'Transfer'}
+          {needsClaiming ? 'Request' : 'Transfer'}
         </Text>
         <Image src={TransferIcon} ml={2} />
       </Flex>

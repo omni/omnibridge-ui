@@ -24,7 +24,13 @@ import {
   parseValue,
 } from 'lib/helpers';
 import { fetchTokenDetails } from 'lib/token';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 
 export const BridgeContext = React.createContext({});
 
@@ -34,8 +40,14 @@ export const BridgeProvider = ({ children }) => {
   const { queryToken, setQueryToken } = useSettings();
   const { isGnosisSafe, ethersProvider, account, providerChainId } =
     useWeb3Context();
-  const { bridgeDirection, getBridgeChainId, homeChainId, foreignChainId } =
-    useBridgeDirection();
+  const {
+    bridgeDirection,
+    getBridgeChainId,
+    homeChainId,
+    foreignChainId,
+    claimDisabled,
+    tokensClaimDisabled,
+  } = useBridgeDirection();
 
   const isHome = providerChainId === homeChainId;
 
@@ -299,6 +311,15 @@ export const BridgeProvider = ({ children }) => {
   useEffect(() => {
     updateToken();
   }, [updateToken]);
+
+  const needsClaiming = useMemo(
+    () =>
+      isHome &&
+      !claimDisabled &&
+      !(tokensClaimDisabled || []).includes(fromToken?.address.toLowerCase()),
+    [isHome, claimDisabled, tokensClaimDisabled, fromToken],
+  );
+
   return (
     <BridgeContext.Provider
       value={{
@@ -334,6 +355,7 @@ export const BridgeProvider = ({ children }) => {
         unlockLoading,
         approvalTxHash,
         feeManagerAddress,
+        needsClaiming,
       }}
     >
       {children}

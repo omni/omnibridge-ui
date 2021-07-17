@@ -18,6 +18,8 @@ const ETH_XDAI_BRIDGE_CONFIG = {
   foreignGraphName: 'raid-guild/mainnet-omnibridge',
   homeGraphName: 'raid-guild/xdai-omnibridge',
   ambLiveMonitorPrefix: 'https://alm-xdai.herokuapp.com',
+  claimDisabled: false,
+  tokensClaimDisabled: [],
 };
 
 const BSC_XDAI_BRIDGE_CONFIG = {
@@ -35,6 +37,10 @@ const BSC_XDAI_BRIDGE_CONFIG = {
   foreignGraphName: 'maxaleks/bsc-to-xdai-omnibridge',
   homeGraphName: 'maxaleks/xdai-to-bsc-omnibridge',
   ambLiveMonitorPrefix: 'https://alm-bsc-xdai.herokuapp.com',
+  claimDisabled: false,
+  tokensClaimDisabled: [
+    '0xCa8d20f3e0144a72C6B5d576e9Bd3Fd8557E2B04'.toLowerCase(), // Wrapped BNB from BSC
+  ],
 };
 
 const KOVAN_SOKOL_BRIDGE_CONFIG = {
@@ -52,6 +58,8 @@ const KOVAN_SOKOL_BRIDGE_CONFIG = {
   foreignGraphName: 'dan13ram/kovan-omnibridge',
   homeGraphName: 'dan13ram/sokol-omnibridge',
   ambLiveMonitorPrefix: 'https://alm-test-amb.herokuapp.com',
+  claimDisabled: false,
+  tokensClaimDisabled: [],
 };
 
 const ETH_BSC_BRIDGE_CONFIG = {
@@ -69,6 +77,8 @@ const ETH_BSC_BRIDGE_CONFIG = {
   foreignGraphName: 'dan13ram/mainnet-to-bsc-omnibridge',
   homeGraphName: 'dan13ram/bsc-to-mainnet-omnibridge',
   ambLiveMonitorPrefix: 'http://alm-bsc.herokuapp.com',
+  claimDisabled: false,
+  tokensClaimDisabled: [],
 };
 
 const ENABLED_BRIDGES = process.env.REACT_APP_ENABLED_BRIDGES.split(' ').map(

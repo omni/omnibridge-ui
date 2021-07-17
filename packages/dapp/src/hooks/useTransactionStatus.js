@@ -13,9 +13,11 @@ import { getEthersProvider } from 'lib/providers';
 import { useCallback, useEffect, useState } from 'react';
 
 export const useTransactionStatus = setMessage => {
+  const { needsClaiming } = useBridgeContext();
   const { homeChainId, getBridgeChainId, getAMBAddress } = useBridgeDirection();
   const { ethersProvider, providerChainId: chainId } = useWeb3Context();
   const isHome = chainId === homeChainId;
+
   const bridgeChainId = getBridgeChainId(chainId);
   const { loading, setLoading, txHash, setTxHash, totalConfirms } =
     useBridgeContext();
@@ -52,7 +54,7 @@ export const useTransactionStatus = setMessage => {
       if (txReceipt) {
         setConfirmations(numConfirmations);
         if (enoughConfirmations) {
-          if (isHome) {
+          if (needsClaiming) {
             setLoadingText('Collecting Signatures');
             const message = await getMessage(
               isHome,
@@ -91,7 +93,7 @@ export const useTransactionStatus = setMessage => {
       }
     } catch (txError) {
       if (
-        isHome &&
+        needsClaiming &&
         txError &&
         txError.message === NOT_ENOUGH_COLLECTED_SIGNATURES
       ) {
@@ -104,6 +106,7 @@ export const useTransactionStatus = setMessage => {
     return false;
   }, [
     isHome,
+    needsClaiming,
     txHash,
     ethersProvider,
     totalConfirms,
