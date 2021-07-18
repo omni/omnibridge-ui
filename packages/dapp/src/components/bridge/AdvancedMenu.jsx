@@ -83,7 +83,6 @@ export const AdvancedMenu = () => {
             fontWeight="normal"
             _hover={{ bg: 'blackAlpha.100' }}
             px="2"
-            title="Click to change recipient"
           >
             <AdvancedImage width="1.25rem" />
             <Text ml={2}>{isMenuOpen ? 'Clear Recipient' : 'Advanced'}</Text>
