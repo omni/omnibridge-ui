@@ -1,4 +1,4 @@
-import { createIcon } from '@chakra-ui/icon';
+import { createIcon } from '@chakra-ui/icons';
 import * as React from 'react';
 
 export const HistoryIcon = createIcon({

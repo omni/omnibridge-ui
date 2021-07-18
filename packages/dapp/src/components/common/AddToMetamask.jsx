@@ -3,15 +3,14 @@ import MetamaskFox from 'assets/metamask-fox.svg';
 import { AddToMetamaskModal } from 'components/modals/AddToMetamaskModal';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { ADDRESS_ZERO } from 'lib/constants';
-import { getNetworkName, getWalletProviderName, logError } from 'lib/helpers';
+import { getNetworkName, logError } from 'lib/helpers';
 import { addTokenToMetamask } from 'lib/metamask';
 import React, { useCallback } from 'react';
 
 export const AddToMetamask = ({ token, asModal = false, ...props }) => {
-  const { providerChainId, ethersProvider } = useWeb3Context();
+  const { providerChainId, isMetamask } = useWeb3Context();
   const toast = useToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const isWalletMetamask = getWalletProviderName(ethersProvider) === 'metamask';
 
   const showError = useCallback(
     msg => {
@@ -50,11 +49,7 @@ export const AddToMetamask = ({ token, asModal = false, ...props }) => {
     }
   }, [onOpen, asModal, addToken]);
 
-  if (!window.ethereum || token.address === ADDRESS_ZERO || !isWalletMetamask) {
-    return null;
-  }
-
-  return (
+  return isMetamask && token.address !== ADDRESS_ZERO ? (
     <>
       <Image
         cursor="pointer"
@@ -68,5 +63,5 @@ export const AddToMetamask = ({ token, asModal = false, ...props }) => {
         <AddToMetamaskModal isOpen={isOpen} onClose={onClose} token={token} />
       )}
     </>
-  );
+  ) : null;
 };

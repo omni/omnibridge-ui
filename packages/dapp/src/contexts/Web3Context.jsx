@@ -2,8 +2,19 @@ import { SafeAppWeb3Modal as Web3Modal } from '@gnosis.pm/safe-apps-web3modal';
 import WalletConnectProvider from '@walletconnect/web3-provider';
 import imTokenLogo from 'assets/imtoken.svg';
 import { ethers } from 'ethers';
-import { getNetworkName, getRPCUrl, logError } from 'lib/helpers';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import {
+  getNetworkName,
+  getRPCUrl,
+  getWalletProviderName,
+  logError,
+} from 'lib/helpers';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 
 export const Web3Context = React.createContext({});
 export const useWeb3Context = () => useContext(Web3Context);
@@ -148,6 +159,11 @@ export const Web3Provider = ({ children }) => {
     })();
   }, [connectWeb3]);
 
+  const isMetamask = useMemo(
+    () => getWalletProviderName(ethersProvider) === 'metamask',
+    [ethersProvider],
+  );
+
   return (
     <Web3Context.Provider
       value={{
@@ -158,6 +174,7 @@ export const Web3Provider = ({ children }) => {
         disconnect,
         providerChainId,
         account,
+        isMetamask,
       }}
     >
       {children}
