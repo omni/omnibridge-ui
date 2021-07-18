@@ -126,15 +126,15 @@ export const getAccountString = address => {
   return `0x${account.substr(2, 4)}...${account.substr(len - 4, len - 1)}`;
 };
 
-export const logError = error => {
+export const logError = (...args) => {
   // eslint-disable-next-line no-console
-  console.error(error);
+  console.error(...args);
 };
 
-export const logDebug = error => {
+export const logDebug = (...args) => {
   if (process.env.REACT_APP_DEBUG_LOGS === 'true') {
     // eslint-disable-next-line no-console
-    console.debug(error);
+    console.log(...args);
   }
 };
 

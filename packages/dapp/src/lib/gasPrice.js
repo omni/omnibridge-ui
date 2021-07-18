@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { BigNumber, utils } from 'ethers';
 import { GasPriceOracle } from 'gas-price-oracle';
-import { logError } from 'lib/helpers';
+import { logDebug, logError } from 'lib/helpers';
 
 const lowest = arr =>
   arr.reduce((low, item) => (low > item ? item : low), arr[0]);
@@ -96,6 +96,8 @@ class GasPriceStore {
     } catch (gasPriceError) {
       logError({ gasPriceError });
     }
+
+    logDebug('Updated Gas Price', { gasPrices });
 
     setTimeout(() => this.updateGasPrice(), this.updateInterval);
   }
