@@ -11,7 +11,7 @@ const ethPriceFromApi = async fetchFn => {
       return null;
     }
 
-    logDebug({ oracleEthPrice, message: 'Gas price updated using the API' });
+    logDebug('Updated ETH Price', { oracleEthPrice });
 
     return oracleEthPrice;
   } catch (e) {

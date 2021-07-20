@@ -41,10 +41,9 @@ export const useRPCHealth = () => {
             foreignHealthy: foreignHealth,
           });
         }
-        logDebug({
+        logDebug('Updated RPC Health', {
           homeHealth,
           foreignHealth,
-          message: 'updated rpc health data',
         });
 
         const timeoutId = setTimeout(() => load(), UPDATE_INTERVAL);

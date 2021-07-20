@@ -1,4 +1,5 @@
 import {
+  Button,
   Flex,
   Image,
   Popover,
@@ -31,16 +32,17 @@ export const SystemFeedback = () => {
   return (
     <Popover>
       <PopoverTrigger>
-        <Flex
-          align="center"
-          color="blue.400"
-          cursor="pointer"
-          pb={{ base: 2, md: 0 }}
+        <Button
           onClick={update}
+          variant="ghost"
+          color="blue.500"
+          _hover={{ bg: 'blackAlpha.100' }}
+          fontWeight="normal"
+          px="2"
         >
           <Image src={Details} mr={2} />
           <Text>System Feedback</Text>
-        </Flex>
+        </Button>
       </PopoverTrigger>
       <PopoverContent border="none" minW="20rem" w="auto" maxW="30rem" p="0">
         {token && tokenLimits && (

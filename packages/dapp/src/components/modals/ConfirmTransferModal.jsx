@@ -52,8 +52,15 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
 
   const { homeChainId, foreignChainId, enableReversedBridge, bridgeDirection } =
     useBridgeDirection();
-  const { receiver, fromToken, toToken, fromAmount, toAmount, transfer } =
-    useBridgeContext();
+  const {
+    receiver,
+    fromToken,
+    toToken,
+    fromAmount,
+    toAmount,
+    transfer,
+    needsClaiming,
+  } = useBridgeContext();
   const [fee, setFee] = useState(0);
   useEffect(() => {
     if (fromAmount.gt(0)) {
@@ -91,7 +98,6 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
 
   if (!fromToken || !toToken) return null;
 
-  const isHome = fromToken.chainId === homeChainId;
   const fromAmt = formatValue(fromAmount, fromToken.decimals);
   const fromUnit = fromToken.symbol;
   const toAmt = formatValue(toAmount, toToken.decimals);
@@ -208,7 +214,11 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
               {`Bridge Fees ${Number(fee.toFixed(3))}%`}
             </Flex>
             <Divider color="#DAE3F0" my={4} />
-            <Box w="100%" fontSize="sm" color={isHome ? 'black' : 'grey'}>
+            <Box
+              w="100%"
+              fontSize="sm"
+              color={needsClaiming ? 'black' : 'grey'}
+            >
               <Text as="span">{`Please confirm that you would like to send `}</Text>
               <Text as="b">{`${fromAmt} ${fromUnit}`}</Text>
               <Text as="span">{` from ${getNetworkLabel(
@@ -228,7 +238,7 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
             </Box>
           </ModalBody>
           <ModalFooter p={6} flexDirection="column">
-            {isHome && <NeedsTransactionsWarning noShadow />}
+            {needsClaiming && <NeedsTransactionsWarning noShadow />}
             {foreignChainId === 1 && medianGasPrice.lt(currentGasPrice) && (
               <MedianGasWarning
                 medianPrice={medianGasPrice}

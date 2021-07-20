@@ -2,12 +2,7 @@ import { useToast } from '@chakra-ui/react';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { executeSignatures, TOKENS_CLAIMED } from 'lib/amb';
-import {
-  getNetworkName,
-  getWalletProviderName,
-  handleWalletError,
-  logError,
-} from 'lib/helpers';
+import { getNetworkName, handleWalletError, logError } from 'lib/helpers';
 import { getMessage, messageCallStatus } from 'lib/message';
 import { addChainToMetaMask } from 'lib/metamask';
 import { getEthersProvider } from 'lib/providers';
@@ -16,7 +11,7 @@ import { useCallback, useEffect, useState } from 'react';
 const useExecution = () => {
   const { foreignChainId, foreignAmbAddress, foreignAmbVersion } =
     useBridgeDirection();
-  const { providerChainId, ethersProvider } = useWeb3Context();
+  const { providerChainId, ethersProvider, isMetamask } = useWeb3Context();
   const [doRepeat, setDoRepeat] = useState(false);
   const [executing, setExecuting] = useState(false);
   const [message, setMessage] = useState();
@@ -55,10 +50,8 @@ const useExecution = () => {
     async (msgData, isHome) => {
       try {
         setExecuting(true);
-        const isWalletMetamask =
-          getWalletProviderName(ethersProvider) === 'metamask';
         if (isHome) {
-          if (isWalletMetamask) {
+          if (isMetamask) {
             const success = await switchChain(foreignChainId);
             if (success) {
               setMessage(msgData);
@@ -87,6 +80,7 @@ const useExecution = () => {
     },
     [
       ethersProvider,
+      isMetamask,
       foreignChainId,
       foreignAmbVersion,
       foreignAmbAddress,
@@ -115,14 +109,12 @@ export const useClaim = () => {
     foreignAmbAddress,
     homeRequiredSignatures,
   } = useBridgeDirection();
-  const { providerChainId, ethersProvider } = useWeb3Context();
+  const { providerChainId, isMetamask } = useWeb3Context();
   const { executeCallback, executing, executionTx } = useExecution();
 
   const claim = useCallback(
     async (txHash, txMessage) => {
-      const isWalletMetamask =
-        getWalletProviderName(ethersProvider) === 'metamask';
-      if (providerChainId !== foreignChainId && !isWalletMetamask) {
+      if (providerChainId !== foreignChainId && !isMetamask) {
         throw Error(
           `Wrong network. Please connect your wallet to ${getNetworkName(
             foreignChainId,
@@ -157,7 +149,7 @@ export const useClaim = () => {
       foreignChainId,
       foreignAmbAddress,
       providerChainId,
-      ethersProvider,
+      isMetamask,
       homeRequiredSignatures,
     ],
   );

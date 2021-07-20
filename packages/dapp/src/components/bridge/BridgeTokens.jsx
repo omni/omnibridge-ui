@@ -30,6 +30,8 @@ import { getNetworkName } from 'lib/helpers';
 import { BSC_XDAI_BRIDGE } from 'lib/networks';
 import React from 'react';
 
+import { SwitchButton } from './SwitchButton';
+
 export const BridgeTokens = () => {
   const { providerChainId: chainId } = useWeb3Context();
   const {
@@ -114,7 +116,9 @@ export const BridgeTokens = () => {
           templateColumns={{ base: 'initial', lg: '2fr 1fr 2fr' }}
           width="100%"
           my={4}
+          position="relative"
         >
+          <SwitchButton />
           {smallScreen && (
             <Flex align="flex-start" direction="column" m={2}>
               <Text color="greyText" fontSize="sm">

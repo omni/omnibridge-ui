@@ -63,12 +63,11 @@ export const useGraphHealth = (
           homeProvider?.getBlockNumber(),
           foreignProvider?.getBlockNumber(),
         ]);
-        logDebug({
+        logDebug('Updated Subgraph Health', {
           homeHealth,
           foreignHealth,
           homeBlockNumber,
           foreignBlockNumber,
-          message: 'updated graph health data',
         });
 
         const isHomeHealthy =
