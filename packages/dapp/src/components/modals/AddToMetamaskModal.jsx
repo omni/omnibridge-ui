@@ -24,6 +24,7 @@ import {
 import MetamaskFox from 'assets/metamask-fox.svg';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { useCopyToClipboard } from 'hooks/useCopyToClipboard';
+import { useRenderChain } from 'hooks/useRenderChain';
 import { getAccountString, getNetworkName, logError } from 'lib/helpers';
 import { addTokenToMetamask } from 'lib/metamask';
 import React, { useCallback, useState } from 'react';
@@ -68,6 +69,8 @@ export const AddToMetamaskModal = ({ isOpen, onClose, token: tokenToAdd }) => {
     }
     setLoading(false);
   }, [showError, onClose, token]);
+
+  const renderChain = useRenderChain();
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered>
@@ -136,8 +139,7 @@ export const AddToMetamaskModal = ({ isOpen, onClose, token: tokenToAdd }) => {
                   <Alert status="info" borderRadius={5}>
                     <AlertIcon minWidth="20px" />
                     <Text fontSize="small">
-                      <Text as="span">{`Please switch the network in your wallet to `}</Text>
-                      <Text as="b">{`${getNetworkName(token.chainId)}`}</Text>
+                      Please switch your wallet to {renderChain(token.chainId)}
                     </Text>
                   </Alert>
                 </Flex>

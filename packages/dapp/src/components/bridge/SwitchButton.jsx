@@ -18,7 +18,12 @@ export const SwitchButton = () => {
     [switchChain, bridgeChainId],
   );
 
-  return isMetamask ? (
+  const isDefaultChain = [1, 3, 4, 5, 42].includes(bridgeChainId);
+  const isMobileBrowser = navigator?.userAgent?.includes('Mobile') || false;
+  const buttonWillWork =
+    isMetamask && (isMobileBrowser ? !isDefaultChain : true);
+
+  return buttonWillWork ? (
     <Tooltip label="Switch direction of bridge" closeOnClick={false}>
       <IconButton
         icon={<SwitchIcon boxSize="2rem" />}

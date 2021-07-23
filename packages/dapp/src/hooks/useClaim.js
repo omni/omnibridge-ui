@@ -35,12 +35,10 @@ const useExecution = () => {
 
   const switchChain = useCallback(
     async chainId => {
-      const result = await addChainToMetaMask({ chainId }).catch(
-        metamaskError => {
-          logError({ metamaskError });
-          handleWalletError(metamaskError, showError);
-        },
-      );
+      const result = await addChainToMetaMask(chainId).catch(metamaskError => {
+        logError({ metamaskError });
+        handleWalletError(metamaskError, showError);
+      });
       return result;
     },
     [showError],
