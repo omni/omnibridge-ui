@@ -213,10 +213,7 @@ export const ToToken = () => {
               fromToken.address.toLowerCase() ===
                 nativeCurrency.homeTokenAddress && (
                 <Flex>
-                  <Text>
-                    Receive
-                    {nativeCurrency.symbol}
-                  </Text>
+                  <Text>Receive {nativeCurrency.symbol}</Text>
                   <Switch
                     ml={2}
                     colorScheme="blue"
