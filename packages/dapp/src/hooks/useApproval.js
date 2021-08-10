@@ -1,7 +1,7 @@
 import { useWeb3Context } from 'contexts/Web3Context';
 import { BigNumber } from 'ethers';
 import { LARGEST_UINT256, LOCAL_STORAGE_KEYS } from 'lib/constants';
-import { logError } from 'lib/helpers';
+import { logDebug, logError } from 'lib/helpers';
 import { approveToken, fetchAllowance } from 'lib/token';
 import { useCallback, useEffect, useState } from 'react';
 
@@ -42,13 +42,34 @@ export const useApproval = (fromToken, fromAmount, txHash) => {
       await tx.wait();
       setAllowance(approvalAmount);
     } catch (approveError) {
-      logError({
-        approveError,
-        fromToken,
-        approvalAmount: approvalAmount.toString(),
-        account,
-      });
-      throw approveError;
+      if (approveError?.code === 'TRANSACTION_REPLACED') {
+        if (approveError.cancelled) {
+          throw new Error('transaction was replaced');
+        } else {
+          logDebug('TRANSACTION_REPLACED');
+          setApprovalTxHash(approveError.replacement.hash);
+          try {
+            await approveError.replacement.wait();
+            setAllowance(approvalAmount);
+          } catch (secondApprovalError) {
+            logError({
+              secondApprovalError,
+              fromToken,
+              approvalAmount: approvalAmount.toString(),
+              account,
+            });
+            throw secondApprovalError;
+          }
+        }
+      } else {
+        logError({
+          approveError,
+          fromToken,
+          approvalAmount: approvalAmount.toString(),
+          account,
+        });
+        throw approveError;
+      }
     } finally {
       setApprovalTxHash();
       setUnlockLoading(false);

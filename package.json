@@ -47,17 +47,17 @@
     ]
   },
   "devDependencies": {
-    "eslint": "^7.29.0",
+    "eslint": "^7.32.0",
     "eslint-config-airbnb": "^18.2.1",
     "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-import": "^2.23.4",
+    "eslint-plugin-import": "^2.24.0",
     "eslint-plugin-jsx-a11y": "^6.4.1",
     "eslint-plugin-react": "^7.24.0",
     "eslint-plugin-react-hooks": "^4.2.0",
     "eslint-plugin-simple-import-sort": "^7.0.0",
-    "husky": "^6.0.0",
-    "lint-staged": "^11.0.0",
-    "prettier": "^2.3.1"
+    "husky": "^7.0.1",
+    "lint-staged": "^11.1.2",
+    "prettier": "^2.3.2"
   },
   "license": "UNLICENSED",
   "lint-staged": {
@@ -66,8 +66,5 @@
       "prettier --write"
     ],
     "*.{json,md}": "prettier --write"
-  },
-  "resolutions": {
-    "assemblyscript": "git+https://github.com/AssemblyScript/assemblyscript.git#v0.6"
   }
 }

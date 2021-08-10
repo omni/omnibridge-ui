@@ -228,3 +228,22 @@ export const handleWalletError = (error, showError) => {
     showError(IMPOSSIBLE_ERROR);
   }
 };
+
+export const timeout = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+export const withTimeout = (ms, promise) =>
+  new Promise((resolve, reject) => {
+    const timer = setTimeout(() => {
+      reject(new Error('timed out'));
+    }, ms);
+
+    promise
+      .then(value => {
+        clearTimeout(timer);
+        resolve(value);
+      })
+      .catch(error => {
+        clearTimeout(timer);
+        reject(error);
+      });
+  });
