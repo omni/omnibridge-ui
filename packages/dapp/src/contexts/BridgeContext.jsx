@@ -108,13 +108,20 @@ export const BridgeProvider = ({ children }) => {
     ],
   );
 
+  const cleanAmounts = useCallback(() => {
+    setAmountInput('0.0');
+    setAmounts({
+      fromAmount: BigNumber.from(0),
+      toAmount: BigNumber.from(0),
+    });
+  }, []);
+
   const setAmount = useCallback(
     async inputAmount => {
       if (!fromToken || !toToken) return;
       setToAmountLoading(true);
       const amount = parseValue(inputAmount, fromToken.decimals);
       const gotToAmount = await getToAmount(amount);
-
       setAmounts({ fromAmount: amount, toAmount: gotToAmount });
       setToAmountLoading(false);
     },
@@ -224,6 +231,7 @@ export const BridgeProvider = ({ children }) => {
         (toToken.address !== ADDRESS_ZERO || toToken.mode === 'NATIVE')
       ) {
         setTokens({ fromToken: toToken, toToken: fromToken });
+        cleanAmounts();
       } else if (
         !(
           fromToken &&
@@ -233,9 +241,17 @@ export const BridgeProvider = ({ children }) => {
         )
       ) {
         await setToken(getDefaultToken(bridgeDirection, chainId));
+        cleanAmounts();
       }
     },
-    [setToken, fromToken, toToken, getBridgeChainId, bridgeDirection],
+    [
+      setToken,
+      fromToken,
+      toToken,
+      getBridgeChainId,
+      bridgeDirection,
+      cleanAmounts,
+    ],
   );
 
   const updateToken = useCallback(async () => {

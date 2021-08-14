@@ -20,7 +20,10 @@ import { useSettings } from 'contexts/SettingsContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { useTransactionStatus } from 'hooks/useTransactionStatus';
+import { LOCAL_STORAGE_KEYS } from 'lib/constants';
 import React, { useEffect, useState } from 'react';
+
+const { DONT_SHOW_CLAIMS } = LOCAL_STORAGE_KEYS;
 
 const getTransactionString = hash => {
   if (!hash) return 'here';
@@ -68,8 +71,7 @@ const BridgeLoader = ({
                     justify="center"
                     border="5px solid #eef4fd"
                     borderRadius="50%"
-                    ml={2}
-                    mr={4}
+                    mx={4}
                     mb={{ base: 2, md: 0 }}
                     position="relative"
                   >
@@ -148,7 +150,7 @@ const BridgeLoader = ({
 };
 
 export const BridgeLoadingModal = () => {
-  const { providerChainId: chainId } = useWeb3Context();
+  const { account, providerChainId: chainId } = useWeb3Context();
   const { getMonitorUrl, homeChainId, foreignChainId } = useBridgeDirection();
   const { loading, txHash, totalConfirms } = useBridgeContext();
   const [message, setMessage] = useState();
@@ -174,9 +176,17 @@ export const BridgeLoadingModal = () => {
   ) : null;
 
   const claimAllTokens =
-    txNeedsClaiming || neverShowClaims || needsSaving ? null : (
+    txNeedsClaiming ||
+    neverShowClaims ||
+    needsSaving ||
+    loading ||
+    needsConfirmation ? null : (
       <ClaimTokensModal />
     );
+
+  useEffect(() => {
+    window.localStorage.setItem(DONT_SHOW_CLAIMS, 'false');
+  }, [account, chainId]);
 
   const loader = needsConfirmation ? (
     <NeedsConfirmationModal

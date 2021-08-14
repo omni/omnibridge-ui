@@ -16,7 +16,6 @@ import {
 import ClaimTokensImage from 'assets/multiple-claim.svg';
 import { LoadingModal } from 'components/modals/LoadingModal';
 import { AuspiciousGasWarning } from 'components/warnings/AuspiciousGasWarning';
-import { useWeb3Context } from 'contexts/Web3Context';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { useClaimableTransfers } from 'hooks/useClaimableTransfers';
 import { LOCAL_STORAGE_KEYS } from 'lib/constants';
@@ -32,7 +31,6 @@ const { DONT_SHOW_CLAIMS } = LOCAL_STORAGE_KEYS;
 
 export const ClaimTokensModal = () => {
   const { foreignChainId } = useBridgeDirection();
-  const { account, providerChainId } = useWeb3Context();
   const { transfers, loading } = useClaimableTransfers();
   const [isOpen, setOpen] = useState(false);
 
@@ -40,10 +38,6 @@ export const ClaimTokensModal = () => {
     setOpen(false);
     window.localStorage.setItem(DONT_SHOW_CLAIMS, 'true');
   };
-
-  useEffect(() => {
-    window.localStorage.setItem(DONT_SHOW_CLAIMS, 'false');
-  }, [account, providerChainId]);
 
   useEffect(() => {
     const dontShowClaims =

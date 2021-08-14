@@ -55,7 +55,6 @@ export const nativeCurrencies = {
 };
 
 export const nativeCurrencyMediators = {
-  1: '',
   42: '0x227a6f13aa0dba8912d740c0f88fb1304b2597e1'.toLowerCase(),
   56: '0xefc33f8b2c4d51005585962be7ea20518ea9fd0d'.toLowerCase(),
 };

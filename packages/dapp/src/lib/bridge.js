@@ -185,6 +185,7 @@ export const fetchToAmount = async (
       abi,
       ethersProvider,
     );
+
     const fee = await feeManagerContract.calculateFee(
       feeType,
       tokenAddress,
@@ -334,9 +335,11 @@ export const relayTokens = async (
     case 'erc677': {
       const abi = ['function transferAndCall(address, uint256, bytes)'];
       const tokenContract = new Contract(address, abi, signer);
-      const bytesData = shouldReceiveNativeCur
-        ? `${getHelperContract(foreignChainId)}${receiver.replace('0x', '')}`
-        : receiver;
+      const foreignHelperContract = getHelperContract(foreignChainId);
+      const bytesData =
+        shouldReceiveNativeCur && foreignHelperContract
+          ? `${foreignHelperContract}${receiver.replace('0x', '')}`
+          : receiver;
       return tokenContract.transferAndCall(mediator, amount, bytesData);
     }
     case 'dedicated-erc20': {
