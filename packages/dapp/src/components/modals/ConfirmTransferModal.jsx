@@ -50,8 +50,12 @@ import React, { useCallback, useEffect, useState } from 'react';
 export const ConfirmTransferModal = ({ isOpen, onClose }) => {
   const { isGnosisSafe, account } = useWeb3Context();
 
-  const { homeChainId, foreignChainId, enableReversedBridge, bridgeDirection } =
-    useBridgeDirection();
+  const {
+    homeChainId,
+    foreignChainId,
+    enableReversedBridge,
+    bridgeDirection,
+  } = useBridgeDirection();
   const {
     receiver,
     fromToken,
@@ -71,10 +75,12 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
   }, [fromAmount, toAmount]);
 
   const smallScreen = useBreakpointValue({ base: true, md: false });
-  const [isInflationWarningChecked, setInflationWarningChecked] =
-    useState(false);
-  const [isGnosisSafeWarningChecked, setGnosisSafeWarningChecked] =
-    useState(false);
+  const [isInflationWarningChecked, setInflationWarningChecked] = useState(
+    false,
+  );
+  const [isGnosisSafeWarningChecked, setGnosisSafeWarningChecked] = useState(
+    false,
+  );
 
   const toast = useToast();
   const showError = useCallback(

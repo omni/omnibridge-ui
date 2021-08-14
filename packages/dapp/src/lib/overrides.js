@@ -160,10 +160,8 @@ const ETH_XDAI_OVERRIDES = {
 };
 
 const KOVAN_SOKOL_OVERRIDES = {
-  ['0xd846B096949E15b42ABCaEB82137c5a3495B1Ed4'.toLowerCase()]:
-    DEMO2712TokenOverrideSokol,
-  ['0xa4764045851F17AA60B6c8E8b62072Bea9538521'.toLowerCase()]:
-    DEMO2712TokenOverrideSokol,
+  ['0xd846B096949E15b42ABCaEB82137c5a3495B1Ed4'.toLowerCase()]: DEMO2712TokenOverrideSokol,
+  ['0xa4764045851F17AA60B6c8E8b62072Bea9538521'.toLowerCase()]: DEMO2712TokenOverrideSokol,
 };
 
 const BSC_XDAI_OVERRIDES = {};

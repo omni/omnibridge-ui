@@ -38,8 +38,12 @@ export const useBridgeContext = () => useContext(BridgeContext);
 
 export const BridgeProvider = ({ children }) => {
   const { queryToken, setQueryToken } = useSettings();
-  const { isGnosisSafe, ethersProvider, account, providerChainId } =
-    useWeb3Context();
+  const {
+    isGnosisSafe,
+    ethersProvider,
+    account,
+    providerChainId,
+  } = useWeb3Context();
   const {
     bridgeDirection,
     getBridgeChainId,
@@ -69,8 +73,11 @@ export const BridgeProvider = ({ children }) => {
   const toast = useToast();
   const totalConfirms = useTotalConfirms();
   const { currentDay, feeManagerAddress } = useMediatorInfo();
-  const { isRewardAddress, homeToForeignFeeType, foreignToHomeFeeType } =
-    useFeeManager();
+  const {
+    isRewardAddress,
+    homeToForeignFeeType,
+    foreignToHomeFeeType,
+  } = useFeeManager();
   const { allowed, unlockLoading, approvalTxHash, approve } = useApproval(
     fromToken,
     fromAmount,
