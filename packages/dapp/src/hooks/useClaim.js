@@ -2,15 +2,23 @@ import { useToast } from '@chakra-ui/react';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { executeSignatures, TOKENS_CLAIMED } from 'lib/amb';
-import { getNetworkName, handleWalletError, logError } from 'lib/helpers';
+import {
+  getNetworkName,
+  handleWalletError,
+  logDebug,
+  logError,
+} from 'lib/helpers';
 import { getMessage, messageCallStatus } from 'lib/message';
 import { addChainToMetaMask } from 'lib/metamask';
 import { getEthersProvider } from 'lib/providers';
 import { useCallback, useEffect, useState } from 'react';
 
 const useExecution = () => {
-  const { foreignChainId, foreignAmbAddress, foreignAmbVersion } =
-    useBridgeDirection();
+  const {
+    foreignChainId,
+    foreignAmbAddress,
+    foreignAmbVersion,
+  } = useBridgeDirection();
   const { providerChainId, ethersProvider, isMetamask } = useWeb3Context();
   const [doRepeat, setDoRepeat] = useState(false);
   const [executing, setExecuting] = useState(false);
@@ -69,8 +77,20 @@ const useExecution = () => {
             foreignAmbVersion,
             msgData,
           );
-          await tx.wait(1);
+          await tx.wait();
           setTxHash(tx.hash);
+        }
+      } catch (claimError) {
+        if (claimError?.code === 'TRANSACTION_REPLACED') {
+          if (claimError.cancelled) {
+            throw new Error('transaction was replaced');
+          } else {
+            logDebug('TRANSACTION_REPLACED');
+            await claimError.replacement.wait();
+            setTxHash(claimError.replacement.hash);
+          }
+        } else {
+          throw claimError;
         }
       } finally {
         setExecuting(false);

@@ -12,8 +12,13 @@ import {
   ModalHeader,
   ModalOverlay,
   Text,
+  useDisclosure,
 } from '@chakra-ui/react';
 import CustomTokenImage from 'assets/custom-token.svg';
+import {
+  ConfirmBSCTokenModal,
+  shouldShowBSCTokenModal,
+} from 'components/modals/ConfirmBSCTokenModal';
 import {
   isRebasingToken,
   RebasingTokenWarning,
@@ -24,15 +29,20 @@ import { utils } from 'ethers';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { LOCAL_STORAGE_KEYS } from 'lib/constants';
 import { logError, uniqueTokens } from 'lib/helpers';
+import { ETH_BSC_BRIDGE } from 'lib/networks';
 import { fetchTokenDetails } from 'lib/token';
-import React, { useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 
 const { CUSTOM_TOKENS } = LOCAL_STORAGE_KEYS;
 
 export const CustomTokenModal = ({ isOpen, onClose, onBack }) => {
-  const { bridgeDirection } = useBridgeDirection();
   const { setToken, setLoading } = useBridgeContext();
   const { providerChainId } = useWeb3Context();
+  const { bridgeDirection, getBridgeChainId } = useBridgeDirection();
+  const bridgeChainId = useMemo(() => getBridgeChainId(providerChainId), [
+    providerChainId,
+    getBridgeChainId,
+  ]);
   const [customToken, setCustomToken] = useState({
     address: '',
     name: '',
@@ -45,12 +55,8 @@ export const CustomTokenModal = ({ isOpen, onClose, onBack }) => {
   const [addressInput, setAddressInput] = useState('');
   const [addressInvalid, setAddressInvalid] = useState(false);
 
-  const onClick = () => {
+  const addCustomToken = useCallback(async () => {
     onClose();
-    addCustomToken();
-  };
-
-  const addCustomToken = async () => {
     setLoading(true);
     let localTokensList = window.localStorage.getItem(CUSTOM_TOKENS);
     let customTokensList = [];
@@ -71,35 +77,58 @@ export const CustomTokenModal = ({ isOpen, onClose, onBack }) => {
     );
     await setToken(customToken);
     setLoading(false);
-  };
+  }, [onClose, customToken, setLoading, setToken]);
 
-  const handleChange = async e => {
-    if (e.target.id === 'address') {
-      setAddressInput(e.target.value);
-      if (utils.isAddress(e.target.value)) {
-        const tokenAddress = e.target.value;
-        fetchTokenDetails(bridgeDirection, {
-          chainId: providerChainId,
-          address: tokenAddress,
-        })
-          .then(tokenDetails => {
-            setAddressInvalid(false);
-            setCustomToken({
-              ...customToken,
-              ...tokenDetails,
-            });
+  const handleChange = useCallback(
+    async e => {
+      if (e.target.id === 'address') {
+        setAddressInput(e.target.value);
+        if (utils.isAddress(e.target.value)) {
+          const tokenAddress = e.target.value;
+          fetchTokenDetails(bridgeDirection, {
+            chainId: providerChainId,
+            address: tokenAddress,
           })
-          .catch(customTokenError => {
-            logError({ customTokenError });
-            setAddressInvalid(true);
-          });
+            .then(tokenDetails => {
+              setAddressInvalid(false);
+              setCustomToken(_customToken => ({
+                ..._customToken,
+                ...tokenDetails,
+              }));
+            })
+            .catch(customTokenError => {
+              logError({ customTokenError });
+              setAddressInvalid(true);
+            });
+        } else {
+          setAddressInvalid(true);
+        }
       } else {
-        setAddressInvalid(true);
+        setCustomToken(_customToken => ({
+          ..._customToken,
+          [e.target.id]: e.target.value,
+        }));
       }
+    },
+    [bridgeDirection, providerChainId],
+  );
+
+  const {
+    isOpen: shouldShowWarning,
+    onOpen: showWarning,
+    onClose: closeWarning,
+  } = useDisclosure();
+
+  const onClick = useCallback(() => {
+    if (
+      bridgeDirection === ETH_BSC_BRIDGE &&
+      shouldShowBSCTokenModal(customToken)
+    ) {
+      showWarning();
     } else {
-      setCustomToken({ ...customToken, [e.target.id]: e.target.value });
+      addCustomToken();
     }
-  };
+  }, [customToken, addCustomToken, bridgeDirection, showWarning]);
 
   const isRebaseToken = isRebasingToken(customToken);
 
@@ -120,6 +149,13 @@ export const CustomTokenModal = ({ isOpen, onClose, onBack }) => {
           maxW="30rem"
           mx={{ base: 12, lg: 0 }}
         >
+          <ConfirmBSCTokenModal
+            isOpen={!!customToken && shouldShowWarning}
+            onClose={closeWarning}
+            onConfirm={addCustomToken}
+            token={customToken}
+            bridgeChainId={bridgeChainId}
+          />
           <ModalHeader p={6}>
             <Text>Add Custom Token</Text>
             <Image src={CustomTokenImage} w="100%" mt={4} />

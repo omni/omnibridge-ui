@@ -15,9 +15,14 @@ import {
   Spinner,
   Text,
   useBreakpointValue,
+  useDisclosure,
 } from '@chakra-ui/react';
 import SearchIcon from 'assets/search.svg';
 import { Logo } from 'components/common/Logo';
+import {
+  ConfirmBSCTokenModal,
+  shouldShowBSCTokenModal,
+} from 'components/modals/ConfirmBSCTokenModal';
 import { useBridgeContext } from 'contexts/BridgeContext';
 import { useSettings } from 'contexts/SettingsContext';
 import { useWeb3Context } from 'contexts/Web3Context';
@@ -31,9 +36,16 @@ import {
   removeElement,
   uniqueTokens,
 } from 'lib/helpers';
+import { ETH_BSC_BRIDGE } from 'lib/networks';
 import { fetchTokenBalanceWithProvider } from 'lib/token';
 import { fetchTokenList } from 'lib/tokenList';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 
 const { CUSTOM_TOKENS } = LOCAL_STORAGE_KEYS;
 
@@ -50,11 +62,17 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
   const [filteredTokenList, setFilteredTokenList] = useState([]);
   const smallScreen = useBreakpointValue({ sm: false, base: true });
   const {
+    bridgeDirection,
     getBridgeChainId,
     foreignChainId,
     getGraphEndpoint,
     enableForeignCurrencyBridge,
   } = useBridgeDirection();
+
+  const bridgeChainId = useMemo(() => getBridgeChainId(providerChainId), [
+    providerChainId,
+    getBridgeChainId,
+  ]);
 
   // Callbacks
   const fetchTokenListWithBalance = useCallback(
@@ -137,7 +155,9 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
 
   // Effects
   useEffect(() => {
-    tokenList.length && setFilteredTokenList(tokenList);
+    if (tokenList.length) {
+      setFilteredTokenList(tokenList);
+    }
   }, [tokenList, setFilteredTokenList]);
 
   useEffect(() => {
@@ -151,14 +171,41 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
   }, [isOpen, providerChainId, setDefaultTokenList]);
 
   // Handlers
-  const onClick = useCallback(
+  const selectToken = useCallback(
     async token => {
-      setBridgeLoading(true);
       onClose();
+      setBridgeLoading(true);
       await setToken(token);
       setBridgeLoading(false);
     },
     [setBridgeLoading, onClose, setToken],
+  );
+
+  const {
+    isOpen: shouldShowWarning,
+    onOpen: showWarning,
+    onClose: closeWarning,
+  } = useDisclosure();
+
+  const [selectedToken, setSelectedToken] = useState();
+
+  const onConfirmWarningModal = useCallback(() => {
+    selectToken(selectedToken);
+  }, [selectedToken, selectToken]);
+
+  const onClick = useCallback(
+    async token => {
+      setSelectedToken(token);
+      if (
+        bridgeDirection === ETH_BSC_BRIDGE &&
+        shouldShowBSCTokenModal(token)
+      ) {
+        showWarning();
+      } else {
+        selectToken(token);
+      }
+    },
+    [selectToken, bridgeDirection, showWarning],
   );
 
   const onChange = e => {
@@ -189,8 +236,15 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
           pb={4}
           pt={2}
           maxW="30rem"
-          mx={{ base: 12, lg: 0 }}
+          mx="12"
         >
+          <ConfirmBSCTokenModal
+            isOpen={!!selectedToken && shouldShowWarning}
+            onClose={closeWarning}
+            onConfirm={onConfirmWarningModal}
+            token={selectedToken}
+            bridgeChainId={bridgeChainId}
+          />
           <ModalHeader pb={0}>
             <Flex align="center" justify="space-between">
               Select a Token
@@ -241,8 +295,14 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
             )}
             {!loading &&
               filteredTokenList.map(token => {
-                const { decimals, balance, name, address, logoURI, symbol } =
-                  token;
+                const {
+                  decimals,
+                  balance,
+                  name,
+                  address,
+                  logoURI,
+                  symbol,
+                } = token;
                 return (
                   <Button
                     variant="outline"

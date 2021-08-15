@@ -38,7 +38,7 @@ export const TermsOfServiceModal = () => {
           boxShadow="0px 1rem 2rem #617492"
           borderRadius="1rem"
           maxW="33.75rem"
-          mx={{ base: 12, lg: 0 }}
+          mx="4"
         >
           <ModalHeader
             p={6}
@@ -92,7 +92,7 @@ export const TermsOfServiceModal = () => {
           </ModalBody>
           <ModalFooter>
             <Flex justify="center" align="center" w="100%">
-              <Button onClick={onClose} colorScheme="blue">
+              <Button onClick={onClose} colorScheme="blue" px="3rem">
                 Continue
               </Button>
             </Flex>

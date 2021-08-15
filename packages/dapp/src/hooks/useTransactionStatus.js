@@ -2,7 +2,7 @@ import { useBridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { POLLING_INTERVAL } from 'lib/constants';
-import { logError } from 'lib/helpers';
+import { logDebug, logError, timeout, withTimeout } from 'lib/helpers';
 import {
   getMessage,
   getMessageData,
@@ -19,8 +19,13 @@ export const useTransactionStatus = setMessage => {
   const isHome = chainId === homeChainId;
 
   const bridgeChainId = getBridgeChainId(chainId);
-  const { loading, setLoading, txHash, setTxHash, totalConfirms } =
-    useBridgeContext();
+  const {
+    loading,
+    setLoading,
+    txHash,
+    setTxHash,
+    totalConfirms,
+  } = useBridgeContext();
   const [needsConfirmation, setNeedsConfirmation] = useState(false);
   const [loadingText, setLoadingText] = useState();
   const [confirmations, setConfirmations] = useState(0);
@@ -47,7 +52,10 @@ export const useTransactionStatus = setMessage => {
 
   const getStatus = useCallback(async () => {
     try {
-      const txReceipt = await ethersProvider.getTransactionReceipt(txHash);
+      const tx = await ethersProvider.getTransaction(txHash);
+      const txReceipt = tx
+        ? await withTimeout(5 * POLLING_INTERVAL, tx.wait())
+        : null;
       const numConfirmations = txReceipt ? txReceipt.confirmations : 0;
       const enoughConfirmations = numConfirmations >= totalConfirms;
 
@@ -92,10 +100,12 @@ export const useTransactionStatus = setMessage => {
         }
       }
     } catch (txError) {
-      if (
-        needsClaiming &&
-        txError &&
-        txError.message === NOT_ENOUGH_COLLECTED_SIGNATURES
+      if (txError?.code === 'TRANSACTION_REPLACED' && !txError.cancelled) {
+        logDebug('TRANSACTION_REPLACED');
+        setTxHash(txError.replacement.hash);
+      } else if (
+        txError?.message === 'timed out' ||
+        (needsClaiming && txError?.message === NOT_ENOUGH_COLLECTED_SIGNATURES)
       ) {
         return false;
       }
@@ -108,6 +118,7 @@ export const useTransactionStatus = setMessage => {
     isHome,
     needsClaiming,
     txHash,
+    setTxHash,
     ethersProvider,
     totalConfirms,
     completeReceipt,
@@ -123,32 +134,21 @@ export const useTransactionStatus = setMessage => {
       return () => undefined;
     }
 
-    const subscriptions = [];
-    const unsubscribe = () => {
-      subscriptions.forEach(s => {
-        clearTimeout(s);
-      });
-    };
-
     setLoadingText('Waiting for Block Confirmations');
     let isSubscribed = true;
 
     const updateStatus = async () => {
-      unsubscribe();
       const status = !isSubscribed || (await getStatus());
       if (!status && loading && txHash && ethersProvider) {
-        unsubscribe();
-        const timeoutId = setTimeout(() => updateStatus(), POLLING_INTERVAL);
-        subscriptions.push(timeoutId);
+        await timeout(POLLING_INTERVAL);
+        updateStatus();
       }
     };
 
     updateStatus();
 
-    // unsubscribe when unmount component
     return () => {
       isSubscribed = false;
-      unsubscribe();
     };
   }, [loading, txHash, ethersProvider, getStatus]);
 

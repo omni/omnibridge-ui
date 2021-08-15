@@ -160,7 +160,9 @@ export const Web3Provider = ({ children }) => {
   }, [connectWeb3]);
 
   const isMetamask = useMemo(
-    () => getWalletProviderName(ethersProvider) === 'metamask',
+    () =>
+      getWalletProviderName(ethersProvider) === 'metamask' &&
+      window.ethereum?.isMetaMask === true,
     [ethersProvider],
   );
 

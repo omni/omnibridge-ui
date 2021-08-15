@@ -8,15 +8,15 @@ import React, { useCallback, useMemo } from 'react';
 export const SwitchButton = () => {
   const { providerChainId, isMetamask } = useWeb3Context();
   const { getBridgeChainId } = useBridgeDirection();
-  const bridgeChainId = useMemo(
-    () => getBridgeChainId(providerChainId),
-    [providerChainId, getBridgeChainId],
-  );
+  const bridgeChainId = useMemo(() => getBridgeChainId(providerChainId), [
+    providerChainId,
+    getBridgeChainId,
+  ]);
   const switchChain = useSwitchChain();
-  const switchOnClick = useCallback(
-    () => switchChain(bridgeChainId),
-    [switchChain, bridgeChainId],
-  );
+  const switchOnClick = useCallback(() => switchChain(bridgeChainId), [
+    switchChain,
+    bridgeChainId,
+  ]);
 
   const isDefaultChain = [1, 3, 4, 5, 42].includes(bridgeChainId);
   const isMobileBrowser = navigator?.userAgent?.includes('Mobile') || false;

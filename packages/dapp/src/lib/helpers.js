@@ -67,7 +67,9 @@ export const uniqueTokens = list => {
 export const formatValue = (num, dec) => {
   const str = utils.formatUnits(num, dec);
   if (str.length > 50) {
-    const expStr = Number(str).toExponential().replace(/e\+?/, ' x 10^');
+    const expStr = Number(str)
+      .toExponential()
+      .replace(/e\+?/, ' x 10^');
     const split = expStr.split(' x 10^');
     const first = Number(split[0]).toLocaleString('en', {
       maximumFractionDigits: 4,
@@ -177,8 +179,9 @@ export const getHelperContract = chainId =>
 
 export const getMediatorAddressWithoutOverride = (bridgeDirection, chainId) => {
   if (!bridgeDirection || !chainId) return null;
-  const { homeChainId, homeMediatorAddress, foreignMediatorAddress } =
-    networks[bridgeDirection];
+  const { homeChainId, homeMediatorAddress, foreignMediatorAddress } = networks[
+    bridgeDirection
+  ];
   return homeChainId === chainId
     ? homeMediatorAddress.toLowerCase()
     : foreignMediatorAddress.toLowerCase();
@@ -228,3 +231,22 @@ export const handleWalletError = (error, showError) => {
     showError(IMPOSSIBLE_ERROR);
   }
 };
+
+export const timeout = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+export const withTimeout = (ms, promise) =>
+  new Promise((resolve, reject) => {
+    const timer = setTimeout(() => {
+      reject(new Error('timed out'));
+    }, ms);
+
+    promise
+      .then(value => {
+        clearTimeout(timer);
+        resolve(value);
+      })
+      .catch(error => {
+        clearTimeout(timer);
+        reject(error);
+      });
+  });

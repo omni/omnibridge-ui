@@ -48,10 +48,9 @@ export const ToToken = () => {
   const smallScreen = useBreakpointValue({ base: true, lg: false });
   const [balanceLoading, setBalanceLoading] = useState(false);
 
-  const nativeCurrency = useMemo(
-    () => getNativeCurrency(foreignChainId),
-    [foreignChainId],
-  );
+  const nativeCurrency = useMemo(() => getNativeCurrency(foreignChainId), [
+    foreignChainId,
+  ]);
 
   const changeToToken = useCallback(async () => {
     setLoading(true);
@@ -213,10 +212,7 @@ export const ToToken = () => {
               fromToken.address.toLowerCase() ===
                 nativeCurrency.homeTokenAddress && (
                 <Flex>
-                  <Text>
-                    Receive
-                    {nativeCurrency.symbol}
-                  </Text>
+                  <Text>Receive {nativeCurrency.symbol}</Text>
                   <Switch
                     ml={2}
                     colorScheme="blue"

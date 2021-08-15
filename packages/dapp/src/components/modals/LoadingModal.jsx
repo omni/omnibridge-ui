@@ -53,8 +53,7 @@ export const LoadingModal = ({ loadingText, txHash, chainId }) => {
                     justify="center"
                     border="5px solid #eef4fd"
                     borderRadius="50%"
-                    ml={2}
-                    mr={4}
+                    mx={4}
                     mb={{ base: 2, md: 0 }}
                     position="relative"
                   >

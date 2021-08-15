@@ -9,8 +9,11 @@ import {
 import { useEffect, useState } from 'react';
 
 export const useClaimableTransfers = () => {
-  const { homeChainId, foreignChainId, getGraphEndpoint } =
-    useBridgeDirection();
+  const {
+    homeChainId,
+    foreignChainId,
+    getGraphEndpoint,
+  } = useBridgeDirection();
   const { account } = useWeb3Context();
   const { txHash } = useBridgeContext();
   const [transfers, setTransfers] = useState();

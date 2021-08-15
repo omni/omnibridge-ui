@@ -30,8 +30,7 @@ export const nativeCurrencies = {
     name: 'Ether',
     symbol: 'ETH',
     mode: 'NATIVE',
-    homeTokenAddress:
-      '0x6A023CCd1ff6F2045C3309768eAd9E68F978f6e1'.toLowerCase(),
+    homeTokenAddress: '0x6A023CCd1ff6F2045C3309768eAd9E68F978f6e1'.toLowerCase(),
   },
   42: {
     chainId: 42,
@@ -41,8 +40,7 @@ export const nativeCurrencies = {
     name: 'Kovan Ether',
     symbol: 'KETH',
     mode: 'NATIVE',
-    homeTokenAddress:
-      '0x3D14493DF2B479E6BABE82Fc2373F91622bac025'.toLowerCase(),
+    homeTokenAddress: '0x3D14493DF2B479E6BABE82Fc2373F91622bac025'.toLowerCase(),
   },
   56: {
     chainId: 56,
@@ -52,13 +50,11 @@ export const nativeCurrencies = {
     address: ADDRESS_ZERO,
     symbol: 'BNB',
     mode: 'NATIVE',
-    homeTokenAddress:
-      '0xCa8d20f3e0144a72C6B5d576e9Bd3Fd8557E2B04'.toLowerCase(),
+    homeTokenAddress: '0xCa8d20f3e0144a72C6B5d576e9Bd3Fd8557E2B04'.toLowerCase(),
   },
 };
 
 export const nativeCurrencyMediators = {
-  1: '',
   42: '0x227a6f13aa0dba8912d740c0f88fb1304b2597e1'.toLowerCase(),
   56: '0xefc33f8b2c4d51005585962be7ea20518ea9fd0d'.toLowerCase(),
 };
