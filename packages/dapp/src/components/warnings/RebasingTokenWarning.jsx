@@ -40,9 +40,6 @@ export const isRebasingToken = token => {
       return BSC_REBASING_TOKENS.includes(address.toLowerCase());
     case 1:
       return ETH_REBASING_TOKENS.includes(address.toLowerCase());
-    case 100:
-    case 77:
-    case 42:
     default:
       return false;
   }
