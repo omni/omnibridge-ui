@@ -22,6 +22,10 @@ import {
 } from 'components/warnings/RebasingTokenWarning';
 import { ReverseWarning } from 'components/warnings/ReverseWarning';
 import { RPCHealthWarning } from 'components/warnings/RPCHealthWarning';
+import {
+  isSafeMoonToken,
+  SafeMoonTokenWarning,
+} from 'components/warnings/SafeMoonTokenWarning';
 import { useBridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
@@ -57,7 +61,8 @@ export const BridgeTokens = () => {
     fromToken.chainId === homeChainId &&
     isERC20ExchangableBinancePeggedAsset(fromToken);
   const isInflationToken = isInflationaryToken(fromToken);
-  const isRebaseToken = isRebasingToken(fromToken);
+  const isTokenRebasing = isRebasingToken(fromToken);
+  const isTokenSafeMoon = isSafeMoonToken(fromToken);
 
   const smallScreen = useBreakpointValue({ base: true, lg: false });
   const bridgeChainId = getBridgeChainId(chainId);
@@ -81,7 +86,8 @@ export const BridgeTokens = () => {
       {isInflationToken && (
         <InflationaryTokenWarning token={fromToken} noCheckbox />
       )}
-      {isRebaseToken && <RebasingTokenWarning token={fromToken} />}
+      {isTokenRebasing && <RebasingTokenWarning token={fromToken} />}
+      {isTokenSafeMoon && <SafeMoonTokenWarning token={fromToken} />}
       <Flex
         maxW="75rem"
         background="white"

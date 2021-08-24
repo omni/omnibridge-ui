@@ -33,6 +33,10 @@ import {
   RebasingTokenWarning,
 } from 'components/warnings/RebasingTokenWarning';
 import { ReverseWarning } from 'components/warnings/ReverseWarning';
+import {
+  isSafeMoonToken,
+  SafeMoonTokenWarning,
+} from 'components/warnings/SafeMoonTokenWarning';
 import { useBridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
@@ -126,13 +130,15 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
     fromToken.chainId === homeChainId &&
     isERC20ExchangableBinancePeggedAsset(fromToken);
   const isInflationToken = isInflationaryToken(fromToken);
-  const isRebaseToken = isRebasingToken(fromToken);
+  const isTokenRebasing = isRebasingToken(fromToken);
+  const isTokenSafeMoon = isSafeMoonToken(fromToken);
 
   const isSameAddress =
     account && receiver && account.toLowerCase() === receiver.toLowerCase();
 
   const isDisabled =
-    isRebaseToken ||
+    isTokenRebasing ||
+    isTokenSafeMoon ||
     (isInflationToken && !isInflationWarningChecked) ||
     (isGnosisSafe && isSameAddress && !isGnosisSafeWarningChecked);
 
@@ -265,8 +271,11 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
                 noShadow
               />
             )}
-            {isRebaseToken && (
+            {isTokenRebasing && (
               <RebasingTokenWarning token={fromToken} noShadow />
+            )}
+            {isTokenSafeMoon && (
+              <SafeMoonTokenWarning token={fromToken} noShadow />
             )}
             {isGnosisSafe && (
               <GnosisSafeWarning
