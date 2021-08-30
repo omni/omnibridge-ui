@@ -1,13 +1,16 @@
 import { SafeAppWeb3Modal as Web3Modal } from '@gnosis.pm/safe-apps-web3modal';
 import WalletConnectProvider from '@walletconnect/web3-provider';
+import coinbaseLogo from 'assets/coinbase.svg';
 import imTokenLogo from 'assets/imtoken.svg';
 import { ethers } from 'ethers';
+import { DEFAULT_BRIDGE_DIRECTION } from 'lib/constants';
 import {
   getNetworkName,
   getRPCUrl,
   getWalletProviderName,
   logError,
 } from 'lib/helpers';
+import { networks } from 'lib/networks';
 import React, {
   useCallback,
   useContext,
@@ -15,6 +18,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
+import { WalletLink } from 'walletlink';
 
 export const Web3Context = React.createContext({});
 export const useWeb3Context = () => useContext(Web3Context);
@@ -50,6 +54,8 @@ const connector = async (ProviderPackage, options) => {
   return provider;
 };
 
+const { homeChainId } = networks[DEFAULT_BRIDGE_DIRECTION];
+
 const providerOptions = {
   walletconnect: {
     package: WalletConnectProvider,
@@ -64,6 +70,28 @@ const providerOptions = {
     package: WalletConnectProvider,
     options: { rpc },
     connector,
+  },
+  'custom-walletlink': {
+    display: {
+      logo: coinbaseLogo,
+      name: 'Coinbase',
+      description: 'Scan with WalletLink to connect',
+    },
+    options: {
+      appName: 'OmniBridge',
+      networkUrl: getRPCUrl(homeChainId),
+      chainId: homeChainId,
+    },
+    package: WalletLink,
+    connector: async (_, options) => {
+      const { appName, networkUrl, chainId } = options;
+      const walletLink = new WalletLink({
+        appName,
+      });
+      const provider = walletLink.makeWeb3Provider(networkUrl, chainId);
+      await provider.enable();
+      return provider;
+    },
   },
 };
 
