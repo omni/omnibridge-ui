@@ -77,9 +77,9 @@ const providerOptions = {
       appName: 'OmniBridge',
     },
     package: WalletLink,
-    connector: async (_, options) => {
+    connector: async (WalletLinkPackage, options) => {
       const { appName } = options;
-      const walletLink = new WalletLink({
+      const walletLink = new WalletLinkPackage({
         appName,
       });
       const provider = walletLink.makeWeb3Provider({}, 0);
