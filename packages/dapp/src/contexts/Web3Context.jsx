@@ -3,14 +3,12 @@ import WalletConnectProvider from '@walletconnect/web3-provider';
 import coinbaseLogo from 'assets/coinbase.svg';
 import imTokenLogo from 'assets/imtoken.svg';
 import { ethers } from 'ethers';
-import { DEFAULT_BRIDGE_DIRECTION } from 'lib/constants';
 import {
   getNetworkName,
   getRPCUrl,
   getWalletProviderName,
   logError,
 } from 'lib/helpers';
-import { networks } from 'lib/networks';
 import React, {
   useCallback,
   useContext,
@@ -54,8 +52,6 @@ const connector = async (ProviderPackage, options) => {
   return provider;
 };
 
-const { homeChainId } = networks[DEFAULT_BRIDGE_DIRECTION];
-
 const providerOptions = {
   walletconnect: {
     package: WalletConnectProvider,
@@ -79,12 +75,10 @@ const providerOptions = {
     },
     options: {
       appName: 'OmniBridge',
-      networkUrl: getRPCUrl(homeChainId),
-      chainId: homeChainId,
     },
     package: WalletLink,
     connector: async (_, options) => {
-      const { appName, networkUrl, chainId } = options;
+      const { appName } = options;
       const walletLink = new WalletLink({
         appName,
       });
