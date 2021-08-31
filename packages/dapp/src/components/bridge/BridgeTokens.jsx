@@ -5,6 +5,7 @@ import { SystemFeedback } from 'components/bridge/SystemFeedback';
 import { ToToken } from 'components/bridge/ToToken';
 import { TransferButton } from 'components/bridge/TransferButton';
 import { UnlockButton } from 'components/bridge/UnlockButton';
+import { CoinzillaTextAd } from 'components/common/CoinzillaTextAd';
 import { BridgeLoadingModal } from 'components/modals/BridgeLoadingModal';
 import {
   BinancePeggedAssetWarning,
@@ -76,6 +77,7 @@ export const BridgeTokens = () => {
       my="auto"
       mx={{ base: 4, sm: 8 }}
     >
+      <CoinzillaTextAd />
       <GnosisSafeWarning noCheckbox />
       <RPCHealthWarning />
       {isERC20Dai && <DaiWarning />}

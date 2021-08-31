@@ -1,4 +1,5 @@
 import { Checkbox, Flex, Grid, Text } from '@chakra-ui/react';
+import { CoinzillaTextAd } from 'components/common/CoinzillaTextAd';
 import { HistoryItem } from 'components/history/HistoryItem';
 import { HistoryPagination } from 'components/history/HistoryPagination';
 import { ManualClaim } from 'components/history/ManualClaim';
@@ -71,6 +72,7 @@ export const BridgeHistory = ({ page }) => {
       px={{ base: 4, sm: 8 }}
       w="100%"
     >
+      <CoinzillaTextAd />
       <ClaimErrorModal
         claimErrorShow={claimErrorShow}
         claimErrorToken={claimErrorToken}
