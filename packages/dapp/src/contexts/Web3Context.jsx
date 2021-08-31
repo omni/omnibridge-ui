@@ -71,7 +71,7 @@ const providerOptions = {
     display: {
       logo: coinbaseLogo,
       name: 'Coinbase',
-      description: 'Scan with WalletLink to connect',
+      description: 'Scan with Coinbase Wallet to connect',
     },
     options: {
       appName: 'OmniBridge',
