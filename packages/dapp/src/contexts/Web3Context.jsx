@@ -88,7 +88,7 @@ const providerOptions = {
       const walletLink = new WalletLink({
         appName,
       });
-      const provider = walletLink.makeWeb3Provider(networkUrl, chainId);
+      const provider = walletLink.makeWeb3Provider({}, 0);
       await provider.enable();
       return provider;
     },
