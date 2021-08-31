@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { COINZILLA_API_KEY } from 'lib/constants';
 import { logError } from 'lib/helpers';
 import { useEffect, useState } from 'react';
 
@@ -12,11 +13,10 @@ export const useCoinzillaText = () => {
   useEffect(() => {
     (async function fetchAdvertisement() {
       try {
-        if (!process.env.REACT_APP_COINZILLA_API_KEY)
-          throw new Error('Cannot fetch advertisement');
+        if (!COINZILLA_API_KEY) throw new Error('Cannot fetch advertisement');
 
         const { data } = await axios.get(COINZILLA_TEXT_API_URL, {
-          params: { z: process.env.REACT_APP_COINZILLA_API_KEY },
+          params: { z: COINZILLA_API_KEY },
         });
 
         setAdData(data);

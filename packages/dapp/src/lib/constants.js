@@ -17,6 +17,9 @@ export const POLLING_INTERVAL =
 export const DEFAULT_BRIDGE_DIRECTION =
   process.env.REACT_APP_DEFAULT_BRIDGE_DIRECTION || ETH_XDAI_BRIDGE;
 
+export const COINZILLA_API_KEY =
+  process.env.REACT_APP_COINZILLA_API_KEY || null;
+
 export const NON_ETH_CHAIN_IDS = [56, 77, 100];
 
 export const XDAI_CHAIN_IDS = [77, 100];

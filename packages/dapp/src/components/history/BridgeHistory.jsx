@@ -1,4 +1,5 @@
 import { Checkbox, Flex, Grid, Text } from '@chakra-ui/react';
+import { CoinzillaBannerAd } from 'components/common/CoinzillaBannerAd';
 import { CoinzillaTextAd } from 'components/common/CoinzillaTextAd';
 import { HistoryItem } from 'components/history/HistoryItem';
 import { HistoryPagination } from 'components/history/HistoryPagination';
@@ -124,7 +125,15 @@ export const BridgeHistory = ({ page }) => {
             <Text textAlign="center">Amount</Text>
             <Text textAlign="right">Status</Text>
           </Grid>
-          {displayHistory.map(item => (
+          {displayHistory.slice(0, 3).map(item => (
+            <HistoryItem
+              key={item.sendingTx}
+              data={item}
+              handleClaimError={handleClaimError}
+            />
+          ))}
+          <CoinzillaBannerAd my="20px" mt="4px" />
+          {displayHistory.slice(3).map(item => (
             <HistoryItem
               key={item.sendingTx}
               data={item}

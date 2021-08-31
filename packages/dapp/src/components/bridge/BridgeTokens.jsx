@@ -5,6 +5,7 @@ import { SystemFeedback } from 'components/bridge/SystemFeedback';
 import { ToToken } from 'components/bridge/ToToken';
 import { TransferButton } from 'components/bridge/TransferButton';
 import { UnlockButton } from 'components/bridge/UnlockButton';
+import { CoinzillaBannerAd } from 'components/common/CoinzillaBannerAd';
 import { CoinzillaTextAd } from 'components/common/CoinzillaTextAd';
 import { BridgeLoadingModal } from 'components/modals/BridgeLoadingModal';
 import {
@@ -163,6 +164,7 @@ export const BridgeTokens = () => {
         <AdvancedMenu />
         <SystemFeedback />
       </Flex>
+      <CoinzillaBannerAd />
     </Flex>
   );
 };
