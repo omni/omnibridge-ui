@@ -1,7 +1,6 @@
-import { HStack, Image, Text } from '@chakra-ui/react';
+import { HStack, Image, Link, Text } from '@chakra-ui/react';
 import { useCoinzillaText } from 'hooks/useCoinzillaText';
 import React from 'react';
-import { Link } from 'react-router-dom';
 
 export const CoinzillaTextAd = () => {
   const { isFetching, adData, adFetchError } = useCoinzillaText();
