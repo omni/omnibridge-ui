@@ -25,9 +25,7 @@ export const CoinzillaTextAd = () => {
       <Text> - {title}</Text>
       <Link
         href={url}
-        target="_blank"
-        rel="noopener no"
-        style={{ color: 'var(--chakra-colors-blue-500)', fontWeight: 'bold' }}
+        color="blue.500" fontWeight="bold" isExternal
       >
         {ctaButton}
       </Link>
