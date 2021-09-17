@@ -56,8 +56,8 @@ const POA_XDAI_BRIDGE_CONFIG = {
     '0x63be59CF177cA9bb317DE8C4aa965Ddda93CB9d7'.toLowerCase(),
   foreignAmbAddress: '0xB2218bdEbe8e90f80D04286772B0968ead666942'.toLowerCase(),
   homeAmbAddress: '0xc2d77d118326c33BBe36EbeAbf4F7ED6BC2dda5c'.toLowerCase(),
-  foreignGraphName: 'yadatashy/poa-to-xdai-omnibridge',
-  homeGraphName: 'yadatashy/xdai-to-poa-omnibridge',
+  foreignGraphName: 'maxaleks/poa-to-xdai-omnibridge',
+  homeGraphName: 'maxaleks/xdai-to-poa-omnibridge',
   ambLiveMonitorPrefix: 'https://alm-poa-xdai.herokuapp.com',
   claimDisabled: false,
   tokensClaimDisabled: [
