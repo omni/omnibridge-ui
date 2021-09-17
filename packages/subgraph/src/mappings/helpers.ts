@@ -20,6 +20,11 @@ export function getDirection(): String {
       // must add other bsc-xdai dedication-bridge addresses here in the future (if any)
     ) {
       return 'bsc-xdai';
+    } else if (
+      address ==
+      Address.fromString('0x63be59CF177cA9bb317DE8C4aa965Ddda93CB9d7')
+    ) {
+      return 'poa-xdai';
     }
     return 'mainnet-xdai';
   } else if (network == 'mainnet') {

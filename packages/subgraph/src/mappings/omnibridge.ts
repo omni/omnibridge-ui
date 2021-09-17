@@ -83,11 +83,16 @@ export function handleNewToken(event: NewTokenRegistered): void {
     token.foreignChainId = 56;
     token.homeName = tokenObject.name;
     token.foreignName = tokenObject.name.slice(0, -8);
+  } else if (network == 'xdai' && direction == 'poa-xdai') {
+    token.homeChainId = 100;
+    token.foreignChainId = 99;
+    token.homeName = tokenObject.name;
+    token.foreignName = tokenObject.name.slice(0, -9);
   } else if (network == 'poa-core') {
     token.homeChainId = 99;
     token.foreignChainId = 100;
     token.homeName = tokenObject.name;
-    token.foreignName = tokenObject.name.slice(0, -8);
+    token.foreignName = tokenObject.name.slice(0, -9);
   } else if (network == 'poa-sokol') {
     token.homeChainId = 77;
     token.foreignChainId = 42;
