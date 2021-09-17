@@ -38,6 +38,8 @@ export function getDirection(): String {
       return 'mainnet-bsc';
     }
     return 'bsc-xdai';
+  } else if (network == 'poa-core') {
+    return 'poa-xdai';
   } else if (network == 'poa-sokol' || network == 'kovan') {
     return 'kovan-sokol';
   }
