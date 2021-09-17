@@ -95,6 +95,9 @@ export function updateHomeTokenInfo(
     if (network == 'xdai') {
       token.homeChainId = 100;
       token.homeName = tokenObject.name;
+    } else if (network == 'poa-core') {
+      token.homeChainId = 99;
+      token.homeName = tokenObject.name;
     } else if (network == 'poa-sokol') {
       token.homeChainId = 77;
       token.homeName = tokenObject.name;
