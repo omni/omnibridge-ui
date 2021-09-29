@@ -23,6 +23,7 @@ yarn-error.log*
 # subgraph
 packages/subgraph/build/
 packages/subgraph/src/types/
+subgraph.yaml
 
 # vim 
 *.swp
@@ -33,9 +34,6 @@ firebase-debug.log*
 
 # eslint
 .eslintcache
-
-# subgraph
-subgraph.yaml
 
 # package-lock 
 package-lock.json

@@ -1,4 +1,4 @@
-specVersion: 0.0.2
+specVersion: 0.0.3
 description: Subgraph that indexes the omnibridge transfers
 repository: https://github.com/raid-guild/xdai-omnibridge
 schema:
@@ -15,7 +15,7 @@ dataSources:
       startBlock: {{startBlock}}
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.5
       abis:
         - name: Bridge
           file: ./src/abis/bridge.json
@@ -46,7 +46,7 @@ dataSources:
       startBlock: {{startBlock}}
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.5
       abis:
         - name: AMB
           file: ./src/abis/amb.json
@@ -79,7 +79,7 @@ dataSources:
       startBlock: {{startBlock}}
     mapping:
       kind: ethereum/events
-      apiVersion: 0.0.4
+      apiVersion: 0.0.5
       abis:
         - name: Bridge
           file: ./src/abis/bridge.json

@@ -26,7 +26,7 @@ export function handleBridgeTransfer(event: TokensBridged): void {
   execution.amount = event.params.value;
   execution.messageId = event.params.messageId;
   execution.save();
-  log.debug('TokensBridged token {}', [execution.token.toHexString()]);
+  log.debug('TokensBridged token {}', [execution.token!.toHexString()]);
 }
 
 export function handleInitiateTransfer(event: TokensBridgingInitiated): void {
@@ -48,7 +48,7 @@ export function handleInitiateTransfer(event: TokensBridgingInitiated): void {
   request.amount = event.params.value;
   request.messageId = event.params.messageId;
   request.save();
-  log.debug('TokensBridgingInitiated token {}', [request.token.toHexString()]);
+  log.debug('TokensBridgingInitiated token {}', [request.token!.toHexString()]);
 }
 
 export function handleNewToken(event: NewTokenRegistered): void {
@@ -118,6 +118,6 @@ export function handleNewToken(event: NewTokenRegistered): void {
   token.save();
   log.debug('NewTokenRegistered homeToken {} and foreignToken {}', [
     token.homeAddress.toHexString(),
-    token.foreignAddress.toHexString(),
+    token.foreignAddress!.toHexString(),
   ]);
 }

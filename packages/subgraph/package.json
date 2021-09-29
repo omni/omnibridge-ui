@@ -2,12 +2,12 @@
   "name": "@omnibridge/subgraph",
   "version": "1.0.0",
   "dependencies": {
-    "@graphprotocol/graph-cli": "^0.21.1",
-    "@graphprotocol/graph-ts": "^0.20.1"
+    "@graphprotocol/graph-cli": "^0.22.1",
+    "@graphprotocol/graph-ts": "^0.22.1"
   },
   "license": "MIT",
   "scripts": {
-    "auth": "graph auth https://api.thegraph.com/deploy/ $GRAPH_ACCESS_TOKEN",
+    "auth": "graph auth --product hosted-service $GRAPH_ACCESS_TOKEN",
     "prepare-mainnet": "mustache config/mainnet.json subgraph.template.yaml > subgraph.yaml",
     "prepare-xdai": "mustache config/xdai.json subgraph.template.yaml > subgraph.yaml",
     "prepare-kovan": "mustache config/kovan.json subgraph.template.yaml > subgraph.yaml",
@@ -16,6 +16,8 @@
     "prepare-bsc-xdai": "mustache config/bsc-xdai.json subgraph.template.yaml > subgraph.yaml",
     "prepare-mainnet-bsc": "mustache config/mainnet-bsc.json subgraph.template.yaml > subgraph.yaml",
     "prepare-bsc-mainnet": "mustache config/bsc-mainnet.json subgraph.template.yaml > subgraph.yaml",
+    "prepare-poa-xdai": "mustache config/poa-xdai.json subgraph.template.yaml > subgraph.yaml",
+    "prepare-xdai-poa": "mustache config/xdai-poa.json subgraph.template.yaml > subgraph.yaml",
     "codegen": "graph codegen --output-dir src/types/",
     "build": "graph build",
     "deploy-mainnet": "graph deploy raid-guild/mainnet-omnibridge --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
@@ -25,7 +27,9 @@
     "deploy-xdai-bsc": "graph deploy maxaleks/xdai-to-bsc-omnibridge --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
     "deploy-bsc-xdai": "graph deploy maxaleks/bsc-to-xdai-omnibridge --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
     "deploy-mainnet-bsc": "graph deploy dan13ram/mainnet-to-bsc-omnibridge --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
-    "deploy-bsc-mainnet": "graph deploy dan13ram/bsc-to-mainnet-omnibridge --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/"
+    "deploy-bsc-mainnet": "graph deploy dan13ram/bsc-to-mainnet-omnibridge --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
+    "deploy-poa-xdai": "graph deploy sunguru98/poa-to-xdai-omnibridge --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
+    "deploy-xdai-poa": "graph deploy sunguru98/xdai-to-poa-omnibridge --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/"
   },
   "devDependencies": {
     "mustache": "^4.2.0",

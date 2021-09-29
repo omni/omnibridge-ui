@@ -8,6 +8,15 @@ class TokenObject {
   name: string;
   symbol: string;
   decimals: i32;
+
+  constructor() {
+    this.address = Address.fromString(
+      '0x0000000000000000000000000000000000000000',
+    );
+    this.name = '';
+    this.symbol = '';
+    this.decimals = 0;
+  }
 }
 
 export function getDirection(): String {
@@ -113,7 +122,7 @@ export function updateHomeTokenInfo(
 }
 
 // headerLength = 79 + sourceChainIdLength + destinationChainIdLength
-// for bsc, sokol, kovan, xdai and mainnet chainId < 255
+// for bsc, sokol, kovan, xdai, poa-core and mainnet chainId < 255
 // => len(chainId) = 1
 var HEADER_LENGTH = 79 + 1 + 1;
 var METHOD_SIGNATURE_LENGTH = 4;
@@ -129,12 +138,17 @@ var deployAndHandleBridgedTokensAndCall = Bytes.fromHexString(
 ) as Bytes;
 var deployAndHandleBridgedTokens = Bytes.fromHexString('0x2ae87cdd') as Bytes;
 
-export function decodeRecipient(encodedData: Bytes): Bytes {
-  let data = encodedData.subarray(HEADER_LENGTH + METHOD_SIGNATURE_LENGTH);
-  let method = encodedData.subarray(
-    HEADER_LENGTH,
-    HEADER_LENGTH + METHOD_SIGNATURE_LENGTH,
-  ) as Bytes;
+export function decodeRecipient(encodedData: Bytes): Bytes | null {
+  let data = Bytes.fromUint8Array(
+    encodedData.subarray(HEADER_LENGTH + METHOD_SIGNATURE_LENGTH),
+  );
+
+  let method = Bytes.fromUint8Array(
+    encodedData.subarray(
+      HEADER_LENGTH,
+      HEADER_LENGTH + METHOD_SIGNATURE_LENGTH,
+    ),
+  );
 
   if (
     method == handleNativeTokens ||
@@ -145,10 +159,12 @@ export function decodeRecipient(encodedData: Bytes): Bytes {
     // _token, 0 - 32
     // _receiver, 32 - 64
     // _value, 64 - 96
-    return data.subarray(
-      2 * PADDED_LENGTH - ADDRESS_LENGTH, // removing padded zeros
-      2 * PADDED_LENGTH,
-    ) as Bytes;
+    return Bytes.fromUint8Array(
+      data.subarray(
+        2 * PADDED_LENGTH - ADDRESS_LENGTH, // removing padded zeros
+        2 * PADDED_LENGTH,
+      ),
+    );
   } else if (
     method == deployAndHandleBridgedTokens ||
     method == deployAndHandleBridgedTokensAndCall
@@ -159,10 +175,12 @@ export function decodeRecipient(encodedData: Bytes): Bytes {
     // _decimals, 96 - 128
     // _receiver, 128 - 160
     // _value, 160 - 192
-    return data.subarray(
-      5 * PADDED_LENGTH - ADDRESS_LENGTH, // removing padded zeros
-      5 * PADDED_LENGTH,
-    ) as Bytes;
+    return Bytes.fromUint8Array(
+      data.subarray(
+        5 * PADDED_LENGTH - ADDRESS_LENGTH, // removing padded zeros
+        5 * PADDED_LENGTH,
+      ),
+    );
   }
   return null;
 }
