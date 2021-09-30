@@ -60,9 +60,7 @@ const POA_XDAI_BRIDGE_CONFIG = {
   homeGraphName: 'dan13ram/xdai-to-poa-omnibridge',
   ambLiveMonitorPrefix: 'https://alm-poa-xdai.herokuapp.com',
   claimDisabled: false,
-  tokensClaimDisabled: [
-    '0x9fe3864F9Ae7cfb5668Dae90C0e20c4C3D437664'.toLowerCase(), // Wrapped POA from POA
-  ],
+  tokensClaimDisabled: [],
 };
 
 const KOVAN_SOKOL_BRIDGE_CONFIG = {
