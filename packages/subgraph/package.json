@@ -26,8 +26,8 @@
     "deploy-sokol": "graph deploy dan13ram/sokol-omnibridge --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
     "deploy-xdai-bsc": "graph deploy maxaleks/xdai-to-bsc-omnibridge --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
     "deploy-bsc-xdai": "graph deploy maxaleks/bsc-to-xdai-omnibridge --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
-    "deploy-xdai-poa": "graph deploy maxaleks/xdai-to-poa-omnibridge --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
-    "deploy-poa-xdai": "graph deploy maxaleks/poa-to-xdai-omnibridge --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
+    "deploy-xdai-poa": "graph deploy dan13ram/xdai-to-poa-omnibridge --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
+    "deploy-poa-xdai": "graph deploy dan13ram/poa-to-xdai-omnibridge --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
     "deploy-mainnet-bsc": "graph deploy dan13ram/mainnet-to-bsc-omnibridge --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/",
     "deploy-bsc-mainnet": "graph deploy dan13ram/bsc-to-mainnet-omnibridge --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/"
   },
