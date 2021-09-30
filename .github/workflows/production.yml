@@ -33,7 +33,7 @@ jobs:
         env:
           CI: true
           REACT_APP_DEFAULT_BRIDGE_DIRECTION: eth-xdai
-          REACT_APP_ENABLED_BRIDGES: 'eth-xdai bsc-xdai eth-bsc'
+          REACT_APP_ENABLED_BRIDGES: 'eth-xdai bsc-xdai poa-xdai eth-bsc'
           REACT_APP_INFURA_ID: ${{ secrets.INFURA_ID }}
           REACT_APP_GAS_PRICE_FALLBACK_GWEI: 50
           REACT_APP_GAS_PRICE_SUPPLIER_URL: https://gasprice.poa.network/
@@ -48,6 +48,7 @@ jobs:
           REACT_APP_GRAPH_HEALTH_UPDATE_INTERVAL: 60000
           REACT_APP_GRAPH_HEALTH_THRESHOLD_BLOCKS: 10
           REACT_APP_XDAI_RPC_URL: https://rpc.xdaichain.com https://dai.poa.network
+          REACT_APP_POA_RPC_URL: https://core.poa.network
           REACT_APP_SOKOL_RPC_URL: https://sokol.poa.network
           REACT_APP_MAINNET_RPC_URL: https://mainnet.infura.io/v3/${{ secrets.INFURA_ID }} https://mainnet-nethermind.blockscout.com/
           REACT_APP_KOVAN_RPC_URL: https://kovan.infura.io/v3/${{ secrets.INFURA_ID }} https://kovan.poa.network/

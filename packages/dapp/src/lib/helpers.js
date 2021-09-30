@@ -17,6 +17,7 @@ import {
   ETH_XDAI_BRIDGE,
   KOVAN_SOKOL_BRIDGE,
   networks,
+  POA_XDAI_BRIDGE,
 } from 'lib/networks';
 
 import { getOverriddenMediator, isOverridden } from './overrides';
@@ -67,9 +68,7 @@ export const uniqueTokens = list => {
 export const formatValue = (num, dec) => {
   const str = utils.formatUnits(num, dec);
   if (str.length > 50) {
-    const expStr = Number(str)
-      .toExponential()
-      .replace(/e\+?/, ' x 10^');
+    const expStr = Number(str).toExponential().replace(/e\+?/, ' x 10^');
     const split = expStr.split(' x 10^');
     const first = Number(split[0]).toLocaleString('en', {
       maximumFractionDigits: 4,
@@ -142,6 +141,7 @@ export const logDebug = (...args) => {
 
 const {
   XDAI_RPC_URL,
+  POA_RPC_URL,
   MAINNET_RPC_URL,
   BSC_RPC_URL,
   KOVAN_RPC_URL,
@@ -159,6 +159,11 @@ export const getRPCKeys = bridgeDirection => {
       return {
         homeRPCKey: XDAI_RPC_URL,
         foreignRPCKey: BSC_RPC_URL,
+      };
+    case POA_XDAI_BRIDGE:
+      return {
+        homeRPCKey: XDAI_RPC_URL,
+        foreignRPCKey: POA_RPC_URL,
       };
     case ETH_BSC_BRIDGE:
       return {
@@ -179,9 +184,8 @@ export const getHelperContract = chainId =>
 
 export const getMediatorAddressWithoutOverride = (bridgeDirection, chainId) => {
   if (!bridgeDirection || !chainId) return null;
-  const { homeChainId, homeMediatorAddress, foreignMediatorAddress } = networks[
-    bridgeDirection
-  ];
+  const { homeChainId, homeMediatorAddress, foreignMediatorAddress } =
+    networks[bridgeDirection];
   return homeChainId === chainId
     ? homeMediatorAddress.toLowerCase()
     : foreignMediatorAddress.toLowerCase();

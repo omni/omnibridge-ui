@@ -20,6 +20,11 @@ export function getDirection(): String {
       // must add other bsc-xdai dedication-bridge addresses here in the future (if any)
     ) {
       return 'bsc-xdai';
+    } else if (
+      address ==
+      Address.fromString('0x63be59CF177cA9bb317DE8C4aa965Ddda93CB9d7')
+    ) {
+      return 'poa-xdai';
     }
     return 'mainnet-xdai';
   } else if (network == 'mainnet') {
@@ -38,6 +43,8 @@ export function getDirection(): String {
       return 'mainnet-bsc';
     }
     return 'bsc-xdai';
+  } else if (network == 'poa-core') {
+    return 'poa-xdai';
   } else if (network == 'poa-sokol' || network == 'kovan') {
     return 'kovan-sokol';
   }
@@ -92,6 +99,9 @@ export function updateHomeTokenInfo(
     let network = dataSource.network();
     if (network == 'xdai') {
       token.homeChainId = 100;
+      token.homeName = tokenObject.name;
+    } else if (network == 'poa-core') {
+      token.homeChainId = 99;
       token.homeName = tokenObject.name;
     } else if (network == 'poa-sokol') {
       token.homeChainId = 77;

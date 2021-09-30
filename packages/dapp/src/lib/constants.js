@@ -3,9 +3,11 @@ import { ETH_XDAI_BRIDGE } from 'lib/networks';
 
 export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000';
 export const ETHER_CURRENCY_LOGO =
-  'https://assets.coingecko.com/coins/images/279/small/ethereum.png?1595348880';
+  'https://s2.coinmarketcap.com/static/img/coins/64x64/1027.png';
 export const BNB_CURRENCY_LOGO =
-  'https://assets.coingecko.com/coins/images/825/small/binance-coin-logo.png?1547034615';
+  'https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png';
+export const POA_CURRENCY_LOGO =
+  'https://s2.coinmarketcap.com/static/img/coins/64x64/2548.png';
 
 export const LARGEST_UINT256 = BigNumber.from(
   '115792089237316195423570985008687907853269984665640564039457584007913129639935',
@@ -20,9 +22,9 @@ export const DEFAULT_BRIDGE_DIRECTION =
 export const COINZILLA_API_KEY =
   process.env.REACT_APP_COINZILLA_API_KEY || null;
 
-export const NON_ETH_CHAIN_IDS = [56, 77, 100];
+export const NON_ETH_CHAIN_IDS = [56, 77, 99, 100];
 
-export const XDAI_CHAIN_IDS = [77, 100];
+export const XDAI_CHAIN_IDS = [77, 99, 100];
 
 export const nativeCurrencies = {
   1: {
@@ -33,7 +35,8 @@ export const nativeCurrencies = {
     name: 'Ether',
     symbol: 'ETH',
     mode: 'NATIVE',
-    homeTokenAddress: '0x6A023CCd1ff6F2045C3309768eAd9E68F978f6e1'.toLowerCase(),
+    homeTokenAddress:
+      '0x6A023CCd1ff6F2045C3309768eAd9E68F978f6e1'.toLowerCase(),
   },
   42: {
     chainId: 42,
@@ -43,7 +46,8 @@ export const nativeCurrencies = {
     name: 'Kovan Ether',
     symbol: 'KETH',
     mode: 'NATIVE',
-    homeTokenAddress: '0x3D14493DF2B479E6BABE82Fc2373F91622bac025'.toLowerCase(),
+    homeTokenAddress:
+      '0x3D14493DF2B479E6BABE82Fc2373F91622bac025'.toLowerCase(),
   },
   56: {
     chainId: 56,
@@ -53,13 +57,26 @@ export const nativeCurrencies = {
     address: ADDRESS_ZERO,
     symbol: 'BNB',
     mode: 'NATIVE',
-    homeTokenAddress: '0xCa8d20f3e0144a72C6B5d576e9Bd3Fd8557E2B04'.toLowerCase(),
+    homeTokenAddress:
+      '0xCa8d20f3e0144a72C6B5d576e9Bd3Fd8557E2B04'.toLowerCase(),
+  },
+  99: {
+    chainId: 99,
+    decimals: 18,
+    logoURI: POA_CURRENCY_LOGO,
+    name: 'POA',
+    address: ADDRESS_ZERO,
+    symbol: 'POA',
+    mode: 'NATIVE',
+    homeTokenAddress:
+      '0x9fe3864F9Ae7cfb5668Dae90C0e20c4C3D437664'.toLowerCase(),
   },
 };
 
 export const nativeCurrencyMediators = {
   42: '0x227a6f13aa0dba8912d740c0f88fb1304b2597e1'.toLowerCase(),
   56: '0xefc33f8b2c4d51005585962be7ea20518ea9fd0d'.toLowerCase(),
+  99: '0xF6a1Ad94d29679388e533B63bfE1Fd6f1680D23B'.toLowerCase(),
 };
 
 export const networkNames = {
@@ -67,6 +84,7 @@ export const networkNames = {
   42: 'Kovan Testnet',
   56: 'Binance Smart Chain',
   77: 'Sokol Testnet',
+  99: 'POA Network',
   100: 'xDai Chain',
 };
 
@@ -78,6 +96,7 @@ export const networkLabels = {
   42: 'Kovan',
   56: 'BSC',
   77: 'Sokol',
+  99: 'POA',
   100: 'xDai',
 };
 
@@ -98,6 +117,10 @@ export const networkCurrencies = {
     name: 'Sokol POA',
     symbol: 'SPOA',
   },
+  99: {
+    name: 'POA',
+    symbol: 'POA',
+  },
   100: {
     name: 'xDai',
     symbol: 'xDai',
@@ -107,6 +130,7 @@ export const networkCurrencies = {
 const {
   REACT_APP_MAINNET_RPC_URL,
   REACT_APP_XDAI_RPC_URL,
+  REACT_APP_POA_RPC_URL,
   REACT_APP_SOKOL_RPC_URL,
   REACT_APP_KOVAN_RPC_URL,
   REACT_APP_BSC_RPC_URL,
@@ -137,6 +161,12 @@ export const chainUrls = {
     chainId: 77,
     name: networkNames[77],
   },
+  99: {
+    rpc: REACT_APP_POA_RPC_URL.split(' '),
+    explorer: 'https://blockscout.com/poa/core',
+    chainId: 99,
+    name: networkNames[99],
+  },
   100: {
     rpc: REACT_APP_XDAI_RPC_URL.split(' '),
     explorer: 'https://blockscout.com/xdai/mainnet',
@@ -150,6 +180,7 @@ export const defaultTokensUrl = {
   1: 'https://tokens.uniswap.org',
   42: '',
   77: '',
+  99: '',
   56: 'https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/smartchain/tokenlist.json',
 };
 
@@ -160,6 +191,7 @@ export const LOCAL_STORAGE_KEYS = {
   DONT_SHOW_CLAIMS: 'dont-show-claims',
   MAINNET_RPC_URL: 'mainnet-rpc-url',
   XDAI_RPC_URL: 'xdai-rpc-url',
+  POA_RPC_URL: 'poa-rpc-url',
   BSC_RPC_URL: 'bsc-rpc-url',
   KOVAN_RPC_URL: 'kovan-rpc-url',
   SOKOL_RPC_URL: 'sokol-rpc-url',
