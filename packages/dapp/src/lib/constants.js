@@ -1,5 +1,10 @@
 import { BigNumber } from 'ethers';
-import { ETH_XDAI_BRIDGE } from 'lib/networks';
+
+export const ETH_XDAI_BRIDGE = 'eth-xdai';
+export const BSC_XDAI_BRIDGE = 'bsc-xdai';
+export const POA_XDAI_BRIDGE = 'poa-xdai';
+export const KOVAN_SOKOL_BRIDGE = 'kovan-sokol';
+export const ETH_BSC_BRIDGE = 'eth-bsc';
 
 export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000';
 export const ETHER_CURRENCY_LOGO =

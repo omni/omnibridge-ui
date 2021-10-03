@@ -1,8 +1,19 @@
-export const ETH_XDAI_BRIDGE = 'eth-xdai';
-export const BSC_XDAI_BRIDGE = 'bsc-xdai';
-export const POA_XDAI_BRIDGE = 'poa-xdai';
-export const KOVAN_SOKOL_BRIDGE = 'kovan-sokol';
-export const ETH_BSC_BRIDGE = 'eth-bsc';
+import {
+  BSC_XDAI_BRIDGE,
+  ETH_BSC_BRIDGE,
+  ETH_XDAI_BRIDGE,
+  KOVAN_SOKOL_BRIDGE,
+  nativeCurrencies,
+  POA_XDAI_BRIDGE,
+} from 'lib/constants';
+
+export {
+  BSC_XDAI_BRIDGE,
+  ETH_BSC_BRIDGE,
+  ETH_XDAI_BRIDGE,
+  KOVAN_SOKOL_BRIDGE,
+  POA_XDAI_BRIDGE,
+};
 
 const ETH_XDAI_BRIDGE_CONFIG = {
   label: 'eth⥊xdai',
@@ -166,17 +177,12 @@ export const defaultTokens = {
     },
   },
   [POA_XDAI_BRIDGE]: {
-    99: {
-      address: '0xA90E565423342B3e5443cfc79eE57a62F9E30633',
-      chainId: 99,
-      symbol: 'STAKE',
-      name: 'STAKE on xDai from xDai',
-    },
+    99: nativeCurrencies[99],
     100: {
-      address: '0xb7D311E2Eb55F2f68a9440da38e7989210b9A05e',
+      address: '0x9fe3864F9Ae7cfb5668Dae90C0e20c4C3D437664',
       chainId: 100,
-      symbol: 'STAKE',
-      name: 'STAKE on xDai',
+      symbol: 'WPOA',
+      name: 'Wrapped POA from POA',
     },
   },
   [ETH_BSC_BRIDGE]: {
