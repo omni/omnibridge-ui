@@ -113,6 +113,21 @@ const HNYTokenOverride = {
 
 const DATATokenOverride = {
   100: {
+    mediator: '0x53f3F44c434494da73EC44a6E8a8D091332bC2ce',
+    from: '0x256eb8a51f382650B2A1e946b8811953640ee47D',
+    to: '0x8f693ca8D21b157107184d29D398A8D082b38b76',
+    mode: 'dedicated-erc20',
+  },
+  1: {
+    mediator: '0x29e572d45cC33D5a68DCc8f92bfc7ded0017Bc59',
+    from: '0x8f693ca8D21b157107184d29D398A8D082b38b76',
+    to: '0x256eb8a51f382650B2A1e946b8811953640ee47D',
+    mode: 'dedicated-erc20',
+  },
+};
+
+const XDATATokenOverride = {
+  100: {
     mediator: '0x7d55f9981d4E10A193314E001b96f72FCc901e40',
     from: '0xE4a2620edE1058D61BEe5F45F6414314fdf10548',
     to: '0x0cf0ee63788a0849fe5297f3407f701e122cc023',
@@ -169,8 +184,10 @@ const ETH_XDAI_OVERRIDES = {
   ['0x1e16aa4Df73d29C029d94CeDa3e3114EC191E25A'.toLowerCase()]: MOONTokenOverride,
   ['0xc3589f56b6869824804a5ea29f2c9886af1b0fce'.toLowerCase()]: HNYTokenOverride,
   ['0x71850b7e9ee3f13ab46d67167341e4bdc905eef9'.toLowerCase()]: HNYTokenOverride,
-  ['0x0cf0ee63788a0849fe5297f3407f701e122cc023'.toLowerCase()]: DATATokenOverride,
-  ['0xE4a2620edE1058D61BEe5F45F6414314fdf10548'.toLowerCase()]: DATATokenOverride,
+  ['0x8f693ca8D21b157107184d29D398A8D082b38b76'.toLowerCase()]: DATATokenOverride,
+  ['0x256eb8a51f382650B2A1e946b8811953640ee47D'.toLowerCase()]: DATATokenOverride,
+  ['0x0cf0ee63788a0849fe5297f3407f701e122cc023'.toLowerCase()]: XDATATokenOverride,
+  ['0xE4a2620edE1058D61BEe5F45F6414314fdf10548'.toLowerCase()]: XDATATokenOverride,
   ['0x0b006E475620Af076915257C6A9E40635AbdBBAd'.toLowerCase()]: AGVETokenOverride,
   ['0x3a97704a1b25f08aa230ae53b352e2e72ef52843'.toLowerCase()]: AGVETokenOverride,
 };

@@ -20,9 +20,14 @@
       "startBlock": "11761811"
     },
     {
-      "name": "DATA",
+      "name": "XDATA",
       "address": "0x2eeeDdeECe91c9F4c5bA4C8E1d784A0234C6d015",
       "startBlock": "12004477"
+    },
+    {
+      "name": "DATA",
+      "address": "0x29e572d45cC33D5a68DCc8f92bfc7ded0017Bc59",
+      "startBlock": "13148806"
     },
     {
       "name": "AGVE",
