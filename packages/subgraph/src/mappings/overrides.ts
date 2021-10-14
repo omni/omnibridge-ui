@@ -40,11 +40,21 @@ export function getOverrides(): TypedMap<Address, boolean> {
     );
     overriddenTokens.set(
       // xdai DATA
-      Address.fromString('0xE4a2620edE1058D61BEe5F45F6414314fdf10548'),
+      Address.fromString('0x256eb8a51f382650B2A1e946b8811953640ee47D'),
       true,
     );
     overriddenTokens.set(
       // mainnet DATA
+      Address.fromString('0x8f693ca8D21b157107184d29D398A8D082b38b76'),
+      true,
+    );
+    overriddenTokens.set(
+      // xdai XDATA
+      Address.fromString('0xE4a2620edE1058D61BEe5F45F6414314fdf10548'),
+      true,
+    );
+    overriddenTokens.set(
+      // mainnet XDATA
       Address.fromString('0x0cf0ee63788a0849fe5297f3407f701e122cc023'),
       true,
     );
@@ -113,11 +123,21 @@ export function getMediatedTokens(): TypedMap<Address, Address> {
     );
     mediatedTokens.set(
       // xdai DATA
+      Address.fromString('0x53f3F44c434494da73EC44a6E8a8D091332bC2ce'),
+      Address.fromString('0x256eb8a51f382650B2A1e946b8811953640ee47D'),
+    );
+    mediatedTokens.set(
+      // mainnet DATA
+      Address.fromString('0x29e572d45cC33D5a68DCc8f92bfc7ded0017Bc59'),
+      Address.fromString('0x8f693ca8D21b157107184d29D398A8D082b38b76'),
+    );
+    mediatedTokens.set(
+      // xdai XDATA
       Address.fromString('0x7d55f9981d4E10A193314E001b96f72FCc901e40'),
       Address.fromString('0xE4a2620edE1058D61BEe5F45F6414314fdf10548'),
     );
     mediatedTokens.set(
-      // mainnet DATA
+      // mainnet XDATA
       Address.fromString('0x2eeeDdeECe91c9F4c5bA4C8E1d784A0234C6d015'),
       Address.fromString('0x0cf0ee63788a0849fe5297f3407f701e122cc023'),
     );
