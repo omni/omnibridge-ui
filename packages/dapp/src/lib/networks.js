@@ -19,7 +19,7 @@ const ETH_XDAI_BRIDGE_CONFIG = {
   label: 'eth⥊xdai',
   homeChainId: 100,
   foreignChainId: 1,
-  enableReversedBridge: false,
+  enableReversedBridge: true,
   enableForeignCurrencyBridge: false,
   foreignMediatorAddress:
     '0x88ad09518695c6c3712AC10a214bE5109a655671'.toLowerCase(),
