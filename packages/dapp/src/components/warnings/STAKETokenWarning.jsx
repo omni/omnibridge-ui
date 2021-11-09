@@ -19,6 +19,18 @@ export const STAKETokenWarning = ({ noShadow = false }) => {
   ) {
     innerText = (
       <>
+        Bridging STAKE token from the xDai chain to the Binance Smart Chain DOES
+        NOT mint Binance-pegged STAKE token. Don&apos;t send minted token to the
+        Binance deposit address!
+      </>
+    );
+  } else if (
+    address.toLowerCase() ===
+      '0x24e5CF4a0577563d4e7761D14D53C8D0b504E337'.toLowerCase() &&
+    bridgeDirection === ETH_BSC_BRIDGE
+  ) {
+    innerText = (
+      <>
         Bridging STAKE token from the Binance Smart Chain to the Ethereum
         Mainnet DOES NOT unlock xDai-pegged STAKE token. If you want STAKE token
         on the Ethereum Mainnet{' '}
@@ -30,18 +42,6 @@ export const STAKETokenWarning = ({ noShadow = false }) => {
           bridge it back to the xDai chain first
         </Link>
         .
-      </>
-    );
-  } else if (
-    address.toLowerCase() ===
-      '0x24e5CF4a0577563d4e7761D14D53C8D0b504E337'.toLowerCase() &&
-    bridgeDirection === ETH_BSC_BRIDGE
-  ) {
-    innerText = (
-      <>
-        Bridging STAKE token from the xDai chain on the Binance Smart Chain to
-        the Ethereum Mainnet DOES NOT mint Binance-pegged STAKE token.
-        Don&apos;t send minted token to the Binance deposit address!
       </>
     );
   } else {
