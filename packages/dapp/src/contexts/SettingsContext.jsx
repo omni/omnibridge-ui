@@ -1,6 +1,10 @@
 import { useLocalState } from 'hooks/useLocalState';
-import { DEFAULT_BRIDGE_DIRECTION, LOCAL_STORAGE_KEYS } from 'lib/constants';
-import { fetchQueryParams, getRPCKeys } from 'lib/helpers';
+import {
+  ADDRESS_ZERO,
+  DEFAULT_BRIDGE_DIRECTION,
+  LOCAL_STORAGE_KEYS,
+} from 'lib/constants';
+import { fetchQueryParams, getNativeCurrency, getRPCKeys } from 'lib/helpers';
 import { networks } from 'lib/networks';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
@@ -45,7 +49,13 @@ export const SettingsProvider = ({ children }) => {
 
         if (networkEntry) {
           setBridgeDirection(networkEntry[0], true);
-          setQueryToken({ chainId: fromChainId, address: tokenAddress });
+          setQueryToken(
+            tokenAddress === ADDRESS_ZERO &&
+              networkEntry[1].enableForeignCurrencyBridge &&
+              networkEntry[1].foreignChainId === fromChainId
+              ? getNativeCurrency(fromChainId)
+              : { chainId: fromChainId, address: tokenAddress },
+          );
         }
       }
     }

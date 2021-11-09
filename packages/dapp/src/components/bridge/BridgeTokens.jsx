@@ -28,6 +28,7 @@ import {
   isSafeMoonToken,
   SafeMoonTokenWarning,
 } from 'components/warnings/SafeMoonTokenWarning';
+import { STAKETokenWarning } from 'components/warnings/STAKETokenWarning';
 import { useBridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
@@ -81,6 +82,7 @@ export const BridgeTokens = () => {
       <CoinzillaTextAd />
       <GnosisSafeWarning noCheckbox />
       <RPCHealthWarning />
+      <STAKETokenWarning />
       {isERC20Dai && <DaiWarning />}
       {showReverseBridgeWarning && <ReverseWarning />}
       {showBinancePeggedAssetWarning && (
