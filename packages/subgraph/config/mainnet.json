@@ -33,6 +33,11 @@
       "name": "AGVE",
       "address": "0x5689C65cfe5E8BF1A5F836c956DeA1b3B8BE00Bb",
       "startBlock": "12624668"
+    },
+    {
+      "name": "SWASH",
+      "address": "0xE964A36142BbE39751D0B4D6140fC0b8c48e68bE",
+      "startBlock": "13443803"
     }
   ]
 }
