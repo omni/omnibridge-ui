@@ -13,13 +13,12 @@ export const useCoinzillaText = () => {
   useEffect(() => {
     (async function fetchAdvertisement() {
       try {
-        if (!COINZILLA_API_KEY) throw new Error('Cannot fetch advertisement');
-
-        const { data } = await axios.get(COINZILLA_TEXT_API_URL, {
-          params: { z: COINZILLA_API_KEY },
-        });
-
-        setAdData(data);
+        if (COINZILLA_API_KEY) {
+          const { data } = await axios.get(COINZILLA_TEXT_API_URL, {
+            params: { z: COINZILLA_API_KEY },
+          });
+          setAdData(data);
+        }
       } catch (err) {
         logError(err);
         setAdFetchError(err);

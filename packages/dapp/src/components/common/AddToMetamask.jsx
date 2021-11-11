@@ -49,16 +49,18 @@ export const AddToMetamask = ({ token, asModal = false, ...props }) => {
     }
   }, [onOpen, asModal, addToken]);
 
-  return isMetamask && token.address !== ADDRESS_ZERO ? (
+  return isMetamask ? (
     <>
-      <Image
-        cursor="pointer"
-        src={MetamaskFox}
-        alt="metamask-fox"
-        onClick={onClick}
-        w="1rem"
-        {...props}
-      />
+      {token.address !== ADDRESS_ZERO && (
+        <Image
+          cursor="pointer"
+          src={MetamaskFox}
+          alt="metamask-fox"
+          onClick={onClick}
+          w="1rem"
+          {...props}
+        />
+      )}
       {asModal && isOpen && (
         <AddToMetamaskModal isOpen={isOpen} onClose={onClose} token={token} />
       )}
