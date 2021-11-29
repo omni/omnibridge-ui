@@ -5,8 +5,7 @@ import React from 'react';
 export const CoinzillaTextAd = () => {
   const { isFetching, adData, adFetchError } = useCoinzillaText();
 
-  if (isFetching || adFetchError) return null;
-  if (!adData) return null;
+  if (isFetching || adFetchError || !adData) return null;
 
   const {
     ad: { thumbnail, name, title, url, cta_button: ctaButton },
@@ -23,10 +22,7 @@ export const CoinzillaTextAd = () => {
       <Image alt="ad-logo" src={thumbnail} w="20px" h="20px" />
       <Text fontWeight="bold">{name}</Text>
       <Text> - {title}</Text>
-      <Link
-        href={url}
-        color="blue.500" fontWeight="bold" isExternal
-      >
+      <Link href={url} color="blue.500" fontWeight="bold" isExternal>
         {ctaButton}
       </Link>
     </HStack>
