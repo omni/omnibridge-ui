@@ -186,6 +186,21 @@ const SWASHTokenOverride = {
   },
 };
 
+const UDTTokenOverride = {
+  100: {
+    mediator: '0x5F0FE58709639A39c193521d919aFaef02E570F7',
+    from: '0x8C84142c4a716a16a89d0e61707164d6107A9811',
+    to: '0x90de74265a416e1393a450752175aed98fe11517',
+    mode: 'erc677',
+  },
+  1: {
+    mediator: '0x41a4ee2855A7Dc328524babB07d7f505B201133e',
+    from: '0x90de74265a416e1393a450752175aed98fe11517',
+    to: '0x8C84142c4a716a16a89d0e61707164d6107A9811',
+    mode: 'dedicated-erc20',
+  },
+};
+
 const ETH_XDAI_OVERRIDES = {
   ['0x0905Ab807F8FD040255F0cF8fa14756c1D824931'.toLowerCase()]: OWLTokenOverride,
   ['0x1a5f9352af8af974bfc03399e3767df6370d82e4'.toLowerCase()]: OWLTokenOverride,
@@ -206,7 +221,9 @@ const ETH_XDAI_OVERRIDES = {
   ['0x0b006E475620Af076915257C6A9E40635AbdBBAd'.toLowerCase()]: AGVETokenOverride,
   ['0x3a97704a1b25f08aa230ae53b352e2e72ef52843'.toLowerCase()]: AGVETokenOverride,
   ['0xA130E3a33a4d84b04c3918c4E5762223Ae252F80'.toLowerCase()]: SWASHTokenOverride,
-  ['0x84e2c67cbefae6b5148fca7d02b341b12ff4b5bb'.toLowerCase()]: SWASHTokenOverride
+  ['0x84e2c67cbefae6b5148fca7d02b341b12ff4b5bb'.toLowerCase()]: SWASHTokenOverride,
+  ['0x90de74265a416e1393a450752175aed98fe11517'.toLowerCase()]: UDTTokenOverride,
+  ['0x8C84142c4a716a16a89d0e61707164d6107A9811'.toLowerCase()]: UDTTokenOverride,
 };
 
 const KOVAN_SOKOL_OVERRIDES = {

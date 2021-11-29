@@ -78,6 +78,16 @@ export function getOverrides(): TypedMap<Address, boolean> {
       Address.fromString('0xA130E3a33a4d84b04c3918c4E5762223Ae252F80'),
       true,
     );
+    overriddenTokens.set(
+      // xdai UDT
+      Address.fromString('0x8C84142c4a716a16a89d0e61707164d6107A9811'),
+      true,
+    );
+    overriddenTokens.set(
+      // mainnet UDT
+      Address.fromString('0x90de74265a416e1393a450752175aed98fe11517'),
+      true,
+    );
   } else if (direction == 'kovan-sokol') {
     overriddenTokens.set(
       // sokol DEMO2712
@@ -171,6 +181,16 @@ export function getMediatedTokens(): TypedMap<Address, Address> {
       Address.fromString('0xE964A36142BbE39751D0B4D6140fC0b8c48e68bE'),
       Address.fromString('0xA130E3a33a4d84b04c3918c4E5762223Ae252F80'),
     );
+    mediatedTokens.set(
+      // xdai UDT
+      Address.fromString('0x5F0FE58709639A39c193521d919aFaef02E570F7'),
+      Address.fromString('0x8C84142c4a716a16a89d0e61707164d6107A9811'),
+    );
+    mediatedTokens.set(
+      // mainnet UDT
+      Address.fromString('0x41a4ee2855A7Dc328524babB07d7f505B201133e'),
+      Address.fromString('0x90de74265a416e1393a450752175aed98fe11517'),
+    );
   } else if (direction == 'kovan-sokol') {
     mediatedTokens.set(
       // sokol DEMO2712
@@ -181,7 +201,7 @@ export function getMediatedTokens(): TypedMap<Address, Address> {
       // kovan DEMO2712
       Address.fromString('0xA68Bd659A9167F3D3C01bA9776A1208dae8F003b'),
       Address.fromString('0xa4764045851F17AA60B6c8E8b62072Bea9538521'),
-    );    
+    );
   }
   // **** OVERRIDES END ****
 
