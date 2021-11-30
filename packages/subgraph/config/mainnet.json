@@ -38,6 +38,11 @@
       "name": "SWASH",
       "address": "0xE964A36142BbE39751D0B4D6140fC0b8c48e68bE",
       "startBlock": "13443803"
+    },
+    {
+      "name": "UDT",
+      "address": "0x41a4ee2855A7Dc328524babB07d7f505B201133e",
+      "startBlock": "13708426"
     }
   ]
 }
