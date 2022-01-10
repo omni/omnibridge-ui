@@ -17,6 +17,7 @@
     "@chakra-ui/icons": "^1.0.15",
     "@chakra-ui/react": "^1.6.6",
     "@chakra-ui/theme": "^1.10.0",
+    "@davatar/react": "^1.8.1",
     "@emotion/react": "^11.4.1",
     "@emotion/styled": "^11.3.0",
     "@gnosis.pm/safe-apps-web3modal": "^1.0.0",

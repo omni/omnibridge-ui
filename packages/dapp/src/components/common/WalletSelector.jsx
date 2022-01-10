@@ -8,13 +8,16 @@ import {
   Text,
   useBreakpointValue,
 } from '@chakra-ui/react';
+import Davatar from '@davatar/react';
 import { useWeb3Context } from 'contexts/Web3Context';
+import { useENS } from 'hooks/useENS';
 import { WalletIcon } from 'icons/WalletIcon';
 import { getAccountString, getNetworkLabel, getNetworkName } from 'lib/helpers';
 import React from 'react';
 
 export const WalletSelector = ({ close }) => {
   const { disconnect, account, providerChainId } = useWeb3Context();
+  const { ensName } = useENS(account);
 
   const placement = useBreakpointValue({ base: 'bottom', md: 'bottom-end' });
   if (!account || !providerChainId) return null;
@@ -23,7 +26,13 @@ export const WalletSelector = ({ close }) => {
       <Popover placement={placement}>
         <PopoverTrigger>
           <Button colorScheme="blue" px={3} leftIcon={<WalletIcon />}>
-            <Text fontSize="sm"> {getAccountString(account)} </Text>
+            <Davatar
+              address={account}
+              size={20}
+              style={{ marginRight: 7 }}
+              generatedAvatarType="jazzicon"
+            />
+            <Text fontSize="sm"> {ensName || getAccountString(account)} </Text>
             <Flex
               justify="center"
               align="center"
