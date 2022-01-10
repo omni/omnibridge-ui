@@ -20,10 +20,8 @@ const ethPriceFromApi = async fetchFn => {
   return null;
 };
 
-const {
-  REACT_APP_ETH_PRICE_API_URL,
-  REACT_APP_ETH_PRICE_UPDATE_INTERVAL,
-} = process.env;
+const { REACT_APP_ETH_PRICE_API_URL, REACT_APP_ETH_PRICE_UPDATE_INTERVAL } =
+  process.env;
 
 const DEFAULT_ETH_PRICE_API_URL =
   'https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=USD';

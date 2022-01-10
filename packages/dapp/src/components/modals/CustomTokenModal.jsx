@@ -43,10 +43,10 @@ export const CustomTokenModal = ({ isOpen, onClose, onBack }) => {
   const { setToken, setLoading } = useBridgeContext();
   const { providerChainId } = useWeb3Context();
   const { bridgeDirection, getBridgeChainId } = useBridgeDirection();
-  const bridgeChainId = useMemo(() => getBridgeChainId(providerChainId), [
-    providerChainId,
-    getBridgeChainId,
-  ]);
+  const bridgeChainId = useMemo(
+    () => getBridgeChainId(providerChainId),
+    [providerChainId, getBridgeChainId],
+  );
   const [customToken, setCustomToken] = useState({
     address: '',
     name: '',

@@ -10,11 +10,12 @@ import {
 } from '@chakra-ui/react';
 import RightArrowImage from 'assets/right-arrow.svg';
 import { AddToMetamask } from 'components/common/AddToMetamask';
-import { BigNumber, utils } from 'ethers';
+import { BigNumber } from 'ethers';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { useClaim } from 'hooks/useClaim';
 import { isRevertedError, TOKENS_CLAIMED } from 'lib/amb';
 import {
+  formatValue,
   getExplorerUrl,
   getHelperContract,
   getNativeCurrency,
@@ -22,8 +23,6 @@ import {
   logError,
 } from 'lib/helpers';
 import React, { useCallback, useState } from 'react';
-
-const { formatUnits } = utils;
 
 const shortenHash = hash =>
   `${hash.slice(0, 6)}...${hash.slice(hash.length - 4, hash.length)}`;
@@ -46,7 +45,7 @@ const Tag = ({ bg, txt }) => (
 );
 
 const networkTags = {
-  100: <Tag bg="#4DA9A6" txt="xDai" />,
+  100: <Tag bg="#4DA9A6" txt="Gnosis Chain" />,
   99: <Tag bg="#5B33A5" txt="POA" />,
   1: <Tag bg="#5A74DA" txt="Ethereum" />,
   42: <Tag bg="#5A74DA" txt="Kovan" />,
@@ -151,8 +150,8 @@ export const HistoryItem = ({
       <Grid
         templateColumns={{
           base: '1fr',
-          md: '0.5fr 1.75fr 1fr 1fr 1.25fr 0.5fr',
-          lg: '1fr 1.25fr 1fr 1fr 1.25fr 0.5fr',
+          md: '0.5fr 1.75fr 0.9fr 0.9fr 1fr 0.5fr',
+          lg: '1fr 1.25fr 0.9fr 0.9fr 1fr 0.5fr',
         }}
         w="100%"
       >
@@ -216,15 +215,15 @@ export const HistoryItem = ({
         </Flex>
         <Flex
           align="center"
-          justify={{ base: 'space-between', md: 'center' }}
+          justify={{ base: 'space-between', md: 'flex-end' }}
           mb={{ base: 1, md: 0 }}
         >
           <Text display={{ base: 'inline-block', md: 'none' }} color="greyText">
             Amount
           </Text>
           <Flex>
-            <Text my="auto" textAlign="center">
-              {`${formatUnits(
+            <Text my="auto" textAlign="right">
+              {`${formatValue(
                 BigNumber.from(amount),
                 toToken.decimals,
               )} ${tokenSymbol}`}

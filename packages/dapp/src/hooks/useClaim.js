@@ -14,11 +14,8 @@ import { getEthersProvider } from 'lib/providers';
 import { useCallback, useEffect, useState } from 'react';
 
 const useExecution = () => {
-  const {
-    foreignChainId,
-    foreignAmbAddress,
-    foreignAmbVersion,
-  } = useBridgeDirection();
+  const { foreignChainId, foreignAmbAddress, foreignAmbVersion } =
+    useBridgeDirection();
   const { providerChainId, ethersProvider, isMetamask } = useWeb3Context();
   const [doRepeat, setDoRepeat] = useState(false);
   const [executing, setExecuting] = useState(false);
