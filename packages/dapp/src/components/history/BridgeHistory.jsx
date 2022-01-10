@@ -109,8 +109,8 @@ export const BridgeHistory = ({ page }) => {
           <Grid
             templateColumns={{
               base: '1fr',
-              md: '0.5fr 1.75fr 1fr 1fr 1.25fr 0.5fr',
-              lg: '1fr 1.25fr 1fr 1fr 1.25fr 0.5fr',
+              md: '0.5fr 1.75fr 0.9fr 0.9fr 1fr 0.5fr',
+              lg: '1fr 1.25fr 0.9fr 0.9fr 1fr 0.5fr',
             }}
             color="grey"
             fontSize="sm"
@@ -122,7 +122,7 @@ export const BridgeHistory = ({ page }) => {
             <Text>Direction</Text>
             <Text textAlign="center">Sending Tx</Text>
             <Text textAlign="center">Receiving Tx</Text>
-            <Text textAlign="center">Amount</Text>
+            <Text textAlign="right">Amount</Text>
             <Text textAlign="right">Status</Text>
           </Grid>
           {displayHistory.slice(0, 3).map(item => (

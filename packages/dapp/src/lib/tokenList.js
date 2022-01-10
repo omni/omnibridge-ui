@@ -3,6 +3,7 @@ import Ajv from 'ajv';
 import { gql, request } from 'graphql-request';
 
 import { getTokenListUrl, uniqueTokens } from './helpers';
+import { renamexDaiTokensAsGnosis } from './token';
 
 const tokenListValidator = new Ajv({ allErrors: true }).compile(schema);
 
@@ -75,6 +76,9 @@ export const fetchTokenList = memoize(
       fetchTokensFromSubgraph(homeEndpoint, foreignEndpoint),
     ]);
     const tokens = uniqueTokens(defaultTokens.concat(subgraphTokens));
-    return tokens;
+    return tokens.map(token => ({
+      ...token,
+      name: renamexDaiTokensAsGnosis(token.name),
+    }));
   },
 );

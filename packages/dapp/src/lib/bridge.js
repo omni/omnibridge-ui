@@ -16,7 +16,9 @@ const getToName = async (fromToken, toChainId, toAddress) => {
   const { name } = fromToken;
   if (toAddress === ADDRESS_ZERO) {
     const fromName = name || (await fetchTokenName(fromToken));
-    return `${fromName} on ${getNetworkLabel(toChainId)}`;
+    return `${fromName} on ${
+      toChainId === 100 ? 'GC' : getNetworkLabel(toChainId)
+    }`;
   }
   return fetchTokenName({ chainId: toChainId, address: toAddress });
 };

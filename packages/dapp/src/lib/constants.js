@@ -91,7 +91,7 @@ export const networkNames = {
   56: 'Binance Smart Chain',
   77: 'Sokol Testnet',
   99: 'POA Network',
-  100: 'xDai Chain',
+  100: 'Gnosis Chain',
 };
 
 export const networkLabels = {
@@ -103,7 +103,7 @@ export const networkLabels = {
   56: 'BSC',
   77: 'Sokol',
   99: 'POA',
-  100: 'xDai',
+  100: 'Gnosis Chain',
 };
 
 export const networkCurrencies = {

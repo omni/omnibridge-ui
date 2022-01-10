@@ -59,6 +59,15 @@ const fetchMode = async (bridgeDirection, token) => {
   return 'erc677';
 };
 
+export const renamexDaiTokensAsGnosis = tokenName => {
+  if (!tokenName) return tokenName;
+  if (tokenName.includes('on xDai'))
+    return tokenName.replace('on xDai', 'on GC');
+  if (tokenName.includes('from xDai'))
+    return tokenName.replace('from xDai', 'from GC');
+  return tokenName;
+};
+
 export const fetchTokenName = async token => {
   const ethersProvider = await getEthersProvider(token.chainId);
 
@@ -80,10 +89,10 @@ export const fetchTokenName = async token => {
     );
     tokenName = utils.parseBytes32String(await tokenContractBytes32.name());
   }
-  return tokenName;
+  return renamexDaiTokensAsGnosis(tokenName);
 };
 
-export const fetchTokenDetailsBytes32 = async token => {
+const fetchTokenDetailsBytes32 = async token => {
   const ethersProvider = await getEthersProvider(token.chainId);
   const abi = [
     'function decimals() view returns (uint8)',
@@ -103,7 +112,7 @@ export const fetchTokenDetailsBytes32 = async token => {
   };
 };
 
-export const fetchTokenDetailsString = async token => {
+const fetchTokenDetailsString = async token => {
   const ethersProvider = await getEthersProvider(token.chainId);
   const abi = [
     'function decimals() view returns (uint8)',
@@ -138,9 +147,11 @@ export const fetchTokenDetails = async (bridgeDirection, token) => {
     fetchMode(bridgeDirection, token),
   ]);
 
+  // replace xDai in token names with GC
+
   return {
     ...token,
-    name,
+    name: renamexDaiTokensAsGnosis(name),
     symbol,
     decimals: Number(decimals),
     mode,
