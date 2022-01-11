@@ -16,7 +16,7 @@ export {
 };
 
 const ETH_XDAI_BRIDGE_CONFIG = {
-  label: 'eth⥊xdai',
+  label: 'eth⥊gc',
   homeChainId: 100,
   foreignChainId: 1,
   enableReversedBridge: true,
@@ -35,7 +35,7 @@ const ETH_XDAI_BRIDGE_CONFIG = {
 };
 
 const BSC_XDAI_BRIDGE_CONFIG = {
-  label: 'bsc⥊xdai',
+  label: 'bsc⥊gc',
   homeChainId: 100,
   foreignChainId: 56,
   enableReversedBridge: true,
@@ -56,7 +56,7 @@ const BSC_XDAI_BRIDGE_CONFIG = {
 };
 
 const POA_XDAI_BRIDGE_CONFIG = {
-  label: 'poa⥊xdai',
+  label: 'poa⥊gc',
   homeChainId: 100,
   foreignChainId: 99,
   enableReversedBridge: true,

@@ -29,10 +29,12 @@ export const WalletSelector = ({ close }) => {
             <Davatar
               address={account}
               size={20}
-              style={{ marginRight: 7 }}
               generatedAvatarType="jazzicon"
             />
-            <Text fontSize="sm"> {ensName || getAccountString(account)} </Text>
+            <Text fontSize="sm" ml="2">
+              {' '}
+              {ensName || getAccountString(account)}{' '}
+            </Text>
             <Flex
               justify="center"
               align="center"

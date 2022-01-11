@@ -69,10 +69,10 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
     enableForeignCurrencyBridge,
   } = useBridgeDirection();
 
-  const bridgeChainId = useMemo(() => getBridgeChainId(providerChainId), [
-    providerChainId,
-    getBridgeChainId,
-  ]);
+  const bridgeChainId = useMemo(
+    () => getBridgeChainId(providerChainId),
+    [providerChainId, getBridgeChainId],
+  );
 
   // Callbacks
   const fetchTokenListWithBalance = useCallback(
@@ -235,7 +235,7 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
           borderRadius="1rem"
           pb={4}
           pt={2}
-          maxW="30rem"
+          maxW="37rem"
           mx="12"
         >
           <ConfirmBSCTokenModal
@@ -295,14 +295,8 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
             )}
             {!loading &&
               filteredTokenList.map(token => {
-                const {
-                  decimals,
-                  balance,
-                  name,
-                  address,
-                  logoURI,
-                  symbol,
-                } = token;
+                const { decimals, balance, name, address, logoURI, symbol } =
+                  token;
                 return (
                   <Button
                     variant="outline"

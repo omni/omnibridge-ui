@@ -1,6 +1,6 @@
 import { Checkbox, Flex, Grid, Text } from '@chakra-ui/react';
-import { CoinzillaBannerAd } from 'components/common/CoinzillaBannerAd';
-import { CoinzillaTextAd } from 'components/common/CoinzillaTextAd';
+// import { CoinzillaBannerAd } from 'components/common/CoinzillaBannerAd';
+// import { CoinzillaTextAd } from 'components/common/CoinzillaTextAd';
 import { HistoryItem } from 'components/history/HistoryItem';
 import { HistoryPagination } from 'components/history/HistoryPagination';
 import { ManualClaim } from 'components/history/ManualClaim';
@@ -73,7 +73,7 @@ export const BridgeHistory = ({ page }) => {
       px={{ base: 4, sm: 8 }}
       w="100%"
     >
-      <CoinzillaTextAd />
+      {/* <CoinzillaTextAd /> */}
       <ClaimErrorModal
         claimErrorShow={claimErrorShow}
         claimErrorToken={claimErrorToken}
@@ -109,8 +109,8 @@ export const BridgeHistory = ({ page }) => {
           <Grid
             templateColumns={{
               base: '1fr',
-              md: '0.5fr 1.75fr 1fr 1fr 1.25fr 0.5fr',
-              lg: '1fr 1.25fr 1fr 1fr 1.25fr 0.5fr',
+              md: '0.5fr 1.75fr 0.9fr 0.9fr 1fr 0.5fr',
+              lg: '1fr 1.25fr 0.9fr 0.9fr 1fr 0.5fr',
             }}
             color="grey"
             fontSize="sm"
@@ -122,7 +122,7 @@ export const BridgeHistory = ({ page }) => {
             <Text>Direction</Text>
             <Text textAlign="center">Sending Tx</Text>
             <Text textAlign="center">Receiving Tx</Text>
-            <Text textAlign="center">Amount</Text>
+            <Text textAlign="right">Amount</Text>
             <Text textAlign="right">Status</Text>
           </Grid>
           {displayHistory.slice(0, 3).map(item => (
@@ -132,7 +132,7 @@ export const BridgeHistory = ({ page }) => {
               handleClaimError={handleClaimError}
             />
           ))}
-          <CoinzillaBannerAd my="20px" mt="4px" />
+          {/* <CoinzillaBannerAd my="20px" mt="4px" /> */}
           {displayHistory.slice(3).map(item => (
             <HistoryItem
               key={item.sendingTx}

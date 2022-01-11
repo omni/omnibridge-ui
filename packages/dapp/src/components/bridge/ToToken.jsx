@@ -48,9 +48,10 @@ export const ToToken = () => {
   const smallScreen = useBreakpointValue({ base: true, lg: false });
   const [balanceLoading, setBalanceLoading] = useState(false);
 
-  const nativeCurrency = useMemo(() => getNativeCurrency(foreignChainId), [
-    foreignChainId,
-  ]);
+  const nativeCurrency = useMemo(
+    () => getNativeCurrency(foreignChainId),
+    [foreignChainId],
+  );
 
   const changeToToken = useCallback(async () => {
     setLoading(true);
