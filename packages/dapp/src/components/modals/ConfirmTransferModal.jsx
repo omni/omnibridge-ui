@@ -37,7 +37,10 @@ import {
   isSafeMoonToken,
   SafeMoonTokenWarning,
 } from 'components/warnings/SafeMoonTokenWarning';
-import { STAKETokenWarning } from 'components/warnings/STAKETokenWarning';
+import {
+  isDisabledStakeToken,
+  StakeTokenWarning,
+} from 'components/warnings/StakeTokenWarning';
 import { useBridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
@@ -127,6 +130,7 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
   const isInflationToken = isInflationaryToken(fromToken);
   const isTokenRebasing = isRebasingToken(fromToken);
   const isTokenSafeMoon = isSafeMoonToken(fromToken);
+  const isTokenStake = isDisabledStakeToken(fromToken);
 
   const isSameAddress =
     account && receiver && account.toLowerCase() === receiver.toLowerCase();
@@ -134,6 +138,7 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
   const isDisabled =
     isTokenRebasing ||
     isTokenSafeMoon ||
+    isTokenStake ||
     (isInflationToken && !isInflationWarningChecked) ||
     (isGnosisSafe && isSameAddress && !isGnosisSafeWarningChecked);
 
@@ -266,7 +271,7 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
                 noShadow
               />
             )}
-            <STAKETokenWarning noShadow />
+            <StakeTokenWarning noShadow />
             {isTokenRebasing && (
               <RebasingTokenWarning token={fromToken} noShadow />
             )}

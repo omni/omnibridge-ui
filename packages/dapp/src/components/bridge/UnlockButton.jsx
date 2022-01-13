@@ -3,6 +3,7 @@ import UnlockIcon from 'assets/unlock.svg';
 import { TxLink } from 'components/common/TxLink';
 import { isRebasingToken } from 'components/warnings/RebasingTokenWarning';
 import { isSafeMoonToken } from 'components/warnings/SafeMoonTokenWarning';
+import { isDisabledStakeToken } from 'components/warnings/StakeTokenWarning';
 import { useBridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { isRevertedError } from 'lib/amb';
@@ -23,8 +24,13 @@ export const UnlockButton = () => {
   } = useBridgeContext();
   const isTokenRebasing = isRebasingToken(token);
   const isTokenSafeMoon = isSafeMoonToken(token);
+  const isTokenStake = isDisabledStakeToken(token);
   const buttonDisabled =
-    allowed || toAmountLoading || isTokenRebasing || isTokenSafeMoon;
+    allowed ||
+    toAmountLoading ||
+    isTokenRebasing ||
+    isTokenSafeMoon ||
+    isTokenStake;
   const toast = useToast();
   const showError = useCallback(
     msg => {

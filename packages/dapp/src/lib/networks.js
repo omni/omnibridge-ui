@@ -145,7 +145,7 @@ export const defaultTokens = {
       address: '0xb7D311E2Eb55F2f68a9440da38e7989210b9A05e',
       chainId: 100,
       symbol: 'STAKE',
-      name: 'STAKE on xDai',
+      name: 'STAKE from Ethereum',
     },
   },
   [KOVAN_SOKOL_BRIDGE]: {
