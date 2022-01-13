@@ -3,6 +3,7 @@ import TransferIcon from 'assets/transfer.svg';
 import { ConfirmTransferModal } from 'components/modals/ConfirmTransferModal';
 import { isRebasingToken } from 'components/warnings/RebasingTokenWarning';
 import { isSafeMoonToken } from 'components/warnings/SafeMoonTokenWarning';
+import { isDisabledStakeToken } from 'components/warnings/StakeTokenWarning';
 import { useBridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { utils } from 'ethers';
@@ -42,6 +43,7 @@ export const TransferButton = () => {
   );
   const isTokenRebasing = isRebasingToken(token);
   const isTokenSafeMoon = isSafeMoonToken(token);
+  const isTokenStake = isDisabledStakeToken(token);
   const showReverseBridgeWarning =
     !!toToken &&
     !enableReversedBridge &&
@@ -52,6 +54,7 @@ export const TransferButton = () => {
     !toAmountLoading &&
     !showReverseBridgeWarning &&
     !isTokenRebasing &&
+    !isTokenStake &&
     !isTokenSafeMoon;
 
   const valid = useCallback(() => {

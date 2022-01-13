@@ -27,6 +27,10 @@ import {
   isSafeMoonToken,
   SafeMoonTokenWarning,
 } from 'components/warnings/SafeMoonTokenWarning';
+import {
+  isDisabledStakeToken,
+  StakeTokenWarning,
+} from 'components/warnings/StakeTokenWarning';
 import { useBridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { utils } from 'ethers';
@@ -136,7 +140,8 @@ export const CustomTokenModal = ({ isOpen, onClose, onBack }) => {
 
   const isTokenRebasing = isRebasingToken(customToken);
   const isTokenSafeMoon = isSafeMoonToken(customToken);
-  const isDisabled = isTokenRebasing || isTokenSafeMoon;
+  const isTokenStake = isDisabledStakeToken(customToken);
+  const isDisabled = isTokenRebasing || isTokenSafeMoon || isTokenStake;
 
   const initialRef = useRef();
 
@@ -215,6 +220,7 @@ export const CustomTokenModal = ({ isOpen, onClose, onBack }) => {
           <ModalFooter p={6} flexDirection="column">
             {isTokenRebasing && <RebasingTokenWarning token={customToken} />}
             {isTokenSafeMoon && <SafeMoonTokenWarning token={customToken} />}
+            {isTokenStake && <StakeTokenWarning token={customToken} />}
             <Flex
               w="100%"
               justify="space-between"
