@@ -136,16 +136,16 @@ export const networks = getNetworkConfig(ENABLED_BRIDGES);
 export const defaultTokens = {
   [ETH_XDAI_BRIDGE]: {
     1: {
-      address: '0x0Ae055097C6d159879521C384F1D2123D1f195e6',
+      address: '0x6810e776880c02933d47db1b9fc05908e5386b96',
       chainId: 1,
-      symbol: 'STAKE',
-      name: 'STAKE',
+      symbol: 'GNO',
+      name: 'Gnosis Token',
     },
     100: {
-      address: '0xb7D311E2Eb55F2f68a9440da38e7989210b9A05e',
+      address: '0x9c58bacc331c9aa871afd802db6379a98e80cedb',
       chainId: 100,
-      symbol: 'STAKE',
-      name: 'STAKE on xDai',
+      symbol: 'GNO',
+      name: 'Gnosis Token from Ethereum',
     },
   },
   [KOVAN_SOKOL_BRIDGE]: {
@@ -164,16 +164,16 @@ export const defaultTokens = {
   },
   [BSC_XDAI_BRIDGE]: {
     56: {
-      address: '0x24e5CF4a0577563d4e7761D14D53C8D0b504E337',
+      address: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
       chainId: 56,
-      symbol: 'STAKE',
-      name: 'STAKE on xDai on BSC',
+      symbol: 'WBNB',
+      name: 'Wrapped BNB',
     },
     100: {
-      address: '0xb7D311E2Eb55F2f68a9440da38e7989210b9A05e',
+      address: '0xCa8d20f3e0144a72C6B5d576e9Bd3Fd8557E2B04',
       chainId: 100,
-      symbol: 'STAKE',
-      name: 'STAKE on xDai',
+      symbol: 'WBNB',
+      name: 'Wrapped BNB on GC',
     },
   },
   [POA_XDAI_BRIDGE]: {
@@ -187,16 +187,16 @@ export const defaultTokens = {
   },
   [ETH_BSC_BRIDGE]: {
     56: {
-      address: '0xe55e614862694214f0339adb551393cb56149323',
+      address: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
       chainId: 56,
-      symbol: 'STAKE',
-      name: 'STAKE on BSC',
+      symbol: 'WBNB',
+      name: 'Wrapped BNB',
     },
     1: {
-      address: '0x0Ae055097C6d159879521C384F1D2123D1f195e6',
+      address: '0x47f29657fd9f76710452208e9b12d8e9745e595c',
       chainId: 1,
-      symbol: 'STAKE',
-      name: 'STAKE',
+      symbol: 'WBNB',
+      name: 'Wrapped BNB from BSC',
     },
   },
 };

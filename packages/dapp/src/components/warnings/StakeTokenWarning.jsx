@@ -1,32 +1,57 @@
 import { Alert, AlertIcon, Flex, Link, Text } from '@chakra-ui/react';
 import { useBridgeContext } from 'contexts/BridgeContext';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
-import { BSC_XDAI_BRIDGE, ETH_BSC_BRIDGE } from 'lib/constants';
+import { ETH_BSC_BRIDGE } from 'lib/constants';
 import React from 'react';
 
-export const STAKETokenWarning = ({ noShadow = false }) => {
+const LearnMoreLink = () => (
+  <Link
+    href="https://www.xdaichain.com/for-stakers/stake-gno-swap"
+    isExternal
+    color="blue.400"
+  >
+    learn more
+  </Link>
+);
+
+const MAINNET_STAKE_TOKEN =
+  '0x0Ae055097C6d159879521C384F1D2123D1f195e6'.toLowerCase();
+const XDAI_STAKE_TOKEN =
+  '0xb7D311E2Eb55F2f68a9440da38e7989210b9A05e'.toLowerCase();
+
+export const isDisabledStakeToken = token => {
+  if (!token) return false;
+  const { chainId, address } = token;
+  switch (chainId) {
+    case 1:
+      return address.toLowerCase() === MAINNET_STAKE_TOKEN;
+    case 100:
+      return address.toLowerCase() === XDAI_STAKE_TOKEN;
+    default:
+      return false;
+  }
+};
+
+export const StakeTokenWarning = ({ noShadow = false }) => {
   const { fromToken } = useBridgeContext();
   const { bridgeDirection } = useBridgeDirection();
 
   if (!fromToken) return null;
-  const { address } = fromToken;
+  const { address, chainId } = fromToken;
 
   let innerText = '';
-  if (
-    address.toLowerCase() ===
-      '0xb7D311E2Eb55F2f68a9440da38e7989210b9A05e'.toLowerCase() &&
-    bridgeDirection === BSC_XDAI_BRIDGE
-  ) {
+  if (isDisabledStakeToken(fromToken)) {
     innerText = (
       <>
-        Bridging STAKE token from the xDai chain to the Binance Smart Chain DOES
-        NOT mint Binance-pegged STAKE token. Don&apos;t send minted token to the
-        Binance deposit address!
+        Bridging of STAKE tokens is disabled, please swap your STAKE tokens for
+        GNO tokens (<LearnMoreLink />
+        ).
       </>
     );
   } else if (
     address.toLowerCase() ===
       '0x24e5CF4a0577563d4e7761D14D53C8D0b504E337'.toLowerCase() &&
+    chainId === 56 &&
     bridgeDirection === ETH_BSC_BRIDGE
   ) {
     innerText = (
