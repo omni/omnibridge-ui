@@ -16,15 +16,16 @@ export const isSafeMoonToken = token => {
   }
 };
 
-export const SafeMoonTokenWarning = ({ noShadow = false }) => (
-  <Flex align="center" direction="column" w="100%" mb="4">
-    <Alert
-      status="error"
-      borderRadius={5}
-      boxShadow={noShadow ? 'none' : '0px 1rem 2rem rgba(204, 218, 238, 0.8)'}
-    >
-      <AlertIcon minWidth="20px" />
-      <Text fontSize="small">SafeMoon tokens cannot be bridged.</Text>
-    </Alert>
-  </Flex>
-);
+export const SafeMoonTokenWarning = ({ token, noShadow = false }) =>
+  isSafeMoonToken(token) ? (
+    <Flex align="center" direction="column" w="100%" mb="4">
+      <Alert
+        status="error"
+        borderRadius={5}
+        boxShadow={noShadow ? 'none' : '0px 1rem 2rem rgba(204, 218, 238, 0.8)'}
+      >
+        <AlertIcon minWidth="20px" />
+        <Text fontSize="small">SafeMoon tokens cannot be bridged.</Text>
+      </Alert>
+    </Flex>
+  ) : null;

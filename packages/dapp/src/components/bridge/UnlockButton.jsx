@@ -3,7 +3,7 @@ import UnlockIcon from 'assets/unlock.svg';
 import { TxLink } from 'components/common/TxLink';
 import { useBridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
-import { useTokenWarnings } from 'hooks/useTokenWarnings';
+import { useTokenDisabled } from 'hooks/useTokenDisabled';
 import { isRevertedError } from 'lib/amb';
 import { handleWalletError } from 'lib/helpers';
 import React, { useCallback } from 'react';
@@ -20,7 +20,7 @@ export const UnlockButton = () => {
     unlockLoading,
     approvalTxHash,
   } = useBridgeContext();
-  const { isBridgingDisabled } = useTokenWarnings({ token });
+  const isBridgingDisabled = useTokenDisabled(token);
   const buttonDisabled = allowed || toAmountLoading || isBridgingDisabled;
   const toast = useToast();
   const showError = useCallback(

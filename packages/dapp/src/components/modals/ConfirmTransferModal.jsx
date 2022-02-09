@@ -23,9 +23,10 @@ import {
 } from 'components/warnings/InflationaryTokenWarning';
 import { MedianGasWarning } from 'components/warnings/MedianGasWarning';
 import { NeedsTransactionsWarning } from 'components/warnings/NeedsTransactionsWarning';
+import { TokenWarnings } from 'components/warnings/TokenWarnings';
 import { useBridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
-import { useTokenWarnings } from 'hooks/useTokenWarnings';
+import { useTokenDisabled } from 'hooks/useTokenDisabled';
 import {
   formatValue,
   getAccountString,
@@ -81,10 +82,7 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
     onClose();
   }, [onClose, showError, transfer]);
 
-  const { isBridgingDisabled, warnings } = useTokenWarnings({
-    token: fromToken,
-    noShadow: true,
-  });
+  const isBridgingDisabled = useTokenDisabled(fromToken);
 
   if (!fromToken || !toToken) return null;
 
@@ -228,7 +226,7 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
                 noShadow
               />
             )}
-            {warnings}
+            <TokenWarnings token={fromToken} noShadow />
             <Flex
               w="100%"
               justify="space-between"

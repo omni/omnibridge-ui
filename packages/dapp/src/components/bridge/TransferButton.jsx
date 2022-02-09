@@ -4,7 +4,7 @@ import { ConfirmTransferModal } from 'components/modals/ConfirmTransferModal';
 import { useBridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { utils } from 'ethers';
-import { useTokenWarnings } from 'hooks/useTokenWarnings';
+import { useTokenDisabled } from 'hooks/useTokenDisabled';
 import { formatValue } from 'lib/helpers';
 import React, { useCallback } from 'react';
 
@@ -35,7 +35,7 @@ export const TransferButton = () => {
     },
     [toast],
   );
-  const { isBridgingDisabled } = useTokenWarnings({ token });
+  const isBridgingDisabled = useTokenDisabled(token);
   const buttonEnabled = allowed && !toAmountLoading && !isBridgingDisabled;
 
   const valid = useCallback(() => {

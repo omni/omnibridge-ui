@@ -19,11 +19,12 @@ import {
   ConfirmBSCTokenModal,
   shouldShowBSCTokenModal,
 } from 'components/modals/ConfirmBSCTokenModal';
+import { TokenWarnings } from 'components/warnings/TokenWarnings';
 import { useBridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { utils } from 'ethers';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
-import { useTokenWarnings } from 'hooks/useTokenWarnings';
+import { useTokenDisabled } from 'hooks/useTokenDisabled';
 import { LOCAL_STORAGE_KEYS } from 'lib/constants';
 import { logError, uniqueTokens } from 'lib/helpers';
 import { ETH_BSC_BRIDGE } from 'lib/networks';
@@ -127,9 +128,7 @@ export const CustomTokenModal = ({ isOpen, onClose, onBack }) => {
     }
   }, [customToken, addCustomToken, bridgeDirection, showWarning]);
 
-  const { isBridgingDisabled, warnings } = useTokenWarnings({
-    token: customToken,
-  });
+  const isBridgingDisabled = useTokenDisabled(customToken);
 
   const initialRef = useRef();
 
@@ -206,7 +205,7 @@ export const CustomTokenModal = ({ isOpen, onClose, onBack }) => {
             </Flex>
           </ModalBody>
           <ModalFooter p={6} flexDirection="column">
-            {warnings}
+            <TokenWarnings token={customToken} />
             <Flex
               w="100%"
               justify="space-between"

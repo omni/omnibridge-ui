@@ -14,10 +14,10 @@ import {
   isInflationaryToken,
 } from 'components/warnings/InflationaryTokenWarning';
 import { RPCHealthWarning } from 'components/warnings/RPCHealthWarning';
+import { TokenWarnings } from 'components/warnings/TokenWarnings';
 import { useBridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
-import { useTokenWarnings } from 'hooks/useTokenWarnings';
 import { getNetworkName } from 'lib/helpers';
 import React from 'react';
 
@@ -28,9 +28,6 @@ export const BridgeTokens = () => {
   const { getBridgeChainId } = useBridgeDirection();
   const { fromToken } = useBridgeContext();
   const isInflationToken = isInflationaryToken(fromToken);
-  const { warnings } = useTokenWarnings({
-    token: fromToken,
-  });
 
   const smallScreen = useBreakpointValue({ base: true, lg: false });
   const bridgeChainId = getBridgeChainId(chainId);
@@ -50,7 +47,7 @@ export const BridgeTokens = () => {
       {isInflationToken && (
         <InflationaryTokenWarning token={fromToken} noCheckbox />
       )}
-      {warnings}
+      <TokenWarnings token={fromToken} />
       <Flex
         maxW="75rem"
         background="white"
