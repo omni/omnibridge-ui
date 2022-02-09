@@ -74,7 +74,7 @@ export const StakeTokenWarning = ({ token, noShadow = false }) => {
   return (
     <Flex align="center" direction="column" w="100%" mb="4">
       <Alert
-        status="warning"
+        status="error"
         borderRadius={5}
         boxShadow={noShadow ? 'none' : '0px 1rem 2rem rgba(204, 218, 238, 0.8)'}
       >

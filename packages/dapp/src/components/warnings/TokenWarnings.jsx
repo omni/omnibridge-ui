@@ -5,6 +5,8 @@ import { SafeMoonTokenWarning } from 'components/warnings/SafeMoonTokenWarning';
 import { StakeTokenWarning } from 'components/warnings/StakeTokenWarning';
 import React from 'react';
 
+import { GCOriginOnBSCTokenWarning } from './GCOriginOnBSCTokenWarning';
+
 export const TokenWarnings = ({ token, noShadow = false }) =>
   token ? (
     <>
@@ -13,5 +15,6 @@ export const TokenWarnings = ({ token, noShadow = false }) =>
       <DaiWarning {...{ token, noShadow }} />
       <RebasingTokenWarning {...{ token, noShadow }} />
       <SafeMoonTokenWarning {...{ token, noShadow }} />
+      <GCOriginOnBSCTokenWarning {...{ token, noShadow }} />
     </>
   ) : null;

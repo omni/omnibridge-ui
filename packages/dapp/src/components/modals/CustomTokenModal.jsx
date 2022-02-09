@@ -128,7 +128,9 @@ export const CustomTokenModal = ({ isOpen, onClose, onBack }) => {
     }
   }, [customToken, addCustomToken, bridgeDirection, showWarning]);
 
-  const isBridgingDisabled = useTokenDisabled(customToken);
+  const isBridgingDisabled = useTokenDisabled(
+    !addressInvalid ? customToken : undefined,
+  );
 
   const initialRef = useRef();
 
@@ -205,7 +207,7 @@ export const CustomTokenModal = ({ isOpen, onClose, onBack }) => {
             </Flex>
           </ModalBody>
           <ModalFooter p={6} flexDirection="column">
-            <TokenWarnings token={customToken} />
+            <TokenWarnings token={!addressInvalid ? customToken : undefined} />
             <Flex
               w="100%"
               justify="space-between"
