@@ -1,13 +1,11 @@
 import { Flex, Image, Text, useDisclosure, useToast } from '@chakra-ui/react';
 import TransferIcon from 'assets/transfer.svg';
 import { ConfirmTransferModal } from 'components/modals/ConfirmTransferModal';
-import { isRebasingToken } from 'components/warnings/RebasingTokenWarning';
-import { isSafeMoonToken } from 'components/warnings/SafeMoonTokenWarning';
-import { isDisabledStakeToken } from 'components/warnings/StakeTokenWarning';
 import { useBridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { utils } from 'ethers';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
+import { useTokenWarnings } from 'hooks/useTokenWarnings';
 import { ADDRESS_ZERO } from 'lib/constants';
 import { formatValue } from 'lib/helpers';
 import React, { useCallback } from 'react';
@@ -41,9 +39,7 @@ export const TransferButton = () => {
     },
     [toast],
   );
-  const isTokenRebasing = isRebasingToken(token);
-  const isTokenSafeMoon = isSafeMoonToken(token);
-  const isTokenStake = isDisabledStakeToken(token);
+  const { isBridgingDisabled } = useTokenWarnings({ token });
   const showReverseBridgeWarning =
     !!toToken &&
     !enableReversedBridge &&
@@ -53,9 +49,7 @@ export const TransferButton = () => {
     allowed &&
     !toAmountLoading &&
     !showReverseBridgeWarning &&
-    !isTokenRebasing &&
-    !isTokenStake &&
-    !isTokenSafeMoon;
+    !isBridgingDisabled;
 
   const valid = useCallback(() => {
     if (!ethersProvider) {

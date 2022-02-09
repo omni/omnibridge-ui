@@ -18,20 +18,12 @@ import {
   InflationaryTokenWarning,
   isInflationaryToken,
 } from 'components/warnings/InflationaryTokenWarning';
-import {
-  isRebasingToken,
-  RebasingTokenWarning,
-} from 'components/warnings/RebasingTokenWarning';
 import { ReverseWarning } from 'components/warnings/ReverseWarning';
 import { RPCHealthWarning } from 'components/warnings/RPCHealthWarning';
-import {
-  isSafeMoonToken,
-  SafeMoonTokenWarning,
-} from 'components/warnings/SafeMoonTokenWarning';
-import { StakeTokenWarning } from 'components/warnings/StakeTokenWarning';
 import { useBridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
+import { useTokenWarnings } from 'hooks/useTokenWarnings';
 import { ADDRESS_ZERO } from 'lib/constants';
 import { getNetworkName } from 'lib/helpers';
 import { BSC_XDAI_BRIDGE } from 'lib/networks';
@@ -64,8 +56,9 @@ export const BridgeTokens = () => {
     fromToken.chainId === homeChainId &&
     isERC20ExchangableBinancePeggedAsset(fromToken);
   const isInflationToken = isInflationaryToken(fromToken);
-  const isTokenRebasing = isRebasingToken(fromToken);
-  const isTokenSafeMoon = isSafeMoonToken(fromToken);
+  const { warnings } = useTokenWarnings({
+    token: fromToken,
+  });
 
   const smallScreen = useBreakpointValue({ base: true, lg: false });
   const bridgeChainId = getBridgeChainId(chainId);
@@ -82,7 +75,6 @@ export const BridgeTokens = () => {
       {/* <CoinzillaTextAd /> */}
       <GnosisSafeWarning noCheckbox />
       <RPCHealthWarning />
-      <StakeTokenWarning />
       {isERC20Dai && <DaiWarning />}
       {showReverseBridgeWarning && <ReverseWarning />}
       {showBinancePeggedAssetWarning && (
@@ -91,8 +83,7 @@ export const BridgeTokens = () => {
       {isInflationToken && (
         <InflationaryTokenWarning token={fromToken} noCheckbox />
       )}
-      {isTokenRebasing && <RebasingTokenWarning token={fromToken} />}
-      {isTokenSafeMoon && <SafeMoonTokenWarning token={fromToken} />}
+      {warnings}
       <Flex
         maxW="75rem"
         background="white"

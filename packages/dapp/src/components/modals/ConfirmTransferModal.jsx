@@ -28,22 +28,11 @@ import {
 } from 'components/warnings/InflationaryTokenWarning';
 import { MedianGasWarning } from 'components/warnings/MedianGasWarning';
 import { NeedsTransactionsWarning } from 'components/warnings/NeedsTransactionsWarning';
-import {
-  isRebasingToken,
-  RebasingTokenWarning,
-} from 'components/warnings/RebasingTokenWarning';
 import { ReverseWarning } from 'components/warnings/ReverseWarning';
-import {
-  isSafeMoonToken,
-  SafeMoonTokenWarning,
-} from 'components/warnings/SafeMoonTokenWarning';
-import {
-  isDisabledStakeToken,
-  StakeTokenWarning,
-} from 'components/warnings/StakeTokenWarning';
 import { useBridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
+import { useTokenWarnings } from 'hooks/useTokenWarnings';
 import { ADDRESS_ZERO } from 'lib/constants';
 import { getGasPrice, getMedianHistoricalEthGasPrice } from 'lib/gasPrice';
 import {
@@ -104,6 +93,11 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
     onClose();
   }, [onClose, showError, transfer]);
 
+  const { isBridgingDisabled, warnings } = useTokenWarnings({
+    token: fromToken,
+    noShadow: true,
+  });
+
   if (!fromToken || !toToken) return null;
 
   const fromAmt = formatValue(fromAmount, fromToken.decimals);
@@ -128,17 +122,12 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
     fromToken.chainId === homeChainId &&
     isERC20ExchangableBinancePeggedAsset(fromToken);
   const isInflationToken = isInflationaryToken(fromToken);
-  const isTokenRebasing = isRebasingToken(fromToken);
-  const isTokenSafeMoon = isSafeMoonToken(fromToken);
-  const isTokenStake = isDisabledStakeToken(fromToken);
 
   const isSameAddress =
     account && receiver && account.toLowerCase() === receiver.toLowerCase();
 
   const isDisabled =
-    isTokenRebasing ||
-    isTokenSafeMoon ||
-    isTokenStake ||
+    isBridgingDisabled ||
     (isInflationToken && !isInflationWarningChecked) ||
     (isGnosisSafe && isSameAddress && !isGnosisSafeWarningChecked);
 
@@ -271,13 +260,6 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
                 noShadow
               />
             )}
-            <StakeTokenWarning noShadow />
-            {isTokenRebasing && (
-              <RebasingTokenWarning token={fromToken} noShadow />
-            )}
-            {isTokenSafeMoon && (
-              <SafeMoonTokenWarning token={fromToken} noShadow />
-            )}
             {isGnosisSafe && (
               <GnosisSafeWarning
                 isChecked={isGnosisSafeWarningChecked}
@@ -285,6 +267,7 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
                 noShadow
               />
             )}
+            {warnings}
             <Flex
               w="100%"
               justify="space-between"
