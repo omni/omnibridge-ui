@@ -16,11 +16,6 @@ import {
   useToast,
 } from '@chakra-ui/react';
 import TransferImage from 'assets/confirm-transfer.svg';
-import {
-  BinancePeggedAssetWarning,
-  isERC20ExchangableBinancePeggedAsset,
-} from 'components/warnings/BinancePeggedAssetWarning';
-import { DaiWarning, isERC20DaiAddress } from 'components/warnings/DaiWarning';
 import { GnosisSafeWarning } from 'components/warnings/GnosisSafeWarning';
 import {
   InflationaryTokenWarning,
@@ -34,21 +29,18 @@ import { useWeb3Context } from 'contexts/Web3Context';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { useTokenWarnings } from 'hooks/useTokenWarnings';
 import { ADDRESS_ZERO } from 'lib/constants';
-import { getGasPrice, getMedianHistoricalEthGasPrice } from 'lib/gasPrice';
 import {
   formatValue,
   getAccountString,
   getNetworkLabel,
   handleWalletError,
 } from 'lib/helpers';
-import { BSC_XDAI_BRIDGE } from 'lib/networks';
 import React, { useCallback, useEffect, useState } from 'react';
 
 export const ConfirmTransferModal = ({ isOpen, onClose }) => {
   const { isGnosisSafe, account } = useWeb3Context();
 
-  const { homeChainId, foreignChainId, enableReversedBridge, bridgeDirection } =
-    useBridgeDirection();
+  const { foreignChainId, enableReversedBridge } = useBridgeDirection();
   const {
     receiver,
     fromToken,
@@ -104,23 +96,12 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
   const fromUnit = fromToken.symbol;
   const toAmt = formatValue(toAmount, toToken.decimals);
   const toUnit = toToken.symbol;
-  const currentGasPrice = getGasPrice();
-  const medianGasPrice = getMedianHistoricalEthGasPrice();
 
-  const isERC20Dai =
-    !!fromToken &&
-    fromToken.chainId === foreignChainId &&
-    isERC20DaiAddress(fromToken);
   const showReverseBridgeWarning =
     !!toToken &&
     !enableReversedBridge &&
     toToken.chainId === foreignChainId &&
     toToken.address === ADDRESS_ZERO;
-  const showBinancePeggedAssetWarning =
-    !!fromToken &&
-    bridgeDirection === BSC_XDAI_BRIDGE &&
-    fromToken.chainId === homeChainId &&
-    isERC20ExchangableBinancePeggedAsset(fromToken);
   const isInflationToken = isInflationaryToken(fromToken);
 
   const isSameAddress =
@@ -239,19 +220,9 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
             </Box>
           </ModalBody>
           <ModalFooter p={6} flexDirection="column">
+            <MedianGasWarning noShadow />
             {needsClaiming && <NeedsTransactionsWarning noShadow />}
-            {foreignChainId === 1 && medianGasPrice.lt(currentGasPrice) && (
-              <MedianGasWarning
-                medianPrice={medianGasPrice}
-                currentPrice={currentGasPrice}
-                noShadow
-              />
-            )}
-            {isERC20Dai && <DaiWarning noShadow />}
             {showReverseBridgeWarning && <ReverseWarning noShadow />}
-            {showBinancePeggedAssetWarning && (
-              <BinancePeggedAssetWarning token={fromToken} noShadow />
-            )}
             {isInflationToken && (
               <InflationaryTokenWarning
                 token={fromToken}

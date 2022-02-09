@@ -1,4 +1,6 @@
 import { Alert, AlertIcon, Flex, Link, Text } from '@chakra-ui/react';
+import { useBridgeDirection } from 'hooks/useBridgeDirection';
+import { BSC_XDAI_BRIDGE } from 'lib/constants';
 import React from 'react';
 
 const binancePeggedAssets = {
@@ -28,7 +30,7 @@ const getComponentFinanceLink = tokenAddress =>
 const getBinancePeggedAssetSymbol = tokenAddress =>
   getBinancePeggedAsset(tokenAddress).toSymbol;
 
-export const isERC20ExchangableBinancePeggedAsset = token => {
+const isERC20ExchangableBinancePeggedAsset = token => {
   if (!token) {
     return false;
   }
@@ -46,12 +48,17 @@ const ComponentFinanceLink = ({ tokenAddress }) => (
   </Link>
 );
 
-export const BinancePeggedAssetWarning = ({
-  token: { symbol, address },
-  noShadow = false,
-}) => {
+export const BinancePeggedAssetWarning = ({ token, noShadow = false }) => {
+  const { symbol, address, chainId } = token;
+  const { homeChainId, bridgeDirection } = useBridgeDirection();
+  const isHomeToken =
+    chainId === homeChainId &&
+    bridgeDirection === BSC_XDAI_BRIDGE &&
+    isERC20ExchangableBinancePeggedAsset(token);
+
   const binancePeggedAssetSymbol = getBinancePeggedAssetSymbol(address);
-  return (
+
+  return isHomeToken ? (
     <Flex align="center" direction="column" w="100%" mb="4">
       <Alert
         status="warning"
@@ -67,5 +74,5 @@ export const BinancePeggedAssetWarning = ({
         </Text>
       </Alert>
     </Flex>
-  );
+  ) : null;
 };

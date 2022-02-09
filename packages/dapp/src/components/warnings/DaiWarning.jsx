@@ -1,4 +1,5 @@
 import { Alert, AlertIcon, Flex, Link, Text } from '@chakra-ui/react';
+import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import React from 'react';
 
 const ERC20DaiAddress = {
@@ -10,7 +11,7 @@ const ERC20DaiAddress = {
   56: '0x1AF3F329e8BE154074D8769D1FFa4eE058B1DBc3',
 };
 
-export const isERC20DaiAddress = token => {
+const isERC20DaiAddress = token => {
   if (!token) return false;
 
   const { chainId, address } = token;
@@ -23,18 +24,24 @@ const XDaiBridgeLink = () => (
   </Link>
 );
 
-export const DaiWarning = ({ noShadow = false }) => (
-  <Flex align="center" direction="column" w="100%" mb="4">
-    <Alert
-      status="warning"
-      borderRadius={5}
-      boxShadow={noShadow ? 'none' : '0px 1rem 2rem rgba(204, 218, 238, 0.8)'}
-    >
-      <AlertIcon minWidth="20px" />
-      <Text fontSize="small">
-        Bridging DAI token to xDai Chain DOES NOT mint native xDai token. If you
-        want native xDai, use the <XDaiBridgeLink />.
-      </Text>
-    </Alert>
-  </Flex>
-);
+export const DaiWarning = ({ token, noShadow = false }) => {
+  const { foreignChainId } = useBridgeDirection();
+  const isERC20Dai =
+    !!token && token.chainId === foreignChainId && isERC20DaiAddress(token);
+
+  return isERC20Dai ? (
+    <Flex align="center" direction="column" w="100%" mb="4">
+      <Alert
+        status="warning"
+        borderRadius={5}
+        boxShadow={noShadow ? 'none' : '0px 1rem 2rem rgba(204, 218, 238, 0.8)'}
+      >
+        <AlertIcon minWidth="20px" />
+        <Text fontSize="small">
+          Bridging DAI token to xDai Chain DOES NOT mint native xDai token. If
+          you want native xDai, use the <XDaiBridgeLink />.
+        </Text>
+      </Alert>
+    </Flex>
+  ) : null;
+};

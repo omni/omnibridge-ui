@@ -1,3 +1,5 @@
+import { BinancePeggedAssetWarning } from 'components/warnings/BinancePeggedAssetWarning';
+import { DaiWarning } from 'components/warnings/DaiWarning';
 import {
   isRebasingToken,
   RebasingTokenWarning,
@@ -22,6 +24,8 @@ export const useTokenWarnings = ({ token, noShadow = false }) => {
   const warnings = (
     <>
       <StakeTokenWarning {...{ token, noShadow }} />
+      <BinancePeggedAssetWarning {...{ token, noShadow }} />
+      <DaiWarning {...{ token, noShadow }} />
       {isTokenRebasing && <RebasingTokenWarning {...{ token, noShadow }} />}
       {isTokenSafeMoon && <SafeMoonTokenWarning {...{ token, noShadow }} />}
     </>
