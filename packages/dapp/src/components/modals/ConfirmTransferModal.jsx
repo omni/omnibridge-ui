@@ -23,12 +23,9 @@ import {
 } from 'components/warnings/InflationaryTokenWarning';
 import { MedianGasWarning } from 'components/warnings/MedianGasWarning';
 import { NeedsTransactionsWarning } from 'components/warnings/NeedsTransactionsWarning';
-import { ReverseWarning } from 'components/warnings/ReverseWarning';
 import { useBridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
-import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { useTokenWarnings } from 'hooks/useTokenWarnings';
-import { ADDRESS_ZERO } from 'lib/constants';
 import {
   formatValue,
   getAccountString,
@@ -40,7 +37,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 export const ConfirmTransferModal = ({ isOpen, onClose }) => {
   const { isGnosisSafe, account } = useWeb3Context();
 
-  const { foreignChainId, enableReversedBridge } = useBridgeDirection();
   const {
     receiver,
     fromToken,
@@ -97,11 +93,6 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
   const toAmt = formatValue(toAmount, toToken.decimals);
   const toUnit = toToken.symbol;
 
-  const showReverseBridgeWarning =
-    !!toToken &&
-    !enableReversedBridge &&
-    toToken.chainId === foreignChainId &&
-    toToken.address === ADDRESS_ZERO;
   const isInflationToken = isInflationaryToken(fromToken);
 
   const isSameAddress =
@@ -222,7 +213,6 @@ export const ConfirmTransferModal = ({ isOpen, onClose }) => {
           <ModalFooter p={6} flexDirection="column">
             <MedianGasWarning noShadow />
             {needsClaiming && <NeedsTransactionsWarning noShadow />}
-            {showReverseBridgeWarning && <ReverseWarning noShadow />}
             {isInflationToken && (
               <InflationaryTokenWarning
                 token={fromToken}

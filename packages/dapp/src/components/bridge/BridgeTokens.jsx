@@ -13,13 +13,11 @@ import {
   InflationaryTokenWarning,
   isInflationaryToken,
 } from 'components/warnings/InflationaryTokenWarning';
-import { ReverseWarning } from 'components/warnings/ReverseWarning';
 import { RPCHealthWarning } from 'components/warnings/RPCHealthWarning';
 import { useBridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { useTokenWarnings } from 'hooks/useTokenWarnings';
-import { ADDRESS_ZERO } from 'lib/constants';
 import { getNetworkName } from 'lib/helpers';
 import React from 'react';
 
@@ -27,14 +25,8 @@ import { SwitchButton } from './SwitchButton';
 
 export const BridgeTokens = () => {
   const { providerChainId: chainId } = useWeb3Context();
-  const { getBridgeChainId, foreignChainId, enableReversedBridge } =
-    useBridgeDirection();
-  const { fromToken, toToken } = useBridgeContext();
-  const showReverseBridgeWarning =
-    !!toToken &&
-    !enableReversedBridge &&
-    toToken.chainId === foreignChainId &&
-    toToken.address === ADDRESS_ZERO;
+  const { getBridgeChainId } = useBridgeDirection();
+  const { fromToken } = useBridgeContext();
   const isInflationToken = isInflationaryToken(fromToken);
   const { warnings } = useTokenWarnings({
     token: fromToken,
@@ -55,7 +47,6 @@ export const BridgeTokens = () => {
       {/* <CoinzillaTextAd /> */}
       <GnosisSafeWarning noCheckbox />
       <RPCHealthWarning />
-      {showReverseBridgeWarning && <ReverseWarning />}
       {isInflationToken && (
         <InflationaryTokenWarning token={fromToken} noCheckbox />
       )}

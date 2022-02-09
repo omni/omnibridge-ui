@@ -1,5 +1,4 @@
 import { Alert, AlertIcon, Flex, Link, Text } from '@chakra-ui/react';
-import { useBridgeContext } from 'contexts/BridgeContext';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { ETH_BSC_BRIDGE } from 'lib/constants';
 import React from 'react';
@@ -32,15 +31,14 @@ export const isDisabledStakeToken = token => {
   }
 };
 
-export const StakeTokenWarning = ({ noShadow = false }) => {
-  const { fromToken } = useBridgeContext();
+export const StakeTokenWarning = ({ token, noShadow = false }) => {
   const { bridgeDirection } = useBridgeDirection();
 
-  if (!fromToken) return null;
-  const { address, chainId } = fromToken;
+  if (!token) return null;
+  const { address, chainId } = token;
 
   let innerText = '';
-  if (isDisabledStakeToken(fromToken)) {
+  if (isDisabledStakeToken(token)) {
     innerText = (
       <>
         Bridging of STAKE tokens is disabled, please swap your STAKE tokens for

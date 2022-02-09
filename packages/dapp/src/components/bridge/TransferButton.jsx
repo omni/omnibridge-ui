@@ -4,20 +4,16 @@ import { ConfirmTransferModal } from 'components/modals/ConfirmTransferModal';
 import { useBridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { utils } from 'ethers';
-import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { useTokenWarnings } from 'hooks/useTokenWarnings';
-import { ADDRESS_ZERO } from 'lib/constants';
 import { formatValue } from 'lib/helpers';
 import React, { useCallback } from 'react';
 
 export const TransferButton = () => {
-  const { foreignChainId, enableReversedBridge } = useBridgeDirection();
   const { isGnosisSafe, ethersProvider } = useWeb3Context();
   const {
     receiver,
     fromAmount: amount,
     fromToken: token,
-    toToken,
     fromBalance: balance,
     tokenLimits,
     allowed,
@@ -40,16 +36,7 @@ export const TransferButton = () => {
     [toast],
   );
   const { isBridgingDisabled } = useTokenWarnings({ token });
-  const showReverseBridgeWarning =
-    !!toToken &&
-    !enableReversedBridge &&
-    toToken.chainId === foreignChainId &&
-    toToken.address === ADDRESS_ZERO;
-  const buttonEnabled =
-    allowed &&
-    !toAmountLoading &&
-    !showReverseBridgeWarning &&
-    !isBridgingDisabled;
+  const buttonEnabled = allowed && !toAmountLoading && !isBridgingDisabled;
 
   const valid = useCallback(() => {
     if (!ethersProvider) {
