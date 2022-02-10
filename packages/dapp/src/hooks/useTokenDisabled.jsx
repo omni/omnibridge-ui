@@ -1,7 +1,7 @@
 import {
   isBSCPeggedToken,
   isGCStableToken,
-} from 'components/warnings/BinancePeggedAssetWarning';
+} from 'components/warnings/BSCGCTokenWarnings';
 import { isERC20DaiAddress } from 'components/warnings/DaiWarning';
 import { isRebasingToken } from 'components/warnings/RebasingTokenWarning';
 import { isSafeMoonToken } from 'components/warnings/SafeMoonTokenWarning';
@@ -61,7 +61,8 @@ export const useTokenDisabled = token => {
   const isTokenRebasing = isRebasingToken(token);
   const isTokenSafeMoon = isSafeMoonToken(token);
   const isTokenDisabledStake = isDisabledStakeToken(token);
-  const isTokenBSCPegged = isBSCPeggedToken(token);
+  const isTokenBSCPegged =
+    isBSCPeggedToken(token) && bridgeDirection === BSC_XDAI_BRIDGE;
   const isTokenGCStableToBSC =
     isGCStableToken(token) && bridgeDirection === BSC_XDAI_BRIDGE;
   const isTokenDAI =

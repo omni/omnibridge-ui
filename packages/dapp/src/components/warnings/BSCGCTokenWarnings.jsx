@@ -1,7 +1,6 @@
 import { Alert, AlertIcon, Flex, Link, Text } from '@chakra-ui/react';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { BSC_XDAI_BRIDGE } from 'lib/constants';
-import { getNetworkName } from 'lib/helpers';
 import React from 'react';
 
 const GC_STABLE_ASSETS = [
@@ -20,8 +19,8 @@ const XpollinateLink = () => (
 );
 
 const BSC_BINANCE_PEGGED_ASSETS = [
-  '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d'.toLowerCase(),
-  '0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3'.toLowerCase(),
+  '0x8ac76a51cc950d9822d68b83fe1ad97b32cd580d'.toLowerCase(), // USDC
+  '0x1af3f329e8be154074d8769d1ffa4ee058b1dbc3'.toLowerCase(), // DAI
 ];
 
 export const isBSCPeggedToken = token => {
@@ -38,12 +37,11 @@ export const isGCStableToken = token => {
   return chainId === 100 && GC_STABLE_ASSETS.includes(address.toLowerCase());
 };
 
-export const BinancePeggedAssetWarning = ({ token, noShadow = false }) => {
-  const { symbol, address, chainId } = token;
-  const { getBridgeChainId, bridgeDirection } = useBridgeDirection();
-  const isGCToken =
-    bridgeDirection === BSC_XDAI_BRIDGE && isGCStableToken(token);
-
+export const BSCGCTokenWarnings = ({ token, noShadow = false }) => {
+  const { symbol, address } = token;
+  const { bridgeDirection } = useBridgeDirection();
+  if (bridgeDirection !== BSC_XDAI_BRIDGE) return null;
+  const isGCToken = isGCStableToken(token);
   const isBSCToken = isBSCPeggedToken(token);
 
   if (isGCToken) {
@@ -80,9 +78,8 @@ export const BinancePeggedAssetWarning = ({ token, noShadow = false }) => {
         >
           <AlertIcon minWidth="20px" />
           <Text fontSize="small">
-            Bridging of Binance-Peg {symbol} tokens to the{' '}
-            {getNetworkName(getBridgeChainId(chainId))} is disabled, please use{' '}
-            <XpollinateLink /> bridge instead.
+            Bridging of Binance-Peg {symbol} tokens to the Gnosis Chain is
+            disabled, please use <XpollinateLink /> bridge instead.
           </Text>
         </Alert>
       </Flex>
