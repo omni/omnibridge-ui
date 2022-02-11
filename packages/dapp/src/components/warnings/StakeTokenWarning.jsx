@@ -1,6 +1,4 @@
 import { Alert, AlertIcon, Flex, Link, Text } from '@chakra-ui/react';
-import { useBridgeDirection } from 'hooks/useBridgeDirection';
-import { ETH_BSC_BRIDGE } from 'lib/constants';
 import React from 'react';
 
 const LearnMoreLink = () => (
@@ -31,47 +29,8 @@ export const isDisabledStakeToken = token => {
   }
 };
 
-export const StakeTokenWarning = ({ token, noShadow = false }) => {
-  const { bridgeDirection } = useBridgeDirection();
-
-  if (!token) return null;
-  const { address, chainId } = token;
-
-  let innerText = '';
-  if (isDisabledStakeToken(token)) {
-    innerText = (
-      <>
-        Bridging of STAKE tokens is disabled, please swap your STAKE tokens for
-        GNO tokens (<LearnMoreLink />
-        ).
-      </>
-    );
-  } else if (
-    address.toLowerCase() ===
-      '0x24e5CF4a0577563d4e7761D14D53C8D0b504E337'.toLowerCase() &&
-    chainId === 56 &&
-    bridgeDirection === ETH_BSC_BRIDGE
-  ) {
-    innerText = (
-      <>
-        Bridging STAKE token from the Binance Smart Chain to the Ethereum
-        Mainnet DOES NOT unlock xDai-pegged STAKE token. If you want STAKE token
-        on the Ethereum Mainnet{' '}
-        <Link
-          href="/bridge?from=56&to=100&token=0x24e5CF4a0577563d4e7761D14D53C8D0b504E337"
-          color="blue.500"
-          isExternal
-        >
-          bridge it back to the xDai chain first
-        </Link>
-        .
-      </>
-    );
-  } else {
-    return null;
-  }
-
-  return (
+export const StakeTokenWarning = ({ token, noShadow = false }) =>
+  isDisabledStakeToken(token) ? (
     <Flex align="center" direction="column" w="100%" mb="4">
       <Alert
         status="error"
@@ -79,8 +38,11 @@ export const StakeTokenWarning = ({ token, noShadow = false }) => {
         boxShadow={noShadow ? 'none' : '0px 1rem 2rem rgba(204, 218, 238, 0.8)'}
       >
         <AlertIcon minWidth="20px" />
-        <Text fontSize="small">{innerText}</Text>
+        <Text fontSize="small">
+          Bridging of STAKE tokens is disabled, please swap your STAKE tokens
+          for GNO tokens (<LearnMoreLink />
+          ).
+        </Text>
       </Alert>
     </Flex>
-  );
-};
+  ) : null;
