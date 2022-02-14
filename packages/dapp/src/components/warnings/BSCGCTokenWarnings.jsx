@@ -60,7 +60,7 @@ export const BSCGCTokenWarnings = ({ token, noShadow = false }) => {
             {address.toLowerCase() === DAI_TOKEN
               ? ' bridge tokens back to the Ethereum Mainnet and '
               : ' please '}
-            use <XpollinateLink /> bridge instead.
+            use <XpollinateLink /> bridge by Connext instead.
           </Text>
         </Alert>
       </Flex>
@@ -79,7 +79,7 @@ export const BSCGCTokenWarnings = ({ token, noShadow = false }) => {
           <AlertIcon minWidth="20px" />
           <Text fontSize="small">
             Bridging of Binance-Peg {symbol} tokens to the Gnosis Chain is
-            disabled, please use <XpollinateLink /> bridge instead.
+            disabled, please use <XpollinateLink /> bridge by Connext instead.
           </Text>
         </Alert>
       </Flex>
