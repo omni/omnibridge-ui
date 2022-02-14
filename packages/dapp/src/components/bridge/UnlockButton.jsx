@@ -1,11 +1,9 @@
 import { Flex, Image, Link, Spinner, Text, useToast } from '@chakra-ui/react';
 import UnlockIcon from 'assets/unlock.svg';
 import { TxLink } from 'components/common/TxLink';
-import { isRebasingToken } from 'components/warnings/RebasingTokenWarning';
-import { isSafeMoonToken } from 'components/warnings/SafeMoonTokenWarning';
-import { isDisabledStakeToken } from 'components/warnings/StakeTokenWarning';
 import { useBridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
+import { useTokenDisabled } from 'hooks/useTokenDisabled';
 import { isRevertedError } from 'lib/amb';
 import { handleWalletError } from 'lib/helpers';
 import React, { useCallback } from 'react';
@@ -22,15 +20,8 @@ export const UnlockButton = () => {
     unlockLoading,
     approvalTxHash,
   } = useBridgeContext();
-  const isTokenRebasing = isRebasingToken(token);
-  const isTokenSafeMoon = isSafeMoonToken(token);
-  const isTokenStake = isDisabledStakeToken(token);
-  const buttonDisabled =
-    allowed ||
-    toAmountLoading ||
-    isTokenRebasing ||
-    isTokenSafeMoon ||
-    isTokenStake;
+  const isBridgingDisabled = useTokenDisabled(token);
+  const buttonDisabled = allowed || toAmountLoading || isBridgingDisabled;
   const toast = useToast();
   const showError = useCallback(
     msg => {

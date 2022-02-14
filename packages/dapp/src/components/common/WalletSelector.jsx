@@ -11,7 +11,6 @@ import {
 import Davatar from '@davatar/react';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { useENS } from 'hooks/useENS';
-import { WalletIcon } from 'icons/WalletIcon';
 import { getAccountString, getNetworkLabel, getNetworkName } from 'lib/helpers';
 import React from 'react';
 
@@ -25,15 +24,14 @@ export const WalletSelector = ({ close }) => {
     <Flex>
       <Popover placement={placement}>
         <PopoverTrigger>
-          <Button colorScheme="blue" px={3} leftIcon={<WalletIcon />}>
+          <Button colorScheme="blue" px={3}>
             <Davatar
               address={account}
               size={20}
               generatedAvatarType="jazzicon"
             />
             <Text fontSize="sm" ml="2">
-              {' '}
-              {ensName || getAccountString(account)}{' '}
+              {ensName || getAccountString(account)}
             </Text>
             <Flex
               justify="center"

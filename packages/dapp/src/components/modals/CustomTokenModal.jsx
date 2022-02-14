@@ -19,22 +19,12 @@ import {
   ConfirmBSCTokenModal,
   shouldShowBSCTokenModal,
 } from 'components/modals/ConfirmBSCTokenModal';
-import {
-  isRebasingToken,
-  RebasingTokenWarning,
-} from 'components/warnings/RebasingTokenWarning';
-import {
-  isSafeMoonToken,
-  SafeMoonTokenWarning,
-} from 'components/warnings/SafeMoonTokenWarning';
-import {
-  isDisabledStakeToken,
-  StakeTokenWarning,
-} from 'components/warnings/StakeTokenWarning';
+import { TokenWarnings } from 'components/warnings/TokenWarnings';
 import { useBridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { utils } from 'ethers';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
+import { useTokenDisabled } from 'hooks/useTokenDisabled';
 import { LOCAL_STORAGE_KEYS } from 'lib/constants';
 import { logError, uniqueTokens } from 'lib/helpers';
 import { ETH_BSC_BRIDGE } from 'lib/networks';
@@ -138,10 +128,9 @@ export const CustomTokenModal = ({ isOpen, onClose, onBack }) => {
     }
   }, [customToken, addCustomToken, bridgeDirection, showWarning]);
 
-  const isTokenRebasing = isRebasingToken(customToken);
-  const isTokenSafeMoon = isSafeMoonToken(customToken);
-  const isTokenStake = isDisabledStakeToken(customToken);
-  const isDisabled = isTokenRebasing || isTokenSafeMoon || isTokenStake;
+  const isBridgingDisabled = useTokenDisabled(
+    !addressInvalid ? customToken : undefined,
+  );
 
   const initialRef = useRef();
 
@@ -218,9 +207,7 @@ export const CustomTokenModal = ({ isOpen, onClose, onBack }) => {
             </Flex>
           </ModalBody>
           <ModalFooter p={6} flexDirection="column">
-            {isTokenRebasing && <RebasingTokenWarning token={customToken} />}
-            {isTokenSafeMoon && <SafeMoonTokenWarning token={customToken} />}
-            {isTokenStake && <StakeTokenWarning token={customToken} />}
+            <TokenWarnings token={!addressInvalid ? customToken : undefined} />
             <Flex
               w="100%"
               justify="space-between"
@@ -239,7 +226,7 @@ export const CustomTokenModal = ({ isOpen, onClose, onBack }) => {
               <Button
                 px={12}
                 onClick={onClick}
-                isDisabled={isDisabled}
+                isDisabled={isBridgingDisabled}
                 colorScheme="blue"
                 mt={{ base: 2, md: 0 }}
               >

@@ -6,7 +6,6 @@ import {
   getMediatorAddressWithoutOverride,
   logError,
 } from './helpers';
-import { networks } from './networks';
 import { getOverriddenMode, isOverridden } from './overrides';
 import { getEthersProvider } from './providers';
 
@@ -39,10 +38,6 @@ export const fetchAllowance = async (
 const fetchMode = async (bridgeDirection, token) => {
   if (isOverridden(bridgeDirection, token)) {
     return getOverriddenMode(bridgeDirection, token);
-  }
-  const { enableReversedBridge, homeChainId } = networks[bridgeDirection];
-  if (!enableReversedBridge) {
-    return token.chainId === homeChainId ? 'erc677' : 'erc20';
   }
 
   const ethersProvider = await getEthersProvider(token.chainId);

@@ -23,29 +23,6 @@ const getToName = async (fromToken, toChainId, toAddress) => {
   return fetchTokenName({ chainId: toChainId, address: toAddress });
 };
 
-const fetchToTokenAddress = async (
-  isHome,
-  homeChainId,
-  tokenAddress,
-  homeMediatorAddress,
-) => {
-  const ethersProvider = await getEthersProvider(homeChainId);
-  const abi = [
-    'function foreignTokenAddress(address) view returns (address)',
-    'function homeTokenAddress(address) view returns (address)',
-  ];
-  const mediatorContract = new Contract(
-    homeMediatorAddress,
-    abi,
-    ethersProvider,
-  );
-
-  if (isHome) {
-    return mediatorContract.foreignTokenAddress(tokenAddress);
-  }
-  return mediatorContract.homeTokenAddress(tokenAddress);
-};
-
 const fetchToTokenDetails = async (bridgeDirection, fromToken, toChainId) => {
   const {
     chainId: fromChainId,
@@ -67,9 +44,6 @@ const fetchToTokenDetails = async (bridgeDirection, fromToken, toChainId) => {
     });
   }
 
-  const { homeChainId, enableReversedBridge } = networks[bridgeDirection];
-
-  const isHome = homeChainId === fromChainId;
   const fromMediatorAddress = getMediatorAddressWithoutOverride(
     bridgeDirection,
     fromChainId,
@@ -85,23 +59,6 @@ const fetchToTokenDetails = async (bridgeDirection, fromToken, toChainId) => {
       address: toAddress,
       chainId: toChainId,
     });
-  }
-
-  if (!enableReversedBridge) {
-    const toAddress = await fetchToTokenAddress(
-      isHome,
-      homeChainId,
-      fromAddress,
-      isHome ? fromMediatorAddress : toMediatorAddress,
-    );
-    const toName = await getToName(fromToken, toChainId, toAddress);
-    return {
-      name: toName,
-      chainId: toChainId,
-      address: toAddress,
-      mode: isHome ? 'erc20' : 'erc677',
-      mediator: toMediatorAddress,
-    };
   }
 
   const fromEthersProvider = await getEthersProvider(fromChainId);

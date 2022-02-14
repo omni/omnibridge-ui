@@ -19,7 +19,6 @@ const ETH_XDAI_BRIDGE_CONFIG = {
   label: 'eth⥊gc',
   homeChainId: 100,
   foreignChainId: 1,
-  enableReversedBridge: true,
   enableForeignCurrencyBridge: true,
   foreignMediatorAddress:
     '0x88ad09518695c6c3712AC10a214bE5109a655671'.toLowerCase(),
@@ -38,7 +37,6 @@ const BSC_XDAI_BRIDGE_CONFIG = {
   label: 'bsc⥊gc',
   homeChainId: 100,
   foreignChainId: 56,
-  enableReversedBridge: true,
   enableForeignCurrencyBridge: true,
   foreignMediatorAddress:
     '0xF0b456250DC9990662a6F25808cC74A6d1131Ea9'.toLowerCase(),
@@ -59,7 +57,6 @@ const POA_XDAI_BRIDGE_CONFIG = {
   label: 'poa⥊gc',
   homeChainId: 100,
   foreignChainId: 99,
-  enableReversedBridge: true,
   enableForeignCurrencyBridge: true,
   foreignMediatorAddress:
     '0x8134470b7CF6f57Faee2076adf8F7301fD5865a5'.toLowerCase(),
@@ -78,7 +75,6 @@ const KOVAN_SOKOL_BRIDGE_CONFIG = {
   label: 'kovan⥊sokol',
   homeChainId: 77,
   foreignChainId: 42,
-  enableReversedBridge: true,
   enableForeignCurrencyBridge: true,
   foreignMediatorAddress:
     '0xA960d095470f7509955d5402e36d9DB984B5C8E2'.toLowerCase(),
@@ -97,7 +93,6 @@ const ETH_BSC_BRIDGE_CONFIG = {
   label: 'eth⥊bsc',
   homeChainId: 56,
   foreignChainId: 1,
-  enableReversedBridge: true,
   enableForeignCurrencyBridge: false,
   foreignMediatorAddress:
     '0x69c707d975e8d883920003CC357E556a4732CD03'.toLowerCase(),
