@@ -6,7 +6,13 @@ import {
 } from 'lib/constants';
 import { fetchQueryParams, getNativeCurrency, getRPCKeys } from 'lib/helpers';
 import { networks } from 'lib/networks';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { useHistory } from 'react-router-dom';
 
 const {
@@ -135,27 +141,47 @@ export const SettingsProvider = ({ children }) => {
     disableBalanceFetchToken,
   ]);
 
+  const settingsContext = useMemo(
+    () => ({
+      bridgeDirection,
+      setBridgeDirection,
+      foreignRPC,
+      setForeignRPC,
+      homeRPC,
+      setHomeRPC,
+      infiniteUnlock,
+      setInfiniteUnlock,
+      neverShowClaims,
+      setNeverShowClaims,
+      disableBalanceFetchToken,
+      setDisableBalanceFetchToken,
+      needsSaving,
+      save,
+      queryToken,
+      setQueryToken,
+    }),
+    [
+      bridgeDirection,
+      setBridgeDirection,
+      foreignRPC,
+      setForeignRPC,
+      homeRPC,
+      setHomeRPC,
+      infiniteUnlock,
+      setInfiniteUnlock,
+      neverShowClaims,
+      setNeverShowClaims,
+      disableBalanceFetchToken,
+      setDisableBalanceFetchToken,
+      needsSaving,
+      save,
+      queryToken,
+      setQueryToken,
+    ],
+  );
+
   return (
-    <SettingsContext.Provider
-      value={{
-        bridgeDirection,
-        setBridgeDirection,
-        foreignRPC,
-        setForeignRPC,
-        homeRPC,
-        setHomeRPC,
-        infiniteUnlock,
-        setInfiniteUnlock,
-        neverShowClaims,
-        setNeverShowClaims,
-        disableBalanceFetchToken,
-        setDisableBalanceFetchToken,
-        needsSaving,
-        save,
-        queryToken,
-        setQueryToken,
-      }}
-    >
+    <SettingsContext.Provider value={settingsContext}>
       {children}
     </SettingsContext.Provider>
   );

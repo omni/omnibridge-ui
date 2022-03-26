@@ -188,20 +188,30 @@ export const Web3Provider = ({ children }) => {
     [ethersProvider],
   );
 
+  const web3Context = useMemo(
+    () => ({
+      isGnosisSafe,
+      ethersProvider,
+      connectWeb3,
+      loading,
+      disconnect,
+      providerChainId,
+      account,
+      isMetamask,
+    }),
+    [
+      isGnosisSafe,
+      ethersProvider,
+      connectWeb3,
+      loading,
+      disconnect,
+      providerChainId,
+      account,
+      isMetamask,
+    ],
+  );
+
   return (
-    <Web3Context.Provider
-      value={{
-        isGnosisSafe,
-        ethersProvider,
-        connectWeb3,
-        loading,
-        disconnect,
-        providerChainId,
-        account,
-        isMetamask,
-      }}
-    >
-      {children}
-    </Web3Context.Provider>
+    <Web3Context.Provider value={web3Context}>{children}</Web3Context.Provider>
   );
 };
