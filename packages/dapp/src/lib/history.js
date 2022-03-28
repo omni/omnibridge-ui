@@ -1,6 +1,7 @@
 import { gql, request } from 'graphql-request';
 
 import { ADDRESS_ZERO } from './constants';
+import { logError } from './helpers';
 
 const pageSize = 1000;
 
@@ -83,20 +84,53 @@ export const getExecutions = async (graphEndpoint, requests) => {
 
   // eslint-disable-next-line no-constant-condition
   while (true) {
-    // eslint-disable-next-line no-await-in-loop
-    const data = await request(graphEndpoint, executionsQuery, {
-      first,
-      skip: page * pageSize,
-      messageIds,
-    });
-    if (data) {
-      executions = data.executions.concat(executions);
+    try {
+      // eslint-disable-next-line no-await-in-loop
+      const data = await request(graphEndpoint, executionsQuery, {
+        first,
+        skip: page * pageSize,
+        messageIds,
+      });
+      if (data) {
+        executions = data.executions.concat(executions);
+      }
+      if (!data || data.executions.length < pageSize) break;
+      page += 1;
+    } catch (graphExecutionsError) {
+      logError({ graphExecutionsError });
+      break;
     }
-    if (!data || data.executions.length < pageSize) break;
-    page += 1;
   }
 
   return { executions };
+};
+
+const getRequestsWithQuery = async (user, graphEndpoint, query) => {
+  let requests = [];
+  let page = 0;
+  const first = pageSize;
+
+  // eslint-disable-next-line no-constant-condition
+  while (true) {
+    try {
+      // eslint-disable-next-line no-await-in-loop
+      const data = await request(graphEndpoint, query, {
+        user,
+        first,
+        skip: page * pageSize,
+      });
+      if (data) {
+        requests = data.requests.concat(requests);
+      }
+      if (!data || data.requests.length < pageSize) break;
+      page += 1;
+    } catch (graphUserRequestsError) {
+      logError({ graphUserRequestsError });
+      break;
+    }
+  }
+
+  return { requests };
 };
 
 export const getRequests = async (user, graphEndpoint) => {
@@ -107,29 +141,6 @@ export const getRequests = async (user, graphEndpoint) => {
   return {
     requests: [...userRequests.requests, ...recipientRequests.requests],
   };
-};
-
-export const getRequestsWithQuery = async (user, graphEndpoint, query) => {
-  let requests = [];
-  let page = 0;
-  const first = pageSize;
-
-  // eslint-disable-next-line no-constant-condition
-  while (true) {
-    // eslint-disable-next-line no-await-in-loop
-    const data = await request(graphEndpoint, query, {
-      user,
-      first,
-      skip: page * pageSize,
-    });
-    if (data) {
-      requests = data.requests.concat(requests);
-    }
-    if (!data || data.requests.length < pageSize) break;
-    page += 1;
-  }
-
-  return { requests };
 };
 
 export const combineRequestsWithExecutions = (

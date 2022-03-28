@@ -51,99 +51,97 @@ const BridgeLoader = ({
       isCentered
     >
       <ModalOverlay background="modalBG">
-        <>
-          {loadingText ? (
-            <ModalContent
-              boxShadow="0px 1rem 2rem #617492"
-              borderRadius={{ base: '1rem', md: 'full' }}
-              mx={{ base: 12, lg: 0 }}
-              maxW={{ base: '20rem', md: '25rem' }}
-            >
-              <ModalBody px={4} py={8}>
+        {loadingText ? (
+          <ModalContent
+            boxShadow="0px 1rem 2rem #617492"
+            borderRadius={{ base: '1rem', md: 'full' }}
+            mx={{ base: 12, lg: 0 }}
+            maxW={{ base: '20rem', md: '25rem' }}
+          >
+            <ModalBody px={4} py={8}>
+              <Flex
+                align={{ base: 'center', md: 'stretch' }}
+                direction={{ base: 'column', md: 'row' }}
+              >
                 <Flex
-                  align={{ base: 'center', md: 'stretch' }}
-                  direction={{ base: 'column', md: 'row' }}
+                  h="3.25rem"
+                  w="3.25rem"
+                  align="center"
+                  justify="center"
+                  border="5px solid #eef4fd"
+                  borderRadius="50%"
+                  mx={4}
+                  mb={{ base: 2, md: 0 }}
+                  position="relative"
                 >
-                  <Flex
-                    h="3.25rem"
-                    w="3.25rem"
-                    align="center"
-                    justify="center"
-                    border="5px solid #eef4fd"
-                    borderRadius="50%"
-                    mx={4}
-                    mb={{ base: 2, md: 0 }}
-                    position="relative"
-                  >
-                    {showConfirmations ? (
-                      <>
-                        <Text fontSize="sm">
-                          {displayConfirms}/{totalConfirms}
-                        </Text>
-                        <Flex
-                          position="absolute"
-                          justify="center"
-                          align="center"
-                          color="blue.500"
-                        >
-                          <ProgressRing
-                            radius={33.5}
-                            stroke={5}
-                            progress={displayConfirms}
-                            totalProgress={totalConfirms}
-                          />
-                        </Flex>
-                      </>
-                    ) : (
-                      <>
-                        <CheckIcon color="blue.500" boxSize="0.85rem" />
-                        <Spinner
-                          position="absolute"
-                          color="blue.500"
-                          thickness="5px"
-                          w="3.25rem"
-                          h="3.25rem"
-                          speed="0.75s"
-                        />
-                      </>
-                    )}
-                  </Flex>
-                  <Flex
-                    flex={1}
-                    direction="column"
-                    align={{ base: 'center', md: 'flex-start' }}
-                    justify="center"
-                    mt={{ base: 2, md: 0 }}
-                  >
-                    <Text textAlign="center">
-                      {`${loadingText || 'Waiting for Block Confirmations'}...`}
-                    </Text>
-                    <Text color="grey" textAlign="center">
-                      {'Monitor at ALM '}
-                      <Link
-                        href={getMonitorUrl(chainId, txHash)}
-                        rel="noreferrer noopener"
-                        target="_blank"
+                  {showConfirmations ? (
+                    <>
+                      <Text fontSize="sm">
+                        {displayConfirms}/{totalConfirms}
+                      </Text>
+                      <Flex
+                        position="absolute"
+                        justify="center"
+                        align="center"
                         color="blue.500"
                       >
-                        {getTransactionString(txHash)}
-                      </Link>
-                    </Text>
-                  </Flex>
+                        <ProgressRing
+                          radius={33.5}
+                          stroke={5}
+                          progress={displayConfirms}
+                          totalProgress={totalConfirms}
+                        />
+                      </Flex>
+                    </>
+                  ) : (
+                    <>
+                      <CheckIcon color="blue.500" boxSize="0.85rem" />
+                      <Spinner
+                        position="absolute"
+                        color="blue.500"
+                        thickness="5px"
+                        w="3.25rem"
+                        h="3.25rem"
+                        speed="0.75s"
+                      />
+                    </>
+                  )}
                 </Flex>
-              </ModalBody>
-            </ModalContent>
-          ) : (
-            <ModalContent background="none" boxShadow="none" borderRadius="0">
-              <Flex direction="column" align="center" justify="center">
-                <Image src={LoadingImage} mb={4} />
-                <Text color="white" fontWeight="bold">
-                  Loading ...
-                </Text>
+                <Flex
+                  flex={1}
+                  direction="column"
+                  align={{ base: 'center', md: 'flex-start' }}
+                  justify="center"
+                  mt={{ base: 2, md: 0 }}
+                >
+                  <Text textAlign="center">
+                    {`${loadingText || 'Waiting for Block Confirmations'}...`}
+                  </Text>
+                  <Text color="grey" textAlign="center">
+                    {'Monitor at ALM '}
+                    <Link
+                      href={getMonitorUrl(chainId, txHash)}
+                      rel="noreferrer noopener"
+                      target="_blank"
+                      color="blue.500"
+                    >
+                      {getTransactionString(txHash)}
+                    </Link>
+                  </Text>
+                </Flex>
               </Flex>
-            </ModalContent>
-          )}
-        </>
+            </ModalBody>
+          </ModalContent>
+        ) : (
+          <ModalContent background="none" boxShadow="none" borderRadius="0">
+            <Flex direction="column" align="center" justify="center">
+              <Image src={LoadingImage} mb={4} />
+              <Text color="white" fontWeight="bold">
+                Loading ...
+              </Text>
+            </Flex>
+          </ModalContent>
+        )}
       </ModalOverlay>
     </Modal>
   );

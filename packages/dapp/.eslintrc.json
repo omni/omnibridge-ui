@@ -23,6 +23,7 @@
     "simple-import-sort/imports": "warn",
     "simple-import-sort/exports": "warn",
     "react/jsx-props-no-spreading": "off",
+    "react/function-component-definition": "off",
     "react/prop-types": "off",
     "arrow-body-style": "warn"
   }

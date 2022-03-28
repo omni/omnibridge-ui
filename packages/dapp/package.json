@@ -40,9 +40,6 @@
     "walletlink": "^2.1.9",
     "web3modal": "^1.9.4"
   },
-  "devDependencies": {
-    "prettier": "^2.3.2"
-  },
   "license": "UNLICENSED",
   "scripts": {
     "build": "GENERATE_SOURCEMAP=false react-scripts build",

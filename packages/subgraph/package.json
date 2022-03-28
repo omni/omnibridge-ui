@@ -32,7 +32,6 @@
     "deploy-bsc-mainnet": "graph deploy dan13ram/bsc-to-mainnet-omnibridge --ipfs https://api.thegraph.com/ipfs/ --node https://api.thegraph.com/deploy/"
   },
   "devDependencies": {
-    "mustache": "^4.2.0",
-    "prettier": "^2.3.2"
+    "mustache": "^4.2.0"
   }
 }

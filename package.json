@@ -47,17 +47,16 @@
     ]
   },
   "devDependencies": {
-    "eslint": "^7.32.0",
-    "eslint-config-airbnb": "^18.2.1",
-    "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-import": "^2.24.0",
-    "eslint-plugin-jsx-a11y": "^6.4.1",
-    "eslint-plugin-react": "^7.24.0",
-    "eslint-plugin-react-hooks": "^4.2.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "^2.25.4",
+    "eslint-plugin-jsx-a11y": "^6.5.1",
+    "eslint-plugin-react": "^7.29.4",
+    "eslint-plugin-react-hooks": "^4.3.0",
     "eslint-plugin-simple-import-sort": "^7.0.0",
-    "husky": "^7.0.1",
-    "lint-staged": "^11.1.2",
-    "prettier": "^2.3.2"
+    "husky": "^7.0.4",
+    "lint-staged": "^12.3.7",
+    "prettier": "^2.6.1"
   },
   "license": "UNLICENSED",
   "lint-staged": {
@@ -66,5 +65,6 @@
       "prettier --write"
     ],
     "*.{json,md}": "prettier --write"
-  }
+  },
+  "dependencies": {}
 }
