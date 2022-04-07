@@ -188,6 +188,7 @@ export const FromToken = () => {
               onChange={e => setInput(e.target.value)}
               onKeyUp={delayedSetAmount}
               fontSize="2xl"
+              borderRadius={0}
             />
             <Button
               ml={2}
