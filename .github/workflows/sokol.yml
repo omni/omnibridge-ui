@@ -54,6 +54,7 @@ jobs:
           REACT_APP_KOVAN_RPC_URL: https://kovan.infura.io/v3/${{ secrets.PERSONAL_INFURA_ID }} https://kovan.poa.network/
           REACT_APP_BSC_RPC_URL: https://bsc-dataseed.binance.org https://bsc-dataseed1.defibit.io/
           REACT_APP_COINZILLA_API_KEY: ${{ secrets.COINZILLA_API_KEY }}
+          REACT_APP_OWLRACLE_API_KEY: ${{ secrets.OWLRACLE_API_KEY }}
 
       - name: Deploy to Firebase
         uses: w9jds/firebase-action@master
