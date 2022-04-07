@@ -87,6 +87,9 @@ export const nativeCurrencyMediators = {
 
 export const networkNames = {
   1: 'ETH Mainnet',
+  3: 'Ropsten Testnet',
+  4: 'Rinkeby Testnet',
+  5: 'Görli Testnet',
   42: 'Kovan Testnet',
   56: 'Binance Smart Chain',
   77: 'Sokol Testnet',

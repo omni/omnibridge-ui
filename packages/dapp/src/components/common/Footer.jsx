@@ -1,10 +1,10 @@
 import { Box, Flex, HStack, Text, useBreakpointValue } from '@chakra-ui/react';
 import { GithubIcon } from 'icons/GithubIcon';
+import { GnosisChainIcon } from 'icons/GnosisChainIcon';
 import { OmniBridgeIcon } from 'icons/OmniBridgeIcon';
 import { RaidGuildIcon } from 'icons/RaidGuildIcon';
 import { TelegramIcon } from 'icons/TelegramIcon';
 import { TwitterIcon } from 'icons/TwitterIcon';
-import { XDaiIcon } from 'icons/XDaiIcon';
 import React from 'react';
 import { Link } from 'react-router-dom';
 
@@ -36,16 +36,16 @@ export const Footer = () => {
       <HStack spacing={4}>
         <Box _hover={{ color: 'blue.500' }}>
           <a
-            href="https://xdaichain.com"
+            href="https://gnosischain.com"
             rel="noreferrer noopener"
             target="_blank"
           >
-            <XDaiIcon />
+            <GnosisChainIcon boxSize="1.25rem" />
           </a>
         </Box>
         <Box _hover={{ color: 'blue.500' }} transition="0.25s">
           <a
-            href="https://twitter.com/xdaichain"
+            href="https://twitter.com/gnosischain"
             rel="noreferrer noopener"
             target="_blank"
           >
@@ -54,7 +54,7 @@ export const Footer = () => {
         </Box>
         <Box _hover={{ color: 'blue.500' }} transition="0.25s">
           <a
-            href="https://t.me/xdaistable"
+            href="https://t.me/gnosischain"
             rel="noreferrer noopener"
             target="_blank"
           >
