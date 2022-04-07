@@ -1,13 +1,12 @@
 import { Alert, AlertIcon, Flex, Text } from '@chakra-ui/react';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
+import { useRPCHealth } from 'hooks/useRPCHealth';
 import { getNetworkName } from 'lib/helpers';
 import React from 'react';
-import { getRPCHealth } from 'stores/rpcHealth';
 
 export const RPCHealthWarning = () => {
+  const { foreignHealthy, homeHealthy } = useRPCHealth();
   const { foreignChainId, homeChainId } = useBridgeDirection();
-  const { [foreignChainId]: foreignHealthy, [homeChainId]: homeHealthy } =
-    getRPCHealth();
 
   if (foreignHealthy && homeHealthy) return null;
 

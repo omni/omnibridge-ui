@@ -59,15 +59,17 @@ const gasPriceFromSupplier = async () => {
 
 const {
   REACT_APP_GAS_PRICE_FALLBACK_GWEI,
+  REACT_APP_GAS_PRICE_SPEED_TYPE,
   REACT_APP_GAS_PRICE_UPDATE_INTERVAL,
 } = process.env;
 
 const DEFAULT_GAS_PRICE_UPDATE_INTERVAL = 60000;
+const DEFAULT_GAS_PRICE_SPEED_TYPE = 'standard';
 
 class GasPriceStore {
   gasPrice = BigNumber.from('0');
 
-  fastGasPrice = BigNumber.from('0');
+  speedType = DEFAULT_GAS_PRICE_SPEED_TYPE;
 
   updateInterval = DEFAULT_GAS_PRICE_UPDATE_INTERVAL;
 
@@ -83,13 +85,14 @@ class GasPriceStore {
       'gwei',
     );
 
-    this.fastGasPrice = utils.parseUnits(
-      REACT_APP_GAS_PRICE_FALLBACK_GWEI || '0',
-      'gwei',
-    );
+    this.speedType =
+      REACT_APP_GAS_PRICE_SPEED_TYPE || DEFAULT_GAS_PRICE_SPEED_TYPE;
+
     this.updateInterval =
       REACT_APP_GAS_PRICE_UPDATE_INTERVAL || DEFAULT_GAS_PRICE_UPDATE_INTERVAL;
+
     this.updateGasPrice();
+
     this.updateHistoricalPrice();
   }
 
@@ -97,12 +100,9 @@ class GasPriceStore {
     const gasPrices = await gasPriceFromSupplier();
     try {
       if (gasPrices) {
-        const { standard, fast } = gasPrices;
-        if (standard) {
-          this.gasPrice = utils.parseUnits(standard.toFixed(2), 'gwei');
-        }
-        if (fast) {
-          this.fastGasPrice = utils.parseUnits(fast.toFixed(2), 'gwei');
+        const { [this.speedType]: price } = gasPrices;
+        if (price) {
+          this.gasPrice = utils.parseUnits(price.toFixed(2), 'gwei');
         }
         logDebug('Updated Gas Price', gasPrices);
       }
@@ -150,8 +150,6 @@ class GasPriceStore {
 const ethGasStore = new GasPriceStore();
 
 export const getGasPrice = () => ethGasStore.gasPrice;
-
-export const getFastGasPrice = () => ethGasStore.fastGasPrice;
 
 export const getLowestHistoricalEthGasPrice = () =>
   ethGasStore.lowestHistoricalPrice;

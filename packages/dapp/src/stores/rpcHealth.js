@@ -21,7 +21,7 @@ class RPCHealthStore {
       Object.entries(chainUrls).map(async ([chainId, { name }]) => {
         try {
           const provider = await getEthersProvider(chainId);
-          this.rpcHealth[chainId] = !!provider;
+          this.rpcHealth[chainId] = (await provider?.getBlockNumber()) ?? null;
         } catch (error) {
           this.rpcHealth[chainId] = false;
           logError(`${name} RPC Health Error: `, error);

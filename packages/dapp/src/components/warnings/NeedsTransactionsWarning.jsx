@@ -1,11 +1,11 @@
 import { Alert, AlertIcon, Flex, Link, Text } from '@chakra-ui/react';
 import { utils } from 'ethers';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
+import { useETHPrice } from 'hooks/useETHPrice';
+import { useGasPrice } from 'hooks/useGasPrice';
 import { networkCurrencies } from 'lib/constants';
 import { getNetworkName } from 'lib/helpers';
 import React from 'react';
-import { getEthereumPrice } from 'stores/ethPrice';
-import { getFastGasPrice } from 'stores/gasPrice';
 
 const LearnMoreLink = () => (
   <Link
@@ -21,8 +21,8 @@ export const NeedsTransactionsWarning = ({ noShadow = false }) => {
   const { homeChainId, foreignChainId } = useBridgeDirection();
   const GAS_COST = 260000;
 
-  const gasPrice = getFastGasPrice();
-  const ethPrice = getEthereumPrice();
+  const { gasPrice } = useGasPrice();
+  const ethPrice = useETHPrice();
   const gasCostInETH = utils.formatEther(gasPrice.mul(GAS_COST));
   const gasCostInUSD = gasCostInETH * ethPrice;
 

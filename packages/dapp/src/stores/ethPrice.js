@@ -55,4 +55,4 @@ class EthPriceStore {
 
 const ethPriceStore = new EthPriceStore();
 
-export const getEthereumPrice = () => ethPriceStore.ethPriceInUSD();
+export const getETHPrice = () => ethPriceStore.ethPriceInUSD();

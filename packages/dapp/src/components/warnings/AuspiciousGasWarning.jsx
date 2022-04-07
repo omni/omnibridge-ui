@@ -1,20 +1,14 @@
 import { Alert, AlertIcon, Flex, Text } from '@chakra-ui/react';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
+import { useGasPrice } from 'hooks/useGasPrice';
 import React from 'react';
-import {
-  getGasPrice,
-  getLowestHistoricalEthGasPrice,
-  getMedianHistoricalEthGasPrice,
-} from 'stores/gasPrice';
 
 export const AuspiciousGasWarning = ({
   noShadow = false,
   noMargin = false,
 }) => {
   const { foreignChainId } = useBridgeDirection();
-  const currentPrice = getGasPrice();
-  const medianPrice = getMedianHistoricalEthGasPrice();
-  const lowestPrice = getLowestHistoricalEthGasPrice();
+  const { currentPrice, medianPrice, lowestPrice } = useGasPrice();
 
   if (
     foreignChainId === 1 &&

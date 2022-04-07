@@ -1,12 +1,11 @@
 import { Alert, AlertIcon, Flex, Text } from '@chakra-ui/react';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
+import { useGasPrice } from 'hooks/useGasPrice';
 import React from 'react';
-import { getGasPrice, getMedianHistoricalEthGasPrice } from 'stores/gasPrice';
 
 export const MedianGasWarning = ({ noShadow = false }) => {
   const { foreignChainId } = useBridgeDirection();
-  const currentPrice = getGasPrice();
-  const medianPrice = getMedianHistoricalEthGasPrice();
+  const { currentPrice, medianPrice } = useGasPrice();
 
   if (
     foreignChainId === 1 &&
