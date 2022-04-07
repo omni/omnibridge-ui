@@ -114,32 +114,36 @@ class GasPriceStore {
   }
 
   async updateHistoricalPrice() {
-    const response = await axios.get(
-      `https://owlracle.info/eth/history?candles=1008&timeframe=10&apiKey=${OWLRACLE_API_KEY}`,
-    );
-    if (response.status !== 200) {
+    try {
+      const response = await axios.get(
+        `https://owlracle.info/eth/history?candles=1008&timeframe=10&apiKey=${OWLRACLE_API_KEY}`,
+      );
+      if (response.status !== 200) {
+        throw new Error(`Fetch gasPrice from owlracle failed!`);
+      }
+
+      const { data } = response;
+
+      const lowestPrice = lowest(data);
+      this.lowestHistoricalPrice = utils.parseUnits(lowestPrice, 'gwei');
+
+      const medianPrice = median(data);
+      this.medianHistoricalPrice = utils.parseUnits(medianPrice, 'gwei');
+
+      const highestPrice = highest(data);
+      this.highestHistoricalPrice = utils.parseUnits(highestPrice, 'gwei');
+
+      logDebug('Updated Historical Gas Price', {
+        lowest: Number(lowestPrice),
+        median: Number(medianPrice),
+        highest: Number(highestPrice),
+      });
+    } catch (historicalGasPriceError) {
       this.lowestHistoricalPrice = BigNumber.from(0);
       this.highestHistoricalPrice = BigNumber.from(0);
       this.medianHistoricalPrice = BigNumber.from(0);
-      throw new Error(`Fetch gasPrice from owlracle failed!`);
+      logError({ historicalGasPriceError });
     }
-
-    const { data } = response;
-
-    const lowestPrice = lowest(data);
-    this.lowestHistoricalPrice = utils.parseUnits(lowestPrice, 'gwei');
-
-    const medianPrice = median(data);
-    this.medianHistoricalPrice = utils.parseUnits(medianPrice, 'gwei');
-
-    const highestPrice = highest(data);
-    this.highestHistoricalPrice = utils.parseUnits(highestPrice, 'gwei');
-
-    logDebug('Updated Historical Gas Price', {
-      lowest: Number(lowestPrice),
-      median: Number(medianPrice),
-      highest: Number(highestPrice),
-    });
   }
 }
 

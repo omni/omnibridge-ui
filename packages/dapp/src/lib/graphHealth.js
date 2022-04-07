@@ -1,8 +1,7 @@
 import { gql, request } from 'graphql-request';
 import { GRAPH_HEALTH_ENDPOINT } from 'lib/constants';
 import { logError } from 'lib/helpers';
-
-import { networks } from './networks';
+import { networks } from 'lib/networks';
 
 const healthQuery = gql`
   query getHealthStatus($subgraphHome: String!, $subgraphForeign: String!) {

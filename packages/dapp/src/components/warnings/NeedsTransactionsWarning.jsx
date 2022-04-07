@@ -2,10 +2,10 @@ import { Alert, AlertIcon, Flex, Link, Text } from '@chakra-ui/react';
 import { utils } from 'ethers';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { networkCurrencies } from 'lib/constants';
-import { getEthereumPrice } from 'lib/ethPrice';
-import { getFastGasPrice } from 'lib/gasPrice';
 import { getNetworkName } from 'lib/helpers';
 import React from 'react';
+import { getEthereumPrice } from 'stores/ethPrice';
+import { getFastGasPrice } from 'stores/gasPrice';
 
 const LearnMoreLink = () => (
   <Link

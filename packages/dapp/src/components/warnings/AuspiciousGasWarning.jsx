@@ -1,11 +1,11 @@
 import { Alert, AlertIcon, Flex, Text } from '@chakra-ui/react';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
+import React from 'react';
 import {
   getGasPrice,
   getLowestHistoricalEthGasPrice,
   getMedianHistoricalEthGasPrice,
-} from 'lib/gasPrice';
-import React from 'react';
+} from 'stores/gasPrice';
 
 export const AuspiciousGasWarning = ({
   noShadow = false,
