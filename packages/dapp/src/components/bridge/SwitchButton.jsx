@@ -43,7 +43,7 @@ export const SwitchButton = () => {
   );
 
   return (
-    <Tooltip label="Switch direction of bridge" closeOnClick={false}>
+    <Tooltip label="Switch direction of bridge">
       <IconButton
         icon={<SwitchIcon boxSize="2rem" />}
         p="0.5rem"
