@@ -161,6 +161,7 @@ export const BridgeProvider = ({ children }) => {
     }
     try {
       setLoading(true);
+      setTxHash();
       const tx = await relayTokens(
         ethersProvider,
         fromToken,
@@ -176,6 +177,7 @@ export const BridgeProvider = ({ children }) => {
       );
       setTxHash(tx.hash);
     } catch (transferError) {
+      setLoading(false);
       logError({
         transferError,
         fromToken,
@@ -184,8 +186,6 @@ export const BridgeProvider = ({ children }) => {
         account,
       });
       throw transferError;
-    } finally {
-      setLoading(false);
     }
   }, [
     isGnosisSafe,
@@ -215,7 +215,6 @@ export const BridgeProvider = ({ children }) => {
         (token?.chainId !== fromToken?.chainId &&
           token?.address !== fromToken?.address)
       ) {
-        cleanAmounts();
         await setToken(token);
       }
     },
@@ -237,8 +236,9 @@ export const BridgeProvider = ({ children }) => {
             ![homeChainId, foreignChainId].includes(fromToken.chainId) ||
             (fromToken.address === ADDRESS_ZERO && fromToken.mode !== 'NATIVE'))
         ) {
-          await setDefaultToken(homeChainId);
+          await setDefaultToken(foreignChainId);
         }
+        cleanAmounts();
         setLoading(false);
       })(),
     [
@@ -249,6 +249,7 @@ export const BridgeProvider = ({ children }) => {
       fromToken,
       homeChainId,
       foreignChainId,
+      cleanAmounts,
     ],
   );
 
@@ -282,7 +283,6 @@ export const BridgeProvider = ({ children }) => {
       toToken,
       setToToken,
       setToken,
-      setDefaultToken,
       switchTokens,
       // bridge
       transfer,
@@ -313,7 +313,6 @@ export const BridgeProvider = ({ children }) => {
       toToken,
       setToToken,
       setToken,
-      setDefaultToken,
       switchTokens,
       // bridge
       transfer,
