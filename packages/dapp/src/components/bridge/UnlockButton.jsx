@@ -8,7 +8,7 @@ import { isRevertedError } from 'lib/amb';
 import { getNetworkName, handleWalletError } from 'lib/helpers';
 import React, { useCallback } from 'react';
 
-export const UnlockButton = ({ approval }) => {
+export const UnlockButton = ({ approval, isValid }) => {
   const { providerChainId } = useWeb3Context();
   const {
     fromAmount: amount,
@@ -20,7 +20,7 @@ export const UnlockButton = ({ approval }) => {
   const { allowed, approve, unlockLoading, approvalTxHash } = approval;
   const isBridgingDisabled = useTokenDisabled(token);
   const buttonDisabled =
-    !token || allowed || toAmountLoading || isBridgingDisabled;
+    !token || allowed || toAmountLoading || isBridgingDisabled || !isValid;
   const toast = useToast();
   const showError = useCallback(
     msg => {

@@ -26,7 +26,9 @@ export const BridgeTokens = () => {
   const { fromToken } = useBridgeContext();
   const isInflationToken = isInflationaryToken(fromToken);
   const smallScreen = useBreakpointValue({ base: true, lg: false });
-  const { isConnected } = useWeb3Context();
+  const { isConnected, providerChainid } = useWeb3Context();
+
+  const isValid = isConnected && providerChainid === fromToken?.chainId;
 
   return (
     <Flex
@@ -110,7 +112,7 @@ export const BridgeTokens = () => {
           )}
           <ToToken />
         </Grid>
-        {isConnected ? (
+        {isValid ? (
           <>
             <AdvancedMenu />
             <SystemFeedback />
