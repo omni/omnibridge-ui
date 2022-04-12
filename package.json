@@ -66,5 +66,7 @@
     ],
     "*.{json,md}": "prettier --write"
   },
-  "dependencies": {}
+  "resolutions": {
+    "react-error-overlay": "6.0.9"
+  }
 }

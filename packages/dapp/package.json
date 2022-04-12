@@ -46,6 +46,5 @@
     "start": "react-scripts start",
     "test": "react-scripts test",
     "lint": "eslint \"./src/**/*.{js,jsx}\""
-  },
-  "devDependencies": {}
+  }
 }
