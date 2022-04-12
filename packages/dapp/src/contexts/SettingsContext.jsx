@@ -4,7 +4,12 @@ import {
   DEFAULT_BRIDGE_DIRECTION,
   LOCAL_STORAGE_KEYS,
 } from 'lib/constants';
-import { fetchQueryParams, getNativeCurrency, getRPCKeys } from 'lib/helpers';
+import {
+  fetchQueryParams,
+  getDefaultToken,
+  getNativeCurrency,
+  getRPCKeys,
+} from 'lib/helpers';
 import { networks } from 'lib/networks';
 import React, {
   useCallback,
@@ -39,27 +44,28 @@ export const SettingsProvider = ({ children }) => {
       const params = fetchQueryParams(window.location.search);
 
       if (params) {
-        if (params?.from && params?.to && params?.token) {
-          const fromChainId = parseInt(params.from, 10);
-          const toChainId = parseInt(params.to, 10);
-          const tokenAddress = params.token;
+        const fromChainId = parseInt(params.from, 10);
+        const toChainId = parseInt(params.to, 10);
+        const tokenAddress = params?.token;
 
-          const networkEntry = Object.entries(networks).find(
-            ([_, { homeChainId, foreignChainId }]) =>
-              (homeChainId === fromChainId && foreignChainId === toChainId) ||
-              (homeChainId === toChainId && foreignChainId === fromChainId),
+        const networkEntry = Object.entries(networks).find(
+          ([_, { homeChainId, foreignChainId }]) =>
+            (homeChainId === fromChainId && foreignChainId === toChainId) ||
+            (homeChainId === toChainId && foreignChainId === fromChainId),
+        );
+
+        if (tokenAddress && networkEntry) {
+          setBridgeDirection(networkEntry[0], true);
+          setQueryToken(
+            tokenAddress === ADDRESS_ZERO &&
+              networkEntry[1].enableForeignCurrencyBridge &&
+              networkEntry[1].foreignChainId === fromChainId
+              ? getNativeCurrency(fromChainId)
+              : { chainId: fromChainId, address: tokenAddress },
           );
-
-          if (networkEntry) {
-            setBridgeDirection(networkEntry[0], true);
-            setQueryToken(
-              tokenAddress === ADDRESS_ZERO &&
-                networkEntry[1].enableForeignCurrencyBridge &&
-                networkEntry[1].foreignChainId === fromChainId
-                ? getNativeCurrency(fromChainId)
-                : { chainId: fromChainId, address: tokenAddress },
-            );
-          }
+        } else if (networkEntry) {
+          setBridgeDirection(networkEntry[0], true);
+          setQueryToken(getDefaultToken(networkEntry[0], fromChainId));
         }
       }
     }

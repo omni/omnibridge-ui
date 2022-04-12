@@ -51,7 +51,7 @@ const TokenDisplay = ({ token, onClick }) => {
 
   useEffect(() => {
     (async () => {
-      if (!ethersProvider || !account) return;
+      if (!ethersProvider || !account || disableBalanceFetchToken) return;
       setLoading(true);
       try {
         const b = await fetchTokenBalanceWithProvider(
@@ -66,7 +66,14 @@ const TokenDisplay = ({ token, onClick }) => {
         setLoading(false);
       }
     })();
-  }, [ethersProvider, account, address, mode, symbol]);
+  }, [
+    ethersProvider,
+    account,
+    address,
+    mode,
+    symbol,
+    disableBalanceFetchToken,
+  ]);
 
   const desc =
     balance && decimals && !disableBalanceFetchToken
