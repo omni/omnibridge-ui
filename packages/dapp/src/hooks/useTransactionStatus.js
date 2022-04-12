@@ -12,15 +12,18 @@ import {
 import { getEthersProvider } from 'lib/providers';
 import { useCallback, useEffect, useState } from 'react';
 
+import { useNeedsClaiming } from './useNeedsClaiming';
+
 export const useTransactionStatus = setMessage => {
-  const { needsClaiming } = useBridgeContext();
-  const { homeChainId, getBridgeChainId, getAMBAddress } = useBridgeDirection();
+  const needsClaiming = useNeedsClaiming();
+  const { homeChainId, getBridgeChainId, getAMBAddress, getTotalConfirms } =
+    useBridgeDirection();
   const { ethersProvider, providerChainId: chainId } = useWeb3Context();
   const isHome = chainId === homeChainId;
+  const totalConfirms = getTotalConfirms(chainId);
 
   const bridgeChainId = getBridgeChainId(chainId);
-  const { loading, setLoading, txHash, setTxHash, totalConfirms } =
-    useBridgeContext();
+  const { loading, setLoading, txHash, setTxHash } = useBridgeContext();
   const [needsConfirmation, setNeedsConfirmation] = useState(false);
   const [loadingText, setLoadingText] = useState();
   const [confirmations, setConfirmations] = useState(0);

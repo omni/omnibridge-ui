@@ -1,6 +1,7 @@
 import { useSettings } from 'contexts/SettingsContext';
 import { useAmbVersion } from 'hooks/useAmbVersion';
 import { useRequiredSignatures } from 'hooks/useRequiredSignatures';
+import { useTotalConfirms } from 'hooks/useTotalConfirms';
 import { networks } from 'lib/networks';
 import { useCallback, useMemo } from 'react';
 
@@ -28,6 +29,13 @@ export const useBridgeDirection = () => {
     homeAmbAddress,
   );
 
+  const { homeTotalConfirms, foreignTotalConfirms } = useTotalConfirms(
+    homeChainId,
+    foreignChainId,
+    homeAmbAddress,
+    foreignAmbAddress,
+  );
+
   const getBridgeChainId = useCallback(
     chainId => (chainId === homeChainId ? foreignChainId : homeChainId),
     [homeChainId, foreignChainId],
@@ -52,6 +60,12 @@ export const useBridgeDirection = () => {
     [homeChainId, homeAmbAddress, foreignAmbAddress],
   );
 
+  const getTotalConfirms = useCallback(
+    chainId =>
+      chainId === homeChainId ? homeTotalConfirms : foreignTotalConfirms,
+    [homeChainId, homeTotalConfirms, foreignTotalConfirms],
+  );
+
   return {
     bridgeDirection,
     getBridgeChainId,
@@ -60,6 +74,9 @@ export const useBridgeDirection = () => {
     getAMBAddress,
     foreignAmbVersion,
     homeRequiredSignatures,
+    homeTotalConfirms,
+    foreignTotalConfirms,
+    getTotalConfirms,
     ...bridgeConfig,
   };
 };

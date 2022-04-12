@@ -149,8 +149,10 @@ const BridgeLoader = ({
 
 export const BridgeLoadingModal = () => {
   const { account, providerChainId: chainId } = useWeb3Context();
-  const { getMonitorUrl, homeChainId, foreignChainId } = useBridgeDirection();
-  const { loading, txHash, totalConfirms } = useBridgeContext();
+  const { getMonitorUrl, homeChainId, foreignChainId, getTotalConfirms } =
+    useBridgeDirection();
+  const { loading, txHash } = useBridgeContext();
+  const totalConfirms = getTotalConfirms(chainId);
   const [message, setMessage] = useState();
   const {
     loadingText,

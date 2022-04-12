@@ -23,13 +23,9 @@ import { fetchTokenBalance } from 'lib/token';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 export const ToToken = () => {
-  const { account, providerChainId } = useWeb3Context();
-  const {
-    getBridgeChainId,
-    bridgeDirection,
-    enableForeignCurrencyBridge,
-    foreignChainId,
-  } = useBridgeDirection();
+  const { isConnected, account } = useWeb3Context();
+  const { bridgeDirection, enableForeignCurrencyBridge, foreignChainId } =
+    useBridgeDirection();
   const {
     txHash,
     fromToken,
@@ -43,7 +39,7 @@ export const ToToken = () => {
     setToToken,
     setLoading,
   } = useBridgeContext();
-  const chainId = getBridgeChainId(providerChainId);
+  const { chainId } = token ?? {};
 
   const smallScreen = useBreakpointValue({ base: true, lg: false });
   const [balanceLoading, setBalanceLoading] = useState(false);
@@ -77,30 +73,23 @@ export const ToToken = () => {
   ]);
 
   useEffect(() => {
-    let isSubscribed = true;
-    if (token && account && chainId === token.chainId) {
-      setBalanceLoading(true);
-      fetchTokenBalance(token, account)
-        .catch(toBalanceError => {
-          logError({ toBalanceError });
-          if (isSubscribed) {
-            setBalance(BigNumber.from(0));
-            setBalanceLoading(false);
-          }
-        })
-        .then(b => {
-          if (isSubscribed) {
-            setBalance(b);
-            setBalanceLoading(false);
-          }
-        });
+    if (token && account) {
+      (async () => {
+        try {
+          setBalanceLoading(true);
+          const b = await fetchTokenBalance(token, account);
+          setBalance(b);
+        } catch (fromBalanceError) {
+          setBalance(BigNumber.from(0));
+          logError({ fromBalanceError });
+        } finally {
+          setBalanceLoading(false);
+        }
+      })();
     } else {
       setBalance(BigNumber.from(0));
     }
-    return () => {
-      isSubscribed = false;
-    };
-  }, [txHash, token, account, setBalance, setBalanceLoading, chainId]);
+  }, [txHash, token, account, setBalance, setBalanceLoading]);
 
   return (
     <Flex
@@ -149,7 +138,7 @@ export const ToToken = () => {
                 borderRadius="50%"
                 mr={2}
               >
-                <Logo uri={token.logoURI} reverseFallback />
+                <Logo uri={token.logoURI} chainId={token.chainId} />
               </Flex>
               <Text fontSize="lg" fontWeight="bold">
                 {truncateText(token.name, 24)}
@@ -162,6 +151,7 @@ export const ToToken = () => {
               align="center"
               h="100%"
               position="relative"
+              display={isConnected ? 'flex' : 'none'}
               ml={{ base: undefined, sm: 2, md: undefined }}
             >
               {balanceLoading ? (

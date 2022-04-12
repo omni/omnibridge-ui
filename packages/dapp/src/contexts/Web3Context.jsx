@@ -188,6 +188,11 @@ export const Web3Provider = ({ children }) => {
     [ethersProvider],
   );
 
+  const isConnected = useMemo(
+    () => !!account && !!providerChainId && !!ethersProvider,
+    [account, providerChainId, ethersProvider],
+  );
+
   const web3Context = useMemo(
     () => ({
       isGnosisSafe,
@@ -198,6 +203,7 @@ export const Web3Provider = ({ children }) => {
       providerChainId,
       account,
       isMetamask,
+      isConnected,
     }),
     [
       isGnosisSafe,
@@ -208,6 +214,7 @@ export const Web3Provider = ({ children }) => {
       providerChainId,
       account,
       isMetamask,
+      isConnected,
     ],
   );
 

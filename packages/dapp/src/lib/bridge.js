@@ -130,7 +130,11 @@ export const fetchToAmount = async (
   const isHome = homeChainId === toToken.chainId;
   const tokenAddress = isHome ? toToken.address : fromToken.address;
   const mediatorAddress = isHome ? toToken.mediator : fromToken.mediator;
-  if (mediatorAddress !== homeMediatorAddress) {
+  if (
+    mediatorAddress !== homeMediatorAddress ||
+    !tokenAddress ||
+    !feeManagerAddress
+  ) {
     return fromAmount;
   }
 

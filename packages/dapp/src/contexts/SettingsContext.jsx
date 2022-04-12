@@ -35,36 +35,37 @@ export const SettingsProvider = ({ children }) => {
   const history = useHistory();
 
   useEffect(() => {
-    const params = fetchQueryParams(window.location.search);
+    if (window.location.pathname === '/bridge') {
+      const params = fetchQueryParams(window.location.search);
 
-    if (params) {
-      history.replace({
-        search: '',
-      });
+      if (params) {
+        if (params?.from && params?.to && params?.token) {
+          const fromChainId = parseInt(params.from, 10);
+          const toChainId = parseInt(params.to, 10);
+          const tokenAddress = params.token;
 
-      if (params?.from && params?.to && params?.token) {
-        const fromChainId = parseInt(params.from, 10);
-        const toChainId = parseInt(params.to, 10);
-        const tokenAddress = params.token;
-
-        const networkEntry = Object.entries(networks).find(
-          ([_, { homeChainId, foreignChainId }]) =>
-            (homeChainId === fromChainId && foreignChainId === toChainId) ||
-            (homeChainId === toChainId && foreignChainId === fromChainId),
-        );
-
-        if (networkEntry) {
-          setBridgeDirection(networkEntry[0], true);
-          setQueryToken(
-            tokenAddress === ADDRESS_ZERO &&
-              networkEntry[1].enableForeignCurrencyBridge &&
-              networkEntry[1].foreignChainId === fromChainId
-              ? getNativeCurrency(fromChainId)
-              : { chainId: fromChainId, address: tokenAddress },
+          const networkEntry = Object.entries(networks).find(
+            ([_, { homeChainId, foreignChainId }]) =>
+              (homeChainId === fromChainId && foreignChainId === toChainId) ||
+              (homeChainId === toChainId && foreignChainId === fromChainId),
           );
+
+          if (networkEntry) {
+            setBridgeDirection(networkEntry[0], true);
+            setQueryToken(
+              tokenAddress === ADDRESS_ZERO &&
+                networkEntry[1].enableForeignCurrencyBridge &&
+                networkEntry[1].foreignChainId === fromChainId
+                ? getNativeCurrency(fromChainId)
+                : { chainId: fromChainId, address: tokenAddress },
+            );
+          }
         }
       }
     }
+    history.replace({
+      search: '',
+    });
   }, [setBridgeDirection, history]);
 
   const { homeRPCKey, foreignRPCKey } = getRPCKeys(bridgeDirection);
