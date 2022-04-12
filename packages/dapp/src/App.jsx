@@ -3,8 +3,10 @@ import 'focus-visible/dist/focus-visible';
 import { ChakraProvider, CSSReset } from '@chakra-ui/react';
 import { css, Global } from '@emotion/react';
 import { ErrorBoundary } from 'components/common/ErrorBoundary';
+import { Header } from 'components/common/Header';
 import { Layout } from 'components/common/Layout';
 import { Routes } from 'components/common/Routes';
+import { BridgeProvider } from 'contexts/BridgeContext';
 import { SettingsProvider } from 'contexts/SettingsContext';
 import { Web3Provider } from 'contexts/Web3Context';
 import React from 'react';
@@ -30,9 +32,12 @@ export const App = () => (
       <Router>
         <SettingsProvider>
           <Web3Provider>
-            <Layout>
-              <Routes />
-            </Layout>
+            <BridgeProvider>
+              <Layout>
+                <Header />
+                <Routes />
+              </Layout>
+            </BridgeProvider>
           </Web3Provider>
         </SettingsProvider>
       </Router>

@@ -115,10 +115,14 @@ class GasPriceStore {
   async updateHistoricalPrice() {
     try {
       const response = await fetch(
-        `https://owlracle.info/eth/history?candles=1008&timeframe=10&apiKey=${OWLRACLE_API_KEY}`,
+        OWLRACLE_API_KEY
+          ? `https://owlracle.info/eth/history?candles=1008&timeframe=10&apiKey=${OWLRACLE_API_KEY}`
+          : `https://owlracle.info/eth/history?candles=1008&timeframe=10`,
       );
       if (!response.ok) {
-        throw new Error(`Fetch gasPrice from owlracle failed!`);
+        throw new Error(
+          `Owlracle request failed with status ${response.status}`,
+        );
       }
 
       const data = await response.json();
