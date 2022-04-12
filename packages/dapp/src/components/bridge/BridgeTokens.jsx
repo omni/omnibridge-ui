@@ -16,7 +16,6 @@ import {
 import { RPCHealthWarning } from 'components/warnings/RPCHealthWarning';
 import { TokenWarnings } from 'components/warnings/TokenWarnings';
 import { useBridgeContext } from 'contexts/BridgeContext';
-import { useWeb3Context } from 'contexts/Web3Context';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { getNetworkName } from 'lib/helpers';
 import React from 'react';
@@ -26,9 +25,6 @@ export const BridgeTokens = () => {
   const { fromToken } = useBridgeContext();
   const isInflationToken = isInflationaryToken(fromToken);
   const smallScreen = useBreakpointValue({ base: true, lg: false });
-  const { isConnected, providerChainId } = useWeb3Context();
-
-  const isValid = isConnected ? providerChainId === fromToken?.chainId : false;
 
   return (
     <Flex
@@ -112,14 +108,8 @@ export const BridgeTokens = () => {
           )}
           <ToToken />
         </Grid>
-        {isValid ? (
-          <>
-            <AdvancedMenu />
-            <SystemFeedback />
-          </>
-        ) : (
-          <Flex h="5rem" />
-        )}
+        <AdvancedMenu />
+        <SystemFeedback />
       </Flex>
       {/* <CoinzillaBannerAd /> */}
     </Flex>
