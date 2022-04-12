@@ -10,20 +10,22 @@ import Logo from 'assets/logo.svg';
 import { BridgeDropdown } from 'components/common/BridgeDropdown';
 import { UpdateSettings } from 'components/common/UpdateSettings';
 import { WalletSelector } from 'components/common/WalletSelector';
+import { useBridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { HistoryIcon } from 'icons/HistoryIcon';
 import React, { useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 
 const HistoryLink = ({ close }) => {
-  const history = useHistory();
+  const { push } = useHistory();
+
   return (
     <Button
       variant="ghost"
       color="grey"
       _hover={{ color: 'blue.500', bgColor: 'blackAlpha.100' }}
       onClick={() => {
-        history.push('/history');
+        push('/history');
         close();
       }}
       leftIcon={<HistoryIcon />}
@@ -37,6 +39,7 @@ const HistoryLink = ({ close }) => {
 
 export const Header = () => {
   const { isConnected } = useWeb3Context();
+  const { loading } = useBridgeContext();
   const [isOpen, setOpen] = useState(false);
   const toggleOpen = () => setOpen(open => !open);
   const isSmallScreen = useBreakpointValue({ base: true, md: false });
@@ -70,7 +73,7 @@ export const Header = () => {
         </Link>
         <Button
           variant="link"
-          display={{ base: 'block', md: 'none' }}
+          display={loading ? 'none' : { base: 'block', md: 'none' }}
           color="blue.500"
           _hover={{ color: 'blue.600' }}
           onClick={toggleOpen}
@@ -99,7 +102,9 @@ export const Header = () => {
       <Stack
         position={{ base: 'relative', md: 'static' }}
         direction={{ base: 'column', md: 'row' }}
-        display={{ base: isOpen ? 'flex' : 'none', md: 'flex' }}
+        display={
+          loading ? 'none' : { base: isOpen ? 'flex' : 'none', md: 'flex' }
+        }
         w={{ base: '100%', md: 'auto' }}
         h={{ base: '100%', md: 'auto' }}
         align="center"
