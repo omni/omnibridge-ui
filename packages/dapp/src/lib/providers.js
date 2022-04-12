@@ -49,17 +49,21 @@ const checkRPCHealth = async url => {
 
 export const getEthersProvider = async chainId => {
   const label = getNetworkLabel(chainId).toUpperCase();
-  const sessionHealthyURL = `HEALTHY-RPC-URL-${label}`;
+  const sessionStorageKey = `HEALTHY-RPC-URL-${label}`;
   const localRPCUrl = window.localStorage.getItem(RPC_URL[chainId]);
   const currentRPCUrls = getRPCUrl(chainId, true);
   const rpcURLs =
     localRPCUrl?.length > 0 ? [localRPCUrl, ...currentRPCUrls] : currentRPCUrls;
 
+  const storageRPCUrl = sessionStorage.getItem(sessionStorageKey);
+
   const provider =
-    (await checkRPCHealth(sessionStorage.getItem(sessionHealthyURL))) ||
+    (await checkRPCHealth(storageRPCUrl)) ??
     (await Promise.all(rpcURLs.map(checkRPCHealth))).filter(p => !!p)[0];
-  sessionStorage.setItem(sessionHealthyURL, provider.connection.url);
-  return provider || null;
+  if (provider?.connection?.url) {
+    sessionStorage.setItem(sessionStorageKey, provider.connection.url);
+  }
+  return provider ?? null;
 };
 
 export const isEIP1193 = ethersProvider =>

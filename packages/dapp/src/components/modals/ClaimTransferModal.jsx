@@ -23,11 +23,6 @@ import { useWeb3Context } from 'contexts/Web3Context';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { useClaim } from 'hooks/useClaim';
 import { isRevertedError, TOKENS_CLAIMED } from 'lib/amb';
-import {
-  getGasPrice,
-  getLowestHistoricalEthGasPrice,
-  getMedianHistoricalEthGasPrice,
-} from 'lib/gasPrice';
 import { getNetworkName, handleWalletError, logError } from 'lib/helpers';
 import { messageCallStatus } from 'lib/message';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -111,10 +106,6 @@ export const ClaimTransferModal = ({ message, setMessage }) => {
       />
     );
 
-  const currentGasPrice = getGasPrice();
-  const medianGasPrice = getMedianHistoricalEthGasPrice();
-  const lowestGasPrice = getLowestHistoricalEthGasPrice();
-
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered>
       <ModalOverlay background="modalBG">
@@ -137,15 +128,7 @@ export const ClaimTransferModal = ({ message, setMessage }) => {
           />
           <ModalBody px={6} py={0}>
             <VStack align="center" direction="column" spacing="4">
-              {foreignChainId === 1 && medianGasPrice.gt(currentGasPrice) && (
-                <AuspiciousGasWarning
-                  currentPrice={currentGasPrice}
-                  medianPrice={medianGasPrice}
-                  lowestPrice={lowestGasPrice}
-                  noShadow
-                  noMargin
-                />
-              )}
+              <AuspiciousGasWarning noShadow noMargin />
               <Flex align="center" direction="column" w="100%">
                 <Alert status="info" borderRadius={5}>
                   <AlertIcon minWidth="20px" />

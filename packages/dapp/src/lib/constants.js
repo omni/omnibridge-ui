@@ -18,6 +18,8 @@ export const LARGEST_UINT256 = BigNumber.from(
   '115792089237316195423570985008687907853269984665640564039457584007913129639935',
 );
 
+export const OWLRACLE_API_KEY = process.env.REACT_APP_OWLRACLE_API_KEY;
+
 export const POLLING_INTERVAL =
   process.env.REACT_APP_UI_STATUS_UPDATE_INTERVAL || 5000;
 
@@ -87,6 +89,9 @@ export const nativeCurrencyMediators = {
 
 export const networkNames = {
   1: 'ETH Mainnet',
+  3: 'Ropsten Testnet',
+  4: 'Rinkeby Testnet',
+  5: 'Görli Testnet',
   42: 'Kovan Testnet',
   56: 'Binance Smart Chain',
   77: 'Sokol Testnet',
