@@ -113,7 +113,7 @@ const useExecution = () => {
       setDoRepeat(false);
       setMessage();
     }
-  }, [executeCallback, doRepeat, message, providerChainId, foreignChainId]);
+  }, [executeCallback, doRepeat, message, isRightNetwork]);
 
   return { executeCallback, executing, executionTx: txHash };
 };

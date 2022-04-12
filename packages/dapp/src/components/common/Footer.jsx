@@ -34,7 +34,7 @@ export const Footer = () => {
         </Link>
       )}
       <HStack spacing={4}>
-        <Box _hover={{ color: 'blue.500' }}>
+        <Box _hover={{ color: 'blue.500' }} transition="0.25s">
           <a
             href="https://gnosischain.com"
             rel="noreferrer noopener"

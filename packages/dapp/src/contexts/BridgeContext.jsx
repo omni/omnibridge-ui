@@ -218,7 +218,7 @@ export const BridgeProvider = ({ children }) => {
         await setToken(token);
       }
     },
-    [setToken, bridgeDirection, cleanAmounts, fromToken],
+    [setToken, bridgeDirection, fromToken],
   );
 
   useEffect(
