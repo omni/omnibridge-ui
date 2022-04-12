@@ -11,29 +11,20 @@ import {
 } from '@chakra-ui/react';
 import Details from 'assets/details.svg';
 import { useBridgeContext } from 'contexts/BridgeContext';
+import { useTokenLimits } from 'hooks/useTokenLimits';
 import { formatValue } from 'lib/helpers';
-import React, { useCallback, useState } from 'react';
+import React from 'react';
 
 export const SystemFeedback = () => {
-  const {
-    fromToken: token,
-    tokenLimits,
-    updateTokenLimits,
-  } = useBridgeContext();
+  const { fromToken: token } = useBridgeContext();
 
-  const [loading, setLoading] = useState(false);
-
-  const update = useCallback(async () => {
-    setLoading(true);
-    await updateTokenLimits();
-    setLoading(false);
-  }, [updateTokenLimits]);
+  const { data: tokenLimits, fetching, refresh } = useTokenLimits();
 
   return (
     <Popover>
       <PopoverTrigger>
         <Button
-          onClick={update}
+          onClick={refresh}
           variant="ghost"
           color="blue.500"
           _hover={{ bg: 'blackAlpha.100' }}
@@ -56,7 +47,7 @@ export const SystemFeedback = () => {
               <Text color="grey" textAlign="left">
                 Daily Limit
               </Text>
-              {loading ? (
+              {fetching ? (
                 <Spinner size="sm" />
               ) : (
                 <Text fontWeight="bold" ml={4} textAlign="right">
@@ -70,7 +61,7 @@ export const SystemFeedback = () => {
               <Text color="grey" textAlign="left">
                 Max per Tx
               </Text>
-              {loading ? (
+              {fetching ? (
                 <Spinner size="sm" />
               ) : (
                 <Text fontWeight="bold" ml={4} textAlign="right">
@@ -84,7 +75,7 @@ export const SystemFeedback = () => {
               <Text color="grey" textAlign="left">
                 Min per Tx
               </Text>
-              {loading ? (
+              {fetching ? (
                 <Spinner size="sm" />
               ) : (
                 <Text fontWeight="bold" ml={4} textAlign="right">

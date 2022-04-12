@@ -38,19 +38,13 @@ import {
 import { ETH_BSC_BRIDGE } from 'lib/networks';
 import { fetchTokenBalanceWithProvider } from 'lib/token';
 import { fetchTokenList } from 'lib/tokenList';
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 const { CUSTOM_TOKENS } = LOCAL_STORAGE_KEYS;
 
 const TokenDisplay = ({ token, onClick }) => {
   const { ethersProvider, account } = useWeb3Context();
-  const { decimals, name, logoURI, symbol, address, mode } = token;
+  const { decimals, name, logoURI, symbol, address, mode, chainId } = token;
   const { disableBalanceFetchToken } = useSettings();
   const [loading, setLoading] = useState(false);
   const [balance, setBalance] = useState();
@@ -97,7 +91,7 @@ const TokenDisplay = ({ token, onClick }) => {
             overflow="hidden"
             borderRadius="50%"
           >
-            <Logo uri={logoURI} />
+            <Logo uri={logoURI} chainId={chainId} />
           </Flex>
           <Text fontSize="lg" fontWeight="bold" mx={2}>
             {symbol}
@@ -125,8 +119,12 @@ export const TokenListModal = ({ isOpen, onClose, onCustom }) => {
   // Ref
   const initialRef = useRef();
   // Contexts
-  const { setToken, setLoading: setBridgeLoading } = useBridgeContext();
-  const { providerChainId } = useWeb3Context();
+  const {
+    fromToken,
+    setToken,
+    setLoading: setBridgeLoading,
+  } = useBridgeContext();
+  const { chainId } = fromToken ?? {};
 
   // State
   const [loading, setLoading] = useState(false);
@@ -141,18 +139,12 @@ export const TokenListModal = ({ isOpen, onClose, onCustom }) => {
     enableForeignCurrencyBridge,
   } = useBridgeDirection();
 
-  const bridgeChainId = useMemo(
-    () => getBridgeChainId(providerChainId),
-    [providerChainId, getBridgeChainId],
-  );
-
   const [customTokens, setCustomTokens] = useState([]);
 
   // Effects
   useEffect(() => {
     (async () => {
-      if (!providerChainId) return;
-      const chainId = providerChainId;
+      if (!chainId) return;
       setLoading(true);
       try {
         const baseTokenList = await fetchTokenList(
@@ -182,12 +174,12 @@ export const TokenListModal = ({ isOpen, onClose, onCustom }) => {
       setLoading(false);
     })();
   }, [
+    chainId,
     getGraphEndpoint,
     getBridgeChainId,
     enableForeignCurrencyBridge,
     foreignChainId,
     customTokens,
-    providerChainId,
   ]);
 
   useEffect(() => {
@@ -273,13 +265,15 @@ export const TokenListModal = ({ isOpen, onClose, onCustom }) => {
           maxW="37rem"
           mx="12"
         >
-          <ConfirmBSCTokenModal
-            isOpen={!!selectedToken && shouldShowWarning}
-            onClose={closeWarning}
-            onConfirm={onConfirmWarningModal}
-            token={selectedToken}
-            bridgeChainId={bridgeChainId}
-          />
+          {chainId && (
+            <ConfirmBSCTokenModal
+              isOpen={!!selectedToken && shouldShowWarning}
+              onClose={closeWarning}
+              onConfirm={onConfirmWarningModal}
+              token={selectedToken}
+              bridgeChainId={getBridgeChainId(chainId)}
+            />
+          )}
           <ModalHeader pb={0}>
             <Flex align="center" justify="space-between">
               Select a Token

@@ -11,7 +11,6 @@ import { BridgeDropdown } from 'components/common/BridgeDropdown';
 import { UpdateSettings } from 'components/common/UpdateSettings';
 import { WalletSelector } from 'components/common/WalletSelector';
 import { useWeb3Context } from 'contexts/Web3Context';
-import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { HistoryIcon } from 'icons/HistoryIcon';
 import React, { useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
@@ -37,12 +36,9 @@ const HistoryLink = ({ close }) => {
 };
 
 export const Header = () => {
-  const { homeChainId, foreignChainId } = useBridgeDirection();
-  const { account, providerChainId } = useWeb3Context();
+  const { isConnected } = useWeb3Context();
   const [isOpen, setOpen] = useState(false);
   const toggleOpen = () => setOpen(open => !open);
-  const valid =
-    !!account && [homeChainId, foreignChainId].indexOf(providerChainId) >= 0;
   const isSmallScreen = useBreakpointValue({ base: true, md: false });
 
   return (
@@ -54,7 +50,7 @@ export const Header = () => {
       align={{ base: 'stretch', md: 'center' }}
       maxW="75rem"
       minH={20}
-      px={{ base: 4, sm: 8 }}
+      px={{ base: 4, sm: 8, md: 4, lg: 8 }}
       w="100%"
       background={isOpen ? { base: 'white', md: 'transparent' } : 'transparent'}
       direction={{ base: 'column', md: 'row' }}
@@ -110,7 +106,7 @@ export const Header = () => {
         justify="center"
         spacing={{ base: 2, md: 0, lg: 2 }}
       >
-        {valid && (
+        {isConnected && (
           <>
             <HistoryLink close={() => setOpen(false)} />
             <UpdateSettings close={() => setOpen(false)} />

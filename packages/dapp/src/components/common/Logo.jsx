@@ -2,8 +2,6 @@ import { Image } from '@chakra-ui/react';
 import BSCLogo from 'assets/bsc-logo.png';
 import EthLogo from 'assets/eth-logo.png';
 import xDAILogo from 'assets/xdai-logo.png';
-import { useWeb3Context } from 'contexts/Web3Context';
-import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { uriToHttp } from 'lib/helpers';
 import React, { useState } from 'react';
 
@@ -17,13 +15,8 @@ const logos = {
   56: BSCLogo,
 };
 
-export const Logo = ({ uri, reverseFallback = false }) => {
-  const { getBridgeChainId } = useBridgeDirection();
-  const { providerChainId } = useWeb3Context();
-  const chainId = reverseFallback
-    ? getBridgeChainId(providerChainId)
-    : providerChainId;
-  const fallbackLogo = logos[chainId];
+export const Logo = ({ uri, chainId }) => {
+  const fallbackLogo = logos[chainId] ?? logos[1];
   const [, refresh] = useState(0);
 
   if (uri) {

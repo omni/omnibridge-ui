@@ -5,23 +5,22 @@ import { useBridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { useTokenDisabled } from 'hooks/useTokenDisabled';
 import { isRevertedError } from 'lib/amb';
-import { handleWalletError } from 'lib/helpers';
+import { getNetworkName, handleWalletError } from 'lib/helpers';
 import React, { useCallback } from 'react';
 
-export const UnlockButton = () => {
+export const UnlockButton = ({ approval }) => {
   const { providerChainId } = useWeb3Context();
   const {
     fromAmount: amount,
     fromBalance: balance,
     fromToken: token,
     toAmountLoading,
-    allowed,
-    approve,
-    unlockLoading,
-    approvalTxHash,
   } = useBridgeContext();
+
+  const { allowed, approve, unlockLoading, approvalTxHash } = approval;
   const isBridgingDisabled = useTokenDisabled(token);
-  const buttonDisabled = allowed || toAmountLoading || isBridgingDisabled;
+  const buttonDisabled =
+    !token || allowed || toAmountLoading || isBridgingDisabled;
   const toast = useToast();
   const showError = useCallback(
     msg => {
@@ -37,6 +36,14 @@ export const UnlockButton = () => {
     [toast],
   );
   const valid = useCallback(() => {
+    if (!providerChainId) {
+      showError('Please connect wallet');
+      return false;
+    }
+    if (providerChainId !== token?.chainId) {
+      showError(`Please switch to ${getNetworkName(token?.chainId)}`);
+      return false;
+    }
     if (amount.lte(0)) {
       showError('Please specify amount');
       return false;
@@ -46,7 +53,8 @@ export const UnlockButton = () => {
       return false;
     }
     return true;
-  }, [amount, balance, showError]);
+  }, [providerChainId, token?.chainId, amount, balance, showError]);
+
   const onClick = useCallback(() => {
     if (!unlockLoading && !buttonDisabled && valid()) {
       approve().catch(error => {

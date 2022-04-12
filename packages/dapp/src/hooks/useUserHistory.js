@@ -11,11 +11,14 @@ export const useUserHistory = () => {
   const { homeChainId, foreignChainId, getGraphEndpoint } =
     useBridgeDirection();
   const { account } = useWeb3Context();
-  const [transfers, setTransfers] = useState();
+  const [transfers, setTransfers] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!account) return () => undefined;
+    if (!account) {
+      setLoading(false);
+      return () => undefined;
+    }
     let isSubscribed = true;
     async function update() {
       setTransfers();

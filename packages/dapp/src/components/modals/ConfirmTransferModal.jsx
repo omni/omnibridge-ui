@@ -26,6 +26,7 @@ import { NeedsTransactionsWarning } from 'components/warnings/NeedsTransactionsW
 import { TokenWarnings } from 'components/warnings/TokenWarnings';
 import { useBridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
+import { useNeedsClaiming } from 'hooks/useNeedsClaiming';
 import { useTokenDisabled } from 'hooks/useTokenDisabled';
 import {
   formatValue,
@@ -38,15 +39,9 @@ import React, { useCallback, useEffect, useState } from 'react';
 export const ConfirmTransferModal = ({ isOpen, onClose }) => {
   const { isGnosisSafe, account } = useWeb3Context();
 
-  const {
-    receiver,
-    fromToken,
-    toToken,
-    fromAmount,
-    toAmount,
-    transfer,
-    needsClaiming,
-  } = useBridgeContext();
+  const { receiver, fromToken, toToken, fromAmount, toAmount, transfer } =
+    useBridgeContext();
+  const needsClaiming = useNeedsClaiming();
   const [fee, setFee] = useState(0);
   useEffect(() => {
     if (fromAmount.gt(0)) {

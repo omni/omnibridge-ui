@@ -1,10 +1,10 @@
 import { Flex, Grid, Text, useBreakpointValue } from '@chakra-ui/react';
+import { ActionButtons } from 'components/bridge/ActionButtons';
 import { AdvancedMenu } from 'components/bridge/AdvancedMenu';
 import { FromToken } from 'components/bridge/FromToken';
+import { SwitchButton } from 'components/bridge/SwitchButton';
 import { SystemFeedback } from 'components/bridge/SystemFeedback';
 import { ToToken } from 'components/bridge/ToToken';
-import { TransferButton } from 'components/bridge/TransferButton';
-import { UnlockButton } from 'components/bridge/UnlockButton';
 // import { CoinzillaBannerAd } from 'components/common/CoinzillaBannerAd';
 // import { CoinzillaTextAd } from 'components/common/CoinzillaTextAd';
 import { BridgeLoadingModal } from 'components/modals/BridgeLoadingModal';
@@ -21,16 +21,13 @@ import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { getNetworkName } from 'lib/helpers';
 import React from 'react';
 
-import { SwitchButton } from './SwitchButton';
-
 export const BridgeTokens = () => {
-  const { providerChainId: chainId } = useWeb3Context();
   const { getBridgeChainId } = useBridgeDirection();
   const { fromToken } = useBridgeContext();
   const isInflationToken = isInflationaryToken(fromToken);
-
   const smallScreen = useBreakpointValue({ base: true, lg: false });
-  const bridgeChainId = getBridgeChainId(chainId);
+  const { isConnected } = useWeb3Context();
+
   return (
     <Flex
       align="center"
@@ -59,13 +56,13 @@ export const BridgeTokens = () => {
       >
         <BridgeLoadingModal />
         {!smallScreen && (
-          <Flex w="100%" justify="space-between">
+          <Flex w="100%" justify="space-between" minH="3rem">
             <Flex align="flex-start" direction="column">
               <Text color="greyText" fontSize="sm">
                 From
               </Text>
               <Text fontWeight="bold" fontSize="lg">
-                {getNetworkName(chainId)}
+                {fromToken ? getNetworkName(fromToken.chainId) : ''}
               </Text>
             </Flex>
             <Flex align="flex-end" direction="column">
@@ -73,7 +70,9 @@ export const BridgeTokens = () => {
                 To
               </Text>
               <Text fontWeight="bold" fontSize="lg" textAlign="right">
-                {getNetworkName(bridgeChainId)}
+                {fromToken
+                  ? getNetworkName(getBridgeChainId(fromToken.chainId))
+                  : ''}
               </Text>
             </Flex>
           </Flex>
@@ -86,40 +85,39 @@ export const BridgeTokens = () => {
         >
           <SwitchButton />
           {smallScreen && (
-            <Flex align="flex-start" direction="column" m={2}>
+            <Flex align="flex-start" direction="column" m={2} minH="3rem">
               <Text color="greyText" fontSize="sm">
                 From
               </Text>
               <Text fontWeight="bold" fontSize="lg">
-                {getNetworkName(chainId)}
+                {fromToken ? getNetworkName(fromToken.chainId) : ''}
               </Text>
             </Flex>
           )}
           <FromToken />
-          <Flex
-            direction="column"
-            px={{ base: 2, lg: 4 }}
-            my={{ base: 2, lg: 0 }}
-            align="center"
-            w="100%"
-          >
-            <UnlockButton />
-            <TransferButton />
-          </Flex>
+          <ActionButtons />
           {smallScreen && (
-            <Flex align="flex-end" direction="column" m={2}>
+            <Flex align="flex-end" direction="column" m={2} minH="3rem">
               <Text color="greyText" fontSize="sm">
                 To
               </Text>
               <Text fontWeight="bold" fontSize="lg" textAlign="right">
-                {getNetworkName(bridgeChainId)}
+                {fromToken
+                  ? getNetworkName(getBridgeChainId(fromToken.chainId))
+                  : ''}
               </Text>
             </Flex>
           )}
           <ToToken />
         </Grid>
-        <AdvancedMenu />
-        <SystemFeedback />
+        {isConnected ? (
+          <>
+            <AdvancedMenu />
+            <SystemFeedback />
+          </>
+        ) : (
+          <Flex h="5rem" />
+        )}
       </Flex>
       {/* <CoinzillaBannerAd /> */}
     </Flex>
