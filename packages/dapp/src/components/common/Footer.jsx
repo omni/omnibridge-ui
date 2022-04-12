@@ -63,7 +63,7 @@ export const Footer = () => {
         </Box>
         <Box _hover={{ color: 'blue.500' }} transition="0.25s">
           <a
-            href="https://github.com/xdaichain"
+            href="https://github.com/omni"
             rel="noreferrer noopener"
             target="_blank"
           >
