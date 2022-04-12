@@ -6,18 +6,33 @@ import { useRenderChain } from 'hooks/useRenderChain';
 import { WalletFilledIcon } from 'icons/WalletFilledIcon';
 import { getNetworkName } from 'lib/helpers';
 import React from 'react';
+import { useHistory } from 'react-router-dom';
 
 export const WalletInfo = ({ close }) => {
-  const { getBridgeChainId } = useBridgeDirection();
+  const { homeChainId, foreignChainId, getBridgeChainId } =
+    useBridgeDirection();
   const { fromToken } = useBridgeContext();
-  const tokenChainId = fromToken ? fromToken.chainId : null;
-  const { isConnected, providerChainId, disconnect } = useWeb3Context();
+  const { isConnected, providerChainId, disconnect, loading } =
+    useWeb3Context();
 
   const renderChain = useRenderChain();
+  const {
+    location: { pathname },
+  } = useHistory();
 
   if (!isConnected) return null;
 
-  const isInvalid = tokenChainId !== providerChainId;
+  const isHistoryPage = pathname === '/history';
+
+  let isInvalid = false;
+
+  if (isHistoryPage) {
+    isInvalid = loading
+      ? false
+      : ![homeChainId, foreignChainId].includes(providerChainId);
+  } else {
+    isInvalid = loading ? false : providerChainId !== fromToken?.chainId;
+  }
 
   return (
     <Flex background="white" direction="column" align="center" w="100%">
@@ -39,8 +54,18 @@ export const WalletInfo = ({ close }) => {
       </Text>
       {isInvalid && (
         <Text color="greyText" mb={4} textAlign="center">
-          Please switch to {renderChain(tokenChainId)} for bridging your tokens
-          to {getNetworkName(getBridgeChainId(tokenChainId))}
+          {isHistoryPage ? (
+            <>
+              Please switch to {renderChain(foreignChainId)} for claiming your
+              tokens
+            </>
+          ) : (
+            <>
+              Please switch to {renderChain(fromToken?.chainId)} for bridging
+              your tokens to{' '}
+              {getNetworkName(getBridgeChainId(fromToken?.chainId))}
+            </>
+          )}
         </Text>
       )}
 

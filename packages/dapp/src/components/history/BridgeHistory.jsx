@@ -9,6 +9,7 @@ import { ClaimErrorModal } from 'components/modals/ClaimErrorModal';
 import { LoadingModal } from 'components/modals/LoadingModal';
 import { AuspiciousGasWarning } from 'components/warnings/AuspiciousGasWarning';
 import { GraphHealthWarning } from 'components/warnings/GraphHealthWarning';
+import { useBridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { useUserHistory } from 'hooks/useUserHistory';
 import React, { useCallback, useState } from 'react';
@@ -18,11 +19,14 @@ const TOTAL_PER_PAGE = 20;
 
 export const BridgeHistory = ({ page }) => {
   const { isConnected } = useWeb3Context();
+  const { loading: loadingBridge } = useBridgeContext();
+  const { transfers, loading: loadingHistory } = useUserHistory();
+
+  const loading = loadingBridge || loadingHistory;
+
   const [onlyUnReceived, setOnlyUnReceived] = useState(false);
   const [claimErrorShow, setClaimErrorShow] = useState(false);
   const [claimErrorToken, setClaimErrorToken] = useState(null);
-
-  const { transfers, loading } = useUserHistory();
 
   const handleClaimError = useCallback(toToken => {
     toToken && setClaimErrorToken(toToken);
@@ -35,11 +39,7 @@ export const BridgeHistory = ({ page }) => {
   }, [claimErrorToken]);
 
   if (loading) {
-    return (
-      <Flex w="100%" maxW="75rem" direction="column" mt={8} px={8}>
-        <LoadingModal />
-      </Flex>
-    );
+    return <LoadingModal />;
   }
 
   const filteredTransfers = onlyUnReceived

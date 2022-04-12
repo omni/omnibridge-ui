@@ -11,10 +11,12 @@ import {
 import Davatar from '@davatar/react';
 import { useBridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
+import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { useENS } from 'hooks/useENS';
 import { WalletIcon } from 'icons/WalletIcon';
 import { getAccountString, getNetworkLabel } from 'lib/helpers';
 import React from 'react';
+import { useHistory } from 'react-router-dom';
 
 import { WalletInfo } from './WalletInfo';
 
@@ -22,12 +24,20 @@ export const WalletSelector = ({ close }) => {
   const { account, loading, providerChainId, connectWeb3 } = useWeb3Context();
   const { ensName } = useENS(account);
   const { fromToken } = useBridgeContext();
+  const { homeChainId, foreignChainId } = useBridgeDirection();
+  const {
+    location: { pathname },
+  } = useHistory();
 
-  const isInvalid =
-    !loading &&
-    providerChainId &&
-    fromToken &&
-    fromToken.chainId !== providerChainId;
+  let isInvalid = false;
+
+  if (pathname === '/history') {
+    isInvalid = loading
+      ? false
+      : ![homeChainId, foreignChainId].includes(providerChainId);
+  } else {
+    isInvalid = loading ? false : providerChainId !== fromToken?.chainId;
+  }
 
   const placement = useBreakpointValue({ base: 'bottom', md: 'bottom-end' });
   if (!account || !providerChainId)

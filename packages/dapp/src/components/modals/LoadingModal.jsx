@@ -10,7 +10,6 @@ import {
   Text,
 } from '@chakra-ui/react';
 import LoadingImage from 'assets/loading.svg';
-import { useBridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import React from 'react';
@@ -24,14 +23,8 @@ const getTransactionString = hash => {
 export const LoadingModal = ({ loadingText, txHash, chainId }) => {
   const { getMonitorUrl } = useBridgeDirection();
   const { providerChainId } = useWeb3Context();
-  const { loading } = useBridgeContext();
   return (
-    <Modal
-      isOpen={!loading}
-      closeOnEsc={false}
-      closeOnOverlayClick={false}
-      isCentered
-    >
+    <Modal closeOnEsc={false} closeOnOverlayClick={false} isOpen isCentered>
       <ModalOverlay background="modalBG">
         {loadingText ? (
           <ModalContent
