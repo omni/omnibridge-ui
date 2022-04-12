@@ -154,6 +154,7 @@ export const fetchToAmount = async (
       tokenAddress,
       fromAmount,
     );
+
     return fromAmount.sub(fee);
   } catch (amountError) {
     logError({ amountError });

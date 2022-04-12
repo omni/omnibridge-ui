@@ -68,7 +68,10 @@ const TokenDisplay = ({ token, onClick }) => {
     })();
   }, [ethersProvider, account, address, mode, symbol]);
 
-  const bal = balance && decimals ? formatValue(balance, decimals) : '';
+  const desc =
+    balance && decimals && !disableBalanceFetchToken
+      ? formatValue(balance, decimals)
+      : name;
 
   return (
     <Button
@@ -107,7 +110,7 @@ const TokenDisplay = ({ token, onClick }) => {
             overflow="hidden"
             maxWidth="60%"
           >
-            {disableBalanceFetchToken ? name : bal}
+            {desc}
           </Text>
         )}
       </Flex>

@@ -102,7 +102,7 @@ const BridgeLoader = ({
                         thickness="5px"
                         w="3.25rem"
                         h="3.25rem"
-                        speed="0.75s"
+                        speed="0.5s"
                       />
                     </>
                   )}
