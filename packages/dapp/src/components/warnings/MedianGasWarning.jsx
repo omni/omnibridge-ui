@@ -1,23 +1,20 @@
 import { Alert, AlertIcon, Flex, Text } from '@chakra-ui/react';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
-import { useGasPrice } from 'hooks/useGasPrice';
+import { getGasPrice, getMedianHistoricalEthGasPrice } from 'lib/gasPrice';
 import React from 'react';
 
 export const MedianGasWarning = ({ noShadow = false }) => {
   const { foreignChainId } = useBridgeDirection();
-  const { currentPrice, medianPrice } = useGasPrice();
+  const currentPrice = getGasPrice();
+  const medianPrice = getMedianHistoricalEthGasPrice();
 
-  if (
-    foreignChainId === 1 &&
-    medianPrice.gt(0) &&
-    medianPrice.lt(currentPrice)
-  ) {
-    const percent = currentPrice
-      .sub(medianPrice)
-      .mul(100)
-      .div(medianPrice)
-      .toNumber();
+  const percent = currentPrice
+    .sub(medianPrice)
+    .mul(100)
+    .div(medianPrice)
+    .toNumber();
 
+  if (foreignChainId === 1 && medianPrice.lt(currentPrice)) {
     return (
       <Flex align="center" direction="column" w="100%" mb="4">
         <Alert

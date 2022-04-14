@@ -9,7 +9,13 @@ import { ClaimErrorModal } from 'components/modals/ClaimErrorModal';
 import { LoadingModal } from 'components/modals/LoadingModal';
 import { AuspiciousGasWarning } from 'components/warnings/AuspiciousGasWarning';
 import { GraphHealthWarning } from 'components/warnings/GraphHealthWarning';
+import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { useUserHistory } from 'hooks/useUserHistory';
+import {
+  getGasPrice,
+  getLowestHistoricalEthGasPrice,
+  getMedianHistoricalEthGasPrice,
+} from 'lib/gasPrice';
 import React, { useCallback, useState } from 'react';
 import { Redirect } from 'react-router-dom';
 
@@ -19,6 +25,7 @@ export const BridgeHistory = ({ page }) => {
   const [onlyUnReceived, setOnlyUnReceived] = useState(false);
   const [claimErrorShow, setClaimErrorShow] = useState(false);
   const [claimErrorToken, setClaimErrorToken] = useState(null);
+  const { foreignChainId } = useBridgeDirection();
 
   const { transfers, loading } = useUserHistory();
 
@@ -54,6 +61,10 @@ export const BridgeHistory = ({ page }) => {
     return <Redirect to="/history" />;
   }
 
+  const currentGasPrice = getGasPrice();
+  const medianGasPrice = getMedianHistoricalEthGasPrice();
+  const lowestGasPrice = getLowestHistoricalEthGasPrice();
+
   return (
     <Flex
       maxW="75rem"
@@ -68,7 +79,13 @@ export const BridgeHistory = ({ page }) => {
         claimErrorToken={claimErrorToken}
         onClose={handleModalClose}
       />
-      <AuspiciousGasWarning />
+      {foreignChainId === 1 && medianGasPrice.gt(currentGasPrice) && (
+        <AuspiciousGasWarning
+          currentPrice={currentGasPrice}
+          medianPrice={medianGasPrice}
+          lowestPrice={lowestGasPrice}
+        />
+      )}
       <GraphHealthWarning />
       <ManualClaim handleClaimError={handleClaimError} />
       <Flex justify="space-between" align="center" mb={4}>
