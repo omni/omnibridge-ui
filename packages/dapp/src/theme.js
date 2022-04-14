@@ -1,16 +1,21 @@
-import { extendTheme } from '@chakra-ui/react';
+import chakraTheme from '@chakra-ui/theme';
 
-export const theme = extendTheme({
+export const theme = {
+  ...chakraTheme,
+  styles: {
+    ...chakraTheme.styles,
+    global: {
+      ...chakraTheme.styles.global,
+    },
+  },
   breakpoints: {
-    base: '0em',
-    sm: '30em',
-    md: '48em',
-    lg: '62em',
+    ...chakraTheme.breakpoints,
     xl: '70em',
     '2xl': '80em',
     '3xl': '96em',
   },
   colors: {
+    ...chakraTheme.colors,
     blue: {
       50: '#edf9ff',
       100: '#ddf3ff',
@@ -67,6 +72,7 @@ export const theme = extendTheme({
     modalOpaqueBG: 'rgba(98, 118, 148, 1)',
   },
   fonts: {
+    ...chakraTheme.fonts,
     body: 'Roboto, sans-serif',
   },
-});
+};
