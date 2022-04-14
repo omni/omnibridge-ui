@@ -1,7 +1,8 @@
 import { useUpdateInterval } from 'hooks/useUpdateInterval';
 import { useMemo } from 'react';
 import {
-  getGasPrice,
+  getCurrentEthGasPrice,
+  getHighestHistoricalEthGasPrice,
   getLowestHistoricalEthGasPrice,
   getMedianHistoricalEthGasPrice,
 } from 'stores/gasPrice';
@@ -11,9 +12,10 @@ export const useGasPrice = () => {
 
   return useMemo(
     () => ({
-      gasPrice: getGasPrice(),
+      currentPrice: getCurrentEthGasPrice(),
       lowestPrice: getLowestHistoricalEthGasPrice(),
       medianPrice: getMedianHistoricalEthGasPrice(),
+      highestPrice: getHighestHistoricalEthGasPrice(),
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [refreshCount],

@@ -149,10 +149,13 @@ class GasPriceStore {
 
 const ethGasStore = new GasPriceStore();
 
-export const getGasPrice = () => ethGasStore.gasPrice;
+export const getCurrentEthGasPrice = () => ethGasStore.gasPrice;
 
 export const getLowestHistoricalEthGasPrice = () =>
   ethGasStore.lowestHistoricalPrice;
 
 export const getMedianHistoricalEthGasPrice = () =>
   ethGasStore.medianHistoricalPrice;
+
+export const getHighestHistoricalEthGasPrice = () =>
+  ethGasStore.highestHistoricalPrice;

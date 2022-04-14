@@ -21,7 +21,7 @@ export const NeedsTransactionsWarning = ({ noShadow = false }) => {
   const { homeChainId, foreignChainId } = useBridgeDirection();
   const GAS_COST = 260000;
 
-  const { gasPrice } = useGasPrice();
+  const { currentPrice: gasPrice } = useGasPrice();
   const ethPrice = useETHPrice();
   const gasCostInETH = utils.formatEther(gasPrice.mul(GAS_COST));
   const gasCostInUSD = gasCostInETH * ethPrice;
