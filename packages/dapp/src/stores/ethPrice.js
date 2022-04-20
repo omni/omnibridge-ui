@@ -11,7 +11,7 @@ const ethPriceFromApi = async fetchFn => {
       return null;
     }
 
-    logDebug('Updated ETH Price', { oracleEthPrice });
+    logDebug('Updated ETH Price', json.ethereum);
 
     return oracleEthPrice;
   } catch (e) {
@@ -55,4 +55,4 @@ class EthPriceStore {
 
 const ethPriceStore = new EthPriceStore();
 
-export const getEthereumPrice = () => ethPriceStore.ethPriceInUSD();
+export const getETHPrice = () => ethPriceStore.ethPriceInUSD();

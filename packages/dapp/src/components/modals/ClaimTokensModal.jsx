@@ -16,21 +16,14 @@ import {
 import ClaimTokensImage from 'assets/multiple-claim.svg';
 import { LoadingModal } from 'components/modals/LoadingModal';
 import { AuspiciousGasWarning } from 'components/warnings/AuspiciousGasWarning';
-import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { useClaimableTransfers } from 'hooks/useClaimableTransfers';
 import { LOCAL_STORAGE_KEYS } from 'lib/constants';
-import {
-  getGasPrice,
-  getLowestHistoricalEthGasPrice,
-  getMedianHistoricalEthGasPrice,
-} from 'lib/gasPrice';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 const { DONT_SHOW_CLAIMS } = LOCAL_STORAGE_KEYS;
 
 export const ClaimTokensModal = () => {
-  const { foreignChainId } = useBridgeDirection();
   const { transfers, loading } = useClaimableTransfers();
   const [isOpen, setOpen] = useState(false);
 
@@ -46,9 +39,6 @@ export const ClaimTokensModal = () => {
   }, [transfers]);
 
   if (loading) return <LoadingModal />;
-  const currentGasPrice = getGasPrice();
-  const medianGasPrice = getMedianHistoricalEthGasPrice();
-  const lowestGasPrice = getLowestHistoricalEthGasPrice();
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} isCentered>
@@ -77,15 +67,7 @@ export const ClaimTokensModal = () => {
                 <Text as="b">{transfers ? transfers.length : 0}</Text>
                 <Text as="span">{` not claimed transactions `}</Text>
               </Box>
-              {foreignChainId === 1 && medianGasPrice.gt(currentGasPrice) && (
-                <AuspiciousGasWarning
-                  currentPrice={currentGasPrice}
-                  medianPrice={medianGasPrice}
-                  lowestPrice={lowestGasPrice}
-                  noShadow
-                  noMargin
-                />
-              )}
+              <AuspiciousGasWarning noShadow noMargin />
             </VStack>
           </ModalBody>
           <ModalFooter p={6}>
