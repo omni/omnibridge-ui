@@ -84,7 +84,7 @@ export const formatValueForLimits = (num, dec) => {
   const beforeDecimal = str.split('.')[0];
   const afterDecimal = `${str.split('.')[1]}0000`;
   if (Number(beforeDecimal) > 0) {
-    str = `${beforeDecimal}.${afterDecimal.slice(0, 4)}`;
+    str = `${beforeDecimal}.${afterDecimal[0]}`;
   }
   return str;
 };
