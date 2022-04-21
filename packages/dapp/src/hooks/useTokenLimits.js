@@ -2,6 +2,7 @@ import { useBridgeContext } from 'contexts/BridgeContext';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { useMediatorInfo } from 'hooks/useMediatorInfo';
 import { fetchTokenLimits } from 'lib/bridge';
+import { ADDRESS_ZERO } from 'lib/constants';
 
 const { useState, useCallback, useEffect } = require('react');
 
@@ -16,7 +17,9 @@ export const useTokenLimits = () => {
     if (
       fromToken?.chainId &&
       toToken?.chainId &&
-      fromToken.symbol === toToken.symbol &&
+      (fromToken?.symbol === toToken?.symbol ||
+        (fromToken?.address === ADDRESS_ZERO &&
+          fromToken?.mode === 'NATIVE')) &&
       currentDay &&
       bridgeDirection
     ) {

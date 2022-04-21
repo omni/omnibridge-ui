@@ -15,7 +15,7 @@ export const useNeedsClaiming = () => {
     () =>
       isHome &&
       !claimDisabled &&
-      !(tokensClaimDisabled || []).includes(fromToken?.address.toLowerCase()),
+      !(tokensClaimDisabled ?? []).includes(fromToken?.address.toLowerCase()),
     [isHome, claimDisabled, tokensClaimDisabled, fromToken],
   );
 };
