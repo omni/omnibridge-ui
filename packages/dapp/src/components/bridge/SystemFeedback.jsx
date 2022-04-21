@@ -12,7 +12,7 @@ import {
 import Details from 'assets/details.svg';
 import { useBridgeContext } from 'contexts/BridgeContext';
 import { useTokenLimits } from 'hooks/useTokenLimits';
-import { formatValue } from 'lib/helpers';
+import { formatValueForLimits as formatValue } from 'lib/helpers';
 import React from 'react';
 
 export const SystemFeedback = () => {

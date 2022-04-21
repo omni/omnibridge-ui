@@ -29,6 +29,7 @@ export const ToToken = () => {
     enableForeignCurrencyBridge,
     foreignChainId,
     foreignMediatorAddress,
+    homeWrappedForeignCurrencyAddress,
   } = useBridgeDirection();
   const {
     txHash,
@@ -206,7 +207,7 @@ export const ToToken = () => {
             {enableForeignCurrencyBridge &&
               chainId === foreignChainId &&
               fromToken.address.toLowerCase() ===
-                nativeCurrency.homeTokenAddress && (
+                homeWrappedForeignCurrencyAddress && (
                 <Flex>
                   <Text>Receive {nativeCurrency.symbol}</Text>
                   <Switch

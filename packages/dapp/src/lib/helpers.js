@@ -1,6 +1,7 @@
 import { BigNumber, utils } from 'ethers';
 import { getAddress } from 'ethers/lib/utils';
 import {
+  ADDRESS_ZERO,
   chainUrls,
   defaultTokensUrl,
   LOCAL_STORAGE_KEYS,
@@ -65,19 +66,20 @@ export const uniqueTokens = list => {
   });
 };
 
-// export const formatValue = (num, dec) => {
-//   const str = utils.formatUnits(num, dec);
-//   if (str.length > 50) {
-//     const expStr = Number(str).toExponential().replace(/e\+?/, ' x 10^');
-//     const split = expStr.split(' x 10^');
-//     const first = Number(split[0]).toLocaleString('en', {
-//       maximumFractionDigits: 4,
-//     });
-//     return `${first} x 10^${split[1]}`;
-//   }
-//   return Number(str).toLocaleString('en', { maximumFractionDigits: 4 });
-// };
 export const formatValue = (num, dec) => {
+  const str = utils.formatUnits(num, dec);
+  if (str.length > 19) {
+    const expStr = Number(str).toExponential().replace(/e\+?/, ' x 10^');
+    const split = expStr.split(' x 10^');
+    const first = Number(split[0]).toLocaleString('en', {
+      maximumFractionDigits: 4,
+    });
+    return `${first} x 10^${split[1]}`;
+  }
+  return Number(str).toLocaleString('en', { maximumFractionDigits: 4 });
+};
+
+export const formatValueForLimits = (num, dec) => {
   let str = utils.formatUnits(num, dec);
   const beforeDecimal = str.split('.')[0];
   const afterDecimal = `${str.split('.')[1]}0000`;
@@ -222,8 +224,14 @@ export const getDefaultToken = (bridgeDirection, chainId) => {
   const storageKey = `${bridgeDirection.toUpperCase()}-${label}-FROM-TOKEN`;
   const tokenString = localStorage.getItem(storageKey);
   const token = JSON.parse(tokenString);
-  if (token && token.chainId === chainId) return token;
-  return defaultTokens[bridgeDirection][chainId];
+  const { enableForeignCurrencyBridge } = networks[bridgeDirection];
+  const defaultToken = defaultTokens[bridgeDirection][chainId];
+  const validToken =
+    !!token &&
+    token.chainId === chainId &&
+    (token.address !== ADDRESS_ZERO || enableForeignCurrencyBridge);
+
+  return validToken ? token : defaultToken;
 };
 
 const IMPOSSIBLE_ERROR =

@@ -1,16 +1,15 @@
 import { BigNumber, Contract } from 'ethers';
-import { ADDRESS_ZERO, nativeCurrencies } from 'lib/constants';
+import { ADDRESS_ZERO } from 'lib/constants';
 import {
   getHelperContract,
   getMediatorAddressWithoutOverride,
   getNetworkLabel,
   logError,
 } from 'lib/helpers';
+import { networks } from 'lib/networks';
 import { getOverriddenToToken, isOverridden } from 'lib/overrides';
 import { getEthersProvider } from 'lib/providers';
 import { fetchTokenDetails, fetchTokenName } from 'lib/token';
-
-import { networks } from './networks';
 
 const getToName = async (fromToken, toChainId, toAddress) => {
   const { name } = fromToken;
@@ -54,9 +53,15 @@ const fetchToTokenDetails = async (bridgeDirection, fromToken, toChainId) => {
   );
 
   if (fromAddress === ADDRESS_ZERO && fromMode === 'NATIVE') {
-    const { homeTokenAddress: toAddress } = nativeCurrencies[fromChainId];
+    const { enableForeignCurrencyBridge, homeWrappedForeignCurrencyAddress } =
+      networks[bridgeDirection];
+    if (!enableForeignCurrencyBridge)
+      throw new Error(
+        'Bridging native tokens is not supported in this direction',
+      );
+
     return fetchTokenDetails(bridgeDirection, {
-      address: toAddress,
+      address: homeWrappedForeignCurrencyAddress,
       chainId: toChainId,
     });
   }
@@ -202,6 +207,17 @@ export const fetchTokenLimits = async (
       await getEthersProvider(toToken.chainId),
     );
 
+    const { wrappedForeignCurrencyAddress } = networks[bridgeDirection];
+
+    const fromTokenAddress =
+      fromToken.address === ADDRESS_ZERO && fromToken.mode === 'NATIVE'
+        ? wrappedForeignCurrencyAddress
+        : fromToken.address;
+    const toTokenAddress =
+      toToken.address === ADDRESS_ZERO && toToken.mode === 'NATIVE'
+        ? wrappedForeignCurrencyAddress
+        : toToken.address;
+
     const [
       minPerTx,
       dailyLimit,
@@ -219,12 +235,12 @@ export const fetchTokenLimits = async (
           toMediatorContract.totalExecutedPerDay(currentDay),
         ])
       : await Promise.all([
-          fromMediatorContract.minPerTx(fromToken.address),
-          fromMediatorContract.dailyLimit(fromToken.address),
-          fromMediatorContract.totalSpentPerDay(fromToken.address, currentDay),
-          toMediatorContract.executionMaxPerTx(toToken.address),
-          toMediatorContract.executionDailyLimit(toToken.address),
-          toMediatorContract.totalExecutedPerDay(toToken.address, currentDay),
+          fromMediatorContract.minPerTx(fromTokenAddress),
+          fromMediatorContract.dailyLimit(fromTokenAddress),
+          fromMediatorContract.totalSpentPerDay(fromTokenAddress, currentDay),
+          toMediatorContract.executionMaxPerTx(toTokenAddress),
+          toMediatorContract.executionDailyLimit(toTokenAddress),
+          toMediatorContract.totalExecutedPerDay(toTokenAddress, currentDay),
         ]);
 
     const remainingExecutionLimit =

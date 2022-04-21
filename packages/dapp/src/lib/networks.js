@@ -20,6 +20,10 @@ const ETH_XDAI_BRIDGE_CONFIG = {
   homeChainId: 100,
   foreignChainId: 1,
   enableForeignCurrencyBridge: true,
+  homeWrappedForeignCurrencyAddress:
+    '0x6A023CCd1ff6F2045C3309768eAd9E68F978f6e1'.toLowerCase(),
+  wrappedForeignCurrencyAddress:
+    '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'.toLowerCase(),
   foreignMediatorAddress:
     '0x88ad09518695c6c3712AC10a214bE5109a655671'.toLowerCase(),
   homeMediatorAddress:
@@ -38,6 +42,10 @@ const BSC_XDAI_BRIDGE_CONFIG = {
   homeChainId: 100,
   foreignChainId: 56,
   enableForeignCurrencyBridge: true,
+  homeWrappedForeignCurrencyAddress:
+    '0xCa8d20f3e0144a72C6B5d576e9Bd3Fd8557E2B04'.toLowerCase(),
+  wrappedForeignCurrencyAddress:
+    '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c'.toLowerCase(),
   foreignMediatorAddress:
     '0xF0b456250DC9990662a6F25808cC74A6d1131Ea9'.toLowerCase(),
   homeMediatorAddress:
@@ -58,6 +66,10 @@ const POA_XDAI_BRIDGE_CONFIG = {
   homeChainId: 100,
   foreignChainId: 99,
   enableForeignCurrencyBridge: true,
+  homeWrappedForeignCurrencyAddress:
+    '0x9fe3864F9Ae7cfb5668Dae90C0e20c4C3D437664'.toLowerCase(),
+  wrappedForeignCurrencyAddress:
+    '0xD2CFBCDbDF02c42951ad269dcfFa27c02151Cebd'.toLowerCase(),
   foreignMediatorAddress:
     '0x8134470b7CF6f57Faee2076adf8F7301fD5865a5'.toLowerCase(),
   homeMediatorAddress:
@@ -76,6 +88,10 @@ const KOVAN_SOKOL_BRIDGE_CONFIG = {
   homeChainId: 77,
   foreignChainId: 42,
   enableForeignCurrencyBridge: true,
+  homeWrappedForeignCurrencyAddress:
+    '0x3D14493DF2B479E6BABE82Fc2373F91622bac025'.toLowerCase(),
+  wrappedForeignCurrencyAddress:
+    '0x89ded978ef13CDBb88c0a5A959B66B552cf3355a'.toLowerCase(),
   foreignMediatorAddress:
     '0xA960d095470f7509955d5402e36d9DB984B5C8E2'.toLowerCase(),
   homeMediatorAddress:
@@ -94,6 +110,9 @@ const ETH_BSC_BRIDGE_CONFIG = {
   homeChainId: 56,
   foreignChainId: 1,
   enableForeignCurrencyBridge: false,
+  homeWrappedForeignCurrencyAddress: null,
+  wrappedForeignCurrencyAddress:
+    '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'.toLowerCase(),
   foreignMediatorAddress:
     '0x69c707d975e8d883920003CC357E556a4732CD03'.toLowerCase(),
   homeMediatorAddress:

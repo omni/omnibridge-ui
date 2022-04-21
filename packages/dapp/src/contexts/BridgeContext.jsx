@@ -121,14 +121,17 @@ export const BridgeProvider = ({ children }) => {
   useEffect(() => {
     if (
       fromToken &&
+      toToken &&
       fromToken.chainId &&
-      [homeChainId, foreignChainId].includes(fromToken.chainId)
+      toToken.chainId &&
+      [homeChainId, foreignChainId].includes(fromToken.chainId) &&
+      [homeChainId, foreignChainId].includes(toToken.chainId)
     ) {
       const label = getNetworkLabel(fromToken.chainId).toUpperCase();
       const storageKey = `${bridgeDirection.toUpperCase()}-${label}-FROM-TOKEN`;
       localStorage.setItem(storageKey, JSON.stringify(fromToken));
     }
-  }, [fromToken, bridgeDirection, homeChainId, foreignChainId]);
+  }, [fromToken, toToken, bridgeDirection, homeChainId, foreignChainId]);
 
   const setToken = useCallback(
     async (tokenWithoutMode, isQueryToken = false) => {
@@ -222,9 +225,10 @@ export const BridgeProvider = ({ children }) => {
   }, [cleanAmounts]);
 
   const setDefaultToken = useCallback(
-    async chainId => {
+    async (chainId, force = false) => {
       const token = getDefaultToken(bridgeDirection, chainId);
       if (
+        force ||
         !fromToken ||
         (token?.chainId !== fromToken?.chainId &&
           token?.address !== fromToken?.address)
@@ -243,15 +247,19 @@ export const BridgeProvider = ({ children }) => {
         tokenSet = await setToken(queryToken, true);
         setQueryToken(null);
       }
-      if (
-        !tokenSet &&
-        (!fromToken ||
-          ![homeChainId, foreignChainId].includes(fromToken.chainId) ||
-          (fromToken.address === ADDRESS_ZERO &&
-            fromToken.mode !== 'NATIVE')) &&
-        !isConnecting
-      ) {
-        await setDefaultToken(providerChainId ?? foreignChainId);
+
+      const tokensValid =
+        fromToken &&
+        toToken &&
+        [homeChainId, foreignChainId].includes(fromToken?.chainId) &&
+        [homeChainId, foreignChainId].includes(toToken?.chainId);
+
+      const chainId = [homeChainId, foreignChainId].includes(providerChainId)
+        ? providerChainId
+        : foreignChainId;
+
+      if (!isConnecting && !tokenSet && !tokensValid) {
+        await setDefaultToken(chainId, !tokensValid);
       }
       cleanAmounts();
       setLoading(false);
@@ -262,6 +270,7 @@ export const BridgeProvider = ({ children }) => {
     setDefaultToken,
     setToken,
     fromToken,
+    toToken,
     homeChainId,
     foreignChainId,
     providerChainId,
