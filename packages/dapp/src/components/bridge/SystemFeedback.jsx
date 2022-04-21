@@ -51,9 +51,8 @@ export const SystemFeedback = () => {
                 <Spinner size="sm" />
               ) : (
                 <Text fontWeight="bold" ml={4} textAlign="right">
-                  {`${formatValue(tokenLimits.dailyLimit, token.decimals)} ${
-                    token.symbol
-                  }`}
+                  {formatValue(tokenLimits.dailyLimit, token.decimals)}{' '}
+                  {token.symbol}
                 </Text>
               )}
             </Flex>
@@ -65,9 +64,8 @@ export const SystemFeedback = () => {
                 <Spinner size="sm" />
               ) : (
                 <Text fontWeight="bold" ml={4} textAlign="right">
-                  {`${formatValue(tokenLimits.maxPerTx, token.decimals)} ${
-                    token.symbol
-                  }`}
+                  {formatValue(tokenLimits.maxPerTx, token.decimals)}{' '}
+                  {token.symbol}
                 </Text>
               )}
             </Flex>
@@ -79,9 +77,8 @@ export const SystemFeedback = () => {
                 <Spinner size="sm" />
               ) : (
                 <Text fontWeight="bold" ml={4} textAlign="right">
-                  {`${formatValue(tokenLimits.minPerTx, token.decimals)} ${
-                    token.symbol
-                  }`}
+                  {formatValue(tokenLimits.minPerTx, token.decimals)}{' '}
+                  {token.symbol}
                 </Text>
               )}
             </Flex>

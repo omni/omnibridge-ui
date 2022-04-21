@@ -18,8 +18,8 @@ export const useTokenLimits = () => {
       fromToken?.chainId &&
       toToken?.chainId &&
       (fromToken?.symbol === toToken?.symbol ||
-        (fromToken?.address === ADDRESS_ZERO &&
-          fromToken?.mode === 'NATIVE')) &&
+        (fromToken?.address === ADDRESS_ZERO && fromToken?.mode === 'NATIVE') ||
+        (toToken?.address === ADDRESS_ZERO && toToken?.mode === 'NATIVE')) &&
       currentDay &&
       bridgeDirection
     ) {

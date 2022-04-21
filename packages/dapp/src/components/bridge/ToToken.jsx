@@ -24,8 +24,12 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 
 export const ToToken = () => {
   const { isConnected, account } = useWeb3Context();
-  const { bridgeDirection, enableForeignCurrencyBridge, foreignChainId } =
-    useBridgeDirection();
+  const {
+    bridgeDirection,
+    enableForeignCurrencyBridge,
+    foreignChainId,
+    foreignMediatorAddress,
+  } = useBridgeDirection();
   const {
     txHash,
     fromToken,
@@ -58,7 +62,7 @@ export const ToToken = () => {
             ...fromToken,
             ...(await fetchToToken(bridgeDirection, fromToken, chainId)),
           }
-        : nativeCurrency,
+        : { ...nativeCurrency, mediator: foreignMediatorAddress },
     );
     setLoading(false);
   }, [
@@ -70,6 +74,7 @@ export const ToToken = () => {
     shouldReceiveNativeCur,
     setShouldReceiveNativeCur,
     setToToken,
+    foreignMediatorAddress,
   ]);
 
   useEffect(() => {
