@@ -118,6 +118,18 @@ export const BridgeProvider = ({ children }) => {
     [setTokens],
   );
 
+  useEffect(() => {
+    if (
+      fromToken &&
+      fromToken.chainId &&
+      [homeChainId, foreignChainId].includes(fromToken.chainId)
+    ) {
+      const label = getNetworkLabel(fromToken.chainId).toUpperCase();
+      const storageKey = `${bridgeDirection.toUpperCase()}-${label}-FROM-TOKEN`;
+      localStorage.setItem(storageKey, JSON.stringify(fromToken));
+    }
+  }, [fromToken, bridgeDirection, homeChainId, foreignChainId]);
+
   const setToken = useCallback(
     async (tokenWithoutMode, isQueryToken = false) => {
       if (!tokenWithoutMode) return false;
@@ -139,9 +151,6 @@ export const BridgeProvider = ({ children }) => {
           ),
         ]);
         setTokens({ fromToken: token, toToken: { ...token, ...gotToToken } });
-        const label = getNetworkLabel(token.chainId).toUpperCase();
-        const storageKey = `${bridgeDirection.toUpperCase()}-${label}-FROM-TOKEN`;
-        localStorage.setItem(storageKey, JSON.stringify(token));
         return true;
       } catch (tokenDetailsError) {
         toast({
