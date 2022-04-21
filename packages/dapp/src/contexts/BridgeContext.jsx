@@ -31,8 +31,13 @@ export const useBridgeContext = () => useContext(BridgeContext);
 
 export const BridgeProvider = ({ children }) => {
   const { queryToken, setQueryToken } = useSettings();
-  const { isGnosisSafe, ethersProvider, account, providerChainId } =
-    useWeb3Context();
+  const {
+    isGnosisSafe,
+    ethersProvider,
+    account,
+    providerChainId,
+    loading: isConnecting,
+  } = useWeb3Context();
   const { bridgeDirection, getBridgeChainId, homeChainId, foreignChainId } =
     useBridgeDirection();
 
@@ -221,37 +226,39 @@ export const BridgeProvider = ({ children }) => {
     [setToken, bridgeDirection, fromToken],
   );
 
-  useEffect(
-    () =>
-      (async () => {
-        setLoading(true);
-        let tokenSet = false;
-        if (queryToken) {
-          tokenSet = await setToken(queryToken, true);
-          setQueryToken(null);
-        }
-        if (
-          !tokenSet &&
-          (!fromToken ||
-            ![homeChainId, foreignChainId].includes(fromToken.chainId) ||
-            (fromToken.address === ADDRESS_ZERO && fromToken.mode !== 'NATIVE'))
-        ) {
-          await setDefaultToken(foreignChainId);
-        }
-        cleanAmounts();
-        setLoading(false);
-      })(),
-    [
-      queryToken,
-      setQueryToken,
-      setDefaultToken,
-      setToken,
-      fromToken,
-      homeChainId,
-      foreignChainId,
-      cleanAmounts,
-    ],
-  );
+  useEffect(() => {
+    (async () => {
+      setLoading(true);
+      let tokenSet = false;
+      if (queryToken) {
+        tokenSet = await setToken(queryToken, true);
+        setQueryToken(null);
+      }
+      if (
+        !tokenSet &&
+        (!fromToken ||
+          ![homeChainId, foreignChainId].includes(fromToken.chainId) ||
+          (fromToken.address === ADDRESS_ZERO &&
+            fromToken.mode !== 'NATIVE')) &&
+        !isConnecting
+      ) {
+        await setDefaultToken(providerChainId ?? foreignChainId);
+      }
+      cleanAmounts();
+      setLoading(false);
+    })();
+  }, [
+    queryToken,
+    setQueryToken,
+    setDefaultToken,
+    setToken,
+    fromToken,
+    homeChainId,
+    foreignChainId,
+    providerChainId,
+    isConnecting,
+    cleanAmounts,
+  ]);
 
   useEffect(() => {
     if (

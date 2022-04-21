@@ -36,7 +36,8 @@ export const WalletSelector = ({ close }) => {
       ? false
       : ![homeChainId, foreignChainId].includes(providerChainId);
   } else {
-    isInvalid = loading ? false : providerChainId !== fromToken?.chainId;
+    isInvalid =
+      loading || !fromToken ? false : providerChainId !== fromToken?.chainId;
   }
 
   const placement = useBreakpointValue({ base: 'bottom', md: 'bottom-end' });
