@@ -224,6 +224,27 @@ export const BridgeProvider = ({ children }) => {
     cleanAmounts();
   }, [cleanAmounts]);
 
+  useEffect(() => {
+    if (
+      fromToken &&
+      toToken &&
+      fromToken.chainId &&
+      toToken.chainId &&
+      [homeChainId, foreignChainId].includes(fromToken.chainId) &&
+      [homeChainId, foreignChainId].includes(toToken.chainId) &&
+      providerChainId === toToken.chainId
+    ) {
+      switchTokens();
+    }
+  }, [
+    homeChainId,
+    foreignChainId,
+    providerChainId,
+    fromToken,
+    toToken,
+    switchTokens,
+  ]);
+
   const setDefaultToken = useCallback(
     async (chainId, force = false) => {
       const token = getDefaultToken(bridgeDirection, chainId);

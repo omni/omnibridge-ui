@@ -26,9 +26,10 @@ export const SwitchButton = () => {
     () =>
       (async () => {
         setLoading(true);
-        switchTokens();
         if (canSwitchInWallet && providerChainId !== toToken.chainId) {
           await switchChain(getBridgeChainId(providerChainId));
+        } else {
+          switchTokens();
         }
         setLoading(false);
       })(),
@@ -60,6 +61,9 @@ export const SwitchButton = () => {
         _hover={{ bg: 'blackAlpha.100' }}
         onClick={switchOnClick}
         isLoading={loading}
+        _loading={{
+          bg: 'blackAlpha.100',
+        }}
       />
     </Tooltip>
   );
