@@ -43,74 +43,76 @@ export const BridgeTokens = () => {
         <InflationaryTokenWarning token={fromToken} noCheckbox />
       )}
       <TokenWarnings token={fromToken} />
-      <Flex
-        maxW="75rem"
-        background="white"
-        boxShadow="0px 1rem 2rem rgba(204, 218, 238, 0.8)"
-        borderRadius="1rem"
-        direction="column"
-        align="center"
-        p={{ base: 4, md: 8 }}
-      >
-        <BridgeLoadingModal />
-        {!smallScreen && (
-          <Flex w="100%" justify="space-between" minH="3rem">
-            <Flex align="flex-start" direction="column">
-              <Text color="greyText" fontSize="sm">
-                From
-              </Text>
-              <Text fontWeight="bold" fontSize="lg">
-                {fromToken ? getNetworkName(fromToken.chainId) : ''}
-              </Text>
-            </Flex>
-            <Flex align="flex-end" direction="column">
-              <Text color="greyText" fontSize="sm">
-                To
-              </Text>
-              <Text fontWeight="bold" fontSize="lg" textAlign="right">
-                {fromToken
-                  ? getNetworkName(getBridgeChainId(fromToken.chainId))
-                  : ''}
-              </Text>
-            </Flex>
-          </Flex>
-        )}
-        <Grid
-          templateColumns={{ base: 'initial', lg: '2fr 1fr 2fr' }}
-          width="100%"
-          my={4}
-          position="relative"
+      <BridgeLoadingModal />
+      {fromToken && (
+        <Flex
+          maxW="75rem"
+          background="white"
+          boxShadow="0px 1rem 2rem rgba(204, 218, 238, 0.8)"
+          borderRadius="1rem"
+          direction="column"
+          align="center"
+          p={{ base: 4, md: 8 }}
         >
-          <SwitchButton />
-          {smallScreen && (
-            <Flex align="flex-start" direction="column" m={2} minH="3rem">
-              <Text color="greyText" fontSize="sm">
-                From
-              </Text>
-              <Text fontWeight="bold" fontSize="lg">
-                {fromToken ? getNetworkName(fromToken.chainId) : ''}
-              </Text>
+          {!smallScreen && (
+            <Flex w="100%" justify="space-between" minH="3rem">
+              <Flex align="flex-start" direction="column">
+                <Text color="greyText" fontSize="sm">
+                  From
+                </Text>
+                <Text fontWeight="bold" fontSize="lg">
+                  {fromToken ? getNetworkName(fromToken.chainId) : ''}
+                </Text>
+              </Flex>
+              <Flex align="flex-end" direction="column">
+                <Text color="greyText" fontSize="sm">
+                  To
+                </Text>
+                <Text fontWeight="bold" fontSize="lg" textAlign="right">
+                  {fromToken
+                    ? getNetworkName(getBridgeChainId(fromToken.chainId))
+                    : ''}
+                </Text>
+              </Flex>
             </Flex>
           )}
-          <FromToken />
-          <ActionButtons />
-          {smallScreen && (
-            <Flex align="flex-end" direction="column" m={2} minH="3rem">
-              <Text color="greyText" fontSize="sm">
-                To
-              </Text>
-              <Text fontWeight="bold" fontSize="lg" textAlign="right">
-                {fromToken
-                  ? getNetworkName(getBridgeChainId(fromToken.chainId))
-                  : ''}
-              </Text>
-            </Flex>
-          )}
-          <ToToken />
-        </Grid>
-        <AdvancedMenu />
-        <SystemFeedback />
-      </Flex>
+          <Grid
+            templateColumns={{ base: 'initial', lg: '2fr 1fr 2fr' }}
+            width="100%"
+            my={4}
+            position="relative"
+          >
+            <SwitchButton />
+            {smallScreen && (
+              <Flex align="flex-start" direction="column" m={2} minH="3rem">
+                <Text color="greyText" fontSize="sm">
+                  From
+                </Text>
+                <Text fontWeight="bold" fontSize="lg">
+                  {fromToken ? getNetworkName(fromToken.chainId) : ''}
+                </Text>
+              </Flex>
+            )}
+            <FromToken />
+            <ActionButtons />
+            {smallScreen && (
+              <Flex align="flex-end" direction="column" m={2} minH="3rem">
+                <Text color="greyText" fontSize="sm">
+                  To
+                </Text>
+                <Text fontWeight="bold" fontSize="lg" textAlign="right">
+                  {fromToken
+                    ? getNetworkName(getBridgeChainId(fromToken.chainId))
+                    : ''}
+                </Text>
+              </Flex>
+            )}
+            <ToToken />
+          </Grid>
+          <AdvancedMenu />
+          <SystemFeedback />
+        </Flex>
+      )}
       {/* <CoinzillaBannerAd /> */}
     </Flex>
   );
