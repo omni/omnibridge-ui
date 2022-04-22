@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { BigNumber, utils } from 'ethers';
 import { GasPriceOracle } from 'gas-price-oracle';
 import { OWLRACLE_API_KEY } from 'lib/constants';
@@ -115,14 +114,18 @@ class GasPriceStore {
 
   async updateHistoricalPrice() {
     try {
-      const response = await axios.get(
-        `https://owlracle.info/eth/history?candles=1008&timeframe=10&apiKey=${OWLRACLE_API_KEY}`,
+      const response = await fetch(
+        OWLRACLE_API_KEY
+          ? `https://owlracle.info/eth/history?candles=1008&timeframe=10&apiKey=${OWLRACLE_API_KEY}`
+          : `https://owlracle.info/eth/history?candles=1008&timeframe=10`,
       );
-      if (response.status !== 200) {
-        throw new Error(`Fetch gasPrice from owlracle failed!`);
+      if (!response.ok) {
+        throw new Error(
+          `Owlracle request failed with status ${response.status}`,
+        );
       }
 
-      const { data } = response;
+      const data = await response.json();
 
       const lowestPrice = lowest(data);
       this.lowestHistoricalPrice = utils.parseUnits(lowestPrice, 'gwei');

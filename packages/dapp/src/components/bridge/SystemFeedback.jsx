@@ -11,29 +11,20 @@ import {
 } from '@chakra-ui/react';
 import Details from 'assets/details.svg';
 import { useBridgeContext } from 'contexts/BridgeContext';
-import { formatValue } from 'lib/helpers';
-import React, { useCallback, useState } from 'react';
+import { useTokenLimits } from 'hooks/useTokenLimits';
+import { formatValueForLimits as formatValue } from 'lib/helpers';
+import React from 'react';
 
 export const SystemFeedback = () => {
-  const {
-    fromToken: token,
-    tokenLimits,
-    updateTokenLimits,
-  } = useBridgeContext();
+  const { fromToken: token } = useBridgeContext();
 
-  const [loading, setLoading] = useState(false);
-
-  const update = useCallback(async () => {
-    setLoading(true);
-    await updateTokenLimits();
-    setLoading(false);
-  }, [updateTokenLimits]);
+  const { data: tokenLimits, fetching, refresh } = useTokenLimits();
 
   return (
     <Popover>
       <PopoverTrigger>
         <Button
-          onClick={update}
+          onClick={refresh}
           variant="ghost"
           color="blue.500"
           _hover={{ bg: 'blackAlpha.100' }}
@@ -56,13 +47,12 @@ export const SystemFeedback = () => {
               <Text color="grey" textAlign="left">
                 Daily Limit
               </Text>
-              {loading ? (
+              {fetching ? (
                 <Spinner size="sm" />
               ) : (
                 <Text fontWeight="bold" ml={4} textAlign="right">
-                  {`${formatValue(tokenLimits.dailyLimit, token.decimals)} ${
-                    token.symbol
-                  }`}
+                  {formatValue(tokenLimits.dailyLimit, token.decimals)}{' '}
+                  {token.symbol}
                 </Text>
               )}
             </Flex>
@@ -70,13 +60,12 @@ export const SystemFeedback = () => {
               <Text color="grey" textAlign="left">
                 Max per Tx
               </Text>
-              {loading ? (
+              {fetching ? (
                 <Spinner size="sm" />
               ) : (
                 <Text fontWeight="bold" ml={4} textAlign="right">
-                  {`${formatValue(tokenLimits.maxPerTx, token.decimals)} ${
-                    token.symbol
-                  }`}
+                  {formatValue(tokenLimits.maxPerTx, token.decimals)}{' '}
+                  {token.symbol}
                 </Text>
               )}
             </Flex>
@@ -84,13 +73,12 @@ export const SystemFeedback = () => {
               <Text color="grey" textAlign="left">
                 Min per Tx
               </Text>
-              {loading ? (
+              {fetching ? (
                 <Spinner size="sm" />
               ) : (
                 <Text fontWeight="bold" ml={4} textAlign="right">
-                  {`${formatValue(tokenLimits.minPerTx, token.decimals)} ${
-                    token.symbol
-                  }`}
+                  {formatValue(tokenLimits.minPerTx, token.decimals)}{' '}
+                  {token.symbol}
                 </Text>
               )}
             </Flex>

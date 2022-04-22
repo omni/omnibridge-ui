@@ -4,7 +4,12 @@ import {
   DEFAULT_BRIDGE_DIRECTION,
   LOCAL_STORAGE_KEYS,
 } from 'lib/constants';
-import { fetchQueryParams, getNativeCurrency, getRPCKeys } from 'lib/helpers';
+import {
+  fetchQueryParams,
+  getDefaultToken,
+  getNativeCurrency,
+  getRPCKeys,
+} from 'lib/helpers';
 import { networks } from 'lib/networks';
 import React, {
   useCallback,
@@ -35,17 +40,13 @@ export const SettingsProvider = ({ children }) => {
   const history = useHistory();
 
   useEffect(() => {
-    const params = fetchQueryParams(window.location.search);
+    if (window.location.pathname === '/bridge') {
+      const params = fetchQueryParams(window.location.search);
 
-    if (params) {
-      history.replace({
-        search: '',
-      });
-
-      if (params?.from && params?.to && params?.token) {
+      if (params) {
         const fromChainId = parseInt(params.from, 10);
         const toChainId = parseInt(params.to, 10);
-        const tokenAddress = params.token;
+        const tokenAddress = params?.token;
 
         const networkEntry = Object.entries(networks).find(
           ([_, { homeChainId, foreignChainId }]) =>
@@ -53,7 +54,7 @@ export const SettingsProvider = ({ children }) => {
             (homeChainId === toChainId && foreignChainId === fromChainId),
         );
 
-        if (networkEntry) {
+        if (tokenAddress && networkEntry) {
           setBridgeDirection(networkEntry[0], true);
           setQueryToken(
             tokenAddress === ADDRESS_ZERO &&
@@ -62,9 +63,15 @@ export const SettingsProvider = ({ children }) => {
               ? getNativeCurrency(fromChainId)
               : { chainId: fromChainId, address: tokenAddress },
           );
+        } else if (networkEntry) {
+          setBridgeDirection(networkEntry[0], true);
+          setQueryToken(getDefaultToken(networkEntry[0], fromChainId));
         }
       }
     }
+    history.replace({
+      search: '',
+    });
   }, [setBridgeDirection, history]);
 
   const { homeRPCKey, foreignRPCKey } = getRPCKeys(bridgeDirection);

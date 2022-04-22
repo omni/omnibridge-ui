@@ -33,7 +33,7 @@ const useDelay = (fn, ms) => {
 };
 
 export const FromToken = () => {
-  const { account, providerChainId: chainId } = useWeb3Context();
+  const { isConnected, account } = useWeb3Context();
   const {
     txHash,
     fromToken: token,
@@ -53,30 +53,23 @@ export const FromToken = () => {
   const delayedSetAmount = useDelay(updateAmount, 500);
 
   useEffect(() => {
-    let isSubscribed = true;
-    if (token && account && chainId === token.chainId) {
-      setBalanceLoading(true);
-      fetchTokenBalance(token, account)
-        .catch(fromBalanceError => {
+    if (token && account) {
+      (async () => {
+        try {
+          setBalanceLoading(true);
+          const b = await fetchTokenBalance(token, account);
+          setBalance(b);
+        } catch (fromBalanceError) {
+          setBalance(BigNumber.from(0));
           logError({ fromBalanceError });
-          if (isSubscribed) {
-            setBalance(BigNumber.from(0));
-            setBalanceLoading(false);
-          }
-        })
-        .then(b => {
-          if (isSubscribed) {
-            setBalance(b);
-            setBalanceLoading(false);
-          }
-        });
+        } finally {
+          setBalanceLoading(false);
+        }
+      })();
     } else {
       setBalance(BigNumber.from(0));
     }
-    return () => {
-      isSubscribed = false;
-    };
-  }, [txHash, token, account, setBalance, setBalanceLoading, chainId]);
+  }, [txHash, token, account, setBalance, setBalanceLoading]);
 
   return (
     <Flex
@@ -131,7 +124,7 @@ export const FromToken = () => {
                 overflow="hidden"
                 borderRadius="50%"
               >
-                <Logo uri={token.logoURI} />
+                <Logo uri={token.logoURI} chainId={token.chainId} />
               </Flex>
               <Text fontSize="lg" fontWeight="bold" mx={2}>
                 {truncateText(token.name, 24)}
@@ -144,6 +137,7 @@ export const FromToken = () => {
               align="center"
               h="100%"
               position="relative"
+              display={isConnected ? 'flex' : 'none'}
               ml={{ base: undefined, sm: 2, md: undefined }}
             >
               {balanceLoading ? (
@@ -188,6 +182,7 @@ export const FromToken = () => {
               onChange={e => setInput(e.target.value)}
               onKeyUp={delayedSetAmount}
               fontSize="2xl"
+              borderRadius={0}
             />
             <Button
               ml={2}

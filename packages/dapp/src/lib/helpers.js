@@ -1,6 +1,7 @@
 import { BigNumber, utils } from 'ethers';
 import { getAddress } from 'ethers/lib/utils';
 import {
+  ADDRESS_ZERO,
   chainUrls,
   defaultTokensUrl,
   LOCAL_STORAGE_KEYS,
@@ -76,6 +77,16 @@ export const formatValue = (num, dec) => {
     return `${first} x 10^${split[1]}`;
   }
   return Number(str).toLocaleString('en', { maximumFractionDigits: 4 });
+};
+
+export const formatValueForLimits = (num, dec) => {
+  let str = utils.formatUnits(num, dec);
+  const beforeDecimal = str.split('.')[0];
+  const afterDecimal = `${str.split('.')[1]}0000`;
+  if (Number(beforeDecimal) > 0) {
+    str = `${beforeDecimal}.${afterDecimal[0]}`;
+  }
+  return str;
 };
 
 export const parseValue = (num, dec) => {
@@ -213,8 +224,14 @@ export const getDefaultToken = (bridgeDirection, chainId) => {
   const storageKey = `${bridgeDirection.toUpperCase()}-${label}-FROM-TOKEN`;
   const tokenString = localStorage.getItem(storageKey);
   const token = JSON.parse(tokenString);
-  if (token && token.chainId === chainId) return token;
-  return defaultTokens[bridgeDirection][chainId];
+  const { enableForeignCurrencyBridge } = networks[bridgeDirection];
+  const defaultToken = defaultTokens[bridgeDirection][chainId];
+  const validToken =
+    !!token &&
+    token.chainId === chainId &&
+    (token.address !== ADDRESS_ZERO || enableForeignCurrencyBridge);
+
+  return validToken ? token : defaultToken;
 };
 
 const IMPOSSIBLE_ERROR =

@@ -1,30 +1,50 @@
 import { IconButton, Tooltip } from '@chakra-ui/react';
+import { useBridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { useSwitchChain } from 'hooks/useSwitchChain';
 import { SwitchIcon } from 'icons/SwitchIcon';
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useState } from 'react';
 
 export const SwitchButton = () => {
-  const { providerChainId, isMetamask } = useWeb3Context();
+  const { isConnected, providerChainId, isMetamask } = useWeb3Context();
+
+  const { switchTokens, toToken } = useBridgeContext();
   const { getBridgeChainId } = useBridgeDirection();
-  const bridgeChainId = useMemo(
-    () => getBridgeChainId(providerChainId),
-    [providerChainId, getBridgeChainId],
-  );
   const switchChain = useSwitchChain();
+
+  const isDefaultChain = providerChainId
+    ? [1, 3, 4, 5, 42].includes(getBridgeChainId(providerChainId))
+    : true;
+  const isMobileBrowser = navigator?.userAgent?.includes('Mobile') ?? false;
+  const canSwitchInWallet =
+    isConnected && isMetamask && (isMobileBrowser ? !isDefaultChain : true);
+
+  const [loading, setLoading] = useState(false);
+
   const switchOnClick = useCallback(
-    () => switchChain(bridgeChainId),
-    [switchChain, bridgeChainId],
+    () =>
+      (async () => {
+        setLoading(true);
+        if (canSwitchInWallet && providerChainId !== toToken.chainId) {
+          await switchChain(getBridgeChainId(providerChainId));
+        } else {
+          switchTokens();
+        }
+        setLoading(false);
+      })(),
+    [
+      switchChain,
+      providerChainId,
+      canSwitchInWallet,
+      switchTokens,
+      getBridgeChainId,
+      toToken,
+    ],
   );
 
-  const isDefaultChain = [1, 3, 4, 5, 42].includes(bridgeChainId);
-  const isMobileBrowser = navigator?.userAgent?.includes('Mobile') || false;
-  const buttonWillWork =
-    isMetamask && (isMobileBrowser ? !isDefaultChain : true);
-
-  return buttonWillWork ? (
-    <Tooltip label="Switch direction of bridge" closeOnClick={false}>
+  return (
+    <Tooltip label="Switch direction of bridge">
       <IconButton
         icon={<SwitchIcon boxSize="2rem" />}
         p="0.5rem"
@@ -40,7 +60,11 @@ export const SwitchButton = () => {
         color="blue.500"
         _hover={{ bg: 'blackAlpha.100' }}
         onClick={switchOnClick}
+        isLoading={loading}
+        _loading={{
+          bg: 'blackAlpha.100',
+        }}
       />
     </Tooltip>
-  ) : null;
+  );
 };

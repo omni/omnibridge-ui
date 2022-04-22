@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { COINZILLA_API_KEY } from 'lib/constants';
 import { logError } from 'lib/helpers';
 import { useEffect, useState } from 'react';
@@ -14,10 +13,13 @@ export const useCoinzillaText = () => {
     (async function fetchAdvertisement() {
       try {
         if (COINZILLA_API_KEY) {
-          const { data } = await axios.get(COINZILLA_TEXT_API_URL, {
-            params: { z: COINZILLA_API_KEY },
-          });
-          setAdData(data);
+          const res = await fetch(
+            `${COINZILLA_TEXT_API_URL}?z=${COINZILLA_API_KEY}`,
+          );
+          if (res.ok) {
+            const data = await res.json();
+            setAdData(data);
+          }
         }
       } catch (err) {
         logError(err);

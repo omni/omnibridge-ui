@@ -7,12 +7,14 @@ import {
   Text,
   useToast,
 } from '@chakra-ui/react';
+import { useWeb3Context } from 'contexts/Web3Context';
 import { useClaim } from 'hooks/useClaim';
 import { isRevertedError, TOKENS_CLAIMED } from 'lib/amb';
 import { handleWalletError, logError } from 'lib/helpers';
 import React, { useCallback, useState } from 'react';
 
 export const ManualClaim = ({ handleClaimError }) => {
+  const { isConnected } = useWeb3Context();
   const [txHash, setTxHash] = useState('');
   const [loading, setLoading] = useState(false);
   const { claim, executing } = useClaim();
@@ -37,12 +39,14 @@ export const ManualClaim = ({ handleClaimError }) => {
     setLoading(true);
     try {
       await claim(txHash);
+      setTxHash('');
     } catch (manualClaimError) {
       logError({ manualClaimError });
       if (
         manualClaimError?.message === TOKENS_CLAIMED ||
         isRevertedError(manualClaimError)
       ) {
+        setTxHash('');
         handleClaimError();
       } else {
         handleWalletError(manualClaimError, showError);
@@ -51,6 +55,8 @@ export const ManualClaim = ({ handleClaimError }) => {
       setLoading(false);
     }
   }, [claim, txHash, showError, handleClaimError]);
+
+  if (!isConnected) return null;
 
   return (
     <Flex
@@ -88,7 +94,7 @@ export const ManualClaim = ({ handleClaimError }) => {
           onChange={e => setTxHash(e.target.value)}
           pr="6rem"
         />
-        <InputRightElement minW="6rem" pr="1">
+        <InputRightElement minW="5rem" pr={1}>
           <Button
             w="100%"
             size="sm"

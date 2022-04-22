@@ -24,7 +24,6 @@
     "@uniswap/token-lists": "^1.0.0-beta.21",
     "@walletconnect/web3-provider": "^1.7.7",
     "ajv": "^6.12.6",
-    "axios": "^0.21.1",
     "copy-to-clipboard": "^3.3.1",
     "ethers": "^5.4.4",
     "fast-memoize": "^2.5.2",
@@ -47,6 +46,5 @@
     "start": "react-scripts start",
     "test": "react-scripts test",
     "lint": "eslint \"./src/**/*.{js,jsx}\""
-  },
-  "devDependencies": {}
+  }
 }

@@ -49,11 +49,13 @@ const useExecution = () => {
     [showError],
   );
 
+  const isRightNetwork = providerChainId === foreignChainId;
+
   const executeCallback = useCallback(
-    async (msgData, isHome) => {
+    async msgData => {
       try {
         setExecuting(true);
-        if (isHome) {
+        if (!isRightNetwork) {
           if (isMetamask) {
             const success = await switchChain(foreignChainId);
             if (success) {
@@ -101,17 +103,17 @@ const useExecution = () => {
       foreignAmbAddress,
       showError,
       switchChain,
+      isRightNetwork,
     ],
   );
 
   useEffect(() => {
-    const isRightNetwork = providerChainId === foreignChainId;
     if (isRightNetwork && doRepeat && !!message) {
-      executeCallback(message, false);
+      executeCallback(message);
       setDoRepeat(false);
       setMessage();
     }
-  }, [executeCallback, doRepeat, message, providerChainId, foreignChainId]);
+  }, [executeCallback, doRepeat, message, isRightNetwork]);
 
   return { executeCallback, executing, executionTx: txHash };
 };
@@ -155,7 +157,7 @@ export const useClaim = () => {
       if (claimed) {
         throw Error(TOKENS_CLAIMED);
       }
-      return executeCallback(message, providerChainId === homeChainId);
+      return executeCallback(message);
     },
     [
       executeCallback,

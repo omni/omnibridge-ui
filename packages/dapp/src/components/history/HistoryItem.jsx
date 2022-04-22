@@ -217,6 +217,7 @@ export const HistoryItem = ({
           align="center"
           justify={{ base: 'space-between', md: 'flex-end' }}
           mb={{ base: 1, md: 0 }}
+          pr={{ base: 0, md: 2 }}
         >
           <Text display={{ base: 'inline-block', md: 'none' }} color="greyText">
             Amount
@@ -245,8 +246,8 @@ export const HistoryItem = ({
         ) : (
           <Flex align="center" justify={{ base: 'center', md: 'flex-end' }}>
             <Button
-              w="100%"
               size="sm"
+              minW="5rem"
               colorScheme="blue"
               onClick={claimTokens}
               isLoading={claiming || executing}

@@ -4,22 +4,24 @@ import { ConfirmTransferModal } from 'components/modals/ConfirmTransferModal';
 import { useBridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { utils } from 'ethers';
+import { useNeedsClaiming } from 'hooks/useNeedsClaiming';
 import { useTokenDisabled } from 'hooks/useTokenDisabled';
-import { formatValue } from 'lib/helpers';
+import { useTokenLimits } from 'hooks/useTokenLimits';
+import { formatValue, getNetworkName } from 'lib/helpers';
 import React, { useCallback } from 'react';
 
-export const TransferButton = () => {
-  const { isGnosisSafe, ethersProvider } = useWeb3Context();
+export const TransferButton = ({ approval, isValid }) => {
+  const { isGnosisSafe, providerChainId } = useWeb3Context();
   const {
     receiver,
     fromAmount: amount,
     fromToken: token,
     fromBalance: balance,
-    tokenLimits,
-    allowed,
     toAmountLoading,
-    needsClaiming,
   } = useBridgeContext();
+
+  const { allowed } = approval;
+  const needsClaiming = useNeedsClaiming();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const toast = useToast();
   const showError = useCallback(
@@ -36,11 +38,15 @@ export const TransferButton = () => {
     [toast],
   );
   const isBridgingDisabled = useTokenDisabled(token);
-  const buttonEnabled = allowed && !toAmountLoading && !isBridgingDisabled;
+  const buttonEnabled =
+    !!token && allowed && !toAmountLoading && !isBridgingDisabled && isValid;
+  const { data: tokenLimits } = useTokenLimits();
 
   const valid = useCallback(() => {
-    if (!ethersProvider) {
+    if (!providerChainId) {
       showError('Please connect wallet');
+    } else if (providerChainId !== token?.chainId) {
+      showError(`Please switch to ${getNetworkName(token?.chainId)}`);
     } else if (tokenLimits && amount.lt(tokenLimits.minPerTx)) {
       showError(
         `Please specify amount more than ${formatValue(
@@ -64,7 +70,7 @@ export const TransferButton = () => {
     }
     return false;
   }, [
-    ethersProvider,
+    providerChainId,
     tokenLimits,
     token,
     amount,

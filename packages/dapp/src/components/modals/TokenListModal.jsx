@@ -28,36 +28,116 @@ import { useSettings } from 'contexts/SettingsContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { PlusIcon } from 'icons/PlusIcon';
-import { ADDRESS_ZERO, LOCAL_STORAGE_KEYS } from 'lib/constants';
+import { LOCAL_STORAGE_KEYS } from 'lib/constants';
 import {
   formatValue,
   getNativeCurrency,
   logError,
-  removeElement,
   uniqueTokens,
 } from 'lib/helpers';
 import { ETH_BSC_BRIDGE } from 'lib/networks';
 import { fetchTokenBalanceWithProvider } from 'lib/token';
 import { fetchTokenList } from 'lib/tokenList';
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 const { CUSTOM_TOKENS } = LOCAL_STORAGE_KEYS;
 
-export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
+const TokenDisplay = ({ token, onClick }) => {
+  const { ethersProvider, account } = useWeb3Context();
+  const { decimals, name, logoURI, symbol, address, mode, chainId } = token;
+  const { disableBalanceFetchToken } = useSettings();
+  const [loading, setLoading] = useState(false);
+  const [balance, setBalance] = useState();
+
+  useEffect(() => {
+    (async () => {
+      if (!ethersProvider || !account || disableBalanceFetchToken) return;
+      setLoading(true);
+      try {
+        const b = await fetchTokenBalanceWithProvider(
+          ethersProvider,
+          { address, mode },
+          account,
+        );
+        setBalance(b);
+      } catch (error) {
+        logError(`Error fetching balance for ${address}-${symbol}`, error);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [
+    ethersProvider,
+    account,
+    address,
+    mode,
+    symbol,
+    disableBalanceFetchToken,
+  ]);
+
+  const desc =
+    balance && decimals && !disableBalanceFetchToken
+      ? formatValue(balance, decimals)
+      : name;
+
+  return (
+    <Button
+      variant="outline"
+      size="lg"
+      width="100%"
+      borderColor="#DAE3F0"
+      onClick={() => onClick(token)}
+      mb={2}
+      px={4}
+    >
+      <Flex align="center" width="100%" justify="space-between">
+        <Flex align="center">
+          <Flex
+            justify="center"
+            align="center"
+            background="white"
+            border="1px solid #DAE3F0"
+            boxSize={8}
+            overflow="hidden"
+            borderRadius="50%"
+          >
+            <Logo uri={logoURI} chainId={chainId} />
+          </Flex>
+          <Text fontSize="lg" fontWeight="bold" mx={2}>
+            {symbol}
+          </Text>
+        </Flex>
+        {loading ? (
+          <Spinner size="sm" speed="0.5s" />
+        ) : (
+          <Text
+            color="grey"
+            fontWeight="normal"
+            textOverflow="ellipsis"
+            overflow="hidden"
+            maxWidth="60%"
+          >
+            {desc}
+          </Text>
+        )}
+      </Flex>
+    </Button>
+  );
+};
+
+export const TokenListModal = ({ isOpen, onClose, onCustom }) => {
   // Ref
   const initialRef = useRef();
   // Contexts
-  const { setToken, setLoading: setBridgeLoading } = useBridgeContext();
-  const { account, ethersProvider, providerChainId } = useWeb3Context();
-  const { disableBalanceFetchToken } = useSettings();
+  const {
+    fromToken,
+    setToken,
+    setLoading: setBridgeLoading,
+  } = useBridgeContext();
+  const { chainId } = fromToken ?? {};
+
   // State
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [tokenList, setTokenList] = useState([]);
   const [filteredTokenList, setFilteredTokenList] = useState([]);
   const smallScreen = useBreakpointValue({ sm: false, base: true });
@@ -69,48 +149,12 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
     enableForeignCurrencyBridge,
   } = useBridgeDirection();
 
-  const bridgeChainId = useMemo(
-    () => getBridgeChainId(providerChainId),
-    [providerChainId, getBridgeChainId],
-  );
+  const [customTokens, setCustomTokens] = useState([]);
 
-  // Callbacks
-  const fetchTokenListWithBalance = useCallback(
-    async tList => {
-      const tokenValueSortFn = ({ balance: balanceA }, { balance: balanceB }) =>
-        balanceB.sub(balanceA).gt(0) ? 1 : -1;
-
-      const tokenListWithBalance = await Promise.all(
-        tList.map(async token => ({
-          ...token,
-          balance: await fetchTokenBalanceWithProvider(
-            ethersProvider,
-            token,
-            account,
-          ),
-        })),
-      );
-
-      const natCurIndex = tokenListWithBalance.findIndex(
-        ({ address, mode }) => address === ADDRESS_ZERO && mode === 'NATIVE',
-      );
-
-      if (natCurIndex !== -1) {
-        return [
-          tokenListWithBalance[natCurIndex],
-          ...removeElement(tokenListWithBalance, natCurIndex).sort(
-            tokenValueSortFn,
-          ),
-        ];
-      }
-
-      return tokenListWithBalance.sort(tokenValueSortFn);
-    },
-    [account, ethersProvider],
-  );
-
-  const setDefaultTokenList = useCallback(
-    async (chainId, customTokens) => {
+  // Effects
+  useEffect(() => {
+    (async () => {
+      if (!chainId) return;
       setLoading(true);
       try {
         const baseTokenList = await fetchTokenList(
@@ -133,27 +177,21 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
           ),
         ];
 
-        setTokenList(
-          !disableBalanceFetchToken
-            ? await fetchTokenListWithBalance(customTokenList)
-            : customTokenList,
-        );
+        setTokenList(customTokenList);
       } catch (fetchTokensError) {
         logError({ fetchTokensError });
       }
       setLoading(false);
-    },
-    [
-      getGraphEndpoint,
-      getBridgeChainId,
-      disableBalanceFetchToken,
-      fetchTokenListWithBalance,
-      enableForeignCurrencyBridge,
-      foreignChainId,
-    ],
-  );
+    })();
+  }, [
+    chainId,
+    getGraphEndpoint,
+    getBridgeChainId,
+    enableForeignCurrencyBridge,
+    foreignChainId,
+    customTokens,
+  ]);
 
-  // Effects
   useEffect(() => {
     if (tokenList.length) {
       setFilteredTokenList(tokenList);
@@ -161,14 +199,13 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
   }, [tokenList, setFilteredTokenList]);
 
   useEffect(() => {
-    if (!isOpen) return;
-    let localTokenList = window.localStorage.getItem(CUSTOM_TOKENS);
-    localTokenList =
-      !localTokenList || !localTokenList.length
-        ? []
-        : JSON.parse(localTokenList);
-    providerChainId && setDefaultTokenList(providerChainId, localTokenList);
-  }, [isOpen, providerChainId, setDefaultTokenList]);
+    if (isOpen) {
+      const localTokenList = window.localStorage.getItem(CUSTOM_TOKENS);
+      if (localTokenList && localTokenList !== JSON.stringify(customTokens)) {
+        setCustomTokens(JSON.parse(localTokenList));
+      }
+    }
+  }, [isOpen, customTokens]);
 
   // Handlers
   const selectToken = useCallback(
@@ -238,13 +275,15 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
           maxW="37rem"
           mx="12"
         >
-          <ConfirmBSCTokenModal
-            isOpen={!!selectedToken && shouldShowWarning}
-            onClose={closeWarning}
-            onConfirm={onConfirmWarningModal}
-            token={selectedToken}
-            bridgeChainId={bridgeChainId}
-          />
+          {chainId && (
+            <ConfirmBSCTokenModal
+              isOpen={!!selectedToken && shouldShowWarning}
+              onClose={closeWarning}
+              onConfirm={onConfirmWarningModal}
+              token={selectedToken}
+              bridgeChainId={getBridgeChainId(chainId)}
+            />
+          )}
           <ModalHeader pb={0}>
             <Flex align="center" justify="space-between">
               Select a Token
@@ -283,7 +322,7 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
             p={2}
           />
           <ModalBody minH="5rem">
-            {loading && (
+            {loading ? (
               <Flex w="100%" align="center" justify="center">
                 <Spinner
                   color="blue.500"
@@ -292,54 +331,11 @@ export const TokenSelectorModal = ({ isOpen, onClose, onCustom }) => {
                   speed="0.75s"
                 />
               </Flex>
+            ) : (
+              filteredTokenList.map(token => (
+                <TokenDisplay key={token.address} {...{ token, onClick }} />
+              ))
             )}
-            {!loading &&
-              filteredTokenList.map(token => {
-                const { decimals, balance, name, address, logoURI, symbol } =
-                  token;
-                return (
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    width="100%"
-                    borderColor="#DAE3F0"
-                    key={address + symbol}
-                    onClick={() => onClick(token)}
-                    mb={2}
-                    px={4}
-                  >
-                    <Flex align="center" width="100%" justify="space-between">
-                      <Flex align="center">
-                        <Flex
-                          justify="center"
-                          align="center"
-                          background="white"
-                          border="1px solid #DAE3F0"
-                          boxSize={8}
-                          overflow="hidden"
-                          borderRadius="50%"
-                        >
-                          <Logo uri={logoURI} />
-                        </Flex>
-                        <Text fontSize="lg" fontWeight="bold" mx={2}>
-                          {symbol}
-                        </Text>
-                      </Flex>
-                      <Text
-                        color="grey"
-                        fontWeight="normal"
-                        textOverflow="ellipsis"
-                        overflow="hidden"
-                        maxWidth="60%"
-                      >
-                        {!disableBalanceFetchToken && balance && decimals
-                          ? formatValue(balance, decimals)
-                          : name}
-                      </Text>
-                    </Flex>
-                  </Button>
-                );
-              })}
           </ModalBody>
         </ModalContent>
       </ModalOverlay>

@@ -5,30 +5,28 @@ import { useEffect, useState } from 'react';
 
 export const useRequiredSignatures = (homeChainId, homeAmbAddress) => {
   const [homeRequiredSignatures, setHomeRequiredSignatures] = useState(0);
-  const [fetching, setFetching] = useState(false);
 
   useEffect(() => {
     const label = getNetworkLabel(homeChainId).toUpperCase();
-    const key = `${label}-REQUIRED-SIGNATURES`;
+    const key = `${label}-{${homeAmbAddress.toUpperCase()}}-REQUIRED-SIGNATURES`;
     const fetchVersion = async () => {
-      const provider = await getEthersProvider(homeChainId);
-      await fetchRequiredSignatures(homeAmbAddress, provider)
-        .then(res => {
-          const signatures = Number.parseInt(res.toString(), 10);
-          setHomeRequiredSignatures(signatures);
-          sessionStorage.setItem(key, signatures);
-        })
-        .catch(versionError => logError({ versionError }));
-      setFetching(false);
+      try {
+        const provider = await getEthersProvider(homeChainId);
+        const res = await fetchRequiredSignatures(homeAmbAddress, provider);
+        const signatures = Number.parseInt(res.toString(), 10);
+        setHomeRequiredSignatures(signatures);
+        sessionStorage.setItem(key, signatures);
+      } catch (versionError) {
+        logError({ versionError });
+      }
     };
     const version = sessionStorage.getItem(key);
-    if (!version && !fetching) {
-      setFetching(true);
-      fetchVersion();
-    } else {
+    if (version) {
       setHomeRequiredSignatures(Number.parseInt(version, 10));
+    } else {
+      fetchVersion();
     }
-  }, [homeAmbAddress, homeChainId, fetching]);
+  }, [homeAmbAddress, homeChainId]);
 
   return homeRequiredSignatures;
 };
