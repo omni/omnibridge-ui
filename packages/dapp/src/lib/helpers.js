@@ -81,12 +81,17 @@ export const formatValue = (num, dec) => {
 };
 
 export const formatValueForLimits = (num, dec) => {
-  let str = utils.formatUnits(num, dec);
+  const str = utils.formatUnits(num, dec);
   const splitStr = str.split('.');
   const beforeDecimal = splitStr[0];
   const afterDecimal = `${(splitStr[1] ?? '').slice(1, 5)}0000`;
   if (Number(beforeDecimal) > 0) {
-    str = `${beforeDecimal}.${afterDecimal[0]}`;
+    const finalNum = Number(`${beforeDecimal}.${afterDecimal}`);
+
+    return finalNum.toLocaleString('en-US', {
+      maximumFractionDigits: 4,
+      minimumFractionDigits: 1,
+    });
   }
   return str;
 };
