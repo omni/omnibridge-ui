@@ -3,7 +3,6 @@ import { useSettings } from 'contexts/SettingsContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { BigNumber } from 'ethers';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
-import { useFeeManager } from 'hooks/useFeeManager';
 import { useMediatorInfo } from 'hooks/useMediatorInfo';
 import { fetchToAmount, fetchToToken, relayTokens } from 'lib/bridge';
 import { ADDRESS_ZERO } from 'lib/constants';
@@ -59,9 +58,13 @@ export const BridgeProvider = ({ children }) => {
   const [txHash, setTxHash] = useState();
 
   const toast = useToast();
-  const { feeManagerAddress } = useMediatorInfo();
-  const { isRewardAddress, homeToForeignFeeType, foreignToHomeFeeType } =
-    useFeeManager();
+  const {
+    feeManagerAddress,
+    isRewardAddress,
+    homeToForeignFeeType,
+    foreignToHomeFeeType,
+    currentDay,
+  } = useMediatorInfo();
 
   const isHome = providerChainId === homeChainId;
   const feeType = isHome ? homeToForeignFeeType : foreignToHomeFeeType;
@@ -342,6 +345,7 @@ export const BridgeProvider = ({ children }) => {
       setReceiver,
       shouldReceiveNativeCur,
       setShouldReceiveNativeCur,
+      currentDay,
     }),
     [
       // amounts & balances
@@ -372,6 +376,7 @@ export const BridgeProvider = ({ children }) => {
       setReceiver,
       shouldReceiveNativeCur,
       setShouldReceiveNativeCur,
+      currentDay,
     ],
   );
 

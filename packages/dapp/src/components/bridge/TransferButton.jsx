@@ -6,11 +6,10 @@ import { useWeb3Context } from 'contexts/Web3Context';
 import { utils } from 'ethers';
 import { useNeedsClaiming } from 'hooks/useNeedsClaiming';
 import { useTokenDisabled } from 'hooks/useTokenDisabled';
-import { useTokenLimits } from 'hooks/useTokenLimits';
 import { formatValue, getNetworkName } from 'lib/helpers';
 import React, { useCallback } from 'react';
 
-export const TransferButton = ({ approval, isValid }) => {
+export const TransferButton = ({ approval, isValid, tokenLimits }) => {
   const { isGnosisSafe, providerChainId } = useWeb3Context();
   const {
     receiver,
@@ -40,7 +39,6 @@ export const TransferButton = ({ approval, isValid }) => {
   const isBridgingDisabled = useTokenDisabled(token);
   const buttonEnabled =
     !!token && allowed && !toAmountLoading && !isBridgingDisabled && isValid;
-  const { data: tokenLimits } = useTokenLimits();
 
   const valid = useCallback(() => {
     if (!providerChainId) {

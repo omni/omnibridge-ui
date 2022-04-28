@@ -221,6 +221,7 @@ export const fetchTokenLimits = async (
 
   const abi = isDedicatedMediatorToken
     ? [
+        'function getCurrentDay() view returns (uint256)',
         'function minPerTx() view returns (uint256)',
         'function executionMaxPerTx() view returns (uint256)',
         'function dailyLimit() view returns (uint256)',
@@ -229,6 +230,7 @@ export const fetchTokenLimits = async (
         'function totalExecutedPerDay(uint256) view returns (uint256)',
       ]
     : [
+        'function getCurrentDay() view returns (uint256)',
         'function minPerTx(address) view returns (uint256)',
         'function executionMaxPerTx(address) view returns (uint256)',
         'function dailyLimit(address) view returns (uint256)',
@@ -260,7 +262,7 @@ export const fetchTokenLimits = async (
         ? wrappedForeignCurrencyAddress
         : toToken.address;
 
-    if (toToken.address === ADDRESS_ZERO)
+    if (toTokenAddress === ADDRESS_ZERO || fromTokenAddress === ADDRESS_ZERO)
       return getDefaultTokenLimits(
         fromToken.decimals,
         fromMediatorContract,
