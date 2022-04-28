@@ -13,7 +13,7 @@ class RPCHealthStore {
   rpcHealth = {};
 
   constructor() {
-    this.updateRPCHealth();
+    setTimeout(() => this.updateRPCHealth(), 5000);
   }
 
   async updateRPCHealth() {
