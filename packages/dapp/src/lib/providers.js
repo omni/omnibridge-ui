@@ -12,7 +12,7 @@ const {
   XDAI_RPC_URL,
 } = LOCAL_STORAGE_KEYS;
 
-const RPC_URL = {
+const LOCAL_STORAGE_KEYS_MAP = {
   1: MAINNET_RPC_URL,
   42: KOVAN_RPC_URL,
   56: BSC_RPC_URL,
@@ -50,19 +50,22 @@ const checkRPCHealth = async url => {
 export const getEthersProvider = async chainId => {
   const label = getNetworkLabel(chainId).toUpperCase();
   const sessionStorageKey = `HEALTHY-RPC-URL-${label}`;
-  const localRPCUrl = window.localStorage.getItem(RPC_URL[chainId]);
-  const currentRPCUrls = getRPCUrl(chainId, true);
-  const rpcURLs =
-    localRPCUrl?.length > 0 ? [localRPCUrl, ...currentRPCUrls] : currentRPCUrls;
 
-  const storageRPCUrl = sessionStorage.getItem(sessionStorageKey);
+  const sessionRPCUrl = window.sessionStorage.getItem(sessionStorageKey);
+  const localRPCUrl = window.localStorage.getItem(
+    LOCAL_STORAGE_KEYS_MAP[chainId],
+  );
+
+  const rpcURLs = getRPCUrl(chainId, true);
 
   const provider =
-    (await checkRPCHealth(storageRPCUrl)) ??
+    (await checkRPCHealth(localRPCUrl)) ??
+    (await checkRPCHealth(sessionRPCUrl)) ??
     (await Promise.all(rpcURLs.map(checkRPCHealth))).filter(p => !!p)[0];
   if (provider?.connection?.url) {
-    sessionStorage.setItem(sessionStorageKey, provider.connection.url);
+    window.sessionStorage.setItem(sessionStorageKey, provider.connection.url);
   }
+
   return provider ?? null;
 };
 
