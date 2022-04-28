@@ -89,7 +89,7 @@ export const BridgeProvider = ({ children }) => {
   );
 
   const cleanAmounts = useCallback(() => {
-    setAmountInput('0.0');
+    setAmountInput('');
     setAmounts({
       fromAmount: BigNumber.from(0),
       toAmount: BigNumber.from(0),
@@ -125,7 +125,8 @@ export const BridgeProvider = ({ children }) => {
       fromToken.chainId &&
       toToken.chainId &&
       [homeChainId, foreignChainId].includes(fromToken.chainId) &&
-      [homeChainId, foreignChainId].includes(toToken.chainId)
+      [homeChainId, foreignChainId].includes(toToken.chainId) &&
+      (fromToken.address !== ADDRESS_ZERO || fromToken.mode === 'NATIVE')
     ) {
       const label = getNetworkLabel(fromToken.chainId).toUpperCase();
       const storageKey = `${bridgeDirection.toUpperCase()}-${label}-FROM-TOKEN`;
