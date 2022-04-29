@@ -70,7 +70,7 @@ export const formatValue = (num, dec) => {
   const str = utils.formatUnits(num, dec);
   const splitStr = str.split('.');
   const beforeDecimal = splitStr[0];
-  const afterDecimal = `${(splitStr[1] ?? '').slice(1, 5)}0000`;
+  const afterDecimal = `${(splitStr[1] ?? '').slice(0, 4)}0000`;
 
   const finalNum = Number(`${beforeDecimal}.${afterDecimal}`);
 
@@ -84,7 +84,7 @@ export const formatValueForLimits = (num, dec) => {
   const str = utils.formatUnits(num, dec);
   const splitStr = str.split('.');
   const beforeDecimal = splitStr[0];
-  const afterDecimal = `${(splitStr[1] ?? '').slice(1, 5)}0000`;
+  const afterDecimal = `${(splitStr[1] ?? '').slice(0, 4)}0000`;
   if (Number(beforeDecimal) > 0) {
     const finalNum = Number(`${beforeDecimal}.${afterDecimal}`);
 
