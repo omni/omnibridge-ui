@@ -167,6 +167,48 @@ export const fetchToAmount = async (
   }
 };
 
+const getDefaultTokenLimits = async (
+  decimals,
+  mediatorContract,
+  toMediatorContract,
+) => {
+  let [minPerTx, maxPerTx, dailyLimit] = await Promise.all([
+    mediatorContract.minPerTx(ADDRESS_ZERO),
+    toMediatorContract.executionMaxPerTx(ADDRESS_ZERO),
+    mediatorContract.executionDailyLimit(ADDRESS_ZERO),
+  ]);
+
+  if (decimals < 18) {
+    const factor = BigNumber.from(10).pow(18 - decimals);
+
+    minPerTx = minPerTx.div(factor);
+    maxPerTx = maxPerTx.div(factor);
+    dailyLimit = dailyLimit.div(factor);
+
+    if (minPerTx.eq(0)) {
+      minPerTx = BigNumber.from(1);
+      if (maxPerTx.lte(minPerTx)) {
+        maxPerTx = BigNumber.from(100);
+        if (dailyLimit.lte(maxPerTx)) {
+          dailyLimit = BigNumber.from(10000);
+        }
+      }
+    }
+  } else {
+    const factor = BigNumber.from(10).pow(decimals - 18);
+
+    minPerTx = minPerTx.mul(factor);
+    maxPerTx = maxPerTx.mul(factor);
+    dailyLimit = dailyLimit.mul(factor);
+  }
+
+  return {
+    minPerTx,
+    maxPerTx,
+    dailyLimit,
+  };
+};
+
 export const fetchTokenLimits = async (
   bridgeDirection,
   fromToken,
@@ -179,14 +221,16 @@ export const fetchTokenLimits = async (
 
   const abi = isDedicatedMediatorToken
     ? [
+        'function getCurrentDay() view returns (uint256)',
         'function minPerTx() view returns (uint256)',
         'function executionMaxPerTx() view returns (uint256)',
-        'function dailyLimit(address) view returns (uint256)',
-        'function totalSpentPerDay(address, uint256) view returns (uint256)',
+        'function dailyLimit() view returns (uint256)',
+        'function totalSpentPerDay(uint256) view returns (uint256)',
         'function executionDailyLimit() view returns (uint256)',
         'function totalExecutedPerDay(uint256) view returns (uint256)',
       ]
     : [
+        'function getCurrentDay() view returns (uint256)',
         'function minPerTx(address) view returns (uint256)',
         'function executionMaxPerTx(address) view returns (uint256)',
         'function dailyLimit(address) view returns (uint256)',
@@ -218,6 +262,13 @@ export const fetchTokenLimits = async (
         ? wrappedForeignCurrencyAddress
         : toToken.address;
 
+    if (toTokenAddress === ADDRESS_ZERO || fromTokenAddress === ADDRESS_ZERO)
+      return getDefaultTokenLimits(
+        fromToken.decimals,
+        fromMediatorContract,
+        toMediatorContract,
+      );
+
     const [
       minPerTx,
       dailyLimit,
@@ -246,9 +297,25 @@ export const fetchTokenLimits = async (
     const remainingExecutionLimit =
       executionDailyLimit.sub(totalExecutedPerDay);
     const remainingRequestLimit = dailyLimit.sub(totalSpentPerDay);
-    const remainingLimit = remainingExecutionLimit.gt(remainingRequestLimit)
+    const remainingLimit = remainingRequestLimit.lt(remainingExecutionLimit)
       ? remainingRequestLimit
       : remainingExecutionLimit;
+
+    // console.log(
+    //   Object.fromEntries(
+    //     Object.entries({
+    //       minPerTx,
+    //       dailyLimit,
+    //       totalSpentPerDay,
+    //       maxPerTx,
+    //       executionDailyLimit,
+    //       totalExecutedPerDay,
+    //       remainingExecutionLimit,
+    //       remainingRequestLimit,
+    //       remainingLimit,
+    //     }).map(([key, value]) => [key, value.toString()]),
+    //   ),
+    // );
 
     return {
       minPerTx,

@@ -1,6 +1,6 @@
 import { chainUrls } from 'lib/constants';
 import { logDebug, logError } from 'lib/helpers';
-import { getEthersProvider } from 'lib/providers';
+import { getValidEthersProvider } from 'lib/providerHelpers';
 
 const { REACT_APP_RPC_HEALTH_UPDATE_INTERVAL } = process.env;
 
@@ -13,15 +13,17 @@ class RPCHealthStore {
   rpcHealth = {};
 
   constructor() {
-    this.updateRPCHealth();
+    setTimeout(() => this.updateRPCHealth(), 5000);
   }
 
   async updateRPCHealth() {
     await Promise.all(
       Object.entries(chainUrls).map(async ([chainId, { name }]) => {
         try {
-          const provider = await getEthersProvider(chainId);
-          this.rpcHealth[chainId] = (await provider?.getBlockNumber()) ?? null;
+          const provider = await getValidEthersProvider(chainId);
+          this.rpcHealth[chainId] = provider
+            ? await provider.getBlockNumber()
+            : false;
         } catch (error) {
           this.rpcHealth[chainId] = false;
           logError(`${name} RPC Health Error: `, error);
@@ -35,8 +37,16 @@ class RPCHealthStore {
   status() {
     return this.rpcHealth;
   }
+
+  setHealth(chainId, blockNumber) {
+    this.rpcHealth[chainId] = blockNumber;
+  }
 }
 
 const rpcHealthStore = new RPCHealthStore();
 
 export const getRPCHealth = () => rpcHealthStore.status();
+
+export const setRPCHealth = (chainId, blockNumber) => {
+  rpcHealthStore.setHealth(chainId, blockNumber);
+};

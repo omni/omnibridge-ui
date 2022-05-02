@@ -8,7 +8,7 @@ export const useRequiredSignatures = (homeChainId, homeAmbAddress) => {
 
   useEffect(() => {
     const label = getNetworkLabel(homeChainId).toUpperCase();
-    const key = `${label}-{${homeAmbAddress.toUpperCase()}}-REQUIRED-SIGNATURES`;
+    const key = `${label}-${homeAmbAddress.toUpperCase()}-REQUIRED-SIGNATURES`;
     const fetchVersion = async () => {
       try {
         const provider = await getEthersProvider(homeChainId);

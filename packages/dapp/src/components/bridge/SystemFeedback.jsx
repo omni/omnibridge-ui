@@ -11,14 +11,11 @@ import {
 } from '@chakra-ui/react';
 import Details from 'assets/details.svg';
 import { useBridgeContext } from 'contexts/BridgeContext';
-import { useTokenLimits } from 'hooks/useTokenLimits';
 import { formatValueForLimits as formatValue } from 'lib/helpers';
 import React from 'react';
 
-export const SystemFeedback = () => {
+export const SystemFeedback = ({ tokenLimits, fetching, refresh }) => {
   const { fromToken: token } = useBridgeContext();
-
-  const { data: tokenLimits, fetching, refresh } = useTokenLimits();
 
   return (
     <Popover>

@@ -68,23 +68,30 @@ export const uniqueTokens = list => {
 
 export const formatValue = (num, dec) => {
   const str = utils.formatUnits(num, dec);
-  if (str.length > 50) {
-    const expStr = Number(str).toExponential().replace(/e\+?/, ' x 10^');
-    const split = expStr.split(' x 10^');
-    const first = Number(split[0]).toLocaleString('en', {
-      maximumFractionDigits: 4,
-    });
-    return `${first} x 10^${split[1]}`;
-  }
-  return Number(str).toLocaleString('en', { maximumFractionDigits: 4 });
+  const splitStr = str.split('.');
+  const beforeDecimal = splitStr[0];
+  const afterDecimal = `${(splitStr[1] ?? '').slice(0, 4)}0000`;
+
+  const finalNum = Number(`${beforeDecimal}.${afterDecimal}`);
+
+  return finalNum.toLocaleString('en-US', {
+    maximumFractionDigits: 4,
+    minimumFractionDigits: 1,
+  });
 };
 
 export const formatValueForLimits = (num, dec) => {
-  let str = utils.formatUnits(num, dec);
-  const beforeDecimal = str.split('.')[0];
-  const afterDecimal = `${str.split('.')[1]}0000`;
+  const str = utils.formatUnits(num, dec);
+  const splitStr = str.split('.');
+  const beforeDecimal = splitStr[0];
+  const afterDecimal = `${(splitStr[1] ?? '').slice(0, 4)}0000`;
   if (Number(beforeDecimal) > 0) {
-    str = `${beforeDecimal}.${afterDecimal[0]}`;
+    const finalNum = Number(`${beforeDecimal}.${afterDecimal}`);
+
+    return finalNum.toLocaleString('en-US', {
+      maximumFractionDigits: 4,
+      minimumFractionDigits: 1,
+    });
   }
   return str;
 };

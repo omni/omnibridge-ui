@@ -17,6 +17,7 @@ import { RPCHealthWarning } from 'components/warnings/RPCHealthWarning';
 import { TokenWarnings } from 'components/warnings/TokenWarnings';
 import { useBridgeContext } from 'contexts/BridgeContext';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
+import { useTokenLimits } from 'hooks/useTokenLimits';
 import { getNetworkName } from 'lib/helpers';
 import React from 'react';
 
@@ -25,6 +26,8 @@ export const BridgeTokens = () => {
   const { fromToken } = useBridgeContext();
   const isInflationToken = isInflationaryToken(fromToken);
   const smallScreen = useBreakpointValue({ base: true, lg: false });
+
+  const { tokenLimits, fetching, refresh } = useTokenLimits();
 
   return (
     <Flex
@@ -94,7 +97,7 @@ export const BridgeTokens = () => {
               </Flex>
             )}
             <FromToken />
-            <ActionButtons />
+            <ActionButtons tokenLimits={tokenLimits} />
             {smallScreen && (
               <Flex align="flex-end" direction="column" m={2} minH="3rem">
                 <Text color="greyText" fontSize="sm">
@@ -110,7 +113,7 @@ export const BridgeTokens = () => {
             <ToToken />
           </Grid>
           <AdvancedMenu />
-          <SystemFeedback />
+          <SystemFeedback {...{ tokenLimits, fetching, refresh }} />
         </Flex>
       )}
       {/* <CoinzillaBannerAd /> */}

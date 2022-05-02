@@ -47,9 +47,7 @@ export const FromToken = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
   const smallScreen = useBreakpointValue({ base: true, lg: false });
   const [balanceLoading, setBalanceLoading] = useState(false);
-  const updateAmount = useCallback(() => {
-    setAmount(input);
-  }, [input, setAmount]);
+  const updateAmount = useCallback(() => setAmount(input), [input, setAmount]);
   const delayedSetAmount = useDelay(updateAmount, 500);
 
   useEffect(() => {

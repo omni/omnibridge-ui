@@ -1,27 +1,27 @@
 import { useBridgeContext } from 'contexts/BridgeContext';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
-import { useMediatorInfo } from 'hooks/useMediatorInfo';
 import { fetchTokenLimits } from 'lib/bridge';
-import { ADDRESS_ZERO } from 'lib/constants';
 
 const { useState, useCallback, useEffect } = require('react');
 
 export const useTokenLimits = () => {
-  const { currentDay } = useMediatorInfo();
-  const { fromToken, toToken } = useBridgeContext();
-  const { bridgeDirection } = useBridgeDirection();
+  const { fromToken, toToken, currentDay } = useBridgeContext();
+  const { bridgeDirection, homeChainId, foreignChainId } = useBridgeDirection();
   const [tokenLimits, setTokenLimits] = useState();
   const [fetching, setFetching] = useState(false);
 
   const updateTokenLimits = useCallback(async () => {
     if (
-      fromToken?.chainId &&
-      toToken?.chainId &&
-      (fromToken?.symbol === toToken?.symbol ||
-        (fromToken?.address === ADDRESS_ZERO && fromToken?.mode === 'NATIVE') ||
-        (toToken?.address === ADDRESS_ZERO && toToken?.mode === 'NATIVE')) &&
-      currentDay &&
-      bridgeDirection
+      fromToken &&
+      toToken &&
+      fromToken.chainId &&
+      toToken.chainId &&
+      (fromToken.symbol.includes(toToken.symbol) ||
+        toToken.symbol.includes(fromToken.symbol)) &&
+      [homeChainId, foreignChainId].includes(fromToken.chainId) &&
+      [homeChainId, foreignChainId].includes(toToken.chainId) &&
+      bridgeDirection &&
+      currentDay
     ) {
       setFetching(true);
       const limits = await fetchTokenLimits(
@@ -33,9 +33,16 @@ export const useTokenLimits = () => {
       setTokenLimits(limits);
       setFetching(false);
     }
-  }, [fromToken, toToken, currentDay, bridgeDirection]);
+  }, [
+    fromToken,
+    toToken,
+    bridgeDirection,
+    homeChainId,
+    foreignChainId,
+    currentDay,
+  ]);
 
   useEffect(() => updateTokenLimits(), [updateTokenLimits]);
 
-  return { data: tokenLimits, fetching, refresh: updateTokenLimits };
+  return { tokenLimits, fetching, refresh: updateTokenLimits };
 };

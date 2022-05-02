@@ -7,7 +7,7 @@ import { useApproval } from 'hooks/useApproval';
 import { getNetworkName } from 'lib/helpers';
 import React from 'react';
 
-export const ActionButtons = () => {
+export const ActionButtons = ({ tokenLimits }) => {
   const { fromToken, fromAmount, txHash } = useBridgeContext();
   const approval = useApproval(fromToken, fromAmount, txHash);
   const { isConnected, providerChainId } = useWeb3Context();
@@ -24,7 +24,7 @@ export const ActionButtons = () => {
       cursor={isValid ? 'default' : 'not-allowed'}
     >
       <UnlockButton {...{ approval, isValid }} />
-      <TransferButton {...{ approval, isValid }} />
+      <TransferButton {...{ approval, isValid, tokenLimits }} />
     </Flex>
   );
 
