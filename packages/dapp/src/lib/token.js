@@ -171,7 +171,7 @@ export const fetchTokenBalance = async (token, account) => {
 
 export const fetchTokenBalanceWithProvider = async (
   ethersProvider,
-  { address, mode },
+  { address, mode, symbol },
   account,
 ) => {
   if (address === ADDRESS_ZERO && mode === 'NATIVE') {
@@ -186,7 +186,7 @@ export const fetchTokenBalanceWithProvider = async (
     const balance = await tokenContract.balanceOf(account);
     return balance;
   } catch (error) {
-    logError({ balanceError: error });
+    logError(`Error fetching balance for ${address}-${symbol}`, error);
   }
 
   return BigNumber.from(0);
