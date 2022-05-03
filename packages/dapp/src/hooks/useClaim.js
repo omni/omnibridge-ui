@@ -8,7 +8,11 @@ import {
   logDebug,
   logError,
 } from 'lib/helpers';
-import { getMessage, messageCallStatus } from 'lib/message';
+import {
+  getMessage,
+  getRemainingSignatures,
+  messageCallStatus,
+} from 'lib/message';
 import { addChainToMetaMask } from 'lib/metamask';
 import { getEthersProvider } from 'lib/providers';
 import { useCallback, useEffect, useState } from 'react';
@@ -124,7 +128,8 @@ export const useClaim = () => {
     homeAmbAddress,
     foreignChainId,
     foreignAmbAddress,
-    homeRequiredSignatures,
+    requiredSignatures,
+    validatorList,
   } = useBridgeDirection();
   const { providerChainId, isMetamask } = useWeb3Context();
   const { executeCallback, executing, executionTx } = useExecution();
@@ -139,15 +144,19 @@ export const useClaim = () => {
         );
       }
       let message =
-        txMessage &&
-        txMessage.signatures &&
-        txMessage.signatures.length >= homeRequiredSignatures
+        txMessage && txMessage.messageData && txMessage.signatures
           ? txMessage
           : null;
       if (!message) {
         const homeProvider = await getEthersProvider(homeChainId);
         message = await getMessage(true, homeProvider, homeAmbAddress, txHash);
       }
+      message.signatures = getRemainingSignatures(
+        message.messageData,
+        message.signatures,
+        requiredSignatures,
+        validatorList,
+      );
       const foreignProvider = await getEthersProvider(foreignChainId);
       const claimed = await messageCallStatus(
         foreignAmbAddress,
@@ -167,7 +176,8 @@ export const useClaim = () => {
       foreignAmbAddress,
       providerChainId,
       isMetamask,
-      homeRequiredSignatures,
+      requiredSignatures,
+      validatorList,
     ],
   );
 

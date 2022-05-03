@@ -1,4 +1,5 @@
 import { Contract, utils } from 'ethers';
+import { logDebug, logError } from 'lib/helpers';
 
 export const NOT_ENOUGH_COLLECTED_SIGNATURES =
   'Transaction to the bridge is found but oracles’ confirmations are not collected yet. Wait for a minute and try again.';
@@ -98,9 +99,76 @@ export const messageCallStatus = async (
   return claimed;
 };
 
-export const requiredSignatures = async (homeAmbAddress, homeProvider) => {
+export const fetchRequiredSignatures = async (homeAmbAddress, homeProvider) => {
   const abi = ['function requiredSignatures() public view returns (uint256)'];
   const ambContract = new Contract(homeAmbAddress, abi, homeProvider);
   const numRequired = await ambContract.requiredSignatures();
   return numRequired;
+};
+
+export const fetchValidatorList = async (homeAmbAddress, homeProvider) => {
+  const ambContract = new Contract(
+    homeAmbAddress,
+    ['function validatorContract() public view returns (address)'],
+    homeProvider,
+  );
+  const validatorContractAddress = await ambContract.validatorContract();
+  const validatorContract = new Contract(
+    validatorContractAddress,
+    ['function validatorList() public view returns (address[])'],
+    homeProvider,
+  );
+  const validatorList = await validatorContract.validatorList();
+  return validatorList;
+};
+
+export const getRemainingSignatures = (
+  messageData,
+  signaturesCollected,
+  requiredSignatures,
+  validatorList,
+) => {
+  const signatures = [];
+  const remainingValidators = Object.fromEntries(
+    validatorList.map(validator => [validator, true]),
+  );
+  for (
+    let i = 0;
+    i < signaturesCollected.length && signatures.length < requiredSignatures;
+    i += 1
+  ) {
+    const signer = utils.recoverAddress(messageData, signaturesCollected[i]);
+    if (validatorList.includes(signer)) {
+      delete remainingValidators[signer];
+      signatures.push(signaturesCollected[i]);
+    }
+  }
+  if (signatures.length < requiredSignatures) {
+    logDebug(
+      'On-chain collected signatures are not enough for message execution',
+    );
+    const manualValidators = Object.keys(remainingValidators);
+    const msgHash = utils.keccak256(messageData);
+    for (
+      let i = 0;
+      i < manualValidators.length && signatures.length < requiredSignatures;
+      i += 1
+    ) {
+      try {
+        // eslint-disable-next-line import/no-dynamic-require, global-require
+        const overrideSignatures = require(`../snapshots/signatures_${manualValidators[i]}.json`);
+        if (overrideSignatures[msgHash]) {
+          logDebug(`Adding manual signature from ${manualValidators[i]}`);
+          signatures.push(overrideSignatures[msgHash]);
+        } else {
+          logDebug(`No manual signature from ${manualValidators[i]} was found`);
+        }
+      } catch (e) {
+        logError(
+          `Signatures overrides are not present for ${manualValidators[i]}`,
+        );
+      }
+    }
+  }
+  return signatures;
 };

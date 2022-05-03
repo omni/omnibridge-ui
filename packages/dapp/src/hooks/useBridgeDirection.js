@@ -1,7 +1,7 @@
 import { useSettings } from 'contexts/SettingsContext';
 import { useAmbVersion } from 'hooks/useAmbVersion';
-import { useRequiredSignatures } from 'hooks/useRequiredSignatures';
 import { useTotalConfirms } from 'hooks/useTotalConfirms';
+import { useValidatorsContract } from 'hooks/useValidatorsContract';
 import { networks } from 'lib/networks';
 import { useCallback, useMemo } from 'react';
 
@@ -24,7 +24,7 @@ export const useBridgeDirection = () => {
 
   const foreignAmbVersion = useAmbVersion(foreignChainId, foreignAmbAddress);
 
-  const homeRequiredSignatures = useRequiredSignatures(
+  const { requiredSignatures, validatorList } = useValidatorsContract(
     homeChainId,
     homeAmbAddress,
   );
@@ -73,10 +73,11 @@ export const useBridgeDirection = () => {
     getGraphEndpoint,
     getAMBAddress,
     foreignAmbVersion,
-    homeRequiredSignatures,
     homeTotalConfirms,
     foreignTotalConfirms,
     getTotalConfirms,
+    requiredSignatures,
+    validatorList,
     ...bridgeConfig,
   };
 };
