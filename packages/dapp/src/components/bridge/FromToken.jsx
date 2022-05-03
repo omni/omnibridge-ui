@@ -181,6 +181,7 @@ export const FromToken = () => {
               onKeyUp={delayedSetAmount}
               fontSize="2xl"
               borderRadius={0}
+              lang="en-US"
             />
             <Button
               ml={2}
