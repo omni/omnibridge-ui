@@ -172,16 +172,25 @@ export const FromToken = () => {
             <Input
               flex={1}
               variant="unstyled"
-              type="number"
+              type="text"
               value={input}
               placeholder="0.0"
               textAlign="left"
               fontWeight="bold"
-              onChange={e => setInput(e.target.value)}
-              onKeyUp={delayedSetAmount}
               fontSize="2xl"
               borderRadius={0}
               lang="en-US"
+              onKeyPress={e => {
+                if (e.key === '.') {
+                  if (e.target.value.includes('.')) {
+                    e.preventDefault();
+                  }
+                } else if (Number.isNaN(Number(e.key))) {
+                  e.preventDefault();
+                }
+              }}
+              onKeyUp={delayedSetAmount}
+              onChange={e => setInput(e.target.value)}
             />
             <Button
               ml={2}
