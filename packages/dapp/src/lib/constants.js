@@ -204,3 +204,5 @@ export const LOCAL_STORAGE_KEYS = {
   DISABLE_BALANCE_WHILE_TOKEN_FETCH: 'disable-balance-while-token-fetch',
   BRIDGE_DIRECTION: 'bridge-direction',
 };
+
+export const SENTRY_DSN = process.env.REACT_APP_SENTRY_DSN;

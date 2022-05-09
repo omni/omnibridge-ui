@@ -2,11 +2,13 @@ import 'focus-visible/dist/focus-visible';
 
 import { ChakraProvider, CSSReset } from '@chakra-ui/react';
 import { css, Global } from '@emotion/react';
-import { ErrorBoundary } from 'components/common/ErrorBoundary';
+import { ErrorBoundary } from '@sentry/react';
+import { ErrorFallback } from 'components/common/ErrorFallback';
 import { Layout } from 'components/common/Layout';
 import { Routes } from 'components/common/Routes';
 import { SettingsProvider } from 'contexts/SettingsContext';
 import { Web3Provider } from 'contexts/Web3Context';
+import { logError } from 'lib/helpers';
 import React from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { theme } from 'theme';
@@ -26,7 +28,10 @@ export const App = () => (
   <ChakraProvider theme={theme}>
     <CSSReset />
     <Global styles={GlobalStyles} />
-    <ErrorBoundary>
+    <ErrorBoundary
+      fallback={<ErrorFallback />}
+      onError={error => logError(error)}
+    >
       <Router>
         <SettingsProvider>
           <Web3Provider>

@@ -1,4 +1,5 @@
 import { Flex, Image, Text, useDisclosure, useToast } from '@chakra-ui/react';
+import { captureException } from '@sentry/react';
 import TransferIcon from 'assets/transfer.svg';
 import { ConfirmTransferModal } from 'components/modals/ConfirmTransferModal';
 import { useBridgeContext } from 'contexts/BridgeContext';
@@ -10,7 +11,7 @@ import { formatValue, getNetworkName } from 'lib/helpers';
 import React, { useCallback } from 'react';
 
 export const TransferButton = ({ approval, isValid, tokenLimits }) => {
-  const { isGnosisSafe, providerChainId } = useWeb3Context();
+  const { isGnosisSafe, providerChainId, account } = useWeb3Context();
   const {
     receiver,
     fromAmount: amount,
@@ -45,6 +46,25 @@ export const TransferButton = ({ approval, isValid, tokenLimits }) => {
       showError('Please connect wallet');
     } else if (providerChainId !== token?.chainId) {
       showError(`Please switch to ${getNetworkName(token?.chainId)}`);
+    } else if (tokenLimits && tokenLimits.dailyLimit.lt(tokenLimits.minPerTx)) {
+      showError(`Daily limit reached. Please try again tomorrow'`);
+      captureException(new Error('Daily limit reached'), {
+        tags: {
+          debugMode: process.env.REACT_APP_DEBUG_LOGS === 'true',
+          user: account,
+          receiver: receiver || account,
+          isGnosisSafe: isGnosisSafe ?? false,
+          ...token,
+          amount: amount.toString(),
+          balance: balance.toString(),
+          ...Object.fromEntries(
+            Object.entries(tokenLimits).map(([key, value]) => [
+              key,
+              value.toString(),
+            ]),
+          ),
+        },
+      });
     } else if (tokenLimits && amount.lt(tokenLimits.minPerTx)) {
       showError(
         `Please specify amount more than ${formatValue(
@@ -75,6 +95,7 @@ export const TransferButton = ({ approval, isValid, tokenLimits }) => {
     balance,
     receiver,
     isGnosisSafe,
+    account,
     showError,
   ]);
 
