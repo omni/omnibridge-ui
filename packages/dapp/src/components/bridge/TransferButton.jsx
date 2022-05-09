@@ -50,6 +50,7 @@ export const TransferButton = ({ approval, isValid, tokenLimits }) => {
       showError(`Daily limit reached. Please try again tomorrow'`);
       captureException(new Error('Daily limit reached'), {
         tags: {
+          debugMode: process.env.REACT_APP_DEBUG_LOGS === 'true',
           user: account,
           receiver: receiver || account,
           isGnosisSafe: isGnosisSafe ?? false,
