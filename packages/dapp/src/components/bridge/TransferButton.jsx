@@ -51,7 +51,7 @@ export const TransferButton = ({ approval, isValid, tokenLimits }) => {
       (amount.gt(tokenLimits.dailyLimit) ||
         tokenLimits.dailyLimit.lt(tokenLimits.minPerTx))
     ) {
-      showError(`Daily limit reached. Please try again tomorrow'`);
+      showError('Daily limit reached. Please try again tomorrow');
       captureException(new Error('Daily limit reached'), {
         tags: {
           debugMode: process.env.REACT_APP_DEBUG_LOGS === 'true',
