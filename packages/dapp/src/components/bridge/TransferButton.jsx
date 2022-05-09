@@ -46,15 +46,21 @@ export const TransferButton = ({ approval, isValid, tokenLimits }) => {
       showError('Please connect wallet');
     } else if (providerChainId !== token?.chainId) {
       showError(`Please switch to ${getNetworkName(token?.chainId)}`);
-    } else if (tokenLimits && tokenLimits.dailyLimit.lt(tokenLimits.minPerTx)) {
+    } else if (
+      tokenLimits &&
+      (amount.gt(tokenLimits.dailyLimit) ||
+        tokenLimits.dailyLimit.lt(tokenLimits.minPerTx))
+    ) {
       showError(`Daily limit reached. Please try again tomorrow'`);
       captureException(new Error('Daily limit reached'), {
         tags: {
           debugMode: process.env.REACT_APP_DEBUG_LOGS === 'true',
-          user: account,
+          userAddress: account,
           receiver: receiver || account,
           isGnosisSafe: isGnosisSafe ?? false,
-          ...token,
+          token: token.address,
+          chainId: token.chainId,
+          symbol: token.symbol,
           amount: amount.toString(),
           balance: balance.toString(),
           ...Object.fromEntries(
