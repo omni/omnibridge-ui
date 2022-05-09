@@ -1,7 +1,7 @@
 import {
+  Box,
   Button,
   Flex,
-  Image,
   Popover,
   PopoverBody,
   PopoverContent,
@@ -9,8 +9,8 @@ import {
   Spinner,
   Text,
 } from '@chakra-ui/react';
-import Details from 'assets/details.svg';
 import { useBridgeContext } from 'contexts/BridgeContext';
+import { LimitsIcon } from 'icons/LimitsIcon';
 import { formatValueForLimits as formatValue } from 'lib/helpers';
 import React from 'react';
 
@@ -26,10 +26,10 @@ export const SystemFeedback = ({ tokenLimits, fetching, refresh }) => {
           color="blue.500"
           _hover={{ bg: 'blackAlpha.100' }}
           fontWeight="normal"
+          leftIcon={<LimitsIcon boxSize="1.5rem" />}
           px="2"
         >
-          <Image src={Details} mr={2} />
-          <Text>System Feedback</Text>
+          <Text>Limits</Text>
         </Button>
       </PopoverTrigger>
       <PopoverContent border="none" minW="20rem" w="auto" maxW="30rem" p="0">
@@ -47,10 +47,35 @@ export const SystemFeedback = ({ tokenLimits, fetching, refresh }) => {
               {fetching ? (
                 <Spinner size="sm" />
               ) : (
-                <Text fontWeight="bold" ml={4} textAlign="right">
-                  {formatValue(tokenLimits.dailyLimit, token.decimals)}{' '}
-                  {token.symbol}
-                </Text>
+                <Box>
+                  {tokenLimits.dailyLimit.gte('1000000000000000') ? (
+                    <Text
+                      fontWeight="bold"
+                      ml={4}
+                      textAlign="right"
+                      lineHeight="21px"
+                      fontSize="xl"
+                    >
+                      ∞
+                    </Text>
+                  ) : (
+                    <Text fontWeight="bold" ml={4} textAlign="right">
+                      <Text as="span" color="#4DA9A6">
+                        {formatValue(
+                          tokenLimits.dailyLimit.sub(
+                            tokenLimits.remainingLimit,
+                          ),
+                          token.decimals,
+                        )}
+                        {' / '}
+                      </Text>
+                      <Text as="span">
+                        {formatValue(tokenLimits.dailyLimit, token.decimals)}{' '}
+                        {token.symbol}
+                      </Text>
+                    </Text>
+                  )}
+                </Box>
               )}
             </Flex>
             <Flex align="center" justify="space-between">

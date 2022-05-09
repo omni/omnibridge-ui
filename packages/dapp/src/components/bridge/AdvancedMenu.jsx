@@ -8,7 +8,6 @@ import {
   Text,
   useDisclosure,
 } from '@chakra-ui/react';
-import { ReactComponent as AdvancedImage } from 'assets/advanced.svg';
 import { useBridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { utils } from 'ethers';
@@ -84,8 +83,7 @@ export const AdvancedMenu = () => {
             _hover={{ bg: 'blackAlpha.100' }}
             px="2"
           >
-            <AdvancedImage width="1.25rem" />
-            <Text ml={2}>{isMenuOpen ? 'Clear Recipient' : 'Advanced'}</Text>
+            <Text ml={2}>Alternative Address</Text>
           </Button>
         )}
       </Flex>
