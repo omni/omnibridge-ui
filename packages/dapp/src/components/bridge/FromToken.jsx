@@ -13,7 +13,7 @@ import { Logo } from 'components/common/Logo';
 import { SelectTokenModal } from 'components/modals/SelectTokenModal';
 import { useBridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
-import { BigNumber, utils } from 'ethers';
+import { BigNumber } from 'ethers';
 import { formatValue, logError, truncateText } from 'lib/helpers';
 import { fetchTokenBalance } from 'lib/token';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -172,15 +172,25 @@ export const FromToken = () => {
             <Input
               flex={1}
               variant="unstyled"
-              type="number"
+              type="text"
               value={input}
               placeholder="0.0"
               textAlign="left"
               fontWeight="bold"
-              onChange={e => setInput(e.target.value)}
-              onKeyUp={delayedSetAmount}
               fontSize="2xl"
               borderRadius={0}
+              lang="en-US"
+              onKeyPress={e => {
+                if (e.key === '.') {
+                  if (e.target.value.includes('.')) {
+                    e.preventDefault();
+                  }
+                } else if (Number.isNaN(Number(e.key))) {
+                  e.preventDefault();
+                }
+              }}
+              onKeyUp={delayedSetAmount}
+              onChange={e => setInput(e.target.value)}
             />
             <Button
               ml={2}
@@ -191,7 +201,7 @@ export const FromToken = () => {
               fontWeight="normal"
               _hover={{ bg: 'blue.100' }}
               onClick={() => {
-                const amountInput = utils.formatUnits(balance, token.decimals);
+                const amountInput = formatValue(balance, token.decimals);
                 setAmount(amountInput);
                 setInput(amountInput);
               }}
