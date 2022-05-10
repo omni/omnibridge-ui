@@ -1,5 +1,5 @@
 import { Flex, Image, Text, useDisclosure, useToast } from '@chakra-ui/react';
-import { captureException } from '@sentry/react';
+import { captureMessage } from '@sentry/react';
 import TransferIcon from 'assets/transfer.svg';
 import { ConfirmTransferModal } from 'components/modals/ConfirmTransferModal';
 import { useBridgeContext } from 'contexts/BridgeContext';
@@ -52,7 +52,7 @@ export const TransferButton = ({ approval, isValid, tokenLimits }) => {
         tokenLimits.dailyLimit.lt(tokenLimits.minPerTx))
     ) {
       showError('Daily limit reached. Please try again tomorrow');
-      captureException(new Error('Daily limit reached'), {
+      captureMessage('Daily limit reached', {
         tags: {
           debugMode: process.env.REACT_APP_DEBUG_LOGS === 'true',
           userAddress: account,
