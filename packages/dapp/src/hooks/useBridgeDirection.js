@@ -25,8 +25,8 @@ export const useBridgeDirection = () => {
   const foreignAmbVersion = useAmbVersion(foreignChainId, foreignAmbAddress);
 
   const { requiredSignatures, validatorList } = useValidatorsContract(
-    homeChainId,
-    homeAmbAddress,
+    foreignChainId,
+    foreignAmbAddress,
   );
 
   const { homeTotalConfirms, foreignTotalConfirms } = useTotalConfirms(

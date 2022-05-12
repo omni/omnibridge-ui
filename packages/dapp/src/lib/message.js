@@ -68,10 +68,10 @@ export const getMessage = async (isHome, provider, ambAddress, txHash) => {
     ambContract.numMessagesSigned(messageHash),
   ]);
 
-  const isEnoughCollected = await ambContract.isAlreadyProcessed(
+  const isAlreadyProcessed = await ambContract.isAlreadyProcessed(
     numMessagesSigned,
   );
-  if (!isEnoughCollected) {
+  if (!isAlreadyProcessed) {
     throw Error(NOT_ENOUGH_COLLECTED_SIGNATURES);
   }
   const signatures = await Promise.all(
@@ -79,9 +79,12 @@ export const getMessage = async (isHome, provider, ambAddress, txHash) => {
       .fill(null)
       .map((_item, index) => ambContract.signature(messageHash, index)),
   );
+
+  const collectedSignatures = signatures.filter(s => s !== '0x');
+
   return {
     messageData,
-    signatures,
+    signatures: collectedSignatures,
     messageId,
   };
 };
@@ -137,7 +140,10 @@ export const getRemainingSignatures = (
     i < signaturesCollected.length && signatures.length < requiredSignatures;
     i += 1
   ) {
-    const signer = utils.recoverAddress(messageData, signaturesCollected[i]);
+    const signer = utils.verifyMessage(
+      utils.arrayify(messageData),
+      signaturesCollected[i],
+    );
     if (validatorList.includes(signer)) {
       delete remainingValidators[signer];
       signatures.push(signaturesCollected[i]);
@@ -169,6 +175,9 @@ export const getRemainingSignatures = (
         );
       }
     }
+  }
+  if (signatures.length < requiredSignatures) {
+    throw Error(NOT_ENOUGH_COLLECTED_SIGNATURES);
   }
   return signatures;
 };

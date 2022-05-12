@@ -3,17 +3,17 @@ import { fetchRequiredSignatures, fetchValidatorList } from 'lib/message';
 import { getEthersProvider } from 'lib/providers';
 import { useEffect, useState } from 'react';
 
-export const useValidatorsContract = (homeChainId, homeAmbAddress) => {
+export const useValidatorsContract = (foreignChainId, foreignAmbAddress) => {
   const [requiredSignatures, setRequiredSignatures] = useState(0);
   const [validatorList, setValidatorList] = useState([]);
 
   useEffect(() => {
-    const label = getNetworkLabel(homeChainId).toUpperCase();
-    const key = `${label}-${homeAmbAddress.toUpperCase()}-REQUIRED-SIGNATURES`;
+    const label = getNetworkLabel(foreignChainId).toUpperCase();
+    const key = `${label}-${foreignAmbAddress.toUpperCase()}-REQUIRED-SIGNATURES`;
     const fetchValue = async () => {
       try {
-        const provider = await getEthersProvider(homeChainId);
-        const res = await fetchRequiredSignatures(homeAmbAddress, provider);
+        const provider = await getEthersProvider(foreignChainId);
+        const res = await fetchRequiredSignatures(foreignAmbAddress, provider);
         const signatures = Number.parseInt(res.toString(), 10);
         setRequiredSignatures(signatures);
         sessionStorage.setItem(key, signatures);
@@ -27,15 +27,15 @@ export const useValidatorsContract = (homeChainId, homeAmbAddress) => {
     } else {
       fetchValue();
     }
-  }, [homeAmbAddress, homeChainId]);
+  }, [foreignAmbAddress, foreignChainId]);
 
   useEffect(() => {
-    const label = getNetworkLabel(homeChainId).toUpperCase();
-    const key = `${label}-${homeAmbAddress.toUpperCase()}-VALIDATOR-LIST`;
+    const label = getNetworkLabel(foreignChainId).toUpperCase();
+    const key = `${label}-${foreignAmbAddress.toUpperCase()}-VALIDATOR-LIST`;
     const fetchValue = async () => {
       try {
-        const provider = await getEthersProvider(homeChainId);
-        const res = await fetchValidatorList(homeAmbAddress, provider);
+        const provider = await getEthersProvider(foreignChainId);
+        const res = await fetchValidatorList(foreignAmbAddress, provider);
         setValidatorList(res);
         sessionStorage.setItem(key, JSON.stringify(res));
       } catch (versionError) {
@@ -48,7 +48,7 @@ export const useValidatorsContract = (homeChainId, homeAmbAddress) => {
     } else {
       fetchValue();
     }
-  }, [homeAmbAddress, homeChainId]);
+  }, [foreignAmbAddress, foreignChainId]);
 
   return { requiredSignatures, validatorList };
 };
