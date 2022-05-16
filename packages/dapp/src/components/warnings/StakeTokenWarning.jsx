@@ -20,8 +20,6 @@ export const isDisabledStakeToken = token => {
   if (!token) return false;
   const { chainId, address } = token;
   switch (chainId) {
-    case 1:
-      return address.toLowerCase() === MAINNET_STAKE_TOKEN;
     case 100:
       return address.toLowerCase() === XDAI_STAKE_TOKEN;
     default:
