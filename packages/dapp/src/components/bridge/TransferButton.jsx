@@ -1,16 +1,19 @@
 import { Flex, Image, Text, useDisclosure, useToast } from '@chakra-ui/react';
+import { captureMessage } from '@sentry/react';
 import TransferIcon from 'assets/transfer.svg';
 import { ConfirmTransferModal } from 'components/modals/ConfirmTransferModal';
 import { useBridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { utils } from 'ethers';
+import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { useNeedsClaiming } from 'hooks/useNeedsClaiming';
 import { useTokenDisabled } from 'hooks/useTokenDisabled';
 import { formatValue, getNetworkName } from 'lib/helpers';
 import React, { useCallback } from 'react';
 
 export const TransferButton = ({ approval, isValid, tokenLimits }) => {
-  const { isGnosisSafe, providerChainId } = useWeb3Context();
+  const { isGnosisSafe, providerChainId, account } = useWeb3Context();
+  const { bridgeDirection } = useBridgeDirection();
   const {
     receiver,
     fromAmount: amount,
@@ -45,6 +48,37 @@ export const TransferButton = ({ approval, isValid, tokenLimits }) => {
       showError('Please connect wallet');
     } else if (providerChainId !== token?.chainId) {
       showError(`Please switch to ${getNetworkName(token?.chainId)}`);
+    } else if (
+      tokenLimits &&
+      (amount.gt(tokenLimits.dailyLimit) ||
+        tokenLimits.dailyLimit.lt(tokenLimits.minPerTx))
+    ) {
+      showError('Daily limit reached. Please try again tomorrow');
+      captureMessage(
+        `Daily limit reached - ${bridgeDirection.toUpperCase()} - 0x${token.chainId.toString(
+          16,
+        )} - ${token.symbol} - ${token.address}`,
+        {
+          tags: {
+            debugMode: process.env.REACT_APP_DEBUG_LOGS === 'true',
+            bridgeDirection,
+            userAddress: account,
+            receiverAddress: receiver || account,
+            isGnosisSafe: isGnosisSafe ?? false,
+            tokenAddress: token.address,
+            tokenChainId: token.chainId,
+            tokenSymbol: token.symbol,
+            tokenAmount: amount.toString(),
+            userBalance: balance.toString(),
+            ...Object.fromEntries(
+              Object.entries(tokenLimits).map(([key, value]) => [
+                key,
+                value.toString(),
+              ]),
+            ),
+          },
+        },
+      );
     } else if (tokenLimits && amount.lt(tokenLimits.minPerTx)) {
       showError(
         `Please specify amount more than ${formatValue(
@@ -75,7 +109,9 @@ export const TransferButton = ({ approval, isValid, tokenLimits }) => {
     balance,
     receiver,
     isGnosisSafe,
+    account,
     showError,
+    bridgeDirection,
   ]);
 
   const onClick = () => {
