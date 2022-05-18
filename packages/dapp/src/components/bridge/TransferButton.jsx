@@ -5,6 +5,7 @@ import { ConfirmTransferModal } from 'components/modals/ConfirmTransferModal';
 import { useBridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { utils } from 'ethers';
+import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { useNeedsClaiming } from 'hooks/useNeedsClaiming';
 import { useTokenDisabled } from 'hooks/useTokenDisabled';
 import { formatValue, getNetworkName } from 'lib/helpers';
@@ -12,6 +13,7 @@ import React, { useCallback } from 'react';
 
 export const TransferButton = ({ approval, isValid, tokenLimits }) => {
   const { isGnosisSafe, providerChainId, account } = useWeb3Context();
+  const { bridgeDirection } = useBridgeDirection();
   const {
     receiver,
     fromAmount: amount,
@@ -52,25 +54,31 @@ export const TransferButton = ({ approval, isValid, tokenLimits }) => {
         tokenLimits.dailyLimit.lt(tokenLimits.minPerTx))
     ) {
       showError('Daily limit reached. Please try again tomorrow');
-      captureMessage('Daily limit reached', {
-        tags: {
-          debugMode: process.env.REACT_APP_DEBUG_LOGS === 'true',
-          userAddress: account,
-          receiver: receiver || account,
-          isGnosisSafe: isGnosisSafe ?? false,
-          token: token.address,
-          chainId: token.chainId,
-          symbol: token.symbol,
-          amount: amount.toString(),
-          balance: balance.toString(),
-          ...Object.fromEntries(
-            Object.entries(tokenLimits).map(([key, value]) => [
-              key,
-              value.toString(),
-            ]),
-          ),
+      captureMessage(
+        `Daily limit reached - ${bridgeDirection.toUpperCase()} - 0x${token.chainId.toString(
+          16,
+        )} - ${token.symbol} - ${token.address}`,
+        {
+          tags: {
+            debugMode: process.env.REACT_APP_DEBUG_LOGS === 'true',
+            bridgeDirection,
+            userAddress: account,
+            receiverAddress: receiver || account,
+            isGnosisSafe: isGnosisSafe ?? false,
+            tokenAddress: token.address,
+            tokenChainId: token.chainId,
+            tokenSymbol: token.symbol,
+            tokenAmount: amount.toString(),
+            userBalance: balance.toString(),
+            ...Object.fromEntries(
+              Object.entries(tokenLimits).map(([key, value]) => [
+                key,
+                value.toString(),
+              ]),
+            ),
+          },
         },
-      });
+      );
     } else if (tokenLimits && amount.lt(tokenLimits.minPerTx)) {
       showError(
         `Please specify amount more than ${formatValue(
@@ -103,6 +111,7 @@ export const TransferButton = ({ approval, isValid, tokenLimits }) => {
     isGnosisSafe,
     account,
     showError,
+    bridgeDirection,
   ]);
 
   const onClick = () => {

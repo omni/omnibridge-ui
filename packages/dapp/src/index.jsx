@@ -8,9 +8,12 @@ import { App } from './App';
 
 Sentry.init({
   dsn: SENTRY_DSN,
-  integrations: [new BrowserTracing()],
   tracesSampleRate: 1.0,
   debug: process.env.REACT_APP_DEBUG_LOGS === 'true',
+  integrations: ints => [
+    ...ints.filter(int => int.name !== 'Dedupe'),
+    new BrowserTracing(),
+  ],
 });
 
 ReactDOM.render(
