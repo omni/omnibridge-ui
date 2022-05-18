@@ -13,7 +13,7 @@ import { Logo } from 'components/common/Logo';
 import { SelectTokenModal } from 'components/modals/SelectTokenModal';
 import { useBridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
-import { BigNumber } from 'ethers';
+import { BigNumber, utils } from 'ethers';
 import { formatValue, logError, truncateText } from 'lib/helpers';
 import { fetchTokenBalance } from 'lib/token';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
@@ -201,7 +201,7 @@ export const FromToken = () => {
               fontWeight="normal"
               _hover={{ bg: 'blue.100' }}
               onClick={() => {
-                const amountInput = formatValue(balance, token.decimals);
+                const amountInput = utils.formatUnits(balance, token.decimals);
                 setAmount(amountInput);
                 setInput(amountInput);
               }}
