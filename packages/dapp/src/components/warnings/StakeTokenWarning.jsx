@@ -11,8 +11,6 @@ const LearnMoreLink = () => (
   </Link>
 );
 
-const MAINNET_STAKE_TOKEN =
-  '0x0Ae055097C6d159879521C384F1D2123D1f195e6'.toLowerCase();
 const XDAI_STAKE_TOKEN =
   '0xb7D311E2Eb55F2f68a9440da38e7989210b9A05e'.toLowerCase();
 
@@ -20,8 +18,6 @@ export const isDisabledStakeToken = token => {
   if (!token) return false;
   const { chainId, address } = token;
   switch (chainId) {
-    case 1:
-      return address.toLowerCase() === MAINNET_STAKE_TOKEN;
     case 100:
       return address.toLowerCase() === XDAI_STAKE_TOKEN;
     default:

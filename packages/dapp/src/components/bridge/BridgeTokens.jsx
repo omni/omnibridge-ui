@@ -1,4 +1,4 @@
-import { Flex, Grid, Text, useBreakpointValue } from '@chakra-ui/react';
+import { Flex, Grid, Text, useBreakpointValue, VStack } from '@chakra-ui/react';
 import { ActionButtons } from 'components/bridge/ActionButtons';
 import { AdvancedMenu } from 'components/bridge/AdvancedMenu';
 import { FromToken } from 'components/bridge/FromToken';
@@ -112,8 +112,10 @@ export const BridgeTokens = () => {
             )}
             <ToToken />
           </Grid>
-          <AdvancedMenu />
-          <SystemFeedback {...{ tokenLimits, fetching, refresh }} />
+          <VStack spacing={2} w="100%">
+            <AdvancedMenu />
+            <SystemFeedback {...{ tokenLimits, fetching, refresh }} />
+          </VStack>
         </Flex>
       )}
       {/* <CoinzillaBannerAd /> */}

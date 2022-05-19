@@ -205,6 +205,7 @@ const getDefaultTokenLimits = async (
   return {
     minPerTx,
     maxPerTx,
+    remainingLimit: dailyLimit,
     dailyLimit,
   };
 };
@@ -320,13 +321,17 @@ export const fetchTokenLimits = async (
     return {
       minPerTx,
       maxPerTx,
-      dailyLimit: remainingLimit,
+      remainingLimit,
+      dailyLimit: dailyLimit.lt(executionDailyLimit)
+        ? dailyLimit
+        : executionDailyLimit,
     };
   } catch (error) {
     logError({ tokenLimitsError: error });
     return {
       minPerTx: BigNumber.from(0),
       maxPerTx: BigNumber.from(0),
+      remainingLimit: BigNumber.from(0),
       dailyLimit: BigNumber.from(0),
     };
   }
