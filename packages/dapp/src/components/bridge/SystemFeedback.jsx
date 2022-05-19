@@ -10,6 +10,7 @@ import {
   Text,
 } from '@chakra-ui/react';
 import { useBridgeContext } from 'contexts/BridgeContext';
+import { utils } from 'ethers';
 import { LimitsIcon } from 'icons/LimitsIcon';
 import { formatValueForLimits as formatValue } from 'lib/helpers';
 import React from 'react';
@@ -48,7 +49,9 @@ export const SystemFeedback = ({ tokenLimits, fetching, refresh }) => {
                 <Spinner size="sm" />
               ) : (
                 <Box>
-                  {tokenLimits.dailyLimit.gte('1000000000000000') ? (
+                  {tokenLimits.dailyLimit.gte(
+                    utils.parseEther('1000000000000000'), // greater than 999 trillion is infinity
+                  ) ? (
                     <Text
                       fontWeight="bold"
                       ml={4}

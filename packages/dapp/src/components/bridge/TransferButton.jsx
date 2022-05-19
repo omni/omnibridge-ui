@@ -53,7 +53,9 @@ export const TransferButton = ({ approval, isValid, tokenLimits }) => {
       (amount.gt(tokenLimits.remainingLimit) ||
         tokenLimits.remainingLimit.lt(tokenLimits.minPerTx))
     ) {
-      showError('Daily limit reached. Please try again tomorrow');
+      showError(
+        'Daily limit reached. Please try again tomorrow or with a lower amount',
+      );
       captureMessage(
         `Daily limit reached - ${bridgeDirection.toUpperCase()} - 0x${token.chainId.toString(
           16,
