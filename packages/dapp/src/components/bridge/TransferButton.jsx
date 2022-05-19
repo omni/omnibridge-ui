@@ -50,8 +50,8 @@ export const TransferButton = ({ approval, isValid, tokenLimits }) => {
       showError(`Please switch to ${getNetworkName(token?.chainId)}`);
     } else if (
       tokenLimits &&
-      (amount.gt(tokenLimits.dailyLimit) ||
-        tokenLimits.dailyLimit.lt(tokenLimits.minPerTx))
+      (amount.gt(tokenLimits.remainingLimit) ||
+        tokenLimits.remainingLimit.lt(tokenLimits.minPerTx))
     ) {
       showError('Daily limit reached. Please try again tomorrow');
       captureMessage(
