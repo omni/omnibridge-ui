@@ -80,7 +80,7 @@ export const AdvancedMenu = () => {
             variant="ghost"
             h="2.5rem"
             fontWeight="normal"
-            _hover={{ bg: 'blackAlpha.100' }}
+            _hover={{ bg: '#EEF4FD' }}
             px="2"
           >
             <Text ml={2}>Alternative Address</Text>
