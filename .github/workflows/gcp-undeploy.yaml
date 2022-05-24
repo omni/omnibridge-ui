@@ -1,0 +1,40 @@
+name: Undeploy Preview from Cloud Run
+
+on:
+  pull_request:
+    branches:
+      - feat/previews
+    types:
+      - closed
+
+env:
+  PROJECT_ID: omnibridge-ui
+  REGISTRY_REGION: asia
+  REGISTRY_REPO: frontend
+  CLOUDRUN_REGION: asia-east1
+
+jobs:
+  undeploy:
+    name: Undeploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - id: auth
+        uses: google-github-actions/auth@v0
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+
+      - name: Set up gcloud
+        uses: google-github-actions/setup-gcloud@v0
+
+      - name: Undeploy
+        run: gcloud -q run services delete omnibridge-ui-preview-${{github.event.number}} --region ${CLOUDRUN_REGION}
+
+      - name: Delete image
+        run: gcloud -q artifacts docker images delete ${REGISTRY_REGION}-docker.pkg.dev/${PROJECT_ID}/${REGISTRY_REPO}/dev-image-${{github.event.number}}
+
+      - name: Comment on pull request
+        uses: thollander/actions-comment-pull-request@v1
+        with:
+          message: Successfully undeployed the Preview of this Pull Request
+          GITHUB_TOKEN: ${{github.token}}

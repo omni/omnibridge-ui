@@ -1,0 +1,88 @@
+name: Deploy to Cloud Run
+
+on:
+  pull_request:
+    branches:
+      - feat/previews
+    types:
+      - opened
+      - reopened
+      - synchronize
+
+env:
+  PROJECT_ID: omnibridge-ui
+  REGISTRY_REGION: asia
+  REGISTRY_REPO: frontend
+  CLOUDRUN_REGION: asia-east1
+
+jobs:
+  deploy:
+    name: Deploy to Cloud Run
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.9.1
+        with:
+          access_token: ${{github.token}}
+
+      - uses: actions/checkout@v3
+
+      - id: auth
+        uses: google-github-actions/auth@v0
+        with:
+          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+
+      - name: Undeploy
+        run: gcloud -q run services delete omnibridge-ui-preview-${{github.event.number}} --region ${CLOUDRUN_REGION}
+
+      - name: Delete image
+        run: gcloud -q artifacts docker images delete ${REGISTRY_REGION}-docker.pkg.dev/${PROJECT_ID}/${REGISTRY_REPO}/dev-image-${{github.event.number}}
+
+      - name: Set up gcloud
+        uses: google-github-actions/setup-gcloud@v0
+
+      - uses: mr-smithers-excellent/docker-build-push@v5
+        name: Build & push Docker image
+        with:
+          image: ${PROJECT_ID}/${REGISTRY_REPO}/dev-image-${{github.event.number}}
+          registry: ${REGISTRY_REGION}-docker.pkg.dev
+          username: _json_key
+          password: ${{ secrets.GCP_CREDENTIALS }}
+          buildArgs:
+            REACT_APP_DEFAULT_BRIDGE_DIRECTION: kovan-sokol
+            REACT_APP_ENABLED_BRIDGES: 'eth-xdai bsc-xdai poa-xdai eth-bsc kovan-sokol'
+            REACT_APP_INFURA_ID: ${{ secrets.PERSONAL_INFURA_ID }}
+            REACT_APP_GAS_PRICE_FALLBACK_GWEI: 50
+            REACT_APP_GAS_PRICE_SUPPLIER_URL: https://gasprice.poa.network/
+            REACT_APP_GAS_PRICE_SPEED_TYPE: fast
+            REACT_APP_GAS_PRICE_UPDATE_INTERVAL: 60000
+            REACT_APP_ETH_PRICE_API_URL: 'https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=USD'
+            REACT_APP_ETH_PRICE_UPDATE_INTERVAL: 60000
+            REACT_APP_TITLE: OmniBridge - %c
+            REACT_APP_DESCRIPTION: 'The OmniBridge multi-token extension is the simplest way to transfer ANY ERC20/ERC677/ERC827 token to and from the xDai chain.'
+            REACT_APP_UI_STATUS_UPDATE_INTERVAL: 5000
+            REACT_APP_DEBUG_LOGS: true
+            REACT_APP_GRAPH_HEALTH_UPDATE_INTERVAL: 60000
+            REACT_APP_GRAPH_HEALTH_THRESHOLD_BLOCKS: 10
+            REACT_APP_XDAI_RPC_URL: https://rpc.ankr.com/gnosis
+            REACT_APP_POA_RPC_URL: https://core.poa.network
+            REACT_APP_SOKOL_RPC_URL: https://sokol.poa.network
+            REACT_APP_MAINNET_RPC_URL: https://mainnet.infura.io/v3/${{ secrets.PERSONAL_INFURA_ID }} https://mainnet-nethermind.blockscout.com/
+            REACT_APP_KOVAN_RPC_URL: https://kovan.infura.io/v3/${{ secrets.PERSONAL_INFURA_ID }} https://kovan.poa.network/
+            REACT_APP_BSC_RPC_URL: https://bsc-dataseed.binance.org https://bsc-dataseed1.defibit.io/
+            REACT_APP_COINZILLA_API_KEY: ${{ secrets.COINZILLA_API_KEY }}
+            REACT_APP_OWLRACLE_API_KEY: ${{ secrets.OWLRACLE_API_KEY }}
+            REACT_APP_SENTRY_DSN: ${{ secrets.SENTRY_DSN }}
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud -q run deploy omnibridge-ui-preview-${{github.event.number}} \
+            --image ${REGISTRY_REGION}-docker.pkg.dev/${PROJECT_ID}/${REGISTRY_REPO}/dev-image-${{github.event.number}} \
+            --region ${CLOUDRUN_REGION} \
+            --port 3000 \
+            --cpu 1 \
+            --memory 512Mi \
+            --ingress all \
+            --allow-unauthenticated \
+            --max-instances 1
