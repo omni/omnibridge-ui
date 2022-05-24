@@ -5,7 +5,6 @@ import {
   Input,
   InputGroup,
   InputRightElement,
-  Text,
   useDisclosure,
 } from '@chakra-ui/react';
 import { useBridgeContext } from 'contexts/BridgeContext';
@@ -83,7 +82,7 @@ export const AdvancedMenu = () => {
             _hover={{ bg: '#EEF4FD' }}
             px="2"
           >
-            <Text ml={2}>Alternative Address</Text>
+            Alternative Address
           </Button>
         )}
       </Flex>
