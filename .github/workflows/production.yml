@@ -64,6 +64,7 @@ jobs:
         env:
           CI: true
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+
       - name: Create Sentry release
         uses: getsentry/action-release@v1
         env:
