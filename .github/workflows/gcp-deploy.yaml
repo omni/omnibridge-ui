@@ -15,6 +15,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Start Deployment
+        uses: bobheadxi/deployments@v1
+        id: create-message
+        with:
+          step: start
+          token: ${{github.token}}
+          env: preview-pr-${{github.event.number}}
+          desc: 'Preview deployment for PR #${{github.event.number}} of ${{github.event.pull_request.head.label}} by ${{github.event.pull_request.user.login}}'
+          ref: ${{github.head_ref}}
+          auto_inactive: false
+          logs: https://github.com/${{github.repository}}/commit/${{github.event.after}}/checks
+
       - name: Cancel Previous Runs
         uses: styfle/cancel-workflow-action@0.9.1
         with:
@@ -33,7 +45,7 @@ jobs:
 
       - name: Delete image
         continue-on-error: true
-        run: gcloud -q artifacts docker images delete asia-docker.pkg.dev/omnibridge-ui/frontend/dev-image-${{github.event.number}}
+        run: gcloud -q artifacts docker images delete asia-east1-docker.pkg.dev/omnibridge-ui/frontend/dev-image-${{github.event.number}}
 
       - name: Set up gcloud
         uses: google-github-actions/setup-gcloud@v0
@@ -43,7 +55,7 @@ jobs:
         with:
           args: |
             . -f Dockerfile \
-              --tag omnibridge-ui/frontend/dev-image-${{github.event.number}} \
+              --tag asia-east1-docker.pkg.dev/omnibridge-ui/frontend/dev-image-${{github.event.number}} \
               --build-arg "REACT_APP_DEFAULT_BRIDGE_DIRECTION=kovan-sokol" \
               --build-arg "REACT_APP_ENABLED_BRIDGES=eth-xdai bsc-xdai poa-xdai eth-bsc kovan-sokol" \
               --build-arg "REACT_APP_INFURA_ID=${{ secrets.PERSONAL_INFURA_ID }}" \
@@ -73,17 +85,18 @@ jobs:
       - name: Login to Docker Registry
         uses: docker/login-action@v1
         with:
-          registry: asia-docker.pkg.dev
+          registry: asia-east1-docker.pkg.dev
           username: _json_key
           password: ${{ secrets.GCP_CREDENTIALS }}
 
       - name: Push Container Image
-        run: docker push omnibridge-ui/frontend/dev-image-${{github.event.number}}
+        run: docker push asia-east1-docker.pkg.dev/omnibridge-ui/frontend/dev-image-${{github.event.number}}
 
       - name: Deploy to Cloud Run
+        id: deploy-frontend
         run: |
           gcloud -q run deploy omnibridge-ui-preview-${{github.event.number}} \
-            --image asia-docker.pkg.dev/omnibridge-ui/frontend/dev-image-${{github.event.number}} \
+            --image asia-east1-docker.pkg.dev/omnibridge-ui/frontend/dev-image-${{github.event.number}} \
             --region asia-east1 \
             --port 3000 \
             --cpu 1 \
@@ -91,3 +104,12 @@ jobs:
             --ingress all \
             --allow-unauthenticated \
             --max-instances 1
+      - name: Finish Deployment
+        uses: bobheadxi/deployments@v1
+        with:
+          step: finish
+          token: ${{github.token}}
+          env: preview-pr-${{github.event.number}}
+          env_url: https://omnibridge-ui-preview-${{github.event.number}}-kvpkvo5upq-de.a.run.app
+          status: ${{job.status}}
+          deployment_id: ${{steps.create-message.outputs.deployment_id}}
