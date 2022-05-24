@@ -7,12 +7,6 @@ on:
     types:
       - closed
 
-env:
-  PROJECT_ID: omnibridge-ui
-  REGISTRY_REGION: asia
-  REGISTRY_REPO: frontend
-  CLOUDRUN_REGION: asia-east1
-
 jobs:
   undeploy:
     name: Undeploy from Cloud Run
@@ -28,10 +22,10 @@ jobs:
         uses: google-github-actions/setup-gcloud@v0
 
       - name: Undeploy
-        run: gcloud -q run services delete omnibridge-ui-preview-${{github.event.number}} --region ${CLOUDRUN_REGION}
+        run: gcloud -q run services delete omnibridge-ui-preview-${{github.event.number}} --region asia-east1
 
       - name: Delete image
-        run: gcloud -q artifacts docker images delete ${REGISTRY_REGION}-docker.pkg.dev/${PROJECT_ID}/${REGISTRY_REPO}/dev-image-${{github.event.number}}
+        run: gcloud -q artifacts docker images delete asia-docker.pkg.dev/omnibridge-ui/frontend/dev-image-${{github.event.number}}
 
       - name: Comment on pull request
         uses: thollander/actions-comment-pull-request@v1
