@@ -5,10 +5,8 @@ import {
   Input,
   InputGroup,
   InputRightElement,
-  Text,
   useDisclosure,
 } from '@chakra-ui/react';
-import { ReactComponent as AdvancedImage } from 'assets/advanced.svg';
 import { useBridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { utils } from 'ethers';
@@ -81,11 +79,10 @@ export const AdvancedMenu = () => {
             variant="ghost"
             h="2.5rem"
             fontWeight="normal"
-            _hover={{ bg: 'blackAlpha.100' }}
+            _hover={{ bg: '#EEF4FD' }}
             px="2"
           >
-            <AdvancedImage width="1.25rem" />
-            <Text ml={2}>{isMenuOpen ? 'Clear Recipient' : 'Advanced'}</Text>
+            Alternative Address
           </Button>
         )}
       </Flex>

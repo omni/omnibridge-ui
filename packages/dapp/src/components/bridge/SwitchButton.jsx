@@ -58,11 +58,11 @@ export const SwitchButton = () => {
         }}
         borderRadius="0.5rem"
         color="blue.500"
-        _hover={{ bg: 'blackAlpha.100' }}
+        _hover={{ bg: '#EEF4FD' }}
         onClick={switchOnClick}
         isLoading={loading}
         _loading={{
-          bg: 'blackAlpha.100',
+          bg: '#EEF4FD',
         }}
       />
     </Tooltip>

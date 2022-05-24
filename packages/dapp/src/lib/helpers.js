@@ -80,6 +80,32 @@ export const formatValue = (num, dec) => {
   });
 };
 
+export const formatUnitsReadable = num => {
+  const thresh = 1000;
+
+  if (Math.abs(num) < thresh) {
+    return num.toLocaleString('en-US', {
+      maximumFractionDigits: 4,
+      minimumFractionDigits: 1,
+    });
+  }
+
+  const units = ['K', 'M', 'B', 'T'];
+  let u = -1;
+
+  do {
+    // eslint-disable-next-line no-param-reassign
+    num /= thresh;
+    u += 1;
+  } while (Math.abs(num) >= thresh && u < units.length - 1);
+
+  return (
+    num.toLocaleString('en-US', {
+      maximumFractionDigits: 2,
+    }) + units[u]
+  );
+};
+
 export const formatValueForLimits = (num, dec) => {
   const str = utils.formatUnits(num, dec);
   const splitStr = str.split('.');
@@ -87,11 +113,7 @@ export const formatValueForLimits = (num, dec) => {
   const afterDecimal = `${(splitStr[1] ?? '').slice(0, 4)}0000`;
   if (Number(beforeDecimal) > 0) {
     const finalNum = Number(`${beforeDecimal}.${afterDecimal}`);
-
-    return finalNum.toLocaleString('en-US', {
-      maximumFractionDigits: 4,
-      minimumFractionDigits: 1,
-    });
+    return formatUnitsReadable(finalNum);
   }
   return str;
 };
