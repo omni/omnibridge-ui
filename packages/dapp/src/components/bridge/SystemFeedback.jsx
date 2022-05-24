@@ -28,9 +28,9 @@ export const SystemFeedback = ({ tokenLimits, fetching, refresh }) => {
           color="blue.500"
           _hover={{ bg: '#EEF4FD' }}
           fontWeight="normal"
-          leftIcon={<LimitsIcon boxSize="1.5rem" />}
           px="2"
         >
+          <LimitsIcon boxSize="1.25rem" mr="0.3125rem" />
           <Text>Limits</Text>
         </Button>
       </PopoverTrigger>
