@@ -3,7 +3,7 @@ name: Deploy Preview to Cloud Run
 on:
   pull_request:
     branches:
-      - feat/previews
+      - develop
     types:
       - opened
       - reopened

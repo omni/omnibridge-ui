@@ -3,7 +3,7 @@ name: Undeploy Preview from Cloud Run
 on:
   pull_request:
     branches:
-      - feat/previews
+      - develop
     types:
       - closed
 
