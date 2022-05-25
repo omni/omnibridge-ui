@@ -56,7 +56,7 @@ const TokenDisplay = ({ token, onClick }) => {
       try {
         const b = await fetchTokenBalanceWithProvider(
           ethersProvider,
-          { address, mode },
+          { address, mode, symbol },
           account,
         );
         setBalance(b);
@@ -193,10 +193,10 @@ export const TokenListModal = ({ isOpen, onClose, onCustom }) => {
   ]);
 
   useEffect(() => {
-    if (tokenList.length) {
+    if (isOpen && tokenList.length) {
       setFilteredTokenList(tokenList);
     }
-  }, [tokenList, setFilteredTokenList]);
+  }, [isOpen, tokenList, setFilteredTokenList]);
 
   useEffect(() => {
     if (isOpen) {
