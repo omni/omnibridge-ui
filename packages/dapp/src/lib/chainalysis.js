@@ -4,10 +4,10 @@ import { logError } from './helpers';
 import { getEthersProvider } from './providers';
 
 const CHAINALYSIS_ORACLE_CONTRACT_ADDRESS =
-  '0x40c57923924b5c5c5455c48d93317139addac8fb';
+  '0xFab69AF7B56330fa599A6b1032cDC341ca7eC2a3';
 
 export const isSanctionedByChainalysis = async address => {
-  const provider = await getEthersProvider(1);
+  const provider = await getEthersProvider(77);
   const abi = new utils.Interface([
     'function isSanctioned(address) view returns (bool)',
   ]);
