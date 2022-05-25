@@ -3,6 +3,7 @@ import WalletConnectProvider from '@walletconnect/web3-provider';
 import coinbaseLogo from 'assets/coinbase.svg';
 import imTokenLogo from 'assets/imtoken.svg';
 import { ethers } from 'ethers';
+import { isSanctionedByChainalysis } from 'lib/chainalysis';
 import {
   getNetworkName,
   getRPCUrl,
@@ -95,9 +96,10 @@ const web3Modal = new Web3Modal({
 });
 
 export const Web3Provider = ({ children }) => {
-  const [{ providerChainId, ethersProvider, account }, setWeb3State] = useState(
-    {},
-  );
+  const [
+    { providerChainId, ethersProvider, account, isSanctioned },
+    setWeb3State,
+  ] = useState({});
   const [isGnosisSafe, setGnosisSafe] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -113,6 +115,7 @@ export const Web3Provider = ({ children }) => {
             account: gotAccount,
             ethersProvider: provider,
             providerChainId: chainId,
+            isSanctioned: await isSanctionedByChainalysis(gotAccount),
           });
         } else {
           setWeb3State(_provider => ({
@@ -151,10 +154,12 @@ export const Web3Provider = ({ children }) => {
       setGnosisSafe(gnosisSafe);
 
       if (!gnosisSafe) {
-        modalProvider.on('accountsChanged', accounts => {
+        modalProvider.on('accountsChanged', async accounts => {
+          const isSanction = await isSanctionedByChainalysis(accounts[0]);
           setWeb3State(_provider => ({
             ..._provider,
             account: accounts[0],
+            isSanctioned: isSanction,
           }));
         });
         modalProvider.on('chainChanged', () => {
@@ -204,6 +209,7 @@ export const Web3Provider = ({ children }) => {
       account,
       isMetamask,
       isConnected,
+      isSanctioned: isSanctioned ?? false,
     }),
     [
       isGnosisSafe,
@@ -215,6 +221,7 @@ export const Web3Provider = ({ children }) => {
       account,
       isMetamask,
       isConnected,
+      isSanctioned,
     ],
   );
 

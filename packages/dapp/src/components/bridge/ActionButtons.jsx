@@ -10,9 +10,10 @@ import React from 'react';
 export const ActionButtons = ({ tokenLimits }) => {
   const { fromToken, fromAmount, txHash } = useBridgeContext();
   const approval = useApproval(fromToken, fromAmount, txHash);
-  const { isConnected, providerChainId } = useWeb3Context();
+  const { isConnected, providerChainId, isSanctioned } = useWeb3Context();
 
-  const isValid = isConnected && providerChainId === fromToken?.chainId;
+  const isValid =
+    !isSanctioned && isConnected && providerChainId === fromToken?.chainId;
 
   const inner = (
     <Flex
@@ -28,17 +29,19 @@ export const ActionButtons = ({ tokenLimits }) => {
     </Flex>
   );
 
-  return isValid ? (
-    inner
-  ) : (
-    <Tooltip
-      label={
-        isConnected
-          ? `Please switch to ${getNetworkName(fromToken?.chainId)}`
-          : `Please connect your wallet`
+  let tooltipTitle = '';
+
+  if (!isValid) {
+    if (isConnected) {
+      if (isSanctioned) {
+        tooltipTitle = 'Bridging is blocked';
+      } else {
+        tooltipTitle = `Please switch to ${getNetworkName(fromToken?.chainId)}`;
       }
-    >
-      {inner}
-    </Tooltip>
-  );
+    } else {
+      tooltipTitle = 'Please connect your wallet';
+    }
+  }
+
+  return isValid ? inner : <Tooltip label={tooltipTitle}>{inner}</Tooltip>;
 };
