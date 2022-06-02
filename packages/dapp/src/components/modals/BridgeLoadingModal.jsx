@@ -160,6 +160,7 @@ export const BridgeLoadingModal = () => {
     setNeedsConfirmation,
     confirmations,
   } = useTransactionStatus(setMessage);
+  const { neverShowClaims, needsSaving } = useSettings();
 
   useEffect(() => {
     if (chainId === homeChainId) {
@@ -167,15 +168,19 @@ export const BridgeLoadingModal = () => {
     }
   }, [chainId, homeChainId]);
 
-  const { neverShowClaims, needsSaving } = useSettings();
+  useEffect(() => {
+    window.localStorage.setItem(DONT_SHOW_CLAIMS, 'false');
+  }, [account, chainId]);
+
   const txNeedsClaiming =
     !!message && !!txHash && !loading && chainId === foreignChainId;
 
-  const claimTransfer = txNeedsClaiming ? (
-    <ClaimTransferModal message={message} setMessage={setMessage} />
-  ) : null;
+  const claimTransfer = () =>
+    txNeedsClaiming ? (
+      <ClaimTransferModal message={message} setMessage={setMessage} />
+    ) : null;
 
-  const claimAllTokens =
+  const claimAllTokens = () =>
     txNeedsClaiming ||
     neverShowClaims ||
     needsSaving ||
@@ -184,32 +189,29 @@ export const BridgeLoadingModal = () => {
       <ClaimTokensModal />
     );
 
-  useEffect(() => {
-    window.localStorage.setItem(DONT_SHOW_CLAIMS, 'false');
-  }, [account, chainId]);
-
-  const loader = needsConfirmation ? (
-    <NeedsConfirmationModal
-      setNeedsConfirmation={setNeedsConfirmation}
-      setMessage={setMessage}
-    />
-  ) : (
-    <BridgeLoader
-      loadingText={loadingText}
-      loading={loading || !fromToken}
-      confirmations={confirmations}
-      totalConfirms={totalConfirms}
-      chainId={chainId}
-      getMonitorUrl={getMonitorUrl}
-      txHash={txHash}
-    />
-  );
+  const loader = () =>
+    needsConfirmation ? (
+      <NeedsConfirmationModal
+        setNeedsConfirmation={setNeedsConfirmation}
+        setMessage={setMessage}
+      />
+    ) : (
+      <BridgeLoader
+        loadingText={loadingText}
+        loading={loading || !fromToken}
+        confirmations={confirmations}
+        totalConfirms={totalConfirms}
+        chainId={chainId}
+        getMonitorUrl={getMonitorUrl}
+        txHash={txHash}
+      />
+    );
 
   return (
     <>
-      {claimAllTokens}
-      {claimTransfer}
-      {loader}
+      {claimTransfer()}
+      {claimAllTokens()}
+      {loader()}
     </>
   );
 };

@@ -1,6 +1,7 @@
 import { useBridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
+import { useGraphHealth } from 'hooks/useGraphHealth';
 import {
   combineRequestsWithExecutions,
   getExecutions,
@@ -16,6 +17,9 @@ export const useClaimableTransfers = () => {
   const [transfers, setTransfers] = useState();
   const [loading, setLoading] = useState(false);
 
+  const { homeHealthy, foreignHealthy } = useGraphHealth();
+  const subgraphHealthy = homeHealthy && foreignHealthy;
+
   useEffect(() => {
     if (!account) return () => undefined;
     let isSubscribed = true;
@@ -30,7 +34,7 @@ export const useClaimableTransfers = () => {
         getGraphEndpoint(foreignChainId),
         requests,
       );
-      const xDaiTransfers = combineRequestsWithExecutions(
+      const homeTransfers = combineRequestsWithExecutions(
         requests,
         executions,
         homeChainId,
@@ -39,7 +43,7 @@ export const useClaimableTransfers = () => {
         .sort((a, b) => b.timestamp - a.timestamp)
         .filter(t => !t.receivingTx);
       if (isSubscribed) {
-        setTransfers(xDaiTransfers);
+        setTransfers(homeTransfers);
         setLoading(false);
       }
     }
@@ -49,5 +53,5 @@ export const useClaimableTransfers = () => {
     };
   }, [account, txHash, homeChainId, foreignChainId, getGraphEndpoint]);
 
-  return { transfers, loading };
+  return { transfers: subgraphHealthy ? transfers : undefined, loading };
 };
