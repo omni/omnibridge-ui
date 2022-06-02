@@ -3,12 +3,7 @@ import { useGraphHealth } from 'hooks/useGraphHealth';
 import React from 'react';
 
 export const GraphHealthWarning = () => {
-  const { foreignHealthy, homeHealthy } = useGraphHealth(
-    'Cannot access history data. Wait for a few minutes and reload the application',
-    {
-      disableAlerts: true,
-    },
-  );
+  const { foreignHealthy, homeHealthy } = useGraphHealth();
   if (foreignHealthy && homeHealthy) return null;
 
   return (
