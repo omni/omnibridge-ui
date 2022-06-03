@@ -103,28 +103,16 @@ export const Web3Provider = ({ children }) => {
   const [isGnosisSafe, setGnosisSafe] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  const setWeb3Provider = useCallback(async (prov, initialCall = false) => {
+  const setWeb3Provider = useCallback(async prov => {
     try {
-      if (prov) {
-        const provider = new ethers.providers.Web3Provider(prov);
-        const chainId = Number(prov.chainId);
-        if (initialCall) {
-          const signer = provider.getSigner();
-          const gotAccount = await signer.getAddress();
-          setWeb3State({
-            account: gotAccount,
-            ethersProvider: provider,
-            providerChainId: chainId,
-            isSanctioned: await isSanctionedByChainalysis(gotAccount),
-          });
-        } else {
-          setWeb3State(_provider => ({
-            ..._provider,
-            ethersProvider: provider,
-            providerChainId: chainId,
-          }));
-        }
-      }
+      const provider = new ethers.providers.Web3Provider(prov);
+      const address = await provider.getSigner().getAddress();
+      setWeb3State({
+        account: address,
+        ethersProvider: provider,
+        providerChainId: (await provider.getNetwork()).chainId,
+        isSanctioned: await isSanctionedByChainalysis(address),
+      });
     } catch (error) {
       logError({ web3ModalError: error });
     }
@@ -148,29 +136,29 @@ export const Web3Provider = ({ children }) => {
 
       const modalProvider = await web3Modal.requestProvider();
 
-      await setWeb3Provider(modalProvider, true);
+      await setWeb3Provider(modalProvider);
 
       const gnosisSafe = await web3Modal.isSafeApp();
       setGnosisSafe(gnosisSafe);
 
       if (!gnosisSafe) {
-        modalProvider.on('accountsChanged', async accounts => {
-          const isSanction = await isSanctionedByChainalysis(accounts[0]);
-          setWeb3State(_provider => ({
-            ..._provider,
-            account: accounts[0],
-            isSanctioned: isSanction,
-          }));
+        modalProvider.on('accountsChanged', async () => {
+          setLoading(true);
+          await setWeb3Provider(modalProvider);
+          setLoading(false);
         });
-        modalProvider.on('chainChanged', () => {
-          setWeb3Provider(modalProvider);
+        modalProvider.on('chainChanged', async () => {
+          setLoading(true);
+          await setWeb3Provider(modalProvider);
+          setLoading(false);
         });
       }
     } catch (error) {
       logError({ web3ModalError: error });
       disconnect();
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }, [setWeb3Provider, disconnect]);
 
   useEffect(() => {

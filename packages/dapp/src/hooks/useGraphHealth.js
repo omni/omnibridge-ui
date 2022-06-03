@@ -1,7 +1,5 @@
-import { useToast } from '@chakra-ui/react';
-import { useWeb3Context } from 'contexts/Web3Context';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
-import { useEffect, useMemo, useRef } from 'react';
+import { useMemo } from 'react';
 import { getGraphHealth } from 'stores/graphHealth';
 import { getRPCHealth } from 'stores/rpcHealth';
 
@@ -15,16 +13,9 @@ const THRESHOLD_BLOCKS =
   REACT_APP_GRAPH_HEALTH_THRESHOLD_BLOCKS ||
   DEFAULT_GRAPH_HEALTH_THRESHOLD_BLOCKS;
 
-export const useGraphHealth = (
-  description,
-  options = { onlyHome: false, disableAlerts: false },
-) => {
-  const { onlyHome, disableAlerts } = options;
+export const useGraphHealth = () => {
   const { homeChainId, foreignChainId, homeGraphName, foreignGraphName } =
     useBridgeDirection();
-  const { providerChainId } = useWeb3Context();
-
-  const isHome = providerChainId === homeChainId;
 
   const [refreshCount] = useUpdateInterval();
 
@@ -59,6 +50,7 @@ export const useGraphHealth = (
         : true;
 
     return [home, foreign];
+    // for refreshCount
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     refreshCount,
@@ -66,33 +58,6 @@ export const useGraphHealth = (
     foreignChainId,
     homeGraphName,
     foreignGraphName,
-  ]);
-
-  const toast = useToast();
-  const toastIdRef = useRef();
-
-  useEffect(() => {
-    if (toastIdRef.current) {
-      toast.close(toastIdRef.current);
-    }
-    if (!(homeHealthy && foreignHealthy)) {
-      if ((onlyHome === true && !isHome) || disableAlerts === true) return;
-      toastIdRef.current = toast({
-        title: 'Subgraph Error',
-        description,
-        status: 'error',
-        duration: null,
-        isClosable: false,
-      });
-    }
-  }, [
-    homeHealthy,
-    foreignHealthy,
-    toast,
-    isHome,
-    disableAlerts,
-    description,
-    onlyHome,
   ]);
 
   return { homeHealthy, foreignHealthy };

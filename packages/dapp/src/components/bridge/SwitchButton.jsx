@@ -1,7 +1,6 @@
 import { IconButton, Tooltip } from '@chakra-ui/react';
 import { useBridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
-import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import { useSwitchChain } from 'hooks/useSwitchChain';
 import { SwitchIcon } from 'icons/SwitchIcon';
 import React, { useCallback, useState } from 'react';
@@ -10,12 +9,9 @@ export const SwitchButton = () => {
   const { isConnected, providerChainId, isMetamask } = useWeb3Context();
 
   const { switchTokens, toToken } = useBridgeContext();
-  const { getBridgeChainId } = useBridgeDirection();
   const switchChain = useSwitchChain();
 
-  const isDefaultChain = providerChainId
-    ? [1, 3, 4, 5, 42].includes(getBridgeChainId(providerChainId))
-    : true;
+  const isDefaultChain = [1, 3, 4, 5, 42].includes(toToken?.chainId);
   const isMobileBrowser = navigator?.userAgent?.includes('Mobile') ?? false;
   const canSwitchInWallet =
     isConnected && isMetamask && (isMobileBrowser ? !isDefaultChain : true);
@@ -26,21 +22,14 @@ export const SwitchButton = () => {
     () =>
       (async () => {
         setLoading(true);
-        if (canSwitchInWallet && providerChainId !== toToken.chainId) {
-          await switchChain(getBridgeChainId(providerChainId));
+        if (canSwitchInWallet && providerChainId !== toToken?.chainId) {
+          await switchChain(toToken?.chainId);
         } else {
           switchTokens();
         }
         setLoading(false);
       })(),
-    [
-      switchChain,
-      providerChainId,
-      canSwitchInWallet,
-      switchTokens,
-      getBridgeChainId,
-      toToken,
-    ],
+    [switchChain, providerChainId, canSwitchInWallet, switchTokens, toToken],
   );
 
   return (
