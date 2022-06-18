@@ -52,8 +52,8 @@ const BSC_XDAI_BRIDGE_CONFIG = {
     '0x59447362798334d3485c64D1e4870Fde2DDC0d75'.toLowerCase(),
   foreignAmbAddress: '0x05185872898b6f94AA600177EF41B9334B1FA48B'.toLowerCase(),
   homeAmbAddress: '0x162E898bD0aacB578C8D5F8d6ca588c13d2A383F'.toLowerCase(),
-  foreignGraphName: 'maxaleks/bsc-to-xdai-omnibridge',
-  homeGraphName: 'maxaleks/xdai-to-bsc-omnibridge',
+  foreignGraphName: 'dan13ram/bsc-to-xdai-omnibridge',
+  homeGraphName: 'dan13ram/xdai-to-bsc-omnibridge',
   ambLiveMonitorPrefix: 'https://alm-bsc-xdai.herokuapp.com',
   claimDisabled: false,
   tokensClaimDisabled: [
