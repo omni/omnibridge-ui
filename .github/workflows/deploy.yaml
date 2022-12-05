@@ -1,9 +1,8 @@
 name: Deploy Omnibridge UI to S3 Bucket
 
 on:
-  pull_request:
+  push:
     branches:
-      - master
       - release
 
 jobs:
