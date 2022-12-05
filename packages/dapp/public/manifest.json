@@ -3,7 +3,7 @@
   "name": "OmniBridge",
   "description": "The OmniBridge is the simplest way to transfer ANY ERC20/ERC677/ERC827 token to and from the xDai chain.",
   "iconPath": "android-chrome-512x512.png",
-  "providedBy": { "name": "xDai Chain", "url": "https://xdaichain.com" },
+  "providedBy": { "name": "Gnosis Chain", "url": "https://gnosischain.com" },
   "icons": [
     {
       "src": "android-chrome-192x192.png",
