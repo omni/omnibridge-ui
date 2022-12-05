@@ -1,0 +1,90 @@
+name: Deploy Omnibridge UI to S3 Bucket
+
+on:
+  pull_request:
+    branches:
+      - master
+      - release
+
+jobs:
+  deploy:
+    name: Deploy to S3 Bucket
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.8.0
+        with:
+          access_token: ${{ github.token }}
+
+      - name: Remove broken apt repos [Ubuntu]
+        if: ${{ matrix.os }} == 'ubuntu-latest'
+        run: |
+          for apt_file in `grep -lr microsoft /etc/apt/sources.list.d/`; do sudo rm $apt_file; done
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - uses: actions/cache@v2
+        with:
+          path: '**/node_modules'
+          key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16.14.2
+
+      - name: Install
+        run: |
+          rm -rf .cache
+          rm -rf build
+          yarn config set cache-folder .yarn
+          yarn install
+          pip install awscli --upgrade --user
+      
+      - name: Build Release App
+        if: github.ref == 'refs/heads/release'
+        run: yarn dapp:build
+        env:
+          CI: true
+          REACT_APP_DEFAULT_BRIDGE_DIRECTION: eth-xdai
+          REACT_APP_ENABLED_BRIDGES: "eth-xdai bsc-xdai poa-xdai eth-bsc kovan-sokol"
+          REACT_APP_INFURA_ID: "" 
+          REACT_APP_GAS_PRICE_FALLBACK_GWEI: "50"
+          REACT_APP_GAS_PRICE_SUPPLIER_URL: "https://gasprice.poa.network/"
+          REACT_APP_GAS_PRICE_SPEED_TYPE=: "fast"
+          REACT_APP_GAS_PRICE_UPDATE_INTERVAL: "60000"
+          REACT_APP_ETH_PRICE_API_URL: "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=USD"
+          REACT_APP_ETH_PRICE_UPDATE_INTERVAL: "60000"
+          REACT_APP_TITLE: "OmniBridge - %c"
+          REACT_APP_DESCRIPTION: "The OmniBridge multi-token extension is the simplest way to transfer ANY ERC20/ERC677/ERC827 token to and from GnosisChain."
+          REACT_APP_UI_STATUS_UPDATE_INTERVAL: "5000"
+          REACT_APP_DEBUG_LOGS: "true"
+          REACT_APP_GRAPH_HEALTH_UPDATE_INTERVAL: "60000"
+          REACT_APP_GRAPH_HEALTH_THRESHOLD_BLOCKS: "10"
+          REACT_APP_XDAI_RPC_URL: "https://rpc.ankr.com/gnosis"
+          REACT_APP_POA_RPC_URL: "https://core.poa.network" 
+          REACT_APP_SOKOL_RPC_URL: "https://sokol.poa.network"
+          REACT_APP_MAINNET_RPC_URL: "https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161 https://rpc.ankr.com/eth" 
+          REACT_APP_KOVAN_RPC_URL: "https://kovan.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161"
+          REACT_APP_BSC_RPC_URL: "https://bsc-dataseed.binance.org https://bsc-dataseed1.defibit.io/"
+          REACT_APP_COINZILLA_API_KEY: ""
+          REACT_APP_OWLRACLE_API_KEY: ""
+          REACT_APP_SENTRY_DSN: ""
+      
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        if: ( github.ref == 'refs/heads/release' || github.ref == 'refs/heads/master' )
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+
+
+      # Script to deploy to release environment
+      - name: 'Deploy to S3: Release'
+        if: github.ref == 'refs/heads/release'
+        run: |
+          aws s3 sync packages/dapp/public/ s3://${{ secrets.RELEASE_BUCKET_NAME }} --delete --exclude "*.html" --cache-control max-age=86400,public
+          aws s3 sync packages/dapp/public/ s3://${{ secrets.RELEASE_BUCKET_NAME }} --delete --exclude "*" --include "*.html" --cache-control max-age=0,no-cache,no-store,must-revalidate --content-type text/html

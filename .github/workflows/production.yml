@@ -2,7 +2,7 @@ name: Build and Deploy Production
 on:
   push:
     branches:
-      - master
+      - testing
 
 jobs:
   deploy:
