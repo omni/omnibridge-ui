@@ -32,7 +32,7 @@ const ETH_XDAI_BRIDGE_CONFIG = {
   homeAmbAddress: '0x75Df5AF045d91108662D8080fD1FEFAd6aA0bb59'.toLowerCase(),
   foreignGraphName: 'raid-guild/mainnet-omnibridge',
   homeGraphName: 'raid-guild/xdai-omnibridge',
-  ambLiveMonitorPrefix: 'https://alm-bridge-monitor.gnosischain.com/',
+  ambLiveMonitorPrefix: 'https://alm-bridge-monitor.gnosischain.com',
   claimDisabled: false,
   tokensClaimDisabled: [],
 };
@@ -54,7 +54,7 @@ const BSC_XDAI_BRIDGE_CONFIG = {
   homeAmbAddress: '0x162E898bD0aacB578C8D5F8d6ca588c13d2A383F'.toLowerCase(),
   foreignGraphName: 'dan13ram/bsc-to-xdai-omnibridge',
   homeGraphName: 'dan13ram/xdai-to-bsc-omnibridge',
-  ambLiveMonitorPrefix: 'https://alm-bridge-monitor.gnosischain.com/',
+  ambLiveMonitorPrefix: 'https://alm-bridge-monitor.gnosischain.com',
   claimDisabled: false,
   tokensClaimDisabled: [
     '0xCa8d20f3e0144a72C6B5d576e9Bd3Fd8557E2B04'.toLowerCase(), // Wrapped BNB from BSC
@@ -78,7 +78,7 @@ const POA_XDAI_BRIDGE_CONFIG = {
   homeAmbAddress: '0xc2d77d118326c33BBe36EbeAbf4F7ED6BC2dda5c'.toLowerCase(),
   foreignGraphName: 'dan13ram/poa-to-xdai-omnibridge',
   homeGraphName: 'dan13ram/xdai-to-poa-omnibridge',
-  ambLiveMonitorPrefix: 'https://alm-bridge-monitor.gnosischain.com/',
+  ambLiveMonitorPrefix: 'https://alm-bridge-monitor.gnosischain.com',
   claimDisabled: false,
   tokensClaimDisabled: [],
 };
@@ -100,7 +100,7 @@ const KOVAN_SOKOL_BRIDGE_CONFIG = {
   homeAmbAddress: '0xFe446bEF1DbF7AFE24E81e05BC8B271C1BA9a560'.toLowerCase(),
   foreignGraphName: 'dan13ram/kovan-omnibridge',
   homeGraphName: 'dan13ram/sokol-omnibridge',
-  ambLiveMonitorPrefix: 'https://alm-bridge-monitor.gnosischain.com/',
+  ambLiveMonitorPrefix: 'https://alm-bridge-monitor.gnosischain.com',
   claimDisabled: false,
   tokensClaimDisabled: [],
 };
@@ -121,7 +121,7 @@ const ETH_BSC_BRIDGE_CONFIG = {
   homeAmbAddress: '0x6943A218d58135793F1FE619414eD476C37ad65a'.toLowerCase(),
   foreignGraphName: 'dan13ram/mainnet-to-bsc-omnibridge',
   homeGraphName: 'dan13ram/bsc-to-mainnet-omnibridge',
-  ambLiveMonitorPrefix: 'https://alm-bridge-monitor.gnosischain.com/',
+  ambLiveMonitorPrefix: 'https://alm-bridge-monitor.gnosischain.com',
   claimDisabled: false,
   tokensClaimDisabled: [],
 };
