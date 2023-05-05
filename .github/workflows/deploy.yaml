@@ -3,6 +3,7 @@ name: Deploy Omnibridge UI to S3 Bucket
 on:
   push:
     branches:
+      - master
       - release
 
 jobs:
@@ -43,7 +44,7 @@ jobs:
           pip install awscli --upgrade --user
       
       - name: Build Release App
-        if: github.ref == 'refs/heads/release'
+        if: ( github.ref == 'refs/heads/release' || github.ref == 'refs/heads/master' )
         run: yarn dapp:build
         env:
           CI: true
@@ -62,7 +63,7 @@ jobs:
           REACT_APP_DEBUG_LOGS: "true"
           REACT_APP_GRAPH_HEALTH_UPDATE_INTERVAL: "60000"
           REACT_APP_GRAPH_HEALTH_THRESHOLD_BLOCKS: "10"
-          REACT_APP_XDAI_RPC_URL: "https://rpc.ankr.com/gnosis"
+          REACT_APP_XDAI_RPC_URL: "https://rpc.gnosischain.com"
           REACT_APP_POA_RPC_URL: "https://core.poa.network" 
           REACT_APP_SOKOL_RPC_URL: "https://sokol.poa.network"
           REACT_APP_MAINNET_RPC_URL: "https://mainnet.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161 https://rpc.ankr.com/eth" 
@@ -74,7 +75,7 @@ jobs:
       
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
-        if: ( github.ref == 'refs/heads/release' || github.ref == 'refs/heads/master' )
+        if: ( github.ref == 'refs/heads/release' )
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -83,7 +84,21 @@ jobs:
 
       # Script to deploy to release environment
       - name: 'Deploy to S3: Release'
-        if: github.ref == 'refs/heads/release'
+        if: ( github.ref == 'refs/heads/release' )
         run: |
           aws s3 sync packages/dapp/build/ s3://${{ secrets.RELEASE_BUCKET_NAME }} --delete --exclude "*.html" --cache-control max-age=86400,public
           aws s3 sync packages/dapp/build/ s3://${{ secrets.RELEASE_BUCKET_NAME }} --delete --exclude "*" --include "*.html" --cache-control max-age=0,no-cache,no-store,must-revalidate --content-type text/html
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        if: ( github.ref == 'refs/heads/master' )
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+
+      - name: 'Deploy to S3: PROD'
+        if: ( github.ref == 'refs/heads/master' )
+        run: |
+          aws s3 sync packages/dapp/build/ s3://${{ secrets.PROD_BUCKET_NAME }} --delete --exclude "*.html" --cache-control max-age=86400,public
+          aws s3 sync packages/dapp/build/ s3://${{ secrets.PROD_BUCKET_NAME }} --delete --exclude "*" --include "*.html" --cache-control max-age=0,no-cache,no-store,must-revalidate --content-type text/html
