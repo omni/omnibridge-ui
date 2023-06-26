@@ -1,14 +1,18 @@
 import {
   BSC_XDAI_BRIDGE,
+  ETH_BSC_BRIDGE,
   ETH_XDAI_BRIDGE,
+  KOVAN_SOKOL_BRIDGE,
   nativeCurrencies,
-  GOERLI_XDAI_BRIDGE,
+  POA_XDAI_BRIDGE,
 } from 'lib/constants';
 
 export {
   BSC_XDAI_BRIDGE,
+  ETH_BSC_BRIDGE,
   ETH_XDAI_BRIDGE,
-  GOERLI_XDAI_BRIDGE,
+  KOVAN_SOKOL_BRIDGE,
+  POA_XDAI_BRIDGE,
 };
 
 const ETH_XDAI_BRIDGE_CONFIG = {
@@ -57,24 +61,67 @@ const BSC_XDAI_BRIDGE_CONFIG = {
   ],
 };
 
-const GOERLI_XDAI_BRIDGE_CONFIG = {
-  label: 'gör⥊gc',
-  homeChainId: 10200,
-  foreignChainId: 5,
+const POA_XDAI_BRIDGE_CONFIG = {
+  label: 'poa⥊gc',
+  homeChainId: 100,
+  foreignChainId: 99,
   enableForeignCurrencyBridge: true,
   homeWrappedForeignCurrencyAddress:
-    ''.toLowerCase(),
+    '0x9fe3864F9Ae7cfb5668Dae90C0e20c4C3D437664'.toLowerCase(),
   wrappedForeignCurrencyAddress:
-    ''.toLowerCase(),
+    '0xD2CFBCDbDF02c42951ad269dcfFa27c02151Cebd'.toLowerCase(),
   foreignMediatorAddress:
-    ''.toLowerCase(),
+    '0x8134470b7CF6f57Faee2076adf8F7301fD5865a5'.toLowerCase(),
   homeMediatorAddress:
-    ''.toLowerCase(),
-  foreignAmbAddress: ''.toLowerCase(),
-  homeAmbAddress: ''.toLowerCase(),
-  foreignGraphName: '',
-  homeGraphName: '',
-  ambLiveMonitorPrefix: '',
+    '0x63be59CF177cA9bb317DE8C4aa965Ddda93CB9d7'.toLowerCase(),
+  foreignAmbAddress: '0xB2218bdEbe8e90f80D04286772B0968ead666942'.toLowerCase(),
+  homeAmbAddress: '0xc2d77d118326c33BBe36EbeAbf4F7ED6BC2dda5c'.toLowerCase(),
+  foreignGraphName: 'dan13ram/poa-to-xdai-omnibridge',
+  homeGraphName: 'dan13ram/xdai-to-poa-omnibridge',
+  ambLiveMonitorPrefix: 'https://alm-bridge-monitor.gnosischain.com',
+  claimDisabled: false,
+  tokensClaimDisabled: [],
+};
+
+const KOVAN_SOKOL_BRIDGE_CONFIG = {
+  label: 'kovan⥊sokol',
+  homeChainId: 77,
+  foreignChainId: 42,
+  enableForeignCurrencyBridge: true,
+  homeWrappedForeignCurrencyAddress:
+    '0x3D14493DF2B479E6BABE82Fc2373F91622bac025'.toLowerCase(),
+  wrappedForeignCurrencyAddress:
+    '0x89ded978ef13CDBb88c0a5A959B66B552cf3355a'.toLowerCase(),
+  foreignMediatorAddress:
+    '0xA960d095470f7509955d5402e36d9DB984B5C8E2'.toLowerCase(),
+  homeMediatorAddress:
+    '0x40CdfF886715A4012fAD0219D15C98bB149AeF0e'.toLowerCase(),
+  foreignAmbAddress: '0xFe446bEF1DbF7AFE24E81e05BC8B271C1BA9a560'.toLowerCase(),
+  homeAmbAddress: '0xFe446bEF1DbF7AFE24E81e05BC8B271C1BA9a560'.toLowerCase(),
+  foreignGraphName: 'dan13ram/kovan-omnibridge',
+  homeGraphName: 'dan13ram/sokol-omnibridge',
+  ambLiveMonitorPrefix: 'https://alm-bridge-monitor.gnosischain.com',
+  claimDisabled: false,
+  tokensClaimDisabled: [],
+};
+
+const ETH_BSC_BRIDGE_CONFIG = {
+  label: 'eth⥊bsc',
+  homeChainId: 56,
+  foreignChainId: 1,
+  enableForeignCurrencyBridge: false,
+  homeWrappedForeignCurrencyAddress: null,
+  wrappedForeignCurrencyAddress:
+    '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2'.toLowerCase(),
+  foreignMediatorAddress:
+    '0x69c707d975e8d883920003CC357E556a4732CD03'.toLowerCase(),
+  homeMediatorAddress:
+    '0xD83893F31AA1B6B9D97C9c70D3492fe38D24d218'.toLowerCase(),
+  foreignAmbAddress: '0x07955be2967B655Cf52751fCE7ccC8c61EA594e2'.toLowerCase(),
+  homeAmbAddress: '0x6943A218d58135793F1FE619414eD476C37ad65a'.toLowerCase(),
+  foreignGraphName: 'dan13ram/mainnet-to-bsc-omnibridge',
+  homeGraphName: 'dan13ram/bsc-to-mainnet-omnibridge',
+  ambLiveMonitorPrefix: 'https://alm-bridge-monitor.gnosischain.com',
   claimDisabled: false,
   tokensClaimDisabled: [],
 };
@@ -86,7 +133,9 @@ const ENABLED_BRIDGES = process.env.REACT_APP_ENABLED_BRIDGES.split(' ').map(
 const bridgeInfo = {
   [ETH_XDAI_BRIDGE]: ETH_XDAI_BRIDGE_CONFIG,
   [BSC_XDAI_BRIDGE]: BSC_XDAI_BRIDGE_CONFIG,
-  [GOERLI_XDAI_BRIDGE]: GOERLI_XDAI_BRIDGE_CONFIG,
+  [POA_XDAI_BRIDGE]: POA_XDAI_BRIDGE_CONFIG,
+  [KOVAN_SOKOL_BRIDGE]: KOVAN_SOKOL_BRIDGE_CONFIG,
+  [ETH_BSC_BRIDGE]: ETH_BSC_BRIDGE_CONFIG,
 };
 
 const getNetworkConfig = bridges => {
@@ -113,6 +162,20 @@ export const defaultTokens = {
       name: 'Gnosis Token from Ethereum',
     },
   },
+  [KOVAN_SOKOL_BRIDGE]: {
+    42: {
+      address: '0xFD2df5dCe4c89B007A43CF88d8161dAf1A17C7AB',
+      chainId: 42,
+      symbol: 'STAKE',
+      name: 'STAKE',
+    },
+    77: {
+      address: '0x408ec1bb883da0ea0fb3c955ea6befcd05aa7c3a',
+      chainId: 77,
+      symbol: 'STAKE',
+      name: 'STAKE on xDai',
+    },
+  },
   [BSC_XDAI_BRIDGE]: {
     56: {
       address: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
@@ -127,18 +190,27 @@ export const defaultTokens = {
       name: 'Wrapped BNB on GC',
     },
   },
-  [GOERLI_XDAI_BRIDGE]: {
-    5: {
-      address: '0x7f477c3f03213970d939104cc436dc995cf615b5',
-      chainId: 5,
-      symbol: 'GNO',
-      name: 'Testnet GNO on Goerli',
+  [POA_XDAI_BRIDGE]: {
+    99: nativeCurrencies[99],
+    100: {
+      address: '0x9fe3864F9Ae7cfb5668Dae90C0e20c4C3D437664',
+      chainId: 100,
+      symbol: 'WPOA',
+      name: 'Wrapped POA from POA',
     },
-    10200: {
-      address: '0x19C653Da7c37c66208fbfbE8908A5051B57b4C70',
-      chainId: 10200,
-      symbol: 'GNO',
-      name: 'Testnet GNO on Chiado',
+  },
+  [ETH_BSC_BRIDGE]: {
+    56: {
+      address: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
+      chainId: 56,
+      symbol: 'WBNB',
+      name: 'Wrapped BNB',
+    },
+    1: {
+      address: '0x47f29657fd9f76710452208e9b12d8e9745e595c',
+      chainId: 1,
+      symbol: 'WBNB',
+      name: 'Wrapped BNB from BSC',
     },
   },
 };
