@@ -40,7 +40,7 @@ GRAPH_ACCESS_TOKEN=your-access-token-here yarn subgraph:auth
 #### `yarn subgraph:prepare-<network>`
 
 Generates subgraph.yaml for particular network.
-Supported networks are kovan, sokol, xdai and mainnet.
+Supported networks are goerli, xdai, GC and eth mainnet.
 
 #### `yarn subgraph:codegen`
 

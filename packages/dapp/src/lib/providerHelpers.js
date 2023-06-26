@@ -5,7 +5,6 @@ import { getNetworkLabel, getRPCUrl, logError } from 'lib/helpers';
 
 const {
   MAINNET_RPC_URL,
-  KOVAN_RPC_URL,
   BSC_RPC_URL,
   SOKOL_RPC_URL,
   POA_RPC_URL,
@@ -14,7 +13,6 @@ const {
 
 const LOCAL_STORAGE_KEYS_MAP = {
   1: MAINNET_RPC_URL,
-  42: KOVAN_RPC_URL,
   56: BSC_RPC_URL,
   77: SOKOL_RPC_URL,
   99: POA_RPC_URL,

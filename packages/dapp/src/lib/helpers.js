@@ -16,7 +16,6 @@ import {
   defaultTokens,
   ETH_BSC_BRIDGE,
   ETH_XDAI_BRIDGE,
-  KOVAN_SOKOL_BRIDGE,
   networks,
   POA_XDAI_BRIDGE,
 } from 'lib/networks';
@@ -184,8 +183,6 @@ const {
   POA_RPC_URL,
   MAINNET_RPC_URL,
   BSC_RPC_URL,
-  KOVAN_RPC_URL,
-  SOKOL_RPC_URL,
 } = LOCAL_STORAGE_KEYS;
 
 export const getRPCKeys = bridgeDirection => {
@@ -206,16 +203,11 @@ export const getRPCKeys = bridgeDirection => {
         foreignRPCKey: POA_RPC_URL,
       };
     case ETH_BSC_BRIDGE:
-      return {
-        homeRPCKey: BSC_RPC_URL,
-        foreignRPCKey: MAINNET_RPC_URL,
-      };
-    case KOVAN_SOKOL_BRIDGE:
-    default:
-      return {
-        homeRPCKey: SOKOL_RPC_URL,
-        foreignRPCKey: KOVAN_RPC_URL,
-      };
+      default:
+        return {
+          homeRPCKey: BSC_RPC_URL,
+          foreignRPCKey: MAINNET_RPC_URL,
+        };
   }
 };
 

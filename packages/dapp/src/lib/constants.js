@@ -2,9 +2,7 @@ import { BigNumber } from 'ethers';
 
 export const ETH_XDAI_BRIDGE = 'eth-xdai';
 export const BSC_XDAI_BRIDGE = 'bsc-xdai';
-export const POA_XDAI_BRIDGE = 'poa-xdai';
-export const KOVAN_SOKOL_BRIDGE = 'kovan-sokol';
-export const ETH_BSC_BRIDGE = 'eth-bsc';
+export const GOERLI_XDAI_BRIDGE = 'gör-xdai';
 
 export const ADDRESS_ZERO = '0x0000000000000000000000000000000000000000';
 export const ETHER_CURRENCY_LOGO =
@@ -13,7 +11,10 @@ export const BNB_CURRENCY_LOGO =
   'https://s2.coinmarketcap.com/static/img/coins/64x64/1839.png';
 export const POA_CURRENCY_LOGO =
   'https://s2.coinmarketcap.com/static/img/coins/64x64/2548.png';
-
+export const GOERLI_CURRENCY_LOGO = 
+  'https://s2.coinmarketcap.com/static/img/coins/64x64/23669.png'
+export const GNOSIS_CURRENCY_LOGO =
+  'https://s2.coinmarketcap.com/static/img/coins/64x64/1659.png'
 export const LARGEST_UINT256 = BigNumber.from(
   '115792089237316195423570985008687907853269984665640564039457584007913129639935',
 );
@@ -43,13 +44,13 @@ export const nativeCurrencies = {
     symbol: 'ETH',
     mode: 'NATIVE',
   },
-  42: {
-    chainId: 42,
+  5: {
+    chainId: 5,
     decimals: 18,
-    logoURI: ETHER_CURRENCY_LOGO,
+    logoURI: GOERLI_CURRENCY_LOGO,
+    name: 'Görli',
     address: ADDRESS_ZERO,
-    name: 'Kovan Ether',
-    symbol: 'KETH',
+    symbol: 'Görli ETH',
     mode: 'NATIVE',
   },
   56: {
@@ -58,7 +59,7 @@ export const nativeCurrencies = {
     logoURI: BNB_CURRENCY_LOGO,
     name: 'Binance Coin',
     address: ADDRESS_ZERO,
-    symbol: 'BNB',
+    symbol: 'ETH',
     mode: 'NATIVE',
   },
   99: {
@@ -70,13 +71,23 @@ export const nativeCurrencies = {
     symbol: 'POA',
     mode: 'NATIVE',
   },
+  10200: {
+    chainId: 10200,
+    decimals: 18,
+    logoURI: GNOSIS_CURRENCY_LOGO,
+    name: 'Chiado',
+    address: ADDRESS_ZERO,
+    symbol: 'Chiado xDAI',
+    mode: 'NATIVE',
+  },
 };
 
 export const nativeCurrencyMediators = {
   1: '0xa6439ca0fcba1d0f80df0be6a17220fed9c9038a'.toLowerCase(),
-  42: '0x227a6f13aa0dba8912d740c0f88fb1304b2597e1'.toLowerCase(),
+  5: ''.toLowerCase(),
   56: '0xefc33f8b2c4d51005585962be7ea20518ea9fd0d'.toLowerCase(),
   99: '0xF6a1Ad94d29679388e533B63bfE1Fd6f1680D23B'.toLowerCase(),
+  10200: ''.toLowerCase(),
 };
 
 export const networkNames = {
@@ -84,11 +95,10 @@ export const networkNames = {
   3: 'Ropsten Testnet',
   4: 'Rinkeby Testnet',
   5: 'Görli Testnet',
-  42: 'Kovan Testnet',
   56: 'Binance Smart Chain',
-  77: 'Sokol Testnet',
   99: 'POA Network',
   100: 'Gnosis Chain',
+  10200: 'Gnosis Chiado Chain',
 };
 
 export const networkLabels = {
@@ -96,11 +106,10 @@ export const networkLabels = {
   3: 'Ropsten',
   4: 'Rinkeby',
   5: 'Görli',
-  42: 'Kovan',
   56: 'BSC',
-  77: 'Sokol',
   99: 'POA',
   100: 'Gnosis Chain',
+  10200: 'Gnosis Chiado Chain',
 };
 
 export const networkCurrencies = {
@@ -116,16 +125,12 @@ export const networkCurrencies = {
     name: 'Binance Coin',
     symbol: 'BNB',
   },
-  77: {
-    name: 'Sokol POA',
-    symbol: 'SPOA',
-  },
   99: {
     name: 'POA',
     symbol: 'POA',
   },
   100: {
-    name: 'xDai',
+    name: 'Gnosis Chain',
     symbol: 'xDai',
   },
 };
@@ -134,9 +139,8 @@ const {
   REACT_APP_MAINNET_RPC_URL,
   REACT_APP_XDAI_RPC_URL,
   REACT_APP_POA_RPC_URL,
-  REACT_APP_SOKOL_RPC_URL,
-  REACT_APP_KOVAN_RPC_URL,
   REACT_APP_BSC_RPC_URL,
+  REACT_APP_GC_CHIADO_RPC_URL,
 } = process.env;
 
 export const chainUrls = {
@@ -146,23 +150,11 @@ export const chainUrls = {
     chainId: 1,
     name: networkNames[1],
   },
-  42: {
-    rpc: REACT_APP_KOVAN_RPC_URL.split(' '),
-    explorer: 'https://blockscout.com/eth/kovan',
-    chainId: 42,
-    name: networkNames[42],
-  },
   56: {
     rpc: REACT_APP_BSC_RPC_URL.split(' '),
     explorer: 'https://bscscan.com',
     chainId: 56,
     name: networkNames[56],
-  },
-  77: {
-    rpc: REACT_APP_SOKOL_RPC_URL.split(' '),
-    explorer: 'https://blockscout.com/poa/sokol',
-    chainId: 77,
-    name: networkNames[77],
   },
   99: {
     rpc: REACT_APP_POA_RPC_URL.split(' '),
@@ -172,6 +164,12 @@ export const chainUrls = {
   },
   100: {
     rpc: REACT_APP_XDAI_RPC_URL.split(' '),
+    explorer: 'https://blockscout.com/xdai/mainnet',
+    chainId: 100,
+    name: networkNames[100],
+  },
+  10200: {
+    rpc: REACT_APP_GC_CHIADO_RPC_URL.split(' '),
     explorer: 'https://blockscout.com/xdai/mainnet',
     chainId: 100,
     name: networkNames[100],
@@ -196,8 +194,6 @@ export const LOCAL_STORAGE_KEYS = {
   XDAI_RPC_URL: 'xdai-rpc-url',
   POA_RPC_URL: 'poa-rpc-url',
   BSC_RPC_URL: 'bsc-rpc-url',
-  KOVAN_RPC_URL: 'kovan-rpc-url',
-  SOKOL_RPC_URL: 'sokol-rpc-url',
   NEVER_SHOW_CLAIMS: 'never-show-claims',
   INFINITE_UNLOCK: 'infinite-unlock',
   CUSTOM_TOKENS: 'customTokens',
