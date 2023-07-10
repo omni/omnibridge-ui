@@ -56,10 +56,7 @@ const connector = async (ProviderPackage, options) => {
 const providerOptions = {
   walletconnect: {
     package: WalletConnectProvider,
-    options: {
-        rpc: rpc,
-        bridge: "https://walletconnect.gnosis.io",
-      },
+    options: {rpc, bridge: "https://walletconnect.gnosis.io",},
   },
   'custom-imToken': {
     display: {
@@ -68,10 +65,7 @@ const providerOptions = {
       description: 'Connect to your imToken Wallet',
     },
     package: WalletConnectProvider,
-    options: {
-        rpc: rpc,
-        bridge: "https://walletconnect.gnosis.io",
-      },
+    options: {rpc, bridge: "https://walletconnect.gnosis.io",},
     connector,
   },
   'custom-walletlink': {
