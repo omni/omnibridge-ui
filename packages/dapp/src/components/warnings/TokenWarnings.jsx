@@ -1,7 +1,7 @@
 import { BSCETHTokenWarnings } from 'components/warnings/BSCETHTokenWarnings';
 import { BSCGCTokenWarnings } from 'components/warnings/BSCGCTokenWarnings';
 import { DaiWarning } from 'components/warnings/DaiWarning';
-import { GCOriginOnBSCTokenWarning } from 'components/warnings/GCOriginOnBSCTokenWarning';
+// import { GCOriginOnBSCTokenWarning } from 'components/warnings/GCOriginOnBSCTokenWarning';
 import { RebasingTokenWarning } from 'components/warnings/RebasingTokenWarning';
 import { SafeMoonTokenWarning } from 'components/warnings/SafeMoonTokenWarning';
 import { StakeTokenWarning } from 'components/warnings/StakeTokenWarning';
@@ -16,6 +16,6 @@ export const TokenWarnings = ({ token, noShadow = false }) =>
       <DaiWarning {...{ token, noShadow }} />
       <RebasingTokenWarning {...{ token, noShadow }} />
       <SafeMoonTokenWarning {...{ token, noShadow }} />
-      <GCOriginOnBSCTokenWarning {...{ token, noShadow }} />
+      {/* <GCOriginOnBSCTokenWarning {...{ token, noShadow }} /> */}
     </>
   ) : null;

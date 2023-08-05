@@ -19,43 +19,44 @@ import { networks } from 'lib/networks';
 import { getEthersProvider } from 'lib/providers';
 import { useCallback, useEffect, useState } from 'react';
 
-const GC_BSC_OMNIBRIDGE = networks[BSC_XDAI_BRIDGE].foreignMediatorAddress;
+// const GC_BSC_OMNIBRIDGE = networks[BSC_XDAI_BRIDGE].foreignMediatorAddress;
 
-export const useTokenGCOriginOnBSC = token => {
-  const { bridgeDirection } = useBridgeDirection();
-  const [fetching, setFetching] = useState(true);
-  const [isToken, setIsToken] = useState(false);
-  const load = useCallback(async () => {
-    setFetching(true);
-    try {
-      if (token && token.chainId === 56 && bridgeDirection === ETH_BSC_BRIDGE) {
-        const provider = await getEthersProvider(56);
-        const abi = [
-          'function nativeTokenAddress(address) view returns (address)',
-        ];
-        const contract = new Contract(GC_BSC_OMNIBRIDGE, abi, provider);
+// export const useTokenGCOriginOnBSC = token => {
+//   const { bridgeDirection } = useBridgeDirection();
+//   const [fetching, setFetching] = useState(true);
+//   const [isToken, setIsToken] = useState(false);
+//   const load = useCallback(async () => {
+//     setFetching(true);
+//     try {
+//       if (token && token.chainId === 56 && bridgeDirection === ETH_BSC_BRIDGE) {
+//         const provider = await getEthersProvider(56);
+//         const abi = [
+//           'function nativeTokenAddress(address) view returns (address)',
+//         ];
+//         const contract = new Contract(GC_BSC_OMNIBRIDGE, abi, provider);
 
-        const address = await contract.nativeTokenAddress(token.address);
-        setIsToken(address !== ADDRESS_ZERO);
-      } else {
-        setIsToken(false);
-      }
-    } catch (error) {
-      logError({ message: 'Error fetching nativeTokenAddress', error });
-      setIsToken(false);
-    } finally {
-      setFetching(false);
-    }
-  }, [token, bridgeDirection]);
+//         const address = await contract.nativeTokenAddress(token.address);
+//         setIsToken(address !== ADDRESS_ZERO);
+//       } else {
+//         setIsToken(false);
+//       }
+//     } catch (error) {
+//       logError({ message: 'Error fetching nativeTokenAddress', error });
+//       setIsToken(false);
+//     } finally {
+//       setFetching(false);
+//     }
+//   }, [token, bridgeDirection]);
 
-  useEffect(() => load(), [load]);
-  return { fetching, isToken };
-};
+//   useEffect(() => load(), [load]);
+//   return { fetching, isToken };
+// };
 
 export const useTokenDisabled = token => {
   const { bridgeDirection } = useBridgeDirection();
-  const { isToken: isTokenGCOriginOnBSC, fetching } =
-    useTokenGCOriginOnBSC(token);
+  // const { isToken: isTokenGCOriginOnBSC, fetching } =
+  //   useTokenGCOriginOnBSC(token);
+  const [fetching, setFetching] = useState(false);
 
   if (!token || fetching) return false;
   const isTokenRebasing = isRebasingToken(token);
@@ -72,7 +73,7 @@ export const useTokenDisabled = token => {
     isTokenSafeMoon ||
     isTokenDisabledStake ||
     isTokenGCStableToBSC ||
-    isTokenGCOriginOnBSC ||
+    // isTokenGCOriginOnBSC ||
     isTokenDAI ||
     isTokenBSCPegged
   );
