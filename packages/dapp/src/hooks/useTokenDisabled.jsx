@@ -6,18 +6,19 @@ import { isERC20DaiAddress } from 'components/warnings/DaiWarning';
 import { isRebasingToken } from 'components/warnings/RebasingTokenWarning';
 import { isSafeMoonToken } from 'components/warnings/SafeMoonTokenWarning';
 import { isDisabledStakeToken } from 'components/warnings/StakeTokenWarning';
-import { Contract } from 'ethers';
+// import { Contract } from 'ethers';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import {
-  ADDRESS_ZERO,
+  // ADDRESS_ZERO,
   BSC_XDAI_BRIDGE,
-  ETH_BSC_BRIDGE,
+  // ETH_BSC_BRIDGE,
   ETH_XDAI_BRIDGE,
 } from 'lib/constants';
-import { logError } from 'lib/helpers';
-import { networks } from 'lib/networks';
-import { getEthersProvider } from 'lib/providers';
-import { useCallback, useEffect, useState } from 'react';
+// import { logError } from 'lib/helpers';
+// import { networks } from 'lib/networks';
+// import { getEthersProvider } from 'lib/providers';
+// import { useCallback, useEffect, useState } from 'react';
+import { useState } from 'react';
 
 // const GC_BSC_OMNIBRIDGE = networks[BSC_XDAI_BRIDGE].foreignMediatorAddress;
 
@@ -56,25 +57,25 @@ export const useTokenDisabled = token => {
   const { bridgeDirection } = useBridgeDirection();
   // const { isToken: isTokenGCOriginOnBSC, fetching } =
   //   useTokenGCOriginOnBSC(token);
-  const [fetching, setFetching] = useState(false);
+  const [fetching] = useState(false);
 
   if (!token || fetching) return false;
   const isTokenRebasing = isRebasingToken(token);
   const isTokenSafeMoon = isSafeMoonToken(token);
   const isTokenDisabledStake = isDisabledStakeToken(token);
-  const isTokenBSCPegged =
-    isBSCPeggedToken(token) && bridgeDirection === BSC_XDAI_BRIDGE;
-  const isTokenGCStableToBSC =
-    isGCStableToken(token) && bridgeDirection === BSC_XDAI_BRIDGE;
+  // const isTokenBSCPegged =
+    // isBSCPeggedToken(token) && bridgeDirection === BSC_XDAI_BRIDGE;
+  // const isTokenGCStableToBSC =
+  //   isGCStableToken(token) && bridgeDirection === BSC_XDAI_BRIDGE;
   const isTokenDAI =
     isERC20DaiAddress(token) && bridgeDirection === ETH_XDAI_BRIDGE;
   return (
     isTokenRebasing ||
     isTokenSafeMoon ||
     isTokenDisabledStake ||
-    isTokenGCStableToBSC ||
+    // isTokenGCStableToBSC ||
     // isTokenGCOriginOnBSC ||
-    isTokenDAI ||
-    isTokenBSCPegged
+    isTokenDAI 
+    // isTokenBSCPegged
   );
 };
