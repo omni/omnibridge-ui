@@ -1,7 +1,7 @@
-import {
-  isBSCPeggedToken,
-  isGCStableToken,
-} from 'components/warnings/BSCGCTokenWarnings';
+// import {
+//   isBSCPeggedToken,
+//   isGCStableToken,
+// } from 'components/warnings/BSCGCTokenWarnings';
 import { isERC20DaiAddress } from 'components/warnings/DaiWarning';
 import { isRebasingToken } from 'components/warnings/RebasingTokenWarning';
 import { isSafeMoonToken } from 'components/warnings/SafeMoonTokenWarning';
@@ -10,7 +10,7 @@ import { isDisabledStakeToken } from 'components/warnings/StakeTokenWarning';
 import { useBridgeDirection } from 'hooks/useBridgeDirection';
 import {
   // ADDRESS_ZERO,
-  BSC_XDAI_BRIDGE,
+  // BSC_XDAI_BRIDGE,
   // ETH_BSC_BRIDGE,
   ETH_XDAI_BRIDGE,
 } from 'lib/constants';
