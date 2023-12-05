@@ -42,7 +42,7 @@ export const useBridgeDirection = () => {
   );
 
   const getMonitorUrl = useCallback(
-    (chainId, hash) => `${ambLiveMonitorPrefix}/${chainId}/${hash}`,
+    (_, hash) => `${ambLiveMonitorPrefix}/?hash=${hash}`,
     [ambLiveMonitorPrefix],
   );
 

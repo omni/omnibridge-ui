@@ -14,18 +14,20 @@ import { useBridgeContext } from 'contexts/BridgeContext';
 import { useWeb3Context } from 'contexts/Web3Context';
 import { HistoryIcon } from 'icons/HistoryIcon';
 import React, { useState } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
-const HistoryLink = ({ close }) => {
-  const { push } = useHistory();
+import { useBridgeDirection } from '../../hooks/useBridgeDirection';
 
-  return (
-    <Button
+const HistoryLink = ({ close, account }) => {
+   const {getMonitorUrl} = useBridgeDirection()
+    
+
+   return <Button
       variant="ghost"
       color="grey"
       _hover={{ color: 'blue.500', bgColor: 'blackAlpha.100' }}
       onClick={() => {
-        push('/history');
+        window.open(getMonitorUrl(null, account), '_blank');
         close();
       }}
       leftIcon={<HistoryIcon />}
@@ -34,11 +36,10 @@ const HistoryLink = ({ close }) => {
     >
       <Text color="black"> History</Text>
     </Button>
-  );
-};
+  };
 
 export const Header = () => {
-  const { isConnected } = useWeb3Context();
+  const { isConnected, account } = useWeb3Context();
   const { loading } = useBridgeContext();
   const [isOpen, setOpen] = useState(false);
   const toggleOpen = () => setOpen(open => !open);
@@ -113,7 +114,7 @@ export const Header = () => {
       >
         {isConnected && (
           <>
-            <HistoryLink close={() => setOpen(false)} />
+            <HistoryLink close={() => setOpen(false)} account={account} />
             <UpdateSettings close={() => setOpen(false)} />
           </>
         )}
