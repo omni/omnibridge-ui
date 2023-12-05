@@ -53,7 +53,7 @@ jobs:
           REACT_APP_INFURA_ID: "" 
           REACT_APP_GAS_PRICE_FALLBACK_GWEI: "50"
           REACT_APP_GAS_PRICE_SUPPLIER_URL: "https://gasprice.poa.network/"
-          REACT_APP_GAS_PRICE_SPEED_TYPE=: "fast"
+          REACT_APP_GAS_PRICE_SPEED_TYPE: "fast"
           REACT_APP_GAS_PRICE_UPDATE_INTERVAL: "60000"
           REACT_APP_ETH_PRICE_API_URL: "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=USD"
           REACT_APP_ETH_PRICE_UPDATE_INTERVAL: "60000"
