@@ -39,6 +39,7 @@ export const Footer = () => {
             href="https://gnosischain.com"
             rel="noreferrer noopener"
             target="_blank"
+            aria-label="Visit GnosisChain.com"
           >
             <GnosisChainIcon boxSize="1.25rem" />
           </a>
@@ -48,6 +49,7 @@ export const Footer = () => {
             href="https://twitter.com/gnosischain"
             rel="noreferrer noopener"
             target="_blank"
+            aria-label="Visit twitter.com"
           >
             <TwitterIcon />
           </a>
@@ -57,6 +59,7 @@ export const Footer = () => {
             href="https://t.me/gnosischain"
             rel="noreferrer noopener"
             target="_blank"
+            aria-label="Visit Gnosis Chain Telegram"
           >
             <TelegramIcon />
           </a>
@@ -66,6 +69,7 @@ export const Footer = () => {
             href="https://github.com/omni"
             rel="noreferrer noopener"
             target="_blank"
+            aria-label="Visit Github.com"
           >
             <GithubIcon />
           </a>
