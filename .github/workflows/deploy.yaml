@@ -44,7 +44,7 @@ jobs:
           pip install awscli --upgrade --user
       
       - name: Build Release App
-        if: ( github.ref == 'refs/heads/release' || github.ref == 'refs/heads/master' )
+        if: ( github.ref == 'refs/heads/testing' || github.ref == 'refs/heads/master' )
         run: yarn dapp:build
         env:
           CI: true
@@ -75,16 +75,16 @@ jobs:
       
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
-        if: ( github.ref == 'refs/heads/release' )
+        if: ( github.ref == 'refs/heads/testing' )
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-access-key-id: ${{ secrets.STAGING_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.STAGING_AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
 
 
       # Script to deploy to release environment
       - name: 'Deploy to S3: Release'
-        if: ( github.ref == 'refs/heads/release' )
+        if: ( github.ref == 'refs/heads/testing' )
         run: |
           aws s3 sync packages/dapp/build/ s3://${{ secrets.RELEASE_BUCKET_NAME }} --delete --exclude "*.html" --cache-control max-age=86400,public
           aws s3 sync packages/dapp/build/ s3://${{ secrets.RELEASE_BUCKET_NAME }} --delete --exclude "*" --include "*.html" --cache-control max-age=0,no-cache,no-store,must-revalidate --content-type text/html
