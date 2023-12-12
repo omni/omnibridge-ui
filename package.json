@@ -68,6 +68,7 @@
   },
   "dependencies": {},
   "resolutions": {
-    "react-error-overlay": "6.0.9"
+    "react-error-overlay": "6.0.9",
+    "concat-stream": "https://github.com/max-mapper/concat-stream.git#v1.6.2"
   }
 }
