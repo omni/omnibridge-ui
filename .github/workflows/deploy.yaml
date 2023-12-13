@@ -43,7 +43,7 @@ jobs:
           yarn install
           pip install awscli --upgrade --user
       
-      - name: Build Release App
+      - name: Build App
         if: ( github.ref == 'refs/heads/testing' || github.ref == 'refs/heads/master' )
         run: yarn dapp:build
         env:
